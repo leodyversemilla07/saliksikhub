@@ -1,6 +1,6 @@
 import { useState, ReactNode, FormEventHandler } from 'react';
 import { Eye, EyeOff, Globe, Clock, Users } from 'lucide-react';
-import { useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 
@@ -23,31 +23,34 @@ export default function Register() {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-screen p-8 bg-gradient-to-br from-blue-50 to-gray-100 font-sans">
-            {/* Header */}
-            <Header />
+        <>
+            <Head title="Register" />
+            <div className="flex flex-col items-center min-h-screen p-8 bg-gradient-to-br from-blue-50 to-gray-100 font-sans">
+                {/* Header */}
+                <Header />
 
-            {/* Main Content */}
-            <main className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
-                {/* Registration Form */}
-                <RegistrationForm
-                    data={data}
-                    setData={setData}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    errors={errors}
-                    submit={submit}
-                />
+                {/* Main Content */}
+                <main className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
+                    {/* Registration Form */}
+                    <RegistrationForm
+                        data={data}
+                        setData={setData}
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                        errors={errors}
+                        submit={submit}
+                    />
 
-                {/* Welcome Section */}
-                <WelcomeSection />
-            </main>
+                    {/* Welcome Section */}
+                    <WelcomeSection />
+                </main>
 
-            {/* Footer */}
-            <footer className="text-center mt-16 text-gray-600">
-                <p>&copy; 2024 MinSU Research Journal. All Rights Reserved.</p>
-            </footer>
-        </div>
+                {/* Footer */}
+                <footer className="text-center mt-16 text-gray-600">
+                    <p>&copy; 2024 MinSU Research Journal. All Rights Reserved.</p>
+                </footer>
+            </div>
+        </>
     );
 }
 
@@ -78,7 +81,7 @@ function RegistrationForm({ data, setData, showPassword, setShowPassword, errors
             <h2 className="text-3xl font-bold mb-6 text-gray-800">Create Your Account</h2>
             <form onSubmit={submit}>
                 {/* Name Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
                     <InputField
                         id="firstname"
                         label="First Name"
@@ -103,7 +106,7 @@ function RegistrationForm({ data, setData, showPassword, setShowPassword, errors
                 <InputField
                     id="email"
                     label="Email"
-                    placeholder="johndoe@gmail.com"
+                    placeholder="johndoe@example.com"
                     type="email"
                     value={data.email}
                     setData={setData}
@@ -158,6 +161,14 @@ function RegistrationForm({ data, setData, showPassword, setShowPassword, errors
                 >
                     Register
                 </button>
+
+                {/* Already have an account? */}
+                <div className="mt-4 text-center">
+                    <span className="text-gray-600 text-sm">Already have an account? </span>
+                    <Link href={route("login")} className="text-green-500 hover:underline">
+                        Login
+                    </Link>
+                </div>
             </form>
         </div>
     );

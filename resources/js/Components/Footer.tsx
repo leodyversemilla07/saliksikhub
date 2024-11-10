@@ -14,12 +14,12 @@ export default function Footer({ journalName }: FooterProps): React.ReactElement
                     <div className="text-xl font-bold text-white">{journalName}</div>
                     <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-8">
                         <Link href="/" className="hover:text-white">Home</Link>
-                        <Link href="#" className="hover:text-white">Current</Link>
-                        <Link href="#" className="hover:text-white">Submissions</Link>
-                        <Link href="#" className="hover:text-white">Archives</Link>
-                        <Link href="#" className="hover:text-white">Editorial Board</Link>
-                        <Link href="#" className="hover:text-white">About Us</Link>
-                        <Link href="#" className="hover:text-white">Contact Us</Link>
+                        <Link href="/current" className="hover:text-white">Current</Link>
+                        <Link href="/submissions" className="hover:text-white">Submissions</Link>
+                        <Link href="/archives" className="hover:text-white">Archives</Link>
+                        <Link href="/editorial-board" className="hover:text-white">Editorial Board</Link>
+                        <Link href="/about-us" className="hover:text-white">About Us</Link>
+                        <Link href="/contact-us" className="hover:text-white">Contact Us</Link>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@ export default function Footer({ journalName }: FooterProps): React.ReactElement
                     <form className="flex justify-center">
                         <input
                             type="email"
-                            placeholder="Your Email"
+                            placeholder="johndoe@example.com"
                             className="px-4 py-2 text-gray-900 rounded-l-md"
                         />
                         <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-r-md hover:bg-green-700">

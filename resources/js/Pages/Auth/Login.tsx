@@ -99,7 +99,7 @@ export default function Login({
                                     id="email"
                                     type="email"
                                     name="email"
-                                    placeholder="johndoe@gmail.com"
+                                    placeholder="johndoe@example.com"
                                     value={data.email}
                                     className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
                                     autoComplete="username"
@@ -169,7 +169,7 @@ export default function Login({
 
                         <div className="mt-6 text-center text-gray-600">
                             Don't have an account?{' '}
-                            <Link href={route('register')} className="text-green-500 hover:underline">
+                            <Link href={route("register")} className="text-green-500 hover:underline">
                                 Sign up
                             </Link>
                         </div>
