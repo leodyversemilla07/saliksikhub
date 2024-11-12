@@ -53,6 +53,18 @@ Route::get('/contact-us', function () {
     ]);
 });
 
+Route::get('/editor-dashboard', function () {
+    return Inertia::render('Editor/Dashboard');
+});
+
+Route::get('/reviewer-dashboard', function () {
+    return Inertia::render('Reviewer/Dashboard');
+});
+
+Route::get('/author-dashboard', function () {
+    return Inertia::render('Author/Dashboard');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
