@@ -1,66 +1,47 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## SaliksikHub: A Dynamic Research Journal Management System with AI-assisted Pre-review
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**SaliksikHub** (Saliksik means "research" in Filipino) is a web-based system designed to streamline the research journal management process. It offers a user-friendly interface for authors, reviewers, and editors to collaborate efficiently. SaliksikHub also incorporates AI-powered pre-review features to expedite the initial screening of submissions.
 
-## About Laravel
+###  Key Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* **Manuscript Submission and Tracking:** Authors can easily submit manuscripts, track their progress, and receive updates throughout the review process.
+* **Double-Blind Review System:** SaliksikHub ensures anonymity between authors and reviewers for a fair and unbiased evaluation.
+* **AI-assisted Pre-review:** Utilize AI capabilities to identify potential formatting issues, plagiarism, and keyword relevance, assisting editors in initial review decisions. (Optional: Specify the specific AI model used)
+* **Reviewer Management:** Assign reviewers with relevant expertise, track their progress, and manage feedback communication.
+* **Editorial Workflow Management:** Editors can efficiently manage submissions, assign reviewers, and track the overall review process.
+* **Detailed Reports and Analytics:** Generate insightful reports on submissions, reviews, and reviewer performance.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+###  Benefits
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **Enhanced Efficiency:** SaliksikHub automates tasks and streamlines workflows, saving time and resources for all stakeholders.
+* **Improved Quality:** AI-assisted pre-review helps maintain high-quality submissions through initial screening.
+* **Transparency and Fairness:** The double-blind review system ensures unbiased evaluations for authors.
+* **Data-driven Decision Making:** Gain valuable insights from detailed reports and analytics for continuous improvement.
 
-## Learning Laravel
+###  Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**1. Installation**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* SaliksikHub is currently under development. (If applicable, provide installation instructions for future releases)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**2. Contributing**
 
-## Laravel Sponsors
+* We welcome contributions from the open-source community. (If applicable, provide instructions on contributing to the codebase)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**3. Documentation**
 
-### Premium Partners
+* Comprehensive user guides and developer documentation will be available soon. (Provide links to documentation when available)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+**4. Support**
 
-## Contributing
+* For any questions or support requests, please contact [email protected]
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+###  Technology Stack
 
-## Code of Conduct
+*  [List the programming languages and frameworks used to build SaliksikHub] (e.g., Python, Django, React)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Disclaimer:** This project is under development, and the features mentioned above may be subject to change. 
 
-## Security Vulnerabilities
+###  License
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+SaliksikHub is licensed under the [License Name] license. ([Link to License details])
