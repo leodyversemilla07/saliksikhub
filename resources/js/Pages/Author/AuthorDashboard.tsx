@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { AlertCircle, CheckCircle, Clock, Download, ExternalLink, Eye, FileText, MessageSquare, Plus, Send, Upload } from 'lucide-react';
 
-export default function Dashboard() {
+export default function AuthorDashboard() {
     // Sample data - in a real application, this would come from an API
     const metrics = {
         activeSubmissions: 3,
@@ -21,7 +21,9 @@ export default function Dashboard() {
             lastUpdate: "2024-11-08",
             journal: "Journal of Climate Science",
             hasComments: true,
-            stage: "Peer Review"
+            stage: "Peer Review",
+            aiReviewPassed: true,
+            aiReviewReport: { sentiment: 'Positive', topics: ['Climate Change', 'AI'], summary: 'The manuscript is well-written and highly relevant.' }
         },
         {
             id: "MS-2024-142",
@@ -32,7 +34,9 @@ export default function Dashboard() {
             journal: "Journal of Quantum Computing",
             hasComments: true,
             stage: "Author Revision",
-            revisionDue: "2024-11-19"
+            revisionDue: "2024-11-19",
+            aiReviewPassed: false,
+            aiReviewReport: { sentiment: 'Negative', topics: ['Quantum Computing', 'Cryptography'], summary: 'The manuscript lacks depth in addressing critical challenges.' }
         },
         {
             id: "MS-2024-128",
@@ -41,7 +45,9 @@ export default function Dashboard() {
             submittedDate: "2024-09-01",
             lastUpdate: "2024-10-30",
             journal: "Healthcare Informatics Journal",
-            doi: "10.1234/hij.2024.128"
+            doi: "10.1234/hij.2024.128",
+            aiReviewPassed: true,
+            aiReviewReport: { sentiment: 'Neutral', topics: ['Machine Learning', 'Healthcare'], summary: 'The manuscript is solid but needs a stronger conclusion.' }
         }
     ];
 
@@ -203,6 +209,16 @@ export default function Dashboard() {
                                                     <Eye className="w-4 h-4 mr-1" />
                                                     View Reviewer Comments
                                                 </button>
+                                            </div>
+                                        )}
+
+                                        {/* AI Review Report */}
+                                        {submission.aiReviewPassed !== undefined && (
+                                            <div className={`mt-4 p-2 ${submission.aiReviewPassed ? 'bg-green-50' : 'bg-red-50'} rounded-md`}>
+                                                <h5 className="font-semibold">{submission.aiReviewPassed ? 'AI Review Passed' : 'AI Review Failed'}</h5>
+                                                <p className="text-sm">Sentiment: {submission.aiReviewReport.sentiment}</p>
+                                                <p className="text-sm">Topics: {submission.aiReviewReport.topics.join(', ')}</p>
+                                                <p className="text-sm">{submission.aiReviewReport.summary}</p>
                                             </div>
                                         )}
                                     </div>

@@ -4,66 +4,33 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
+Route::get('/', fn() => renderPage('Home'));
+Route::get('/current', fn() => renderPage('Current'));
+Route::get('/submissions', fn() => renderPage('Submissions'));
+Route::get('/archives', fn() => renderPage('Archives'));
+Route::get('/editorial-board', fn() => renderPage('EditorialBoard'));
+Route::get('/about-us', fn() => renderPage('About'));
+Route::get('/contact-us', fn() => renderPage('ContactUs'));
 
-Route::get('/current', function () {
-    return Inertia::render('Current', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
+Route::get('/editor-dashboard', fn() => Inertia::render('Editor/EditorDashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('editor.dashboard');
 
-Route::get('/submissions', function () {
-    return Inertia::render('Submissions', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
+Route::get('/reviewer-dashboard', fn() => Inertia::render('Reviewer/ReviewerDashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('reviewer.dashboard');
 
-Route::get('/archives', function () {
-    return Inertia::render('Archives', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
+Route::get('/author-dashboard', fn() => Inertia::render('Author/AuthorDashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('author.dashboard.');
 
-Route::get('/editorial-board', function () {
-    return Inertia::render('EditorialBoard', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
+Route::get('/admin-dashboard', fn() => Inertia::render('Admin/AdminPanel'))
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard');
 
-Route::get('/about-us', function () {
-    return Inertia::render('About', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
-
-Route::get('/contact-us', function () {
-    return Inertia::render('ContactUs', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-});
-
-Route::get('/editor-dashboard', function () {
-    return Inertia::render('Editor/Dashboard');
-});
-
-Route::get('/reviewer-dashboard', function () {
-    return Inertia::render('Reviewer/Dashboard');
-});
-
-Route::get('/author-dashboard', function () {
-    return Inertia::render('Author/Dashboard');
-});
+Route::get('/admin-dashboard', fn() => Inertia::render('Admin/AdminPanel'))
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -76,3 +43,14 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+/**
+ * Helper function to render pages with common authentication checks
+ */
+function renderPage(string $page)
+{
+    return Inertia::render($page, [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+}

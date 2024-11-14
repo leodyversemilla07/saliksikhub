@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { BarChart3, Bell, CheckCircle, Clock, FileText, Filter, Users, XCircle } from 'lucide-react';
 
-export default function Dashboard() {
+export default function EditorDashboard() {
     // Sample data - in a real application, this would come from an API
     const metrics = {
         newSubmissions: 12,

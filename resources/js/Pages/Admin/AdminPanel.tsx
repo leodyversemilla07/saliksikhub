@@ -17,7 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-export default function SaliksikHubAdmin() {
+export default function Admin() {
     const [activePage, setActivePage] = React.useState('Dashboard');
 
     // Sample data for charts with AI review metrics
