@@ -59,7 +59,7 @@ export default function AuthorDashboard() {
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Author Dashboard" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
