@@ -46,7 +46,7 @@ Route::group(['middleware' => ['auth', 'verified','role:admin']], function () {
 
 // Editor Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () {
-    Route::get('/editor', [EditorController::class, 'index'])->name('editor.index');
+    Route::get('/editor', [EditorController::class, 'index'])->name('editor.dashboard');
     Route::get('/editor/edit-articles', [EditorController::class, 'editArticles'])->name('editor.editArticles');
     Route::post('/editor/articles/{article}/update', [EditorController::class, 'updateArticle'])->name('editor.updateArticle');
     Route::post('/editor/articles/{article}/publish', [EditorController::class, 'publishArticle'])->name('editor.publishArticle');
@@ -54,14 +54,14 @@ Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () 
 
 // Reviewer Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function () {
-    Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.index');
+    Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.dashboard');
     Route::get('/reviewer/review-articles', [ReviewerController::class, 'reviewArticles'])->name('reviewer.reviewArticles');
     Route::post('/reviewer/articles/{article}/submit-review', [ReviewerController::class, 'submitReview'])->name('reviewer.submitReview');
 });
 
 // Author Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () {
-    Route::get('/author', [AuthorController::class, 'index'])->name('dashboard');
+    Route::get('/author', [AuthorController::class, 'index'])->name('author.dashboard');
     Route::post('/author/articles/submit', [AuthorController::class, 'submitArticle'])->name('author.submitArticle');
     Route::get('/author/my-articles', [AuthorController::class, 'myArticles'])->name('author.myArticles');
     Route::get('/author/articles/{article}/edit', [AuthorController::class, 'editMyArticle'])->name('author.editMyArticle');

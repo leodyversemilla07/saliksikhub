@@ -10,9 +10,23 @@ export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
-
+    const userRoles = usePage().props.auth.roles; // Get user roles
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    // Determine dashboard route based on user roles
+    const getDashboardRoute = () => {
+        if (userRoles.includes('admin')) {
+            return route('admin.dashboard'); // Admin dashboard
+        } else if (userRoles.includes('editor')) {
+            return route('editor.dashboard'); // Editor dashboard
+        } else if (userRoles.includes('reviewer')) {
+            return route('reviewer.dashboard'); // Reviewer dashboard
+        } else if (userRoles.includes('author')) {
+            return route('author.dashboard'); // Author dashboard
+        }
+        return route('dashboard'); // Default dashboard
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -28,8 +42,8 @@ export default function Authenticated({
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                    href={getDashboardRoute()}
+                                    active={route().current(getDashboardRoute())}
                                 >
                                     Dashboard
                                 </NavLink>
@@ -132,8 +146,8 @@ export default function Authenticated({
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            href={getDashboardRoute()}
+                            active={route().current(getDashboardRoute())}
                         >
                             Dashboard
                         </ResponsiveNavLink>

@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ReviewerController extends Controller
 {
     public function index()
     {
         // Display reviewer dashboard
-        return view('reviewer.dashboard');
+        return Inertia::render("Reviewer/ReviewerDashboard");
     }
 
     public function reviewArticles()

@@ -32,6 +32,23 @@ export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
     // Helper function to determine if a link is active
     const isActive = (href: string) => url === href ? 'text-green-800 font-bold' : 'text-gray-600';
 
+    // Function to determine the correct dashboard route based on user roles
+    const getDashboardRoute = () => {
+        const userRoles = auth.roles; // Get user roles from auth props
+
+        if (userRoles.includes('admin')) {
+            return route('admin.dashboard'); // Admin dashboard route
+        } else if (userRoles.includes('editor')) {
+            return route('editor.dashboard'); // Editor dashboard route
+        } else if (userRoles.includes('reviewer')) {
+            return route('reviewer.dashboard'); // Reviewer dashboard route
+        } else if (userRoles.includes('author')) {
+            return route('author.dashboard'); // Author dashboard route
+        }
+
+        return route('dashboard'); // Default dashboard route
+    };
+
     return (
         <div>
             {/* Logo, Journal name, and Search bar */}
@@ -91,7 +108,7 @@ export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
                     {/* Right section: Auth buttons */}
                     <div className="hidden lg:flex space-x-4">
                         {auth.user ? (
-                            <Link href={route('dashboard')}>
+                            <Link href={getDashboardRoute()}>
                                 <Button className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
                                     Dashboard
                                 </Button>
@@ -126,7 +143,7 @@ export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
 
                 {/* Auth buttons */}
                 {auth.user ? (
-                    <Link href={route('dashboard')}>
+                    <Link href={getDashboardRoute()}>
                         <button className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
                             Dashboard
                         </button>

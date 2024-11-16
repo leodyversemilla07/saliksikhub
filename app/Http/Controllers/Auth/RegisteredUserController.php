@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role; // Import Role model if using Spatie's package
 
 class RegisteredUserController extends Controller
 {
@@ -51,6 +52,19 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        // Assuming you assign roles during registration or have a way to determine the role
+        $roles = $user->getRoleNames(); // Get user roles
+
+        // Determine the appropriate dashboard route based on roles
+        if ($roles->contains('admin')) {
+            return redirect()->route('admin.dashboard')->with('success', 'Registration successful. Welcome!');
+        } elseif ($roles->contains('editor')) {
+            return redirect()->route('editor.dashboard')->with('success', 'Registration successful. Welcome!');
+        } elseif ($roles->contains('reviewer')) {
+            return redirect()->route('reviewer.dashboard')->with('success', 'Registration successful. Welcome!');
+        } elseif ($roles->contains('author')) {
+            return redirect()->route('author.dashboard')->with('success', 'Registration successful. Welcome!');
+        }
         return redirect(route('dashboard', absolute: false))->with('success', 'Registration successful. Please log in.');
     }
 }

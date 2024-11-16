@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use Inertia\Inertia;
 
 class EditorController extends Controller
 {
     public function index()
     {
         // Display editor dashboard
-        return view('editor.dashboard');
+        return Inertia::render("Editor/EditorDashboard");
     }
 
     public function editArticles()
