@@ -15,20 +15,31 @@ class AuthorController extends Controller
         return Inertia::render('Author/AuthorDashboard');
     }
 
+    public function submissionForm()
+    {
+        return Inertia::render('Author/SubmissionForm');
+    }
+
     public function submitArticle(Request $request)
     {
         // Validate and create a new article submission
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'manuscript_file' => 'required|file|mimes:pdf,doc,docx|max:2048', // Validate file type and size
             // Add other validations as necessary
         ]);
 
+        // Handle the manuscript file upload
+        $filePath = $request->file('manuscript_file')->store('manuscripts', 'public'); // Store in public disk
+
+        // Create a new article record
         Article::create([
             'title' => $request->title,
-            'content' => $request->content,
+            'abstract   ' => $request->content,
             'author_id' => Auth::id(),
             'status' => 'pending',
+            'manuscript_file' => $filePath, // Save the file path in the database
             // Add other fields as necessary
         ]);
 

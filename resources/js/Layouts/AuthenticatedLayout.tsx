@@ -47,6 +47,17 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('manuscripts.create')}
+                                    active={route().current('manuscripts.create')}
+                                >
+                                    Submissions
+                                </NavLink><NavLink
+                                    href={route('manuscripts.create')}
+                                    active={route().current('manuscripts.create')}
+                                >
+                                    My Submissions
+                                </NavLink>
                             </div>
                         </div>
 
@@ -150,6 +161,12 @@ export default function Authenticated({
                             active={route().current(getDashboardRoute())}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('manuscripts.create')}
+                            active={route().current('manuscripts.create')}
+                        >
+                            Submissions
                         </ResponsiveNavLink>
                     </div>
 

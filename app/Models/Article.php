@@ -9,7 +9,8 @@ class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'author_id', 'status'];
+    // Define the fillable fields
+    protected $fillable = ['title', 'abstract', 'author_id', 'status', 'manuscript_file'];
 
     public function author()
     {

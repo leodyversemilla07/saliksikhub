@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\ManuscriptController;
 
 Route::get('/', fn() => renderPage('Home'));
 Route::get('/current', fn() => renderPage('Current'));
@@ -17,25 +18,8 @@ Route::get('/editorial-board', fn() => renderPage('EditorialBoard'));
 Route::get('/about-us', fn() => renderPage('About'));
 Route::get('/contact-us', fn() => renderPage('ContactUs'));
 
-// Route::get('/editor-dashboard', fn() => Inertia::render('Editor/EditorDashboard'))
-//     ->middleware(['auth', 'verified'])
-//     ->name('editor.dashboard');
-
-// Route::get('/reviewer-dashboard', fn() => Inertia::render('Reviewer/ReviewerDashboard'))
-//     ->middleware(['auth', 'verified'])
-//     ->name('reviewer.dashboard');
-
-// Route::get('/dashboard', fn() => Inertia::render('Author/AuthorDashboard'))
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
-
-// Route::get('/admin-dashboard', fn() => Inertia::render('Admin/AdminPanel'))
-//     ->middleware(['auth', 'verified'])
-//     ->name('admin.dashboard');
-
 // Admin Routes
-Route::group(['middleware' => ['auth', 'verified','role:admin']], function () {
-
+Route::group(['middleware' => ['auth', 'verified', 'role:admin']], function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.manageUsers');
     Route::post('/admin/users/create', [AdminController::class, 'createUser'])->name('admin.createUser');
@@ -62,10 +46,15 @@ Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function (
 // Author Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () {
     Route::get('/author', [AuthorController::class, 'index'])->name('author.dashboard');
+    Route::get('/author/submissions', [AuthorController::class, 'submissionForm'])->name('submissions.dashboard');
     Route::post('/author/articles/submit', [AuthorController::class, 'submitArticle'])->name('author.submitArticle');
     Route::get('/author/my-articles', [AuthorController::class, 'myArticles'])->name('author.myArticles');
     Route::get('/author/articles/{article}/edit', [AuthorController::class, 'editMyArticle'])->name('author.editMyArticle');
     Route::post('/author/articles/{article}/update', [AuthorController::class, 'updateMyArticle'])->name('author.updateMyArticle');
+
+    Route::get('/manuscripts/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
+    Route::post('/manuscripts', [ManuscriptController::class, 'store'])->name('manuscripts.store');
+    Route::get('/user/manuscripts', [ManuscriptController::class, 'userManuscripts'])->name('manuscripts.show');
 });
 
 Route::middleware('auth')->group(function () {
