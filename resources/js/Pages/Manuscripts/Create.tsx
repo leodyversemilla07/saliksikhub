@@ -87,8 +87,6 @@ export default function ManuscriptSubmissionForm() {
                         Submissions
                     </h2>
                 }>
-
-
                 <div className="container mx-auto py-10">
                     <Card className="max-w-3xl mx-auto">
                         <CardHeader className="space-y-1">
@@ -218,7 +216,7 @@ export default function ManuscriptSubmissionForm() {
                             </Form>
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)} className="w-full">
+                            <Button type="submit" disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)} className="w-full bg-green-600 hover:bg-green-700">
                                 {isSubmitting ? 'Submitting...' : 'Submit'}
                             </Button>
                         </CardFooter>
