@@ -1,5 +1,5 @@
 import { PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Header from '@/Components/Header';
 import HeroSection from '@/Components/HeroSection';
 import FeaturedJournals from '@/Components/FeaturedJournals';

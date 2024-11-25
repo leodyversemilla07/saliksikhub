@@ -9,6 +9,13 @@ class Manuscript extends Model
 {
     use HasFactory;
 
+    const STATUS_SUBMITTED = 'Submitted';
+    const STATUS_UNDER_REVIEW = 'Under Review';
+    const STATUS_REVISION_REQUIRED = 'Revision Required';
+    const STATUS_ACCEPTED = 'Accepted';
+    const STATUS_REJECTED = 'Rejected';
+    const STATUS_PUBLISHED = 'Published';
+
     protected $fillable = [
         'title',
         'authors',
@@ -16,6 +23,7 @@ class Manuscript extends Model
         'keywords',
         'manuscript_path',
         'user_id', // Add user_id to fillable
+        'status',
     ];
 
     // Define the relationship to User

@@ -9,6 +9,9 @@ use App\Http\Controllers\EditorController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ManuscriptController;
+use App\Models\Manuscript;
+
+use function Termwind\render;
 
 Route::get('/', fn() => renderPage('Home'));
 Route::get('/current', fn() => renderPage('Current'));
@@ -55,7 +58,20 @@ Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () 
     Route::get('/manuscripts/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
     Route::post('/manuscripts', [ManuscriptController::class, 'store'])->name('manuscripts.store');
     Route::get('/user/manuscripts', [ManuscriptController::class, 'userManuscripts'])->name('manuscripts.show');
+    Route::get('/manuscripts/index', [ManuscriptController::class, 'index'])->name('manuscripts.index');
 });
+
+Route::post('/manuscript-review', [ManuscriptController::class, 'sendForReview']);
+Route::get('/manuscript-review', function () {
+    return inertia('ManuscriptReview', [
+        'review' => null,
+        'compliance_score' => null,
+    ]);
+});
+
+Route::get('/manuscriptsmodal', function () {
+    return Inertia::render('Manuscripts/ModalManuscript');
+})->name('manuscripts.modal');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
