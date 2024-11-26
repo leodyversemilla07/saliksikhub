@@ -104,7 +104,7 @@ export default function Authenticated({
                         className="flex items-center gap-3 px-4 py-2 rounded-md text-gray-700 hover:bg-green-100 hover:text-green-700"
                     >
                         <Upload />
-                        Revision Requireds
+                        Revision Required
                     </NavLink>
                     <NavLink
                         href=''
