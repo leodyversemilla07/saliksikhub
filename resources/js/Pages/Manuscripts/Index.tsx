@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Inertia } from '@inertiajs/inertia';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -13,6 +14,10 @@ import {
 } from '@/Components/ui/select';
 import { Eye, Edit2, Trash2, Clock, Search } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import axios from 'axios';
+import { toast, useToast } from '@/hooks/use-toast';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/alert-dialog';
+
 
 type Manuscript = {
     id: number;
@@ -28,11 +33,14 @@ interface ManuscriptTableProps {
     manuscripts: Manuscript[];
 }
 
-export default function ManuscriptTable({ manuscripts }: ManuscriptTableProps) {
+export default function Index({ manuscripts }: ManuscriptTableProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [dateFilter, setDateFilter] = useState('all');
     const [filteredManuscripts, setFilteredManuscripts] = useState<Manuscript[]>(manuscripts);
+    const [selectedManuscript, setSelectedManuscript] = useState<Manuscript | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const toast = useToast();
 
     const statuses = ['Submitted', 'Under Review', 'Revision Required', 'Accepted', 'Rejected'];
 
@@ -113,6 +121,37 @@ export default function ManuscriptTable({ manuscripts }: ManuscriptTableProps) {
             return authors.split(',').map((author) => author.trim()); // Split by comma if it's a string
         }
         return []; // Return empty array if null or empty string
+    };
+
+    const destroy = async (id: number) => {
+        try {
+            await axios.delete(`/manuscripts/${id}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+            });
+
+            setFilteredManuscripts((prev) => prev.filter((manuscript) => manuscript.id !== id));
+
+            // Use the 'default' variant or 'destructive' for success or error toasts
+            toast.toast({
+                title: 'Success',
+                description: 'Manuscript deleted successfully.',
+                variant: 'default',  // Use 'default' as per the type definition
+            });
+        } catch (error) {
+            console.error('Error deleting manuscript:', error);
+
+            // Use 'destructive' variant for error toast
+            toast.toast({
+                title: 'Error',
+                description: 'Failed to delete the manuscript. Please try again.',
+                variant: 'destructive',  // Use 'destructive' for error
+            });
+        }
+        finally {
+            setIsDialogOpen(false);
+        }
     };
 
     return (
@@ -224,13 +263,32 @@ export default function ManuscriptTable({ manuscripts }: ManuscriptTableProps) {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex justify-center gap-2">
-                                                        <Button variant="outline" size="sm">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                Inertia.visit(`/author/manuscripts/${manuscript.id}`);
+                                                            }}
+                                                        >
                                                             <Eye className="h-4 w-4 text-blue-600" />
                                                         </Button>
-                                                        <Button variant="outline" size="sm">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                Inertia.visit(`/author/manuscripts/${manuscript.id}/edit`);
+                                                            }}>
                                                             <Edit2 className="h-4 w-4 text-yellow-600" />
                                                         </Button>
-                                                        <Button variant="outline" size="sm">
+
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedManuscript(manuscript);
+                                                                setIsDialogOpen(true);
+                                                            }}
+                                                        >
                                                             <Trash2 className="h-4 w-4 text-red-600" />
                                                         </Button>
                                                     </div>
@@ -243,6 +301,35 @@ export default function ManuscriptTable({ manuscripts }: ManuscriptTableProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Delete Confirmation Dialog */}
+                {
+                    selectedManuscript && (
+                        <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Confirm Deletion </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to delete this manuscript? <br /> This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                < AlertDialogFooter >
+                                    <Button variant="outline" onClick={() => setIsDialogOpen(false)
+                                    }>
+                                        Cancel
+                                    </Button>
+                                    < Button
+                                        variant="destructive"
+                                        onClick={() => {
+                                            if (selectedManuscript) destroy(selectedManuscript.id);
+                                        }}
+                                    >
+                                        Confirm
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
             </AuthenticatedLayout>
         </>
     );

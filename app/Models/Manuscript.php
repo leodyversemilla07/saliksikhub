@@ -10,6 +10,7 @@ class Manuscript extends Model
     use HasFactory;
 
     const STATUS_SUBMITTED = 'Submitted';
+    const STATUS_AI_PRE_REVIEWED = 'AI Pre-reviewed';
     const STATUS_UNDER_REVIEW = 'Under Review';
     const STATUS_REVISION_REQUIRED = 'Revision Required';
     const STATUS_ACCEPTED = 'Accepted';

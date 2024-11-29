@@ -9,6 +9,7 @@ use App\Models\Article;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
+use Exception;
 
 class ManuscriptController extends Controller
 {
@@ -16,7 +17,10 @@ class ManuscriptController extends Controller
     {
         $userId = Auth::id(); // Or use $request->user()->id
         // Fetch manuscripts from the database
-        $manuscripts = Manuscript::where('user_id', $userId)->get(); // Get the manuscripts belonging to the logged-in user
+        $manuscripts = Manuscript::where('user_id', $userId)
+            ->where('status', '!=', 'Revision Required')
+            ->where('status', '!=', 'AI Pre-reviewed')
+            ->get(); // Get the manuscripts belonging to the logged-in user
 
         // Return the data to the Inertia view
         return Inertia::render('Manuscripts/Index', [
@@ -33,6 +37,21 @@ class ManuscriptController extends Controller
         return Inertia::render('Manuscripts/Create');
     }
 
+    public function revisions()
+    {
+        $userId = Auth::id(); // Get the logged-in user's ID
+
+        // Fetch manuscripts with 'revision' status that belong to the logged-in user
+        $manuscripts = Manuscript::where('user_id', $userId)
+            ->where('status', 'Revision Required')
+            ->get();
+
+        // Return the data to the Inertia view
+        return Inertia::render('Manuscripts/Index', [
+            'manuscripts' => $manuscripts,
+        ]);
+    }
+
     /**
      * Store a newly created manuscript in storage.
      */
@@ -44,7 +63,7 @@ class ManuscriptController extends Controller
             'authors' => 'required|string|min:3',
             'abstract' => 'required|string|min:100',
             'keywords' => 'required|string|min:3',
-            'manuscript' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // Max 10MB
+            'manuscript' => 'required|mimes:pdf|max:20480', // Accept PDF files up to 20MB
         ]);
 
         try {
@@ -71,7 +90,7 @@ class ManuscriptController extends Controller
                 'data' => $manuscript,
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'An error occurred during submission.',
                 'error' => $e->getMessage(),
@@ -86,15 +105,16 @@ class ManuscriptController extends Controller
     {
         $manuscript = Manuscript::findOrFail($id);
 
-        return response()->json([
-            'data' => [
+        return Inertia::render('Manuscripts/Show', [
+            'manuscript' => [
                 'title' => $manuscript->title,
-                'authors' => $manuscript->authors,
+                'authors' => $manuscript->authors ? explode(', ', $manuscript->authors) : [],
                 'abstract' => $manuscript->abstract,
-                'keywords' => $manuscript->keywords,
-                'manuscript_url' => $manuscript->manuscript_path
-                    ? asset('storage/' . $manuscript->manuscript_path) // Generate public URL
-                    : null,
+                'keywords' => $manuscript->keywords ? explode(', ', $manuscript->keywords) : [],
+                'manuscript_url' => $manuscript->manuscript_path ? asset('storage/' . $manuscript->manuscript_path) : null,
+                'status' => $manuscript->status,
+                'created_at' => $manuscript->created_at->toDateTimeString(),
+                'updated_at' => $manuscript->updated_at->toDateTimeString(),
             ],
         ]);
     }
@@ -105,7 +125,9 @@ class ManuscriptController extends Controller
     public function edit($id)
     {
         $manuscript = Manuscript::findOrFail($id);
-        return view('manuscripts.edit', compact('manuscript'));
+        return Inertia::render('Manuscripts/Edit', [
+            'manuscript' => $manuscript,
+        ]);
     }
 
     /**
@@ -115,24 +137,50 @@ class ManuscriptController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'authors' => 'required|string|max:255',
             'abstract' => 'required',
+            'keywords' => 'required|string|max:255',
+            'manuscript_file' => 'nullable|file|mimes:pdf|max:10240', // Only allow PDF files, max 10MB
         ]);
 
         $manuscript = Manuscript::findOrFail($id);
+
+        // Step 1: Save the validated fields to the manuscript
         $manuscript->update($validated);
 
+        // Step 2: Handle file upload and deletion of old file
+        if ($request->hasFile('manuscript_file')) {
+            // Step 2.1: Delete the old file if it exists
+            if ($manuscript->manuscript_path) {
+                // Use Laravel's `Storage` facade to delete the old file from the public disk
+                $oldFilePath = str_replace('http://127.0.0.1:8000/storage/', 'public/', $manuscript->manuscript_path);
+                Storage::delete($oldFilePath); // Deletes the old file from the storage
+            }
+
+            // Step 2.2: Store the new file and update the manuscript path
+            $filePath = $request->file('manuscript_file')->store('manuscripts', 'public');
+            $manuscript->manuscript_path = asset('storage/' . $filePath); // Update with the new file's URL
+            $manuscript->save(); // Save the manuscript with the new file path
+        }
+
+        // Step 3: Redirect with success message
         return redirect()->route('manuscripts.index')->with('success', 'Manuscript updated successfully.');
     }
+
 
     /**
      * Remove the specified manuscript from storage.
      */
     public function destroy($id)
     {
-        $manuscript = Manuscript::findOrFail($id);
-        $manuscript->delete();
+        try {
+            $manuscript = Manuscript::findOrFail($id); // Check if it exists
+            $manuscript->delete();
 
-        return redirect()->route('manuscripts.index')->with('success', 'Manuscript deleted successfully.');
+            return response()->json(['message' => 'Deleted successfully'], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500); // Debug the error
+        }
     }
 
     /**
@@ -226,24 +274,52 @@ class ManuscriptController extends Controller
         return inertia('ManuscriptReview', ['review' => $review, 'compliance_score' => $compliance_score]);
     }
 
-    /**
-     * Download the manuscript file.
-     */
-    // public function download($id)
-    // {
-    //     $manuscript = Manuscript::findOrFail($id);
+    public function showAiReview($manuscriptId)
+    {
+        $manuscript = Manuscript::findOrFail($manuscriptId);
 
-    //     // Check user role or permissions
-    //     if (!Auth::user()->can('download', $manuscript)) {
-    //         return redirect()->back()->with('error', 'Unauthorized access.');
-    //     }
+        // Hardcoded AI review data
+        $aiReview = [
+            'manuscriptTitle' => $manuscript->title,
+            'reviewDate' => now()->toISOString(),
+            'overallScore' => 85,
+            'plagiarismScore' => 5,
+            'sections' => [
+                [
+                    'title' => 'Language and Grammar',
+                    'description' => 'The manuscript has minor grammatical errors.',
+                    'suggestions' => [
+                        'Correct the grammatical errors in Section 2.',
+                        'Use consistent tense throughout the document.',
+                    ],
+                ],
+                [
+                    'title' => 'Plagiarism',
+                    'description' => 'Minimal overlap detected with other sources.',
+                    'suggestions' => [
+                        'Ensure proper citations for the flagged sections.',
+                    ],
+                ],
+            ],
+            // 'downloadUrl' => route('manuscripts.downloadReport', $manuscriptId),
+        ];
 
-    //     // Ensure the file exists
-    //     if (!$manuscript->file || !Storage::disk('public')->exists($manuscript->file)) {
-    //         return redirect()->back()->with('error', 'File not found.');
-    //     }
+        return Inertia::render('Manuscripts/AiReviewReport', $aiReview);
+    }
 
-    //     // Download the file
-    //     return response()->download(storage_path('app/public/' . $manuscript->file));
-    // }
+    public function indexAIPrereviewed()
+    {
+        // Fetch manuscripts that have been reviewed by AI
+        $manuscripts = Manuscript::where('status', 'AI Pre-reviewed')->get();
+
+        // Returning data to Inertia (React)
+        return Inertia::render('Manuscripts/IndexAIPrereviewed', [
+            'manuscripts' => $manuscripts,
+        ]);
+    }
+
+    public function notification()
+    {
+        return Inertia::render('Author/Notification');
+    }
 }

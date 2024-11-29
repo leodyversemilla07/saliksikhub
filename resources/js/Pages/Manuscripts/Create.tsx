@@ -200,11 +200,11 @@ export default function ManuscriptSubmissionForm() {
                                                                 <Input
                                                                     id="manuscript"
                                                                     type="file"
-                                                                    accept=".pdf,.doc,.docx"
+                                                                    accept=".pdf"
                                                                     onChange={(e) => field.onChange(e.target.files?.[0] || null)} />
                                                             </FormControl>
                                                             <FormDescription>
-                                                                Upload your manuscript file (PDF, DOC, or DOCX format, max 10MB).
+                                                                Upload your manuscript file (PDF, max 20MB).
                                                             </FormDescription>
                                                             <FormMessage />
                                                         </FormItem>

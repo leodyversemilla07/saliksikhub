@@ -49,17 +49,31 @@ Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function (
 // Author Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () {
     Route::get('/author', [AuthorController::class, 'index'])->name('author.dashboard');
-    Route::get('/author/submissions', [AuthorController::class, 'submissionForm'])->name('submissions.dashboard');
-    Route::post('/author/articles/submit', [AuthorController::class, 'submitArticle'])->name('author.submitArticle');
     Route::get('/author/my-articles', [AuthorController::class, 'myArticles'])->name('author.myArticles');
-    Route::get('/author/articles/{article}/edit', [AuthorController::class, 'editMyArticle'])->name('author.editMyArticle');
-    Route::post('/author/articles/{article}/update', [AuthorController::class, 'updateMyArticle'])->name('author.updateMyArticle');
 
-    Route::get('/manuscripts/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
-    Route::post('/manuscripts', [ManuscriptController::class, 'store'])->name('manuscripts.store');
-    Route::get('/user/manuscripts', [ManuscriptController::class, 'userManuscripts'])->name('manuscripts.show');
-    Route::get('/manuscripts/index', [ManuscriptController::class, 'index'])->name('manuscripts.index');
+    Route::get('/author/manuscripts/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
+    Route::post('/author/manuscripts', [ManuscriptController::class, 'store'])->name('manuscripts.store');
+    Route::get('/author/manuscripts/index', [ManuscriptController::class, 'index'])->name('manuscripts.index');
+    Route::delete('/author/manuscripts/{id}', [ManuscriptController::class, 'destroy'])->name('manuscripts.destroy');
+    Route::get('/author/manuscripts/{id}', [ManuscriptController::class, 'show'])->name('manuscripts.show');
+    Route::get('/author/manuscripts/{id}/edit', [ManuscriptController::class, 'edit'])->name('manuscripts.edit');
+    Route::put('/author/manuscripts/{id}', [ManuscriptController::class, 'update'])->name('manuscripts.update');
+
+    Route::get('/manuscripts/{id}/ai-review', [ManuscriptController::class, 'showAiReview'])
+        ->name('manuscripts.aiReview');
+    Route::get('/manuscripts/ai-review', [ManuscriptController::class, 'indexAIPrereviewed'])
+        ->name('manuscripts.indexAIPrereviewed');
+
+    Route::get('/author/notifications', [ManuscriptController::class, 'notification'])
+        ->name('author.notifications');
+
+    Route::get('/articles/index', function () {
+        return inertia('Articles/Index');
+    })->name('articles.index');
+
+    Route::get('/manuscripts/revisions', [ManuscriptController::class, 'revisions'])->name('manuscripts.revisions');
 });
+
 
 Route::post('/manuscript-review', [ManuscriptController::class, 'sendForReview']);
 Route::get('/manuscript-review', function () {
