@@ -13,8 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-    use HasRoles;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -64,5 +63,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function manuscripts()
     {
         return $this->hasMany(Manuscript::class);
+    }
+
+    public function reviewerAssignments()
+    {
+        return $this->hasMany(ReviewerAssignment::class);
     }
 }

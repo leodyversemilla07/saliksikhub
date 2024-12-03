@@ -10,22 +10,36 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use Exception;
+use App\Models\ReviewerAssignment;
 
 class ManuscriptController extends Controller
 {
+    /**
+     * Display a list of manuscripts for the authenticated user.
+     */
     public function index()
     {
-        $userId = Auth::id(); // Or use $request->user()->id
-        // Fetch manuscripts from the database
-        $manuscripts = Manuscript::where('user_id', $userId)
-            ->where('status', '!=', 'Revision Required')
-            ->where('status', '!=', 'AI Pre-reviewed')
-            ->get(); // Get the manuscripts belonging to the logged-in user
+        $userId = Auth::id();
 
-        // Return the data to the Inertia view
-        return Inertia::render('Manuscripts/Index', [
-            'manuscripts' => $manuscripts
-        ]);
+        $manuscripts = Manuscript::where('user_id', $userId)
+            ->whereNotIn('status', ['Revision Required', 'AI Pre-reviewed'])
+            ->get();
+
+        return Inertia::render('Manuscripts/Index', compact('manuscripts'));
+    }
+
+    /**
+     * Show manuscripts requiring revision for the authenticated user.
+     */
+    public function revisions()
+    {
+        $userId = Auth::id();
+
+        $manuscripts = Manuscript::where('user_id', $userId)
+            ->where('status', 'Revision Required')
+            ->get();
+
+        return Inertia::render('Manuscripts/Index', compact('manuscripts'));
     }
 
     /**
@@ -33,63 +47,37 @@ class ManuscriptController extends Controller
      */
     public function create()
     {
-        // Render the ManuscriptSubmissionForm in Inertia
         return Inertia::render('Manuscripts/Create');
     }
 
-    public function revisions()
-    {
-        $userId = Auth::id(); // Get the logged-in user's ID
-
-        // Fetch manuscripts with 'revision' status that belong to the logged-in user
-        $manuscripts = Manuscript::where('user_id', $userId)
-            ->where('status', 'Revision Required')
-            ->get();
-
-        // Return the data to the Inertia view
-        return Inertia::render('Manuscripts/Index', [
-            'manuscripts' => $manuscripts,
-        ]);
-    }
-
     /**
-     * Store a newly created manuscript in storage.
+     * Store a new manuscript.
      */
     public function store(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'title' => 'required|string|min:10',
             'authors' => 'required|string|min:3',
             'abstract' => 'required|string|min:100',
             'keywords' => 'required|string|min:3',
-            'manuscript' => 'required|mimes:pdf|max:20480', // Accept PDF files up to 20MB
+            'manuscript' => 'required|mimes:pdf|max:20480',
         ]);
 
         try {
-            // Handle file upload if present
             if ($request->hasFile('manuscript')) {
-                $file = $request->file('manuscript');
-                $path = $file->store('manuscripts', 'public');
-
-                if (!$path) {
-                    return response()->json(['message' => 'File upload failed.'], 500);
-                }
-
+                $path = $request->file('manuscript')->store('manuscripts', 'public');
                 $validated['manuscript_path'] = $path;
             }
 
-            // Associate the manuscript with the authenticated user
-            $manuscript = Manuscript::create(array_merge($validated, [
-                'user_id' => $request->user()->id,
-                'status' => Manuscript::STATUS_SUBMITTED, // Default status
-            ]));
+            $validated['user_id'] = Auth::id();
+            $validated['status'] = Manuscript::STATUS_SUBMITTED;
+
+            $manuscript = Manuscript::create($validated);
 
             return response()->json([
                 'message' => 'Manuscript submitted successfully!',
                 'data' => $manuscript,
             ], 201);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'An error occurred during submission.',
@@ -99,7 +87,7 @@ class ManuscriptController extends Controller
     }
 
     /**
-     * Display the specified manuscript.
+     * Show a specific manuscript.
      */
     public function show($id)
     {
@@ -108,10 +96,10 @@ class ManuscriptController extends Controller
         return Inertia::render('Manuscripts/Show', [
             'manuscript' => [
                 'title' => $manuscript->title,
-                'authors' => $manuscript->authors ? explode(', ', $manuscript->authors) : [],
+                'authors' => explode(', ', $manuscript->authors),
                 'abstract' => $manuscript->abstract,
-                'keywords' => $manuscript->keywords ? explode(', ', $manuscript->keywords) : [],
-                'manuscript_url' => $manuscript->manuscript_path ? asset('storage/' . $manuscript->manuscript_path) : null,
+                'keywords' => explode(', ', $manuscript->keywords),
+                'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
                 'status' => $manuscript->status,
                 'created_at' => $manuscript->created_at->toDateTimeString(),
                 'updated_at' => $manuscript->updated_at->toDateTimeString(),
@@ -120,18 +108,17 @@ class ManuscriptController extends Controller
     }
 
     /**
-     * Show the form for editing the specified manuscript.
+     * Show the form for editing a manuscript.
      */
     public function edit($id)
     {
         $manuscript = Manuscript::findOrFail($id);
-        return Inertia::render('Manuscripts/Edit', [
-            'manuscript' => $manuscript,
-        ]);
+
+        return Inertia::render('Manuscripts/Edit', compact('manuscript'));
     }
 
     /**
-     * Update the specified manuscript in storage.
+     * Update a manuscript.
      */
     public function update(Request $request, $id)
     {
@@ -140,102 +127,91 @@ class ManuscriptController extends Controller
             'authors' => 'required|string|max:255',
             'abstract' => 'required',
             'keywords' => 'required|string|max:255',
-            'manuscript_file' => 'nullable|file|mimes:pdf|max:10240', // Only allow PDF files, max 10MB
+            'manuscript_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $manuscript = Manuscript::findOrFail($id);
-
-        // Step 1: Save the validated fields to the manuscript
         $manuscript->update($validated);
 
-        // Step 2: Handle file upload and deletion of old file
         if ($request->hasFile('manuscript_file')) {
-            // Step 2.1: Delete the old file if it exists
             if ($manuscript->manuscript_path) {
-                // Use Laravel's `Storage` facade to delete the old file from the public disk
-                $oldFilePath = str_replace('http://127.0.0.1:8000/storage/', 'public/', $manuscript->manuscript_path);
-                Storage::delete($oldFilePath); // Deletes the old file from the storage
+                Storage::delete(str_replace(asset('storage/'), 'public/', $manuscript->manuscript_path));
             }
 
-            // Step 2.2: Store the new file and update the manuscript path
-            $filePath = $request->file('manuscript_file')->store('manuscripts', 'public');
-            $manuscript->manuscript_path = asset('storage/' . $filePath); // Update with the new file's URL
-            $manuscript->save(); // Save the manuscript with the new file path
+            $path = $request->file('manuscript_file')->store('manuscripts', 'public');
+            $manuscript->update(['manuscript_path' => asset('storage/' . $path)]);
         }
 
-        // Step 3: Redirect with success message
         return redirect()->route('manuscripts.index')->with('success', 'Manuscript updated successfully.');
     }
 
 
     /**
-     * Remove the specified manuscript from storage.
+     * Delete a manuscript.
      */
     public function destroy($id)
     {
-        try {
-            $manuscript = Manuscript::findOrFail($id); // Check if it exists
-            $manuscript->delete();
+        $manuscript = Manuscript::findOrFail($id);
+        $manuscript->delete();
 
-            return response()->json(['message' => 'Deleted successfully'], 200);
-        } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500); // Debug the error
-        }
+        return response()->json(['message' => 'Deleted successfully'], 200);
     }
 
     /**
-     * Submit the manuscript for review.
+     * Submit a manuscript for review.
      */
     public function submitForReview($id)
     {
         $manuscript = Manuscript::findOrFail($id);
-        $manuscript->status = Manuscript::STATUS_UNDER_REVIEW;
-        $manuscript->save();
+        $manuscript->update(['status' => Manuscript::STATUS_UNDER_REVIEW]);
 
         return redirect()->back()->with('success', 'Manuscript submitted for review.');
     }
 
-    /**
-     * Assign reviewers to the manuscript.
-     */
-    public function assignReviewer(Request $request, $id)
+    public function assignReviewer(Request $request, Manuscript $manuscript)
     {
-        $validated = $request->validate([
-            'reviewer_ids' => 'required|array',
+        // Validate request
+        $request->validate([
+            'reviewer_id' => 'required|array',
+            'reviewer_id.*' => 'exists:users,id',
         ]);
 
-        $manuscript = Manuscript::findOrFail($id);
-        $manuscript->reviewers()->sync($validated['reviewer_ids']);
+        // Create reviewer assignments
+        foreach ($request->reviewer_id as $reviewerId) {
+            ReviewerAssignment::create([
+                'manuscript_id' => $manuscript->id,
+                'reviewer_id' => $reviewerId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
-        return redirect()->back()->with('success', 'Reviewers assigned successfully.');
+        // Update manuscript status
+        $manuscript->update(['status' => Manuscript::STATUS_UNDER_REVIEW]);
+
+        return redirect()->back()->with('success', 'Reviewer(s) assigned successfully.');
     }
 
     /**
-     * Approve the manuscript for publication.
+     * Approve or reject or revision required a manuscript.
      */
     public function approve($id)
     {
-        $manuscript = Manuscript::findOrFail($id);
-        $manuscript->status = 'approved';
-        $manuscript->save();
-
-        return redirect()->back()->with('success', 'Manuscript approved.');
+        return $this->changeStatus($id, Manuscript::STATUS_ACCEPTED, 'Manuscript accepted.');
     }
 
-    /**
-     * Reject the manuscript.
-     */
     public function reject($id)
     {
-        $manuscript = Manuscript::findOrFail($id);
-        $manuscript->status = 'rejected';
-        $manuscript->save();
+        return $this->changeStatus($id, Manuscript::STATUS_REJECTED, 'Manuscript rejected.');
+    }
 
-        return redirect()->back()->with('success', 'Manuscript rejected.');
+    public function revisionRequired($id)
+    {
+        return $this->changeStatus($id, Manuscript::STATUS_REVISION_REQUIRED, 'Manuscript requires revision.');
     }
 
     /**
-     * Publish the manuscript.
+     * Publish a manuscript.
      */
     public function publish($id)
     {
@@ -245,21 +221,17 @@ class ManuscriptController extends Controller
             return redirect()->back()->with('error', 'Only approved manuscripts can be published.');
         }
 
-        // Transfer manuscript data to the articles table
-        $article = new Article();
-        $article->title = $manuscript->title;
-        $article->abstract = $manuscript->abstract;
-        $article->content = $manuscript->content; // If applicable
-        $article->file = $manuscript->file; // Assuming the same file is used
-        $article->author_id = $manuscript->author_id;
-        $article->published_at = now();
-        $article->save();
+        Article::create([
+            'title' => $manuscript->title,
+            'abstract' => $manuscript->abstract,
+            'file' => $manuscript->manuscript_path,
+            'author_id' => $manuscript->user_id,
+            'published_at' => now(),
+        ]);
 
-        // Update manuscript status to indicate it has been published
-        $manuscript->status = 'published';
-        $manuscript->save();
+        $manuscript->update(['status' => 'published']);
 
-        return redirect()->back()->with('success', 'Manuscript published successfully and moved to Articles.');
+        return redirect()->back()->with('success', 'Manuscript published successfully.');
     }
 
     public function sendForReview(Request $request)
@@ -321,5 +293,16 @@ class ManuscriptController extends Controller
     public function notification()
     {
         return Inertia::render('Author/Notification');
+    }
+
+    /**
+     * Change manuscript status helper.
+     */
+    private function changeStatus($id, $status, $message)
+    {
+        $manuscript = Manuscript::findOrFail($id);
+        $manuscript->update(['status' => $status]);
+
+        return redirect()->back()->with('success', $message);
     }
 }

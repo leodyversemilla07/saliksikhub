@@ -58,7 +58,7 @@ export default function ManuscriptSubmissionForm() {
         }
 
         try {
-            await axios.post('/manuscripts', formData, {
+            await axios.post('/author/manuscripts', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast({

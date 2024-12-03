@@ -3,21 +3,75 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { BarChart3, Bell, CheckCircle, Clock, FileText, Filter, Users, XCircle } from 'lucide-react';
 
-export default function EditorDashboard() {
-    // Sample data - in a real application, this would come from an API
-    const metrics = {
+type Metrics = {
+    newSubmissions: number;
+    inReview: number;
+    awaitingRevision: number;
+    publishedThisMonth: number;
+    rejectedThisMonth: number;
+    averageReviewTime: string;
+    activeReviewers: number;
+};
+
+type Submission = {
+    id: string;
+    title: string;
+    status: string;
+    submitted: string;
+};
+
+type StatusLabelProps = {
+    status: string;
+};
+
+const StatusLabel: React.FC<StatusLabelProps> = ({ status }) => {
+    const statusClasses: Record<string, string> = {
+        "New Submission": "bg-blue-100 text-blue-800",
+        "Under Review": "bg-yellow-100 text-yellow-800",
+        "Revision Required": "bg-orange-100 text-orange-800",
+    };
+
+    return (
+        <span className={`px-2 py-1 rounded-full text-sm ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
+            {status}
+        </span>
+    );
+};
+
+type MetricsCardProps = {
+    icon: React.ElementType;
+    colorClass: string;
+    title: string;
+    value: string | number;
+};
+
+const MetricsCard: React.FC<MetricsCardProps> = ({ icon: Icon, colorClass, title, value }) => (
+    <Card className={`${colorClass} hover:brightness-105 cursor-pointer transition-all`}>
+        <CardContent className="flex items-center p-4">
+            <Icon className="w-8 h-8 mr-4" />
+            <div>
+                <h3 className="font-semibold">{title}</h3>
+                <p className="text-2xl font-bold">{value}</p>
+            </div>
+        </CardContent>
+    </Card>
+);
+
+const EditorDashboard: React.FC = ( ) => {
+    const metrics: Metrics = {
         newSubmissions: 12,
         inReview: 28,
         awaitingRevision: 8,
         publishedThisMonth: 15,
         rejectedThisMonth: 6,
-        averageReviewTime: "18 days"
+        averageReviewTime: "18 days",
+        activeReviewers: 42,
     };
 
-    const recentSubmissions = [
+    const recentSubmissions: Submission[] = [
         { id: "MS-2024-123", title: "Advanced Machine Learning Applications", status: "Under Review", submitted: "2024-11-08" },
         { id: "MS-2024-122", title: "Quantum Computing Developments", status: "Revision Required", submitted: "2024-11-07" },
-        { id: "MS-2024-121", title: "Climate Change Impact Analysis", status: "New Submission", submitted: "2024-11-06" }
+        { id: "MS-2024-121", title: "Climate Change Impact Analysis", status: "New Submission", submitted: "2024-11-06" },
     ];
 
     return (
@@ -40,82 +94,52 @@ export default function EditorDashboard() {
 
                     {/* Quick Actions */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <Card className="bg-blue-50 hover:bg-blue-100 cursor-pointer transition-colors">
-                            <CardContent className="flex items-center p-4">
-                                <Bell className="w-8 h-8 text-blue-600 mr-4" />
-                                <div>
-                                    <h3 className="font-semibold">New Submissions</h3>
-                                    <p className="text-2xl font-bold text-blue-600">{metrics.newSubmissions}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-yellow-50 hover:bg-yellow-100 cursor-pointer transition-colors">
-                            <CardContent className="flex items-center p-4">
-                                <Clock className="w-8 h-8 text-yellow-600 mr-4" />
-                                <div>
-                                    <h3 className="font-semibold">In Review</h3>
-                                    <p className="text-2xl font-bold text-yellow-600">{metrics.inReview}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-green-50 hover:bg-green-100 cursor-pointer transition-colors">
-                            <CardContent className="flex items-center p-4">
-                                <FileText className="w-8 h-8 text-green-600 mr-4" />
-                                <div>
-                                    <h3 className="font-semibold">Awaiting Revision</h3>
-                                    <p className="text-2xl font-bold text-green-600">{metrics.awaitingRevision}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <MetricsCard
+                            icon={Bell}
+                            colorClass="bg-blue-50 text-blue-600"
+                            title="New Submissions"
+                            value={metrics.newSubmissions}
+                        />
+                        <MetricsCard
+                            icon={Clock}
+                            colorClass="bg-yellow-50 text-yellow-600"
+                            title="In Review"
+                            value={metrics.inReview}
+                        />
+                        <MetricsCard
+                            icon={FileText}
+                            colorClass="bg-green-50 text-green-600"
+                            title="Awaiting Revision"
+                            value={metrics.awaitingRevision}
+                        />
                     </div>
 
                     {/* Statistics Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <Card>
-                            <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <CheckCircle className="w-6 h-6 text-green-500" />
-                                    <span className="text-sm text-gray-500">This Month</span>
-                                </div>
-                                <h3 className="text-xl font-bold">{metrics.publishedThisMonth}</h3>
-                                <p className="text-gray-600">Published Articles</p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <XCircle className="w-6 h-6 text-red-500" />
-                                    <span className="text-sm text-gray-500">This Month</span>
-                                </div>
-                                <h3 className="text-xl font-bold">{metrics.rejectedThisMonth}</h3>
-                                <p className="text-gray-600">Rejected Articles</p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <BarChart3 className="w-6 h-6 text-purple-500" />
-                                    <span className="text-sm text-gray-500">Average</span>
-                                </div>
-                                <h3 className="text-xl font-bold">{metrics.averageReviewTime}</h3>
-                                <p className="text-gray-600">Review Time</p>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardContent className="p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <Users className="w-6 h-6 text-blue-500" />
-                                    <span className="text-sm text-gray-500">Active</span>
-                                </div>
-                                <h3 className="text-xl font-bold">42</h3>
-                                <p className="text-gray-600">Active Reviewers</p>
-                            </CardContent>
-                        </Card>
+                        <MetricsCard
+                            icon={CheckCircle}
+                            colorClass="text-green-500"
+                            title="Published Articles"
+                            value={metrics.publishedThisMonth}
+                        />
+                        <MetricsCard
+                            icon={XCircle}
+                            colorClass="text-red-500"
+                            title="Rejected Articles"
+                            value={metrics.rejectedThisMonth}
+                        />
+                        <MetricsCard
+                            icon={BarChart3}
+                            colorClass="text-purple-500"
+                            title="Average Review Time"
+                            value={metrics.averageReviewTime}
+                        />
+                        <MetricsCard
+                            icon={Users}
+                            colorClass="text-blue-500"
+                            title="Active Reviewers"
+                            value={metrics.activeReviewers}
+                        />
                     </div>
 
                     {/* Recent Submissions Table */}
@@ -123,7 +147,10 @@ export default function EditorDashboard() {
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle>Recent Submissions</CardTitle>
-                                <button className="flex items-center px-3 py-1 text-sm text-gray-600 border rounded-md hover:bg-gray-50">
+                                <button
+                                    className="flex items-center px-3 py-1 text-sm text-gray-600 border rounded-md hover:bg-gray-50"
+                                    aria-label="Filter submissions"
+                                >
                                     <Filter className="w-4 h-4 mr-2" />
                                     Filter
                                 </button>
@@ -147,16 +174,13 @@ export default function EditorDashboard() {
                                                 <td className="py-3 px-4">{submission.id}</td>
                                                 <td className="py-3 px-4">{submission.title}</td>
                                                 <td className="py-3 px-4">
-                                                    <span className={`px-2 py-1 rounded-full text-sm ${submission.status === 'New Submission' ? 'bg-blue-100 text-blue-800' :
-                                                        submission.status === 'Under Review' ? 'bg-yellow-100 text-yellow-800' :
-                                                            'bg-orange-100 text-orange-800'
-                                                        }`}>
-                                                        {submission.status}
-                                                    </span>
+                                                    <StatusLabel status={submission.status} />
                                                 </td>
                                                 <td className="py-3 px-4">{submission.submitted}</td>
                                                 <td className="py-3 px-4">
-                                                    <button className="text-blue-600 hover:text-blue-800">View Details</button>
+                                                    <button className="text-blue-600 hover:text-blue-800">
+                                                        View Details
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -169,4 +193,6 @@ export default function EditorDashboard() {
             </div>
         </AuthenticatedLayout>
     );
-}
+};
+
+export default EditorDashboard;

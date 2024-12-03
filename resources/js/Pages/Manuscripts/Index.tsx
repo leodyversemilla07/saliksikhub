@@ -12,11 +12,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/ui/select';
-import { Eye, Edit2, Trash2, Clock, Search } from 'lucide-react';
+import { Eye, Edit2, Trash2, Clock, Search, MoreHorizontal } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
-import { toast, useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/alert-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 
 
 type Manuscript = {
@@ -154,6 +156,21 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
         }
     };
 
+    const getStatusColor = (status: Manuscript['status']) => {
+        switch (status) {
+            case 'Accepted':
+                return 'bg-green-100 text-green-800'
+            case 'Rejected':
+                return 'bg-red-100 text-red-800'
+            case 'Revision Required':
+                return 'bg-yellow-100 text-yellow-800'
+            case 'Under Review':
+                return 'bg-blue-100 text-blue-800'
+            default:
+                return 'bg-gray-100 text-gray-800'
+        }
+    }
+
     return (
         <>
             <AuthenticatedLayout
@@ -212,19 +229,19 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b">
-                                        <th className="px-4 py-3 text-left">ID</th>
-                                        <th className="px-4 py-3 text-left">Manuscript Title</th>
-                                        <th className="px-4 py-3 text-left">Status</th>
-                                        <th className="px-4 py-3 text-left">Submission Date</th> {/* Updated column name */}
-                                        <th className="px-4 py-3 text-left">Authors</th>
-                                        <th className="px-4 py-3 text-left">Last Updated</th> {/* Updated column name */}
-                                        <th className="px-4 py-3 text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="text-left">ID</TableHead>
+                                        <TableHead>Manuscript Title</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Submitted</TableHead> {/* Updated column name */}
+                                        <TableHead>Authors</TableHead>
+                                        <TableHead>Updated</TableHead> {/* Updated column name */}
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
                                     {filteredManuscripts.length === 0 ? (
                                         <tr>
                                             <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
@@ -233,16 +250,16 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                         </tr>
                                     ) : (
                                         filteredManuscripts.map((manuscript) => (
-                                            <tr key={manuscript.id} className="border-b hover:bg-gray-50">
-                                                <td className="px-4 py-3">{manuscript.id}</td>
-                                                <td className="px-4 py-3 font-medium">{manuscript.title}</td>
-                                                <td className="px-4 py-3">
-                                                    <Badge className={`${getStatusBadgeColor(manuscript.status)}`}>
+                                            <TableRow key={manuscript.id} className="border-b hover:bg-gray-50">
+                                                <TableCell className="font-medium text-left">{manuscript.id}</TableCell>
+                                                <TableCell className="max-w-[200px] truncate">{manuscript.title}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="secondary" className={`${getStatusColor(manuscript.status)} whitespace-nowrap`}>
                                                         {manuscript.status}
                                                     </Badge>
-                                                </td>
-                                                <td className="px-4 py-3">{new Date(manuscript.created_at).toLocaleDateString()}</td> {/* Display created_at */}
-                                                <td className="px-4 py-3">
+                                                </TableCell>
+                                                <TableCell className="whitespace-nowrap">{new Date(manuscript.created_at).toLocaleDateString()}</TableCell> {/* Display created_at */}
+                                                <TableCell className="max-w-[200px] truncate">
                                                     {getAuthors(manuscript.authors).length > 0 ? (
                                                         <div className="flex flex-wrap gap-1">
                                                             {getAuthors(manuscript.authors).map((author, index) => (
@@ -254,53 +271,53 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     ) : (
                                                         <span className="text-gray-400">No co-authors</span>
                                                     )}
-                                                </td>
-                                                <td className="px-4 py-3">
+                                                </TableCell>
+                                                <TableCell className="whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
-                                                        <Clock className="h-4 w-4 text-gray-400" />
                                                         {new Date(manuscript.updated_at).toLocaleDateString()} {/* Display updated_at */}
                                                     </div>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <div className="flex justify-center gap-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                <span className="sr-only">Open menu</span>
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem onClick={() => {
                                                                 Inertia.visit(`/author/manuscripts/${manuscript.id}`);
-                                                            }}
-                                                        >
-                                                            <Eye className="h-4 w-4 text-blue-600" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
+                                                            }}>
+                                                                <Eye className="mr-2 h-4 w-4" />
+                                                                View
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => {
                                                                 Inertia.visit(`/author/manuscripts/${manuscript.id}/edit`);
                                                             }}>
-                                                            <Edit2 className="h-4 w-4 text-yellow-600" />
-                                                        </Button>
-
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
+                                                                <Edit2 className="mr-2 h-4 w-4" />
+                                                                Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => {
                                                                 setSelectedManuscript(manuscript);
                                                                 setIsDialogOpen(true);
-                                                            }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-red-600" />
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                            }}>
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
                                         ))
                                     )}
-                                </tbody>
-                            </table>
+                                </TableBody>
+                            </ Table>
                         </div>
                     </CardContent>
                 </Card>
+                
 
                 {/* Delete Confirmation Dialog */}
                 {

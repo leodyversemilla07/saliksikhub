@@ -37,13 +37,27 @@ Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () 
     Route::get('/editor/edit-articles', [EditorController::class, 'editArticles'])->name('editor.editArticles');
     Route::post('/editor/articles/{article}/update', [EditorController::class, 'updateArticle'])->name('editor.updateArticle');
     Route::post('/editor/articles/{article}/publish', [EditorController::class, 'publishArticle'])->name('editor.publishArticle');
+    Route::get('/editor/manuscripts', [EditorController::class, 'indexManuscripts'])->name('editor.indexManuscripts');
+
+    Route::put('editor/manuscripts/{id}/approve', [ManuscriptController::class, 'approve'])->name('manuscripts.approve');
+    Route::put('editor/manuscripts/{id}/reject', [ManuscriptController::class, 'reject'])->name('manuscripts.reject');
+    Route::put('editor/manuscripts/{id}/revise', [ManuscriptController::class, 'revisionRequired'])->name('manuscripts.revisionRequired');
+    Route::get('editor/manuscripts/{id}/show', [EditorController::class, 'show'])->name('editor.manuscripts.show');
+
+    Route::get('editor/assign/reviewer', [EditorController::class, 'indexManuscriptsAssign'])->name('editor.reviewer.assign');
+
+    Route::post('editor/reviewer/{manuscript}/assigned', [ManuscriptController::class, 'assignReviewer'])->name('assign.reviewer');
 });
+
 
 // Reviewer Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function () {
     Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.dashboard');
-    Route::get('/reviewer/review-articles', [ReviewerController::class, 'reviewArticles'])->name('reviewer.reviewArticles');
+    Route::get('/reviewer/review-manuscripts', [ReviewerController::class, 'reviewManuscripts'])->name('reviewer.reviewManuscripts');
     Route::post('/reviewer/articles/{article}/submit-review', [ReviewerController::class, 'submitReview'])->name('reviewer.submitReview');
+
+    Route::get('reviewer/manuscripts/{id}/show', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');
+    Route::get('reviewer/manuscripts/review', [ReviewerController::class, 'reviewForm'])->name('reviewer.manuscripts.review');
 });
 
 // Author Routes
@@ -74,7 +88,6 @@ Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () 
     Route::get('/manuscripts/revisions', [ManuscriptController::class, 'revisions'])->name('manuscripts.revisions');
 });
 
-
 Route::post('/manuscript-review', [ManuscriptController::class, 'sendForReview']);
 Route::get('/manuscript-review', function () {
     return inertia('ManuscriptReview', [
@@ -82,10 +95,6 @@ Route::get('/manuscript-review', function () {
         'compliance_score' => null,
     ]);
 });
-
-Route::get('/manuscriptsmodal', function () {
-    return Inertia::render('Manuscripts/ModalManuscript');
-})->name('manuscripts.modal');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

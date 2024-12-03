@@ -1,4 +1,3 @@
-import React from 'react';
 import { Head } from '@inertiajs/react';
 import { FileText, User, Clock, Tag, FileDown } from 'lucide-react';
 
@@ -17,7 +16,7 @@ interface ShowProps {
     manuscript: Manuscript;
 }
 
-const Show: React.FC<ShowProps> = ({ manuscript }) => {
+export default function Show({ manuscript }: ShowProps): JSX.Element {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <Head title={`Manuscript: ${manuscript.title}`} />
@@ -120,6 +119,4 @@ const Show: React.FC<ShowProps> = ({ manuscript }) => {
             </div>
         </div>
     );
-};
-
-export default Show;
+}

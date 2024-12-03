@@ -30,25 +30,28 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         // Get the authenticated user
         $user = Auth::user();
         $roles = $user->getRoleNames(); // Get user roles
 
-        // Determine the appropriate dashboard route based on roles
-        if ($roles->contains('admin')) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
-        } elseif ($roles->contains('editor')) {
-            return redirect()->intended(route('editor.dashboard', absolute: false));
-        } elseif ($roles->contains('reviewer')) {
-            return redirect()->intended(route('reviewer.dashboard', absolute: false));
-        } elseif ($roles->contains('author')) {
-            return redirect()->intended(route('author.dashboard', absolute: false));
+        // Map roles to dashboard routes
+        $roleRoutes = [
+            'admin' => 'admin.dashboard',
+            'editor' => 'editor.dashboard',
+            'reviewer' => 'reviewer.dashboard',
+            'author' => 'author.dashboard',
+        ];
+
+        // Find the first matching role and redirect
+        foreach ($roleRoutes as $role => $route) {
+            if ($roles->contains($role)) {
+                return redirect()->intended(route($route, absolute: false));
+            }
         }
 
-        // Fallback to a default dashboard route if no specific role matches
+        // Fallback to a default dashboard route
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -60,7 +63,6 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

@@ -6,6 +6,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     Activity,
     Bell,
+    BookOpen,
     CheckCircle,
     ChevronDown,
     FileText,
@@ -14,6 +15,7 @@ import {
     Plus,
     Settings,
     Upload,
+    User,
 } from 'lucide-react';
 import { PropsWithChildren, ReactNode, useState, ComponentType } from 'react';
 
@@ -37,25 +39,15 @@ declare module '@inertiajs/core' {
     interface PageProps extends CustomPageProps { }
 }
 
-const Authenticated = ({ header, children }: PropsWithChildren<{ header?: ReactNode }>) => {
-    const { auth } = usePage<PageProps>().props; // Use the extended type
-    const user = auth.user; // `user` is now guaranteed to exist
+export default function AuthenticatedLayout({
+    header,
+    children,
+}: PropsWithChildren<{ header?: ReactNode }>) {
+    const { auth } = usePage<PageProps>().props;
+    const user = auth.user;
     const userRoles = auth.roles || [];
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const dashboardRoutes: Record<string, string> = {
-        admin: route('admin.dashboard'),
-        editor: route('editor.dashboard'),
-        reviewer: route('reviewer.dashboard'),
-        author: route('author.dashboard'),
-    };
-
-    const getDashboardRoute = () => {
-        for (const role of userRoles) {
-            if (dashboardRoutes[role]) return dashboardRoutes[role];
-        }
-        return route('dashboard');
-    };
 
     const SidebarLink = ({
         href,
@@ -70,8 +62,10 @@ const Authenticated = ({ header, children }: PropsWithChildren<{ header?: ReactN
         label: string;
         roles?: string[];
     }) => {
-        const isAccessible = roles.length === 0 || roles.some((role) => userRoles.includes(role));
+        const isAccessible =
+            roles.length === 0 || roles.some((role) => userRoles.includes(role));
         if (!isAccessible) return null;
+
         return (
             <NavLink
                 href={href}
@@ -123,6 +117,7 @@ const Authenticated = ({ header, children }: PropsWithChildren<{ header?: ReactN
                     </button>
                 </div>
                 <nav className="flex flex-col mt-4 space-y-1 px-4">
+                    {/* Author Links */}
                     <SidebarLink
                         href={route('author.dashboard')}
                         active={route().current('author.dashboard')}
@@ -157,29 +152,58 @@ const Authenticated = ({ header, children }: PropsWithChildren<{ header?: ReactN
                         icon={Upload}
                         label="Revision Required"
                         roles={['author']}
-                    >
-                    </SidebarLink>
+                    />
                     <SidebarLink
                         href={route('manuscripts.indexAIPrereviewed')}
                         active={route().current('manuscripts.indexAIPrereviewed')}
                         icon={Activity}
                         label="AI Review Reports"
                         roles={['author']}
-                    >
-                    </SidebarLink>
-                    {/* <SidebarLink
-                        href={route('manuscripts.revisions')}
-                        active={route().current('manuscripts.revisions')}
-                        icon={Bell}
-                        label="Notifications"
-                        roles={['author']}
-                    >
-                    </SidebarLink> */}
+                    />
+
+                    {/* Editor Links */}
+                    <SidebarLink
+                        href={route('editor.dashboard')}
+                        active={route().current('editor.dashboard')}
+                        icon={Home}
+                        label="Dashboard"
+                        roles={['editor']}
+                    />
+                    <SidebarLink
+                        href={route('editor.indexManuscripts')}
+                        active={route().current('editor.indexManuscripts')}
+                        icon={BookOpen}
+                        label="Submitted Manuscripts"
+                        roles={['editor']}
+                    />
+                    <SidebarLink
+                        href={route('editor.reviewer.assign')}
+                        active={route().current('editor.reviewer.assign')}
+                        icon={User}
+                        label="Assign Reviewer"
+                        roles={['editor']}
+                    />
+
+                    <SidebarLink
+                        href={route('reviewer.dashboard')}
+                        active={route().current('reviewer.dashboard')}
+                        icon={Home}
+                        label="Dashboard"
+                        roles={['reviewer']}
+                    />
+                    <SidebarLink
+                        href={route('reviewer.reviewManuscripts')}
+                        active={route().current('reviewer.reviewManuscripts')}
+                        icon={FileText}
+                        label="Review"
+                        roles={['reviewer']}
+                    />
                 </nav>
                 <div className="mt-auto px-4 py-4 border-t border-gray-200">
                     <UserDropdown user={user} />
                 </div>
             </div>
+            {/* Main Content */}
             <div className="flex flex-1 flex-col lg:ml-64">
                 <div className="flex h-16 items-center bg-white shadow lg:hidden">
                     <button
@@ -193,13 +217,13 @@ const Authenticated = ({ header, children }: PropsWithChildren<{ header?: ReactN
                 </div>
                 {header && (
                     <header className="bg-white shadow">
-                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{header}</div>
+                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                            {header}
+                        </div>
                     </header>
                 )}
                 <main className="flex-1 p-4">{children}</main>
             </div>
         </div>
     );
-};
-
-export default Authenticated;
+}

@@ -3,6 +3,7 @@ import { Eye, EyeOff, Globe, Clock, Users } from 'lucide-react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -59,11 +60,7 @@ function Header() {
     return (
         <header className="flex justify-between items-center p-6 w-full max-w-6xl bg-white rounded-lg shadow-lg mb-12">
             <div className="flex items-center gap-4">
-                <img
-                    src="https://minsu.edu.ph/template/images/logo.png"
-                    alt="MinSU Logo"
-                    className="w-10 h-10"
-                />
+                <ApplicationLogo className="w-10 h-10" />
                 <span className="text-2xl font-bold text-gray-800">MinSU Research Journal</span>
             </div>
             <div className="flex gap-4 text-gray-600">

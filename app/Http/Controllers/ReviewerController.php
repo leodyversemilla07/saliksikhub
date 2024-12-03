@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Article;
+use App\Models\Manuscript;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -15,14 +15,20 @@ class ReviewerController extends Controller
         return Inertia::render("Reviewer/ReviewerDashboard");
     }
 
-    public function reviewArticles()
+    public function reviewForm()
     {
-        // List articles assigned for review
-        $articles = Article::where('status', 'under_review')->get();
-        return view('reviewer.review_articles', compact('articles'));
+        // Display reviewer dashboard
+        return Inertia::render("Reviewer/ReviewForm");
     }
 
-    public function submitReview(Request $request, Article $article)
+    public function reviewManuscripts()
+    {
+        // List articles assigned for review
+        $manuscripts = Manuscript::where('status', 'Under Review')->get();
+        return Inertia::render('Reviewer/ReviewManuscriptsTable', compact('manuscripts'));
+    }
+
+    public function submitReview(Request $request, Manuscript $manuscript)
     {
         // Validate and submit review feedback
         $request->validate([
@@ -31,12 +37,33 @@ class ReviewerController extends Controller
         ]);
 
         // Assuming you have a feedback column or related model to store reviews.
-        $article->feedback()->create([
+        $manuscript->feedback()->create([
             'reviewer_id' => Auth::id(), // Use Auth facade here
             'feedback' => $request->feedback,
             // Add other fields as necessary
         ]);
 
         return redirect()->route('reviewer.reviewArticles')->with('success', 'Review submitted successfully.');
+    }
+
+    /**
+     * Show a specific manuscript.
+     */
+    public function show($id)
+    {
+        $manuscript = Manuscript::findOrFail($id);
+
+        return Inertia::render('Manuscripts/Show', [
+            'manuscript' => [
+                'title' => $manuscript->title,
+                'authors' => explode(', ', $manuscript->authors),
+                'abstract' => $manuscript->abstract,
+                'keywords' => explode(', ', $manuscript->keywords),
+                'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+                'status' => $manuscript->status,
+                'created_at' => $manuscript->created_at->toDateTimeString(),
+                'updated_at' => $manuscript->updated_at->toDateTimeString(),
+            ],
+        ]);
     }
 }

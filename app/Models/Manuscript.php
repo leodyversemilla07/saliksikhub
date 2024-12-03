@@ -32,4 +32,14 @@ class Manuscript extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function reviewerAssignments()
+    {
+        return $this->hasMany(ReviewerAssignment::class);
+    }
+
+    public function reviewers()
+    {
+        return $this->belongsToMany(User::class, 'reviewer_assignments');
+    }
 }

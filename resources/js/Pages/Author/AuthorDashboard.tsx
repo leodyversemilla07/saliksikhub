@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { AlertCircle, CheckCircle, Clock, Download, ExternalLink, Eye, FileText, MessageSquare, Plus, Send, Upload } from 'lucide-react';
-import { ManuscriptSubmissionModal } from '@/Pages/Manuscripts/ModalManuscript';
 
 export default function AuthorDashboard() {
     // Sample data - in a real application, this would come from an API

@@ -46,7 +46,7 @@ class ArticleController extends Controller
         $article->content = $validated['content'];
         $article->file = $filePath;
         $article->published_at = now();
-        $article->author_id = Auth::id(); // Assuming the logged-in user is the author
+        $article->author_id = Auth::id(); // Assuming the logged-in  is the author
         $article->save();
 
         return redirect()->route('articles.index')->with('success', 'Article created successfully.');
