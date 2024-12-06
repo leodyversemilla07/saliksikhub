@@ -12,14 +12,9 @@ class AuthorController extends Controller
 {
     public function index()
     {
-        // Display author dashboard
-        // return Inertia::render('Author/AuthorDashboardCopy');
-
         $manuscripts = Manuscript::all(); // Fetch data from your database
 
-        return Inertia::render('Author/AuthorDashboardCopy', [
-            'manuscripts' => $manuscripts,
-        ]);
+        return Inertia::render('Author/AuthorDashboard', compact('manuscripts'));
     }
 
     public function myArticles()

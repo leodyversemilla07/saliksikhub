@@ -184,6 +184,7 @@ export default function AuthenticatedLayout({
                         roles={['editor']}
                     />
 
+                    {/* Reviewer Links */}
                     <SidebarLink
                         href={route('reviewer.dashboard')}
                         active={route().current('reviewer.dashboard')}
@@ -197,6 +198,22 @@ export default function AuthenticatedLayout({
                         icon={FileText}
                         label="Review"
                         roles={['reviewer']}
+                    />
+
+                    {/* Admin Links */}
+                    <SidebarLink
+                        href={route('admin.dashboard')}
+                        active={route().current('admin.dashboard')}
+                        icon={Home}
+                        label="Dashboard"
+                        roles={['admin']}
+                    />
+                    <SidebarLink
+                        href={route('admin.manageUsers')}
+                        active={route().current('admin.manageUsers')}
+                        icon={User}
+                        label="User Management"
+                        roles={['admin']}
                     />
                 </nav>
                 <div className="mt-auto px-4 py-4 border-t border-gray-200">

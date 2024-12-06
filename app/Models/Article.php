@@ -10,7 +10,15 @@ class Article extends Model
     use HasFactory;
 
     // Define the fillable fields
-    protected $fillable = ['title', 'abstract', 'author_id', 'status', 'manuscript_file'];
+    protected $fillable = [
+        'title',
+        'authors',
+        'user_id',
+        'abstract',
+        'keywords',
+        'status',
+        'manuscript_path'
+    ];
 
     public function author()
     {
@@ -22,7 +30,8 @@ class Article extends Model
         return $this->hasMany(Review::class); // Each article can have many reviews
     }
 
-    public function comments() {
-        return $this->hasMany(Comment::class);
-    }
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comment::class);
+    // }
 }

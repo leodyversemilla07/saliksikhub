@@ -25,10 +25,11 @@ Route::get('/contact-us', fn() => renderPage('ContactUs'));
 Route::group(['middleware' => ['auth', 'verified', 'role:admin']], function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.manageUsers');
-    Route::post('/admin/users/create', [AdminController::class, 'createUser'])->name('admin.createUser');
+    Route::post('/admin/users/create', action: [AdminController::class, 'createUser'])->name('admin.createUser');
+    Route::post('admin/users', [AdminController::class, 'store'])->name('admin.user.store');
     Route::get('/admin/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.editUser');
-    Route::post('/admin/users/{user}/update', [AdminController::class, 'updateUser'])->name('admin.updateUser');
-    Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    Route::post('/admin/users/{user}/update', [AdminController::class, 'update'])->name('admin.updateUser');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.deleteUser');
 });
 
 // Editor Routes

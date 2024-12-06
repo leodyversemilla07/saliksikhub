@@ -10,14 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
+        Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('authors');
+            $table->string('status')->default('Published');
             $table->text('abstract');
-            $table->foreignId('author_id')->constrained('users')->onDelete('cascade'); // References users.id
-            $table->string('status')->default('pending'); // e.g., pending, published, under_review
-            $table->string('keywords')->nullable(); // Add this line for keywords
-            $table->string('manuscript_file')->nullable(); // Add this line for manuscript file
+            $table->string('keywords')->nullable();
+            $table->string('manuscript_file')->nullable();
             $table->timestamps();
         });
     }

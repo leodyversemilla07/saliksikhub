@@ -1,55 +1,190 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import React, { useState, useEffect } from 'react';
+import {
+    Book,
+    FileText,
+    CheckCircle,
+    Clock,
+    AlertCircle,
+    Pen
+} from 'lucide-react';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    PieChart,
+    Pie,
+    Cell,
+    ResponsiveContainer
+} from 'recharts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
-import { AlertCircle, CheckCircle, Clock, Download, ExternalLink, Eye, FileText, MessageSquare, Plus, Send, Upload } from 'lucide-react';
+import { Head } from '@inertiajs/react';
 
-export default function AuthorDashboard() {
-    // Sample data - in a real application, this would come from an API
-    const metrics = {
-        activeSubmissions: 3,
-        publishedPapers: 5,
-        underReview: 2,
-        needsRevision: 1
+// Constants for Submission States
+const SUBMISSION_STATES = {
+    DRAFT: 'DRAFT',
+    SUBMITTED: 'SUBMITTED',
+    UNDER_REVIEW: 'UNDER_REVIEW',
+    REVISION_REQUESTED: 'REVISION_REQUESTED',
+    ACCEPTED: 'ACCEPTED',
+    PUBLISHED: 'PUBLISHED'
+} as const;
+
+// Define Submission Interface
+interface Submission {
+    id: string;
+    title: string;
+    journal: string;
+    state: keyof typeof SUBMISSION_STATES;
+    submissionDate: Date | null;
+    lastUpdated: Date;
+}
+
+// Define Active and Completed Submission State Types
+type ActiveSubmissionStates = 'DRAFT' | 'UNDER_REVIEW' | 'REVISION_REQUESTED';
+type CompletedSubmissionStates = 'ACCEPTED' | 'PUBLISHED';
+
+// Color Mapping for Submission States
+const STATE_COLORS: Record<Submission['state'], string> = {
+    [SUBMISSION_STATES.DRAFT]: '#6B7280', // Gray
+    [SUBMISSION_STATES.SUBMITTED]: '#3B82F6', // Blue
+    [SUBMISSION_STATES.UNDER_REVIEW]: '#F59E0B', // Yellow
+    [SUBMISSION_STATES.REVISION_REQUESTED]: '#F97316', // Orange
+    [SUBMISSION_STATES.ACCEPTED]: '#10B981', // Green
+    [SUBMISSION_STATES.PUBLISHED]: '#8B5CF6' // Purple
+};
+
+const AuthorDashboard: React.FC = () => {
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
+    const [activeSubmissions, setActiveSubmissions] = useState<Submission[]>([]);
+    const [completedSubmissions, setCompletedSubmissions] = useState<Submission[]>([]);
+
+    useEffect(() => {
+        const fetchSubmissions = async () => {
+            const mockSubmissions: Submission[] = [
+                {
+                    id: 'MS2024-001',
+                    title: 'Quantum Entanglement in Neural Networks',
+                    journal: 'Computational Neuroscience Quarterly',
+                    state: 'UNDER_REVIEW',
+                    submissionDate: new Date('2024-02-15'),
+                    lastUpdated: new Date('2024-03-20')
+                },
+                {
+                    id: 'MS2024-002',
+                    title: 'Epistemic Foundations of Machine Learning',
+                    journal: 'Philosophical Perspectives in Technology',
+                    state: 'DRAFT',
+                    submissionDate: null,
+                    lastUpdated: new Date('2024-04-10')
+                },
+                {
+                    id: 'MS2024-003',
+                    title: 'Cognitive Architectures in AI',
+                    journal: 'Advanced Computational Cognition',
+                    state: 'ACCEPTED',
+                    submissionDate: new Date('2024-01-10'),
+                    lastUpdated: new Date('2024-05-01')
+                },
+                {
+                    id: 'MS2024-004',
+                    title: 'Ethical Implications of Generative Models',
+                    journal: 'Technology and Ethics Quarterly',
+                    state: 'PUBLISHED',
+                    submissionDate: new Date('2023-12-05'),
+                    lastUpdated: new Date('2024-02-15')
+                }
+            ];
+
+            setSubmissions(mockSubmissions);
+
+            setActiveSubmissions(
+                mockSubmissions.filter(submission =>
+                    ['DRAFT', 'UNDER_REVIEW', 'REVISION_REQUESTED'].includes(submission.state)
+                ) as Submission[]
+            );
+
+            setCompletedSubmissions(
+                mockSubmissions.filter(submission =>
+                    ['ACCEPTED', 'PUBLISHED'].includes(submission.state)
+                ) as Submission[]
+            );
+        };
+
+        fetchSubmissions();
+    }, []);
+
+    // Compute Submission State Distribution
+    const getSubmissionStateDistribution = () => {
+        const stateCount = submissions.reduce((acc, submission) => {
+            acc[submission.state] = (acc[submission.state] || 0) + 1;
+            return acc;
+        }, {} as Record<Submission['state'], number>);
+
+        return Object.entries(stateCount).map(([state, count]) => ({
+            name: state.replace('_', ' '),
+            value: count,
+            color: STATE_COLORS[state as Submission['state']]
+        }));
     };
 
-    const submissions = [
-        {
-            id: "MS-2024-156",
-            title: "Neural Networks in Climate Prediction",
-            status: "Under Review",
-            submittedDate: "2024-11-01",
-            lastUpdate: "2024-11-08",
-            journal: "Journal of Climate Science",
-            hasComments: true,
-            stage: "Peer Review",
-            aiReviewPassed: true,
-            aiReviewReport: { sentiment: 'Positive', topics: ['Climate Change', 'AI'], summary: 'The manuscript is well-written and highly relevant.' }
-        },
-        {
-            id: "MS-2024-142",
-            title: "Quantum Computing Applications in Cryptography",
-            status: "Revision Required",
-            submittedDate: "2024-10-15",
-            lastUpdate: "2024-11-05",
-            journal: "Journal of Quantum Computing",
-            hasComments: true,
-            stage: "Author Revision",
-            revisionDue: "2024-11-19",
-            aiReviewPassed: false,
-            aiReviewReport: { sentiment: 'Negative', topics: ['Quantum Computing', 'Cryptography'], summary: 'The manuscript lacks depth in addressing critical challenges.' }
-        },
-        {
-            id: "MS-2024-128",
-            title: "Machine Learning in Healthcare Systems",
-            status: "Published",
-            submittedDate: "2024-09-01",
-            lastUpdate: "2024-10-30",
-            journal: "Healthcare Informatics Journal",
-            doi: "10.1234/hij.2024.128",
-            aiReviewPassed: true,
-            aiReviewReport: { sentiment: 'Neutral', topics: ['Machine Learning', 'Healthcare'], summary: 'The manuscript is solid but needs a stronger conclusion.' }
-        }
-    ];
+    // Compute Submissions by Month
+    const getSubmissionsByMonth = () => {
+        const monthNames = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+
+        const monthlySubmissions = submissions.reduce((acc, submission) => {
+            if (submission.submissionDate) {
+                const month = monthNames[submission.submissionDate.getMonth()];
+                acc[month] = (acc[month] || 0) + 1;
+            }
+            return acc;
+        }, {} as Record<string, number>);
+
+        return Object.entries(monthlySubmissions).map(([month, count]) => ({
+            month,
+            submissions: count
+        }));
+    };
+
+    // State Icon Mapping
+    const getStateIcon = (state: Submission['state']) => {
+        const stateIcons: Record<Submission['state'], JSX.Element> = {
+            [SUBMISSION_STATES.DRAFT]: <Pen className="text-gray-500" />,
+            [SUBMISSION_STATES.SUBMITTED]: <FileText className="text-blue-500" />,
+            [SUBMISSION_STATES.UNDER_REVIEW]: <Clock className="text-yellow-500" />,
+            [SUBMISSION_STATES.REVISION_REQUESTED]: <AlertCircle className="text-orange-500" />,
+            [SUBMISSION_STATES.ACCEPTED]: <CheckCircle className="text-green-500" />,
+            [SUBMISSION_STATES.PUBLISHED]: <Book className="text-purple-500" />
+        };
+        return stateIcons[state] || null;
+    };
+
+    // Submission Card Component
+    const SubmissionCard: React.FC<{ submission: Submission }> = ({ submission }) => (
+        <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center justify-between hover:shadow-lg transition-shadow duration-300">
+            <div className="flex items-center space-x-4">
+                {getStateIcon(submission.state)}
+                <div>
+                    <h3 className="font-semibold text-lg">{submission.title}</h3>
+                    <p className="text-gray-600">{submission.journal}</p>
+                </div>
+            </div>
+            <div className="text-right">
+                <p className="text-sm text-gray-500">
+                    Submission ID: {submission.id}
+                </p>
+                <p className="text-sm text-gray-500">
+                    Status: {submission.state.replace('_', ' ')}
+                </p>
+            </div>
+        </div>
+    );
 
     return (
         <>
@@ -61,216 +196,86 @@ export default function AuthorDashboard() {
                 }
             >
                 <Head title="Author Dashboard" />
+                <div className="min-h-screen bg-gray-50 p-8">
+                    <div className="container mx-auto">
+                        <header className="mb-8">
+                            <h1 className="text-3xl font-bold text-gray-800">Research Submission Dashboard</h1>
+                            <p className="text-gray-600">Navigating the Intellectual Landscape of Academic Publishing</p>
+                        </header>
 
-                <div className="py-12">
-                    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                        {/* Header with New Submission Button */}
-                        <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-800">Author Dashboard</h1>
-                                <p className="text-gray-600 mt-2">Research Journal Management System</p>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            <div className="bg-white shadow-md rounded-lg p-4">
+                                <h2 className="text-xl font-semibold mb-4 text-gray-700">Submission State Distribution</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={getSubmissionStateDistribution()}
+                                            cx="50%"
+                                            cy="50%"
+                                            labelLine={false}
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="value"
+                                        >
+                                            {getSubmissionStateDistribution().map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend layout="vertical" verticalAlign="bottom" align="center" />
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </div>
-                            <button
-                                onClick={() => router.visit(route('manuscripts.create'))}
-                                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                            >
-                                <Plus className="w-5 h-5 mr-2" />
-                                New Submission
-                            </button>
+
+                            <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
+                                <h2 className="text-xl font-semibold mb-4 text-gray-700">Submissions by Month</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={getSubmissionsByMonth()}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="month" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="submissions" fill="#8884d8" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
 
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                            <Card className="bg-blue-50">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-gray-600">Active Submissions</p>
-                                            <h3 className="text-2xl font-bold text-blue-600">{metrics.activeSubmissions}</h3>
-                                        </div>
-                                        <FileText className="w-8 h-8 text-blue-500" />
-                                    </div>
-                                </CardContent>
-                            </Card>
+                        <div className="grid md:grid-cols-2 gap-8 mt-8">
+                            <section>
+                                <h2 className="text-2xl font-semibold mb-4 text-gray-700">Active Submissions</h2>
+                                {activeSubmissions.length > 0 ? (
+                                    activeSubmissions.map(submission => (
+                                        <SubmissionCard
+                                            key={submission.id}
+                                            submission={submission}
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">No active submissions found.</p>
+                                )}
+                            </section>
 
-                            <Card className="bg-green-50">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-gray-600">Published Papers</p>
-                                            <h3 className="text-2xl font-bold text-green-600">{metrics.publishedPapers}</h3>
-                                        </div>
-                                        <CheckCircle className="w-8 h-8 text-green-500" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-yellow-50">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-gray-600">Under Review</p>
-                                            <h3 className="text-2xl font-bold text-yellow-600">{metrics.underReview}</h3>
-                                        </div>
-                                        <Clock className="w-8 h-8 text-yellow-500" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-orange-50">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-gray-600">Needs Revision</p>
-                                            <h3 className="text-2xl font-bold text-orange-600">{metrics.needsRevision}</h3>
-                                        </div>
-                                        <AlertCircle className="w-8 h-8 text-orange-500" />
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <section>
+                                <h2 className="text-2xl font-semibold mb-4 text-gray-700">Completed Submissions</h2>
+                                {completedSubmissions.length > 0 ? (
+                                    completedSubmissions.map(submission => (
+                                        <SubmissionCard
+                                            key={submission.id}
+                                            submission={submission}
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">No completed submissions found.</p>
+                                )}
+                            </section>
                         </div>
-
-                        {/* Manuscript Tracking */}
-                        <Card className="mb-8">
-                            <CardHeader>
-                                <CardTitle>Manuscript Tracking</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-6">
-                                    {submissions.map((submission) => (
-                                        <div key={submission.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <h4 className="font-semibold text-lg">{submission.title}</h4>
-                                                        {submission.hasComments && (
-                                                            <span className="flex items-center text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
-                                                                <MessageSquare className="w-3 h-3 mr-1" />
-                                                                New Comments
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-sm text-gray-600">
-                                                        Manuscript ID: {submission.id} | Journal: {submission.journal}
-                                                    </p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    {submission.status === "Revision Required" && (
-                                                        <button className="px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 flex items-center">
-                                                            <Upload className="w-4 h-4 mr-1" />
-                                                            Submit Revision
-                                                        </button>
-                                                    )}
-                                                    <button className="px-3 py-1 text-sm text-gray-600 border rounded-md hover:bg-gray-50">
-                                                        <Download className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-                                                <div>
-                                                    <p className="text-gray-600">Submitted Date</p>
-                                                    <p className="font-medium">{submission.submittedDate}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">Last Update</p>
-                                                    <p className="font-medium">{submission.lastUpdate}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">Status</p>
-                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${submission.status === 'Under Review'
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : submission.status === 'Revision Required'
-                                                            ? 'bg-orange-100 text-orange-800'
-                                                            : submission.status === 'Published'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-gray-100 text-gray-800'
-                                                        }`}>
-                                                        {submission.status}
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">Stage</p>
-                                                    <p className="font-medium">{submission.stage || 'Completed'}</p>
-                                                </div>
-                                            </div>
-
-                                            {submission.status === "Published" && (
-                                                <div className="flex items-center text-sm text-blue-600 hover:text-blue-800">
-                                                    <ExternalLink className="w-4 h-4 mr-1" />
-                                                    <a href={`https://doi.org/${submission.doi}`} target="_blank" rel="noopener noreferrer">
-                                                        {submission.doi}
-                                                    </a>
-                                                </div>
-                                            )}
-
-                                            {submission.status === "Revision Required" && (
-                                                <div className="mt-2 p-2 bg-orange-50 rounded-md flex items-center justify-between">
-                                                    <span className="text-sm text-orange-800">
-                                                        Revision due by: {submission.revisionDue}
-                                                    </span>
-                                                    <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
-                                                        <Eye className="w-4 h-4 mr-1" />
-                                                        View Reviewer Comments
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {/* AI Review Report */}
-                                            {submission.aiReviewPassed !== undefined && (
-                                                <div className={`mt-4 p-2 ${submission.aiReviewPassed ? 'bg-green-50' : 'bg-red-50'} rounded-md`}>
-                                                    <h5 className="font-semibold">{submission.aiReviewPassed ? 'AI Review Passed' : 'AI Review Failed'}</h5>
-                                                    <p className="text-sm">Sentiment: {submission.aiReviewReport.sentiment}</p>
-                                                    <p className="text-sm">Topics: {submission.aiReviewReport.topics.join(', ')}</p>
-                                                    <p className="text-sm">{submission.aiReviewReport.summary}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Submission History */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Recent Activity</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex items-center text-sm">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                            <MessageSquare className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">Reviewer comments received for MS-2024-142</p>
-                                            <p className="text-gray-600">2 days ago</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center text-sm">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                            <Send className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">New manuscript submitted MS-2024-156</p>
-                                            <p className="text-gray-600">1 week ago</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center text-sm">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                            <CheckCircle className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">MS-2024-128 has been published</p>
-                                            <p className="text-gray-600">2 weeks ago</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
             </AuthenticatedLayout>
         </>
     );
-}
+};
+
+export default AuthorDashboard;

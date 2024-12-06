@@ -11,8 +11,15 @@ interface HeaderProps {
     logoUrl: string;
 }
 
+enum UserRole {
+    Admin = 'admin',
+    Editor = 'editor',
+    Reviewer = 'reviewer',
+    Author = 'author',
+}
+
 export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
-    const { url } = usePage(); // Get the current URL
+    const { url } = usePage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,24 +36,22 @@ export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
         console.log('Searching for:', searchQuery);
     };
 
-    // Helper function to determine if a link is active
     const isActive = (href: string) => url === href ? 'text-green-800 font-bold' : 'text-gray-600';
 
-    // Function to determine the correct dashboard route based on user roles
     const getDashboardRoute = () => {
-        const userRoles = auth.roles; // Get user roles from auth props
+        const userRoles = auth.roles;
 
-        if (userRoles.includes('admin')) {
-            return route('admin.dashboard'); // Admin dashboard route
-        } else if (userRoles.includes('editor')) {
-            return route('editor.dashboard'); // Editor dashboard route
-        } else if (userRoles.includes('reviewer')) {
-            return route('reviewer.dashboard'); // Reviewer dashboard route
-        } else if (userRoles.includes('author')) {
-            return route('author.dashboard'); // Author dashboard route
+        if (userRoles.includes(UserRole.Admin)) {
+            return route('admin.dashboard');
+        } else if (userRoles.includes(UserRole.Editor)) {
+            return route('editor.dashboard');
+        } else if (userRoles.includes(UserRole.Reviewer)) {
+            return route('reviewer.dashboard');
+        } else if (userRoles.includes(UserRole.Author)) {
+            return route('author.dashboard');
         }
 
-        return route('dashboard'); // Default dashboard route
+        return route('dashboard');
     };
 
     return (

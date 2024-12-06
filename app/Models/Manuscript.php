@@ -19,12 +19,12 @@ class Manuscript extends Model
 
     protected $fillable = [
         'title',
+        'user_id',
         'authors',
+        'status',
         'abstract',
         'keywords',
         'manuscript_path',
-        'user_id', // Add user_id to fillable
-        'status',
     ];
 
     // Define the relationship to User

@@ -4,7 +4,7 @@ export interface User {
     lastname: string;
     email: string;
     email_verified_at?: string;
-    roles: string[]; // Add this line to include user roles
+    role: string[]; // Add this line to include user roles
 }
 
 export type PageProps<

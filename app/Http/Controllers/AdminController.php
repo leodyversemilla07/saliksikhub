@@ -10,30 +10,41 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // Display admin dashboard
         return Inertia::render("Admin/AdminDashboard");
     }
 
     public function manageUsers()
     {
         // List all users
-        $users = User::all();
-        return view('admin.manage_users', compact('users'));
+        $users = User::all()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames()->toArray(),
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ];
+        });
+
+        return Inertia('Admin/UserManagement', compact('users'));
     }
 
-    public function createUser(Request $request)
+    // Store a new user
+    public function store(Request $request)
     {
-        // Validate and create a new user
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'role' => 'required|string',
+        $validated = $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'roles' => 'required|in:admin,reviewer,editor,author',
         ]);
 
-        $user = User::create($request->only('name', 'email', 'password'));
-        $user->assignRole($request->role);
+        User::create($validated);
 
-        return redirect()->route('admin.manageUsers')->with('success', 'User created successfully.');
+        return redirect()->route('users.index')
+            ->with('success', 'User created successfully.');
     }
 
     public function editUser(User $user)
@@ -42,25 +53,28 @@ class AdminController extends Controller
         return view('admin.edit_user', compact('user'));
     }
 
-    public function updateUser(Request $request, User $user)
+    // Update a user's details
+    public function update(Request $request, User $user)
     {
-        // Validate and update user details
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|string',
+        $validated = $request->validate([
+            'firstname' => 'sometimes|string|max:255',
+            'lastname' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'roles' => 'sometimes|in:admin,reviewer,editor,author',
         ]);
 
-        $user->update($request->only('name', 'email'));
-        $user->syncRoles($request->role);
+        $user->update($validated);
 
-        return redirect()->route('admin.manageUsers')->with('success', 'User updated successfully.');
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully.');
     }
 
-    public function deleteUser(User $user)
+    // Delete a user
+    public function destroy(User $user)
     {
-        // Delete a user
         $user->delete();
-        return redirect()->route('admin.manageUsers')->with('success', 'User deleted successfully.');
+
+        return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully.');
     }
 }
