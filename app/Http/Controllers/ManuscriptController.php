@@ -35,11 +35,12 @@ class ManuscriptController extends Controller
     {
         $userId = Auth::id();
 
-        $manuscripts = Manuscript::where('user_id', $userId)
-            ->where('status', 'Revision Required')
-            ->get();
+        $manuscripts = Manuscript::where([
+            ['user_id', '=', $userId],
+            ['status', '=', 'Revision Required']
+        ])->get();
 
-        return Inertia::render('Manuscripts/Index', compact('manuscripts'));
+        return Inertia::render('Manuscripts/Index', ['manuscripts' => $manuscripts]);
     }
 
     /**

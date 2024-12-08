@@ -5,9 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+    protected $user;
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
     public function index()
     {
         return Inertia::render("Admin/AdminDashboard");
@@ -15,66 +27,90 @@ class AdminController extends Controller
 
     public function manageUsers()
     {
-        // List all users
-        $users = User::all()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'firstname' => $user->firstname,
-                'lastname' => $user->lastname,
-                'email' => $user->email,
-                'roles' => $user->getRoleNames()->toArray(),
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ];
-        });
-
-        return Inertia('Admin/UserManagement', compact('users'));
+        $users = $this->getUsersExceptCurrent();
+        return Inertia::render('Admin/UserManagement', compact('users'));
     }
 
-    // Store a new user
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        $validated = $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'roles' => 'required|in:admin,reviewer,editor,author',
-        ]);
-
-        User::create($validated);
-
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully.');
+        try {
+            $user = $this->createUser($request->validated());
+            return $this->successResponse('User created successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to create user');
+        }
     }
 
-    public function editUser(User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        // Show edit form for a user
-        return view('admin.edit_user', compact('user'));
+        try {
+            $this->updateUser($user, $request->validated());
+            return $this->successResponse('User updated successfully');
+        } catch (\Exception $error) {
+            return $this->errorResponse('Failed to update user');
+        }
     }
 
-    // Update a user's details
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'firstname' => 'sometimes|string|max:255',
-            'lastname' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'roles' => 'sometimes|in:admin,reviewer,editor,author',
-        ]);
-
-        $user->update($validated);
-
-        return redirect()->route('users.index')
-            ->with('success', 'User updated successfully.');
-    }
-
-    // Delete a user
     public function destroy(User $user)
     {
         $user->delete();
-
-        return redirect()->route('users.index')
+        return redirect()->route('manageUsers')
             ->with('success', 'User deleted successfully.');
+    }
+
+    private function getUsersExceptCurrent()
+    {
+        return $this->user
+            ->where('id', '!=', Auth::id())
+            ->get()
+            ->map(fn($user) => $this->transformUser($user));
+    }
+
+    private function transformUser($user)
+    {
+        return [
+            'id' => $user->id,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames()->toArray(),
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ];
+    }
+
+    private function createUser(array $data)
+    {
+        $user = $this->user->create([
+            'firstname' => $data['firstname'],
+            'lastname' => $data['lastname'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+        $user->assignRole($data['roles']);
+        return $user;
+    }
+
+    private function updateUser(User $user, array $data)
+    {
+        $user->update([
+            'firstname' => $data['firstname'],
+            'lastname' => $data['lastname'],
+            'email' => $data['email'],
+        ]);
+
+        $user->syncRoles($data['roles']);
+        return $user;
+    }
+
+    private function successResponse($message)
+    {
+        return back()->with('success', $message);
+    }
+
+    private function errorResponse($message)
+    {
+        return back()->with('error', $message)->withInput();
     }
 }

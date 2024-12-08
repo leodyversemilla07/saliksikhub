@@ -2,16 +2,12 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ManuscriptController;
-use App\Models\Manuscript;
-
-use function Termwind\render;
 
 Route::get('/', fn() => renderPage('Home'));
 Route::get('/current', fn() => renderPage('Current'));
@@ -22,14 +18,25 @@ Route::get('/about-us', fn() => renderPage('About'));
 Route::get('/contact-us', fn() => renderPage('ContactUs'));
 
 // Admin Routes
-Route::group(['middleware' => ['auth', 'verified', 'role:admin']], function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.manageUsers');
-    Route::post('/admin/users/create', action: [AdminController::class, 'createUser'])->name('admin.createUser');
-    Route::post('admin/users', [AdminController::class, 'store'])->name('admin.user.store');
-    Route::get('/admin/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.editUser');
-    Route::post('/admin/users/{user}/update', [AdminController::class, 'update'])->name('admin.updateUser');
-    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.deleteUser');
+Route::group([
+    'middleware' => ['auth', 'verified', 'role:admin'],
+    'prefix' => 'admin',
+    'as' => 'admin.'
+], function () {
+    Route::get('/', [AdminController::class, 'index'])
+        ->name('dashboard');
+    
+    // User management routes
+    Route::prefix('users')->group(function () {
+        Route::get('/manage', [AdminController::class, 'manageUsers'])
+            ->name('manageUsers');
+        Route::post('/', [AdminController::class, 'store'])
+            ->name('users.store');
+        Route::put('/{user}', [AdminController::class, 'update'])
+            ->name('users.update');
+        Route::delete('/{user}', [AdminController::class, 'destroy'])
+            ->name('users.destroy');
+    });
 });
 
 // Editor Routes
@@ -106,14 +113,3 @@ Route::middleware('auth')->group(function () {
 Route::get('send-mail', [MailController::class, 'index']);
 
 require __DIR__ . '/auth.php';
-
-/**
- * Helper function to render pages with common authentication checks
- */
-function renderPage(string $page)
-{
-    return Inertia::render($page, [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
-}
