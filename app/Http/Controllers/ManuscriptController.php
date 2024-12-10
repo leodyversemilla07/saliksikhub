@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use Exception;
 use App\Models\ReviewerAssignment;
+use App\Models\AiReview;
+use Smalot\PdfParser\Parser;
 
 class ManuscriptController extends Controller
 {
@@ -51,11 +53,12 @@ class ManuscriptController extends Controller
         return Inertia::render('Manuscripts/Create');
     }
 
-    /**
-     * Store a new manuscript.
-     */
     public function store(Request $request)
     {
+        // Increase execution time for long-running requests (e.g., PDF parsing and API call)
+        set_time_limit(240);
+
+        // Validate the incoming request
         $validated = $request->validate([
             'title' => 'required|string|min:10',
             'authors' => 'required|string|min:3',
@@ -65,21 +68,75 @@ class ManuscriptController extends Controller
         ]);
 
         try {
+            // Save the uploaded manuscript file
             if ($request->hasFile('manuscript')) {
                 $path = $request->file('manuscript')->store('manuscripts', 'public');
                 $validated['manuscript_path'] = $path;
             }
 
+            // Save manuscript data in the database
             $validated['user_id'] = Auth::id();
-            $validated['status'] = Manuscript::STATUS_SUBMITTED;
+            $validated['status'] = Manuscript::STATUSES['SUBMITTED'];
 
             $manuscript = Manuscript::create($validated);
 
+            // Extract text from the PDF
+            $filePath = Storage::disk('public')->path($validated['manuscript_path']);
+            $parser = new Parser();
+            $pdf = $parser->parseFile($filePath);
+            $manuscriptText = $pdf->getText();
+
+            // Log the manuscript text extraction (for debugging)
+            logger()->info('Extracted Manuscript Text:', ['text' => $manuscriptText]);
+
+            // Send the extracted manuscript text to the Django AI-assisted pre-review service
+            $client = new Client();
+            $response = $client->post('http://127.0.0.1:8080/pre_review/', [
+                'json' => [
+                    'manuscript_text' => $manuscriptText,
+                ],
+                'timeout' => 240,  // Set timeout to 30 seconds
+            ]);
+
+            // Check if the API request was successful
+            if ($response->getStatusCode() === 200) {
+                $responseBody = json_decode($response->getBody()->getContents(), true);
+
+                // Log the response from the Django service (for debugging)
+                logger()->info('AI Pre-review Response:', ['response' => $responseBody]);
+
+                // Store AI review data in the database
+                // Store AI review data in the database
+                AiReview::create([
+                    'manuscript_id' => $manuscript->id,
+                    'summary' => $responseBody['summary'] ?? null,
+                    // Convert the 'keywords' array to a JSON string
+                    'keywords' => isset($responseBody['keywords']) ? json_encode($responseBody['keywords']) : null,
+                    // Convert the 'language_quality' array to a JSON string
+                    'language_quality' => isset($responseBody['language_quality']) ? json_encode($responseBody['language_quality']) : null,
+                ]);
+
+            } else {
+                // Log an error if the AI service fails
+                logger()->error('AI Pre-review failed', [
+                    'response' => $response->getBody()->getContents(),
+                ]);
+            }
+
+            // Return success response with manuscript data and AI review
             return response()->json([
                 'message' => 'Manuscript submitted successfully!',
-                'data' => $manuscript,
+                'data' => $manuscript->load('aiReview'),
             ], 201);
+
         } catch (Exception $e) {
+            // Log the full exception details for debugging
+            logger()->error('Submission Error', [
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Return error response
             return response()->json([
                 'message' => 'An error occurred during submission.',
                 'error' => $e->getMessage(),
@@ -100,7 +157,7 @@ class ManuscriptController extends Controller
                 'authors' => explode(', ', $manuscript->authors),
                 'abstract' => $manuscript->abstract,
                 'keywords' => explode(', ', $manuscript->keywords),
-                'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+                'manuscript_url' => asset("storage/{$manuscript->manuscript_path}"),
                 'status' => $manuscript->status,
                 'created_at' => $manuscript->created_at->toDateTimeString(),
                 'updated_at' => $manuscript->updated_at->toDateTimeString(),
@@ -140,7 +197,7 @@ class ManuscriptController extends Controller
             }
 
             $path = $request->file('manuscript_file')->store('manuscripts', 'public');
-            $manuscript->update(['manuscript_path' => asset('storage/' . $path)]);
+            $manuscript->update(['manuscript_path' => asset("storage/{$path}")]);
         }
 
         return redirect()->route('manuscripts.index')->with('success', 'Manuscript updated successfully.');
@@ -156,17 +213,6 @@ class ManuscriptController extends Controller
         $manuscript->delete();
 
         return response()->json(['message' => 'Deleted successfully'], 200);
-    }
-
-    /**
-     * Submit a manuscript for review.
-     */
-    public function submitForReview($id)
-    {
-        $manuscript = Manuscript::findOrFail($id);
-        $manuscript->update(['status' => Manuscript::STATUS_UNDER_REVIEW]);
-
-        return redirect()->back()->with('success', 'Manuscript submitted for review.');
     }
 
     public function assignReviewer(Request $request, Manuscript $manuscript)
@@ -188,7 +234,7 @@ class ManuscriptController extends Controller
         }
 
         // Update manuscript status
-        $manuscript->update(['status' => Manuscript::STATUS_UNDER_REVIEW]);
+        $manuscript->update(['status' => 'Under Review']);
 
         return redirect()->back()->with('success', 'Reviewer(s) assigned successfully.');
     }
@@ -198,17 +244,17 @@ class ManuscriptController extends Controller
      */
     public function approve($id)
     {
-        return $this->changeStatus($id, Manuscript::STATUS_ACCEPTED, 'Manuscript accepted.');
+        return $this->changeStatus($id, Manuscript::STATUSES['ACCEPTED'], 'Manuscript accepted.');
     }
 
     public function reject($id)
     {
-        return $this->changeStatus($id, Manuscript::STATUS_REJECTED, 'Manuscript rejected.');
+        return $this->changeStatus($id, Manuscript::STATUSES['REJECTED'], 'Manuscript rejected.');
     }
 
     public function revisionRequired($id)
     {
-        return $this->changeStatus($id, Manuscript::STATUS_REVISION_REQUIRED, 'Manuscript requires revision.');
+        return $this->changeStatus($id, Manuscript::STATUSES['REVISION_REQUIRED'], 'Manuscript requires revision.');
     }
 
     /**
@@ -247,45 +293,28 @@ class ManuscriptController extends Controller
         return inertia('ManuscriptReview', ['review' => $review, 'compliance_score' => $compliance_score]);
     }
 
-    public function showAiReview($manuscriptId)
+    public function showAiPrereviewed()
     {
-        $manuscript = Manuscript::findOrFail($manuscriptId);
+        // // Fetch manuscripts along with related AI reviews (assuming a relationship exists)
+        // $manuscripts = Manuscript::with('aiReview')->get(); // 'aiReview' should be the relationship defined on the Manuscript model
 
-        // Hardcoded AI review data
-        $aiReview = [
-            'manuscriptTitle' => $manuscript->title,
-            'reviewDate' => now()->toISOString(),
-            'overallScore' => 85,
-            'plagiarismScore' => 5,
-            'sections' => [
-                [
-                    'title' => 'Language and Grammar',
-                    'description' => 'The manuscript has minor grammatical errors.',
-                    'suggestions' => [
-                        'Correct the grammatical errors in Section 2.',
-                        'Use consistent tense throughout the document.',
-                    ],
-                ],
-                [
-                    'title' => 'Plagiarism',
-                    'description' => 'Minimal overlap detected with other sources.',
-                    'suggestions' => [
-                        'Ensure proper citations for the flagged sections.',
-                    ],
-                ],
-            ],
-            // 'downloadUrl' => route('manuscripts.downloadReport', $manuscriptId),
-        ];
+        // return inertia('Manuscripts/AiReviewReport', [
+        //     'manuscripts' => $manuscripts,
+        // ]);
 
-        return Inertia::render('Manuscripts/AiReviewReport', $aiReview);
+        return Inertia::render('Manuscripts/ShowAIPrereviewed');
     }
 
     public function indexAIPrereviewed()
     {
-        // Fetch manuscripts that have been reviewed by AI
-        $manuscripts = Manuscript::where('status', 'AI Pre-reviewed')->get();
+        $userId = Auth::id();
 
-        // Returning data to Inertia (React)
+        // Fetch manuscripts with AI reviews for the authenticated user
+        $manuscripts = Manuscript::with('aiReview')
+            ->where('user_id', $userId)
+            ->get();
+
+        // Return the manuscripts with AI review data to the Inertia page
         return Inertia::render('Manuscripts/IndexAIPrereviewed', [
             'manuscripts' => $manuscripts,
         ]);

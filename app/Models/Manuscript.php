@@ -9,14 +9,21 @@ class Manuscript extends Model
 {
     use HasFactory;
 
-    const STATUS_SUBMITTED = 'Submitted';
-    const STATUS_AI_PRE_REVIEWED = 'AI Pre-reviewed';
-    const STATUS_UNDER_REVIEW = 'Under Review';
-    const STATUS_REVISION_REQUIRED = 'Revision Required';
-    const STATUS_ACCEPTED = 'Accepted';
-    const STATUS_REJECTED = 'Rejected';
-    const STATUS_PUBLISHED = 'Published';
+    /**
+     * Manuscript status constants
+     */
+    public const STATUSES = [
+        'SUBMITTED' => 'Submitted',
+        'UNDER_REVIEW' => 'Under Review',
+        'REVISION_REQUIRED' => 'Revision Required',
+        'ACCEPTED' => 'Accepted',
+        'REJECTED' => 'Rejected',
+        'PUBLISHED' => 'Published'
+    ];
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
         'title',
         'user_id',
@@ -25,12 +32,30 @@ class Manuscript extends Model
         'abstract',
         'keywords',
         'manuscript_path',
+        'editor_id',
+        'decision_date',
+        'decision_comments'
     ];
 
-    // Define the relationship to User
-    public function user()
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'keywords' => 'array',
+        'authors' => 'array'
+    ];
+
+    /**
+     * Relationships
+     */
+    public function author()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function editor()
+    {
+        return $this->belongsTo(User::class, 'editor_id');
     }
 
     public function reviewerAssignments()
@@ -38,8 +63,42 @@ class Manuscript extends Model
         return $this->hasMany(ReviewerAssignment::class);
     }
 
-    public function reviewers()
+    public function reviews()
     {
-        return $this->belongsToMany(User::class, 'reviewer_assignments');
+        return $this->hasManyThrough(Review::class, ReviewerAssignment::class);
+    }
+
+    public function decisions()
+    {
+        return $this->hasMany(ManuscriptDecision::class);
+    }
+
+    /**
+     * Status related methods
+     */
+    public function updateStatus(string $status): bool
+    {
+        if (in_array($status, self::STATUSES)) {
+            return $this->update(['status' => $status]);
+        }
+        return false;
+    }
+
+    public function isUnderReview(): bool
+    {
+        return $this->status === self::STATUSES['UNDER_REVIEW'];
+    }
+
+    /**
+     * Decision related methods
+     */
+    public function latestDecision()
+    {
+        return $this->decisions()->latest('decided_at')->first();
+    }
+
+    public function aiReview()
+    {
+        return $this->hasOne(AiReview::class);
     }
 }

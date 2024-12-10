@@ -9,29 +9,48 @@ class Article extends Model
 {
     use HasFactory;
 
-    // Define the fillable fields
+    const STATUS_PUBLISHED = 'Published';
+    const STATUS_UNPUBLISHED = 'Unpublished';
+    const STATUS_ARCHIVED = 'Archived';
+
     protected $fillable = [
         'title',
-        'authors',
         'user_id',
+        'authors',
+        'status',
         'abstract',
         'keywords',
-        'status',
-        'manuscript_path'
+        'doi',
+        'publication_date',
+        'journal_name',
+        'volume',
+        'issue',
+        'page_numbers',
+        'pdf_file'
     ];
 
-    public function author()
+    protected $casts = [
+        'publication_date' => 'datetime',
+        'keywords' => 'array'
+    ];
+
+    public function user()
     {
-        return $this->belongsTo(User::class, 'author_id'); // Each article belongs to one user (the author)
+        return $this->belongsTo(User::class);
     }
 
     public function reviews()
     {
-        return $this->hasMany(Review::class); // Each article can have many reviews
+        return $this->hasMany(Review::class);
     }
 
-    // public function comments()
-    // {
-    //     return $this->hasMany(Comment::class);
-    // }
+    public function isPublished()
+    {
+        return $this->status === self::STATUS_PUBLISHED;
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', self::STATUS_PUBLISHED);
+    }
 }

@@ -2,127 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ArticleRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of published articles.
-     */
+    use AuthorizesRequests, ValidatesRequests;
+
     public function index()
     {
-        $articles = Article::latest()->paginate(10); // Paginated list of articles
+        $articles = Article::with('author')
+            ->latest()
+            ->paginate(10);
+
         return view('articles.index', compact('articles'));
     }
 
-    /**
-     * Show the form for creating a new article (Admin only).
-     */
     public function create()
     {
+        $this->authorize('create', Article::class);
         return view('articles.create');
     }
 
-    /**
-     * Store a newly created article in the database (Admin only).
-     */
-    public function store(Request $request)
+    public function store(ArticleRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'abstract' => 'required|string',
-            'content' => 'required',
-            'file' => 'nullable|file|mimes:pdf,docx',
-        ]);
+        $validated = $request->validated();
 
-        $filePath = $request->file('file') ? $request->file('file')->store('articles', 'public') : null;
-
-        $article = new Article();
-        $article->title = $validated['title'];
-        $article->abstract = $validated['abstract'];
-        $article->content = $validated['content'];
-        $article->file = $filePath;
+        $article = new Article($validated);
+        $article->author_id = Auth::id();
         $article->published_at = now();
-        $article->author_id = Auth::id(); // Assuming the logged-in  is the author
+
+        if ($request->hasFile('file')) {
+            $article->file = $this->handleFileUpload($request->file('file'));
+        }
+
         $article->save();
 
-        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article created successfully.');
     }
 
-    /**
-     * Display the specified article.
-     */
-    public function show($id)
+    public function show(Article $article)
     {
-        $article = Article::findOrFail($id);
         return view('articles.show', compact('article'));
     }
 
-    /**
-     * Show the form for editing the specified article (Admin only).
-     */
-    public function edit($id)
+    public function edit(Article $article)
     {
-        $article = Article::findOrFail($id);
+        $this->authorize('update', $article);
         return view('articles.edit', compact('article'));
     }
 
-    /**
-     * Update the specified article in the database (Admin only).
-     */
-    public function update(Request $request, $id)
+    public function update(ArticleRequest $request, Article $article)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'abstract' => 'required|string',
-            'content' => 'required',
-            'file' => 'nullable|file|mimes:pdf,docx',
-        ]);
+        $this->authorize('update', $article);
 
-        $article = Article::findOrFail($id);
+        $validated = $request->validated();
 
         if ($request->hasFile('file')) {
-            $filePath = $request->file('file')->store('articles', 'public');
-            $article->file = $filePath; // Update file if a new one is provided
+            $this->deleteExistingFile($article->file);
+            $validated['file'] = $this->handleFileUpload($request->file('file'));
         }
 
-        $article->update([
-            'title' => $validated['title'],
-            'abstract' => $validated['abstract'],
-            'content' => $validated['content'],
-        ]);
+        $article->update($validated);
 
-        return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article updated successfully.');
     }
 
-    /**
-     * Remove the specified article from the database (Admin only).
-     */
-    public function destroy($id)
+    public function destroy(Article $article)
     {
-        $article = Article::findOrFail($id);
+        $this->authorize('delete', $article);
+
+        $this->deleteExistingFile($article->file);
         $article->delete();
 
-        return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
+        return redirect()
+            ->route('articles.index')
+            ->with('success', 'Article deleted successfully.');
     }
 
-
-    /**
-     * Download the article file.
-     */
-    public function download($id)
+    public function download(Article $article)
     {
-        $article = Article::findOrFail($id);
-
-        // Ensure the file exists
         if (!$article->file || !Storage::disk('public')->exists($article->file)) {
             return redirect()->back()->with('error', 'File not found.');
         }
 
-        // Download the file
-        return response()->download(storage_path('app/public/' . $article->file));
+        return Storage::download('public/' . $article->file);
+    }
+
+    private function handleFileUpload($file)
+    {
+        return $file->store('articles', 'public');
+    }
+
+    private function deleteExistingFile($filePath)
+    {
+        if ($filePath && Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
     }
 }

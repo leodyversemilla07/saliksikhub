@@ -25,7 +25,7 @@ Route::group([
 ], function () {
     Route::get('/', [AdminController::class, 'index'])
         ->name('dashboard');
-    
+
     // User management routes
     Route::prefix('users')->group(function () {
         Route::get('/manage', [AdminController::class, 'manageUsers'])
@@ -61,11 +61,17 @@ Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () 
 // Reviewer Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function () {
     Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.dashboard');
-    Route::get('/reviewer/review-manuscripts', [ReviewerController::class, 'reviewManuscripts'])->name('reviewer.reviewManuscripts');
-    Route::post('/reviewer/articles/{article}/submit-review', [ReviewerController::class, 'submitReview'])->name('reviewer.submitReview');
+    // Route::get('/reviewer/review-manuscripts', [ReviewerController::class, 'reviewManuscripts'])->name('reviewer.reviewManuscripts');
+    Route::post('/reviewer/submit-review/{id}', [ReviewerController::class, 'submitReview'])->name('reviewer.submitReview');
 
     Route::get('reviewer/manuscripts/{id}/show', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');
-    Route::get('reviewer/manuscripts/review', [ReviewerController::class, 'reviewForm'])->name('reviewer.manuscripts.review');
+    Route::get('reviewer/manuscripts/review/{id}', [ReviewerController::class, 'reviewForm'])->name('reviewer.manuscripts.review');
+
+    // Route to display the review form
+    Route::get('/reviews/{reviewId}/submit', [ReviewerController::class, 'showReviewForm'])->name('reviews.show');
+
+    // Route to handle the review submission
+    Route::post('/reviews/{reviewId}/submit', [ReviewerController::class, 'submitReview'])->name('reviews.submit');
 });
 
 // Author Routes
@@ -81,10 +87,13 @@ Route::group(['middleware' => ['auth', 'verified', 'role:author']], function () 
     Route::get('/author/manuscripts/{id}/edit', [ManuscriptController::class, 'edit'])->name('manuscripts.edit');
     Route::put('/author/manuscripts/{id}', [ManuscriptController::class, 'update'])->name('manuscripts.update');
 
-    Route::get('/manuscripts/{id}/ai-review', [ManuscriptController::class, 'showAiReview'])
-        ->name('manuscripts.aiReview');
-    Route::get('/manuscripts/ai-review', [ManuscriptController::class, 'indexAIPrereviewed'])
+    Route::get('/manuscripts/{id}/ai-review', [ManuscriptController::class, 'showAiPrereviewed'])
+        ->name('manuscripts.showAiPrereviewed');
+
+    Route::get('/manuscripts/ai-prereviewed', [ManuscriptController::class, 'indexAIPrereviewed'])
         ->name('manuscripts.indexAIPrereviewed');
+
+    // Route::get('/manuscripts//ai-review', [ManuscriptController::class, 'getAiReviews']);
 
     Route::get('/author/notifications', [ManuscriptController::class, 'notification'])
         ->name('author.notifications');

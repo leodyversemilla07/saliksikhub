@@ -192,13 +192,14 @@ export default function AuthenticatedLayout({
                         label="Dashboard"
                         roles={['reviewer']}
                     />
-                    <SidebarLink
+
+                    {/* <SidebarLink
                         href={route('reviewer.reviewManuscripts')}
                         active={route().current('reviewer.reviewManuscripts')}
                         icon={FileText}
                         label="Review"
                         roles={['reviewer']}
-                    />
+                    />  */}
 
                     {/* Admin Links */}
                     <SidebarLink

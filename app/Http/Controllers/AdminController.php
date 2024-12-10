@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends Controller
 {
@@ -22,13 +21,15 @@ class AdminController extends Controller
 
     public function index()
     {
-        return Inertia::render("Admin/AdminDashboard");
+        $stats = $this->getDashboardStats();
+        return Inertia::render("Admin/AdminDashboard", compact('stats'));
     }
 
     public function manageUsers()
     {
         $users = $this->getUsersExceptCurrent();
-        return Inertia::render('Admin/UserManagement', compact('users'));
+        $roles = $this->getAllRoles();
+        return Inertia::render('Admin/UserManagement', compact('users', 'roles'));
     }
 
     public function store(UserStoreRequest $request)
@@ -37,7 +38,7 @@ class AdminController extends Controller
             $user = $this->createUser($request->validated());
             return $this->successResponse('User created successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse('Failed to create user');
+            return $this->errorResponse('Failed to create user: ' . $e->getMessage());
         }
     }
 
@@ -47,23 +48,58 @@ class AdminController extends Controller
             $this->updateUser($user, $request->validated());
             return $this->successResponse('User updated successfully');
         } catch (\Exception $error) {
-            return $this->errorResponse('Failed to update user');
+            return $this->errorResponse('Failed to update user: ' . $error->getMessage());
         }
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('manageUsers')
-            ->with('success', 'User deleted successfully.');
+        try {
+            if ($user->id === Auth::id()) {
+                return $this->errorResponse('You cannot delete your own account');
+            }
+            $user->delete();
+            return $this->successResponse('User deleted successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to delete user');
+        }
+    }
+
+    public function show(User $user)
+    {
+        try {
+            $userData = $this->transformUser($user);
+            return Inertia::render('Admin/UserDetail', compact('userData'));
+        } catch (ModelNotFoundException $e) {
+            return $this->errorResponse('User not found');
+        }
+    }
+
+    private function getDashboardStats()
+    {
+        return [
+            'total_users' => $this->user->count(),
+            'active_users' => $this->user->where('status', 'active')->count(),
+            'admin_users' => $this->user->role('admin')->count(),
+            'recent_users' => $this->user->latest()->take(5)->get()
+                ->map(fn($user) => $this->transformUser($user)),
+        ];
     }
 
     private function getUsersExceptCurrent()
     {
         return $this->user
             ->where('id', '!=', Auth::id())
+            ->with('roles')
+            ->latest()
             ->get()
             ->map(fn($user) => $this->transformUser($user));
+    }
+
+    private function getAllRoles()
+    {
+        return \Spatie\Permission\Models\Role::all()
+            ->pluck('name');
     }
 
     private function transformUser($user)
@@ -74,8 +110,9 @@ class AdminController extends Controller
             'lastname' => $user->lastname,
             'email' => $user->email,
             'roles' => $user->getRoleNames()->toArray(),
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at,
+            'status' => $user->status ?? 'active',
+            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -86,6 +123,7 @@ class AdminController extends Controller
             'lastname' => $data['lastname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'status' => $data['status'] ?? 'active',
         ]);
 
         $user->assignRole($data['roles']);
@@ -94,13 +132,23 @@ class AdminController extends Controller
 
     private function updateUser(User $user, array $data)
     {
-        $user->update([
+        $updateData = [
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
             'email' => $data['email'],
-        ]);
+        ];
 
+        if (isset($data['password'])) {
+            $updateData['password'] = Hash::make($data['password']);
+        }
+
+        if (isset($data['status'])) {
+            $updateData['status'] = $data['status'];
+        }
+
+        $user->update($updateData);
         $user->syncRoles($data['roles']);
+
         return $user;
     }
 

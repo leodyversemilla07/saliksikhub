@@ -15,10 +15,16 @@ return new class extends Migration {
             $table->string('title');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('authors');
-            $table->string('status')->default('Published');
+            $table->enum('status', ['Published', 'Unpublished', 'Archived'])->default('Published');
             $table->text('abstract');
             $table->string('keywords')->nullable();
-            $table->string('manuscript_file')->nullable();
+            $table->string('doi')->nullable(); // Digital Object Identifier
+            $table->string('publication_date');
+            $table->string('journal_name');
+            $table->string('volume')->nullable();
+            $table->string('issue')->nullable();
+            $table->string('page_numbers')->nullable();
+            $table->string('pdf_file')->nullable();
             $table->timestamps();
         });
     }

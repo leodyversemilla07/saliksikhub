@@ -111,6 +111,43 @@ export default function ReviewerDashboard() {
                         </Card>
                     </div>
 
+                    {/* Notifications */}
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle>Notifications</CardTitle>
+                                <button className="text-sm text-blue-600 hover:text-blue-800">
+                                    Mark all as read
+                                </button>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="flex items-center p-2 bg-blue-50 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <AlertCircle className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium">New review request for MS-2024-135</p>
+                                        <p className="text-sm text-gray-600">Please accept or decline within 48 hours</p>
+                                    </div>
+                                    <span className="text-xs text-gray-500">2h ago</span>
+                                </div>
+                                <div className="flex items-center p-2 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                                        <Clock className="w-4 h-4 text-yellow-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium">Deadline approaching for MS-2024-123</p>
+                                        <p className="text-sm text-gray-600">Review due in 4 days</p>
+                                    </div>
+                                    <span className="text-xs text-gray-500">1d ago</span>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+
                     {/* Active Reviews Section */}
                     <Card className="mb-8">
                         <CardHeader>

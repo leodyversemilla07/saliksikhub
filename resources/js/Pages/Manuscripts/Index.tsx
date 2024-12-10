@@ -127,7 +127,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     const destroy = async (id: number) => {
         try {
-            await axios.delete(`/manuscripts/${id}`, {
+            await axios.delete(`/author/manuscripts/${id}`, {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },

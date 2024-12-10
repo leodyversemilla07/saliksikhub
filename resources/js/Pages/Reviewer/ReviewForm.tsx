@@ -1,217 +1,127 @@
-"use client";
+import { useForm } from '@inertiajs/react';
+import React, { ChangeEvent } from 'react';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/Components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
-import { Textarea } from "@/Components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
+// Define types for the review props
+interface Review {
+    id: number;
+    manuscript: {
+        title: string;
+    };
+    rating?: number;
+    comments?: string;
+    suggested_edits?: string;
+    confidential_comments?: string;
+    status: 'pending' | 'approved' | 'rejected';
+}
 
-// Zod schema for validation
-const reviewFormSchema = z.object({
-    manuscriptId: z.string().min(1, "Manuscript ID is required"),
-    overallRating: z.enum(["1", "2", "3", "4", "5"], {
-        required_error: "You need to select an overall rating.",
-    }),
-    novelty: z.enum(["1", "2", "3", "4", "5"], {
-        required_error: "You need to rate the novelty.",
-    }),
-    technicalQuality: z.enum(["1", "2", "3", "4", "5"], {
-        required_error: "You need to rate the technical quality.",
-    }),
-    clarity: z.enum(["1", "2", "3", "4", "5"], {
-        required_error: "You need to rate the clarity.",
-    }),
-    significance: z.enum(["1", "2", "3", "4", "5"], {
-        required_error: "You need to rate the significance.",
-    }),
-    recommendation: z.enum(["accept", "minor_revision", "major_revision", "reject"], {
-        required_error: "You need to provide a recommendation.",
-    }),
-    commentsToAuthor: z.string().min(1, "Comments to the author are required"),
-    commentsToEditor: z.string().optional(),
-});
+// Define the props passed to the component
+interface SubmitReviewProps {
+    review: Review;
+}
 
-// Reusable RatingRadioGroup component
-const RatingRadioGroup = ({ field, label, description }: { field: any; label: string; description: string }) => (
-    <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-            <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex justify-between space-x-2"
-            >
-                {[1, 2, 3, 4, 5].map((value) => (
-                    <FormItem key={value} className="relative">
-                        <FormControl>
-                            <RadioGroupItem value={value.toString()} id={`${label.toLowerCase()}-${value}`} className="sr-only" />
-                        </FormControl>
-                        <label
-                            htmlFor={`${label.toLowerCase()}-${value}`}
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 text-sm font-medium hover:border-primary hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${field.value === value.toString() ? "bg-primary text-white" : "bg-white text-gray-700"
-                                }`}
-                        >
-                            {value}
-                        </label>
-                    </FormItem>
-                ))}
-            </RadioGroup>
-        </FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-    </FormItem>
-);
-
-export default function ReviewSubmissionForm() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const form = useForm<z.infer<typeof reviewFormSchema>>({
-        resolver: zodResolver(reviewFormSchema),
-        defaultValues: {
-            manuscriptId: "",
-            overallRating: undefined,
-            novelty: undefined,
-            technicalQuality: undefined,
-            clarity: undefined,
-            significance: undefined,
-            recommendation: undefined,
-            commentsToAuthor: "",
-            commentsToEditor: "",
-        },
+const SubmitReview: React.FC<SubmitReviewProps> = ({ review }) => {
+    // Initialize the form data using Inertia's useForm hook
+    const { data, setData, post, processing, errors } = useForm({
+        rating: review.rating || '',
+        comments: review.comments || '',
+        suggested_edits: review.suggested_edits || '',
+        confidential_comments: review.confidential_comments || '',
+        status: review.status || 'pending',
     });
 
-    function onSubmit(data: z.infer<typeof reviewFormSchema>) {
-        setIsSubmitting(true);
-        console.log(data); // Send data to backend
-        setTimeout(() => {
-            setIsSubmitting(false);
-            toast({
-                title: "Review submitted",
-                description: "Your review has been successfully submitted.",
-            });
-            form.reset();
-        }, 2000);
-    }
+    // Handle input changes for the form
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    // Handle form submission
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('reviews.submit', review.id)); // Post the data to the backend
+    };
 
     return (
-        <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader>
-                <CardTitle>Submit Manuscript Review</CardTitle>
-                <CardDescription>Please provide your evaluation and comments for the manuscript you have reviewed.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="manuscriptId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Manuscript ID</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter the manuscript ID" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="overallRating"
-                            render={({ field }) => (
-                                <RatingRadioGroup
-                                    field={field}
-                                    label="Overall Rating"
-                                    description="Rate the manuscript from 1 (poor) to 5 (excellent)."
-                                />
-                            )}
-                        />
-                        {["novelty", "technicalQuality", "clarity", "significance"].map((criterion) => (
-                            <FormField
-                                key={criterion}
-                                control={form.control}
-                                name={criterion as "novelty" | "technicalQuality" | "clarity" | "significance"}
-                                render={({ field }) => (
-                                    <RatingRadioGroup
-                                        field={field}
-                                        label={criterion
-                                            .charAt(0)
-                                            .toUpperCase() + criterion.slice(1).replace(/([A-Z])/g, " $1")}
-                                        description={`Rate the ${criterion.toLowerCase()} from 1 (poor) to 5 (excellent).`}
-                                    />
-                                )}
-                            />
-                        ))}
-                        <FormField
-                            control={form.control}
-                            name="recommendation"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Recommendation</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select your recommendation" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="accept">Accept</SelectItem>
-                                            <SelectItem value="minor_revision">Minor Revision</SelectItem>
-                                            <SelectItem value="major_revision">Major Revision</SelectItem>
-                                            <SelectItem value="reject">Reject</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="commentsToAuthor"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Comments to Author</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Provide your detailed comments and feedback for the author"
-                                            className="min-h-[100px]"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="commentsToEditor"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Comments to Editor (Optional)</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Provide any confidential comments for the editor"
-                                            className="min-h-[100px]"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit Review"}
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
+        <div className="container">
+            <h1>Submit Your Review for Manuscript: {review.manuscript.title}</h1>
+
+            <form onSubmit={handleSubmit} className="review-form">
+                <div className="form-group">
+                    <label htmlFor="rating">Rating (1 to 5):</label>
+                    <input
+                        type="number"
+                        id="rating"
+                        name="rating"
+                        min="1"
+                        max="5"
+                        value={data.rating}
+                        onChange={handleChange}
+                        className="form-control"
+                    />
+                    {errors.rating && <div className="text-danger">{errors.rating}</div>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="comments">Comments:</label>
+                    <textarea
+                        id="comments"
+                        name="comments"
+                        value={data.comments}
+                        onChange={handleChange}
+                        className="form-control"
+                    />
+                    {errors.comments && <div className="text-danger">{errors.comments}</div>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="suggested_edits">Suggested Edits:</label>
+                    <textarea
+                        id="suggested_edits"
+                        name="suggested_edits"
+                        value={data.suggested_edits}
+                        onChange={handleChange}
+                        className="form-control"
+                    />
+                    {errors.suggested_edits && <div className="text-danger">{errors.suggested_edits}</div>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="confidential_comments">Confidential Comments (For Editors Only):</label>
+                    <textarea
+                        id="confidential_comments"
+                        name="confidential_comments"
+                        value={data.confidential_comments}
+                        onChange={handleChange}
+                        className="form-control"
+                    />
+                    {errors.confidential_comments && <div className="text-danger">{errors.confidential_comments}</div>}
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="status">Status:</label>
+                    <select
+                        id="status"
+                        name="status"
+                        value={data.status}
+                        onChange={handleChange}
+                        className="form-control"
+                    >
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    {errors.status && <div className="text-danger">{errors.status}</div>}
+                </div>
+
+                <button type="submit" className="btn btn-primary" disabled={processing}>
+                    Submit Review
+                </button>
+            </form>
+        </div>
     );
-}
+};
+
+export default SubmitReview;

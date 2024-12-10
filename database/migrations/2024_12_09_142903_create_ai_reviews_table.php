@@ -10,11 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('ai_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('article_id')->constrained()->onDelete('cascade'); // References articles.id
-            $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade'); // References users.id
-            $table->text('feedback');
+            $table->foreignId('manuscript_id')->constrained()->onDelete('cascade');
+            $table->text('summary')->nullable();
+            $table->json('keywords')->nullable();
+            $table->json('language_quality')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('ai_reviews');
     }
 };

@@ -26,14 +26,6 @@ interface ManuscriptTableProps {
     manuscripts: Manuscript[]
 }
 
-// const manuscripts: Manuscript[] = [
-//     { id: "MS001", title: "Advances in Quantum Computing", authors: "John Doe, Jane Smith", submissionDate: "2023-05-01", category: "Computer Science", status: "Pending" },
-//     { id: "MS002", title: "Climate Change Effects on Marine Ecosystems", authors: "Emily Johnson", submissionDate: "2023-05-03", category: "Environmental Science", status: "In Progress" },
-//     { id: "MS003", title: "Novel Approaches to Cancer Immunotherapy", authors: "Michael Brown, Sarah Davis", submissionDate: "2023-05-05", category: "Medicine", status: "Pending" },
-//     { id: "MS004", title: "Artificial Intelligence in Education", authors: "David Wilson", submissionDate: "2023-05-07", category: "Education", status: "Completed" },
-//     { id: "MS005", title: "Sustainable Urban Planning Strategies", authors: "Lisa Taylor, Robert Martinez", submissionDate: "2023-05-09", category: "Urban Studies", status: "In Progress" },
-// ]
-
 export default function ManuscriptReviewTable({ manuscripts }: ManuscriptTableProps) {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter] = useState<Manuscript['status'] | 'All'>('All')

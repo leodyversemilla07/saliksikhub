@@ -10,15 +10,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('reviewer_assignments', function (Blueprint $table) {
+        Schema::create('assignments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('manuscript_id');
             $table->unsignedBigInteger('reviewer_id');
-            $table->timestamps();
 
-            // Foreign keys
+            // Foreign key constraints
             $table->foreign('manuscript_id')->references('id')->on('manuscripts')->onDelete('cascade');
             $table->foreign('reviewer_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->dateTime('assigned_date');
+            $table->enum('response_status', ['Accepted', 'Declined', 'Pending']);
+            $table->timestamps();
         });
     }
 
@@ -27,6 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviewer_assignments');
+        Schema::dropIfExists('assignments');
     }
 };

@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Manuscript;
+use App\Models\Review;
+use App\Models\ReviewerAssignment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use App\Models\ManuscriptReview;
 
 class ReviewerController extends Controller
 {
@@ -15,10 +20,19 @@ class ReviewerController extends Controller
         return Inertia::render("Reviewer/ReviewerDashboard");
     }
 
-    public function reviewForm()
+    public function reviewForm(?int $id = null)
     {
-        // Display reviewer dashboard
-        return Inertia::render("Reviewer/ReviewForm");
+        if (!$id) {
+            abort(404);
+        }
+        $manuscript = Manuscript::findOrFail($id);
+
+        return Inertia::render("Reviewer/ReviewForm", $manuscript = [
+            'id' => $manuscript->id,
+            'title' => $manuscript->title,
+            'authors' => explode(', ', $manuscript->authors),
+            'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+        ]);
     }
 
     public function reviewManuscripts()
@@ -28,22 +42,30 @@ class ReviewerController extends Controller
         return Inertia::render('Reviewer/ReviewManuscriptsTable', compact('manuscripts'));
     }
 
-    public function submitReview(Request $request, Manuscript $manuscript)
+    public function showReviewForm($reviewId)
+{
+    $review = Review::with('manuscript')->findOrFail($reviewId);
+    return Inertia::render('Reviews/SubmitReview', [
+        'review' => $review,
+    ]);
+}
+
+    public function submitReview(Request $request, $reviewId)
     {
-        // Validate and submit review feedback
-        $request->validate([
-            'feedback' => 'required|string',
-            // Add other validations as necessary
+        $validated = $request->validate([
+            'rating' => 'nullable|integer|min:1|max:5',
+            'comments' => 'nullable|string',
+            'suggested_edits' => 'nullable|string',
+            'confidential_comments' => 'nullable|string',
+            'status' => 'required|in:approved,rejected',
         ]);
 
-        // Assuming you have a feedback column or related model to store reviews.
-        $manuscript->feedback()->create([
-            'reviewer_id' => Auth::id(), // Use Auth facade here
-            'feedback' => $request->feedback,
-            // Add other fields as necessary
-        ]);
+        $review = Review::findOrFail($reviewId);
+        $review->update($validated);
 
-        return redirect()->route('reviewer.reviewArticles')->with('success', 'Review submitted successfully.');
+        // Optional: Send notification to editors/authors
+
+        return back()->with('success', 'Your review has been submitted successfully.');
     }
 
     /**

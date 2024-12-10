@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'firstname',
         'lastname',
+        'status',
         'email',
         'password',
     ];
@@ -68,5 +69,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function reviewerAssignments()
     {
         return $this->hasMany(ReviewerAssignment::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }
