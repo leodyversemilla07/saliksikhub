@@ -12,16 +12,8 @@ class AuthorController extends Controller
 {
     public function index()
     {
-        $manuscripts = Manuscript::all(); // Fetch data from your database
+        $manuscripts = Manuscript::all();
 
         return Inertia::render('Author/AuthorDashboard', compact('manuscripts'));
-    }
-
-    public function myArticles()
-    {
-        // List author's submitted articles
-        $articles = Article::where('author_id', Auth::id())->get();
-
-        return view('author.my_articles', compact('articles'));
     }
 }

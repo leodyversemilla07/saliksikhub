@@ -91,7 +91,7 @@ class ManuscriptController extends Controller
 
             // Send the extracted manuscript text to the Django AI-assisted pre-review service
             $client = new Client();
-            $response = $client->post('http://127.0.0.1:8080/pre_review/', [
+            $response = $client->post('http://127.0.0.1:3000/pre_review/', [
                 'json' => [
                     'manuscript_text' => $manuscriptText,
                 ],
@@ -281,30 +281,6 @@ class ManuscriptController extends Controller
         return redirect()->back()->with('success', 'Manuscript published successfully.');
     }
 
-    public function sendForReview(Request $request)
-    {
-        $request->validate(['manuscript' => 'required|file|mimes:pdf,docx',]);
-        $manuscript = $request->file('manuscript');
-        $client = new Client();
-        $response = $client->post('http://127.0.0.1:8000/api/manuscript-review/', ['multipart' => [['name' => 'manuscript', 'contents' => fopen($manuscript->getPathname(), 'r'), 'filename' => $manuscript->getClientOriginalName(),],], 'headers' => ['X-CSRF-TOKEN' => csrf_token(),],]);
-        $data = json_decode($response->getBody()->getContents(), true);
-        $review = $data['review'];
-        $compliance_score = $data['compliance_score'];
-        return inertia('ManuscriptReview', ['review' => $review, 'compliance_score' => $compliance_score]);
-    }
-
-    public function showAiPrereviewed()
-    {
-        // // Fetch manuscripts along with related AI reviews (assuming a relationship exists)
-        // $manuscripts = Manuscript::with('aiReview')->get(); // 'aiReview' should be the relationship defined on the Manuscript model
-
-        // return inertia('Manuscripts/AiReviewReport', [
-        //     'manuscripts' => $manuscripts,
-        // ]);
-
-        return Inertia::render('Manuscripts/ShowAIPrereviewed');
-    }
-
     public function indexAIPrereviewed()
     {
         $userId = Auth::id();
@@ -314,7 +290,25 @@ class ManuscriptController extends Controller
             ->where('user_id', $userId)
             ->get();
 
-        // Return the manuscripts with AI review data to the Inertia page
+        // Transform the data to match the expected structure
+        $manuscripts = $manuscripts->map(function ($manuscript) {
+            return [
+                'id' => $manuscript->id,
+                'title' => $manuscript->title,
+                'user_id' => $manuscript->user_id,
+                'created_at' => $manuscript->created_at->toDateTimeString(),
+                'updated_at' => $manuscript->updated_at->toDateTimeString(),
+                'status' => $manuscript->status,
+                'authors' => $manuscript->authors,
+                'aiReview' => $manuscript->aiReview ? [
+                    'summary' => $manuscript->aiReview->summary,
+                    'keywords' => $manuscript->aiReview->keywords ? explode(',', $manuscript->aiReview->keywords) : [],
+                    'language_quality' => json_decode($manuscript->aiReview->language_quality, true),
+                    'created_at' => $manuscript->aiReview->created_at->toDateTimeString(),
+                ] : null,
+            ];
+        });
+
         return Inertia::render('Manuscripts/IndexAIPrereviewed', [
             'manuscripts' => $manuscripts,
         ]);

@@ -10,6 +10,6 @@ class AiReview extends Model
 
     public function manuscript()
     {
-        return $this->belongsTo(Manuscript::class);
+        return $this->belongsTo(Manuscript::class, 'manuscript_id', 'id');
     }
 }

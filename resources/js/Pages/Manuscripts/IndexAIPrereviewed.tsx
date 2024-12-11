@@ -1,40 +1,43 @@
-import React from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import React from 'react'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/Components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
+import { Badge } from "@/Components/ui/badge"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/Components/ui/accordion"
+import { ScrollArea } from "@/Components/ui/scroll-area"
 
-// Define the structure of AI review data
 interface LanguageQuality {
-    word_count: number;
-    unique_words: number;
-    sentence_count: number;
-    named_entities: number;
-    grammar_issues: number;
-    readability_score: number;
+    word_count: number
+    unique_words: number
+    sentence_count: number
+    named_entities: number
+    grammar_issues: number
+    readability_score: number
 }
 
 interface AiReview {
-    summary: string;
-    keywords: string[];
-    language_quality: LanguageQuality;
+    summary: string
+    keywords: string[]
+    language_quality: LanguageQuality
+    created_at: string
 }
 
 interface Manuscript {
-    id: number;
-    title: string;
-    user_id: number;
-    created_at: string;
-    updated_at: string;
-    status: 'Submitted' | 'Under Review' | 'Revision Required' | 'Accepted' | 'Rejected';
-    authors: string | string[] | null;
-    aiReview: AiReview; // AI review should be part of the manuscript
+    id: number
+    title: string
+    user_id: number
+    created_at: string
+    updated_at: string
+    status: 'Submitted' | 'Under Review' | 'Revision Required' | 'Accepted' | 'Rejected'
+    authors: string | string[] | null
+    aiReview: AiReview | null
 }
 
 interface ManuscriptsDashboardProps {
-    manuscripts: Manuscript[]; // Array of manuscripts to be displayed
+    manuscripts: Manuscript[]
 }
 
 const ManuscriptsDashboard: React.FC<ManuscriptsDashboardProps> = ({ manuscripts }) => {
-    console.log(manuscripts); // Debugging: Check the data being passed
-
     return (
         <AuthenticatedLayout
             header={
@@ -44,70 +47,81 @@ const ManuscriptsDashboard: React.FC<ManuscriptsDashboardProps> = ({ manuscripts
             }
         >
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">AI Pre-review Report</h1>
-
-                {/* Manuscripts Table */}
-                <div className="bg-white p-6 shadow rounded mb-6">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">My Manuscripts</h2>
-                    <table className="min-w-full table-auto border-collapse text-left">
-                        <thead>
-                            <tr className="bg-gray-100 border-b">
-                                <th className="px-4 py-2 font-semibold text-gray-700">Title</th>
-                                <th className="px-4 py-2 font-semibold text-gray-700">Review Date</th>
-                                <th className="px-4 py-2 font-semibold text-gray-700">AI Review Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {manuscripts.map((manuscript) => {
-                                const aiReview = manuscript.aiReview;
-
-                                if (!aiReview) {
-                                    return (
-                                        <tr key={manuscript.id} className="border-b hover:bg-gray-50 transition duration-200">
-                                            <td className="px-4 py-2">{manuscript.title}</td>
-                                            <td className="px-4 py-2">{new Date(manuscript.created_at).toLocaleDateString()}</td>
-                                            <td className="px-4 py-2 text-red-600">No AI Review Available</td>
-                                        </tr>
-                                    );
-                                }
-
-                                // Parse the stringified JSON fields
-                                const keywords = aiReview.keywords;
-                                const languageQuality = aiReview.language_quality;
-
-                                return (
-                                    <tr key={manuscript.id} className="border-b hover:bg-gray-50 transition duration-200">
-                                        <td className="px-4 py-2">{manuscript.title}</td>
-                                        <td className="px-4 py-2">{new Date(manuscript.created_at).toLocaleDateString()}</td>
-                                        <td className="px-4 py-2 text-green-600">
-                                            AI Review Available
-                                            <div>
-                                                <strong>Summary:</strong> {aiReview.summary}
-                                            </div>
-                                            <div>
-                                                <strong>Keywords:</strong> {keywords.join(', ')}
-                                            </div>
-                                            <div>
-                                                <strong>Language Quality:</strong> 
-                                                <ul>
-                                                    <li>Word Count: {languageQuality.word_count}</li>
-                                                    <li>Unique Words: {languageQuality.unique_words}</li>
-                                                    <li>Sentence Count: {languageQuality.sentence_count}</li>
-                                                    <li>Named Entities: {languageQuality.named_entities}</li>
-                                                    <li>Grammar Issues: {languageQuality.grammar_issues}</li>
-                                                    <li>Readability Score: {languageQuality.readability_score}</li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>AI Pre-review Report</CardTitle>
+                        <CardDescription>Overview of your manuscripts and their AI reviews</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ScrollArea className="h-[600px]">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead>Review Date</TableHead>
+                                        <TableHead>AI Review Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {manuscripts.map(manuscript => (
+                                        <TableRow key={manuscript.id}>
+                                            <TableCell className="font-medium">{manuscript.title}</TableCell>
+                                            <TableCell>
+                                                {manuscript.aiReview?.created_at
+                                                    ? new Date(manuscript.aiReview.created_at).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                    })
+                                                    : 'N/A'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {manuscript.aiReview ? (
+                                                    <Badge variant="default">AI Review Available</Badge>
+                                                ) : (
+                                                    <Badge variant="destructive">No AI Review</Badge>
+                                                )}
+                                                {manuscript.aiReview && (
+                                                    <Accordion type="single" collapsible className="w-full">
+                                                        <AccordionItem value="ai-review">
+                                                            <AccordionTrigger>View AI Review</AccordionTrigger>
+                                                            <AccordionContent>
+                                                                <div className="space-y-4">
+                                                                    <div>
+                                                                        <h4 className="font-semibold">Summary</h4>
+                                                                        <p>{manuscript.aiReview.summary}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className="font-semibold">Keywords</h4>
+                                                                        <p>{manuscript.aiReview.keywords.join(', ')}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className="font-semibold">Language Quality</h4>
+                                                                        <ul className="list-disc pl-5 space-y-1">
+                                                                            <li>Word Count: {manuscript.aiReview.language_quality.word_count}</li>
+                                                                            <li>Unique Words: {manuscript.aiReview.language_quality.unique_words}</li>
+                                                                            <li>Sentence Count: {manuscript.aiReview.language_quality.sentence_count}</li>
+                                                                            <li>Named Entities: {manuscript.aiReview.language_quality.named_entities}</li>
+                                                                            <li>Grammar Issues: {manuscript.aiReview.language_quality.grammar_issues}</li>
+                                                                            <li>Readability Score: {manuscript.aiReview.language_quality.readability_score}</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </AccordionContent>
+                                                        </AccordionItem>
+                                                    </Accordion>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </ScrollArea>
+                    </CardContent>
+                </Card>
             </div>
         </AuthenticatedLayout>
-    );
-};
+    )
+}
 
-export default ManuscriptsDashboard;
+export default ManuscriptsDashboard
