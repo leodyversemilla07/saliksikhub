@@ -62,7 +62,8 @@ Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () 
 // Reviewer Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function () {
     Route::get('/reviewer', [ReviewerController::class, 'index'])->name('reviewer.dashboard');
-    // Route::get('/reviewer/review-manuscripts', [ReviewerController::class, 'reviewManuscripts'])->name('reviewer.reviewManuscripts');
+    Route::get('/reviewer/manuscripts/to-review', [ReviewerController::class, 'toReview'])->name('reviewer.manuscripts.toReview');
+
     Route::post('/reviewer/submit-review/{id}', [ReviewerController::class, 'submitReview'])->name('reviewer.submitReview');
 
     Route::get('reviewer/manuscripts/{id}/show', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');

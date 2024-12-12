@@ -35,20 +35,22 @@ class ReviewerController extends Controller
         ]);
     }
 
-    public function reviewManuscripts()
+    public function toReview()
     {
-        // List articles assigned for review
-        $manuscripts = Manuscript::where('status', 'Under Review')->get();
+        // Retrieve manuscripts that need to be reviewed
+        $manuscripts = Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->get();
+
+        // Return a view with the manuscripts
         return Inertia::render('Reviewer/ReviewManuscriptsTable', compact('manuscripts'));
     }
 
     public function showReviewForm($reviewId)
-{
-    $review = Review::with('manuscript')->findOrFail($reviewId);
-    return Inertia::render('Reviews/SubmitReview', [
-        'review' => $review,
-    ]);
-}
+    {
+        $review = Review::with('manuscript')->findOrFail($reviewId);
+        return Inertia::render('Reviews/SubmitReview', [
+            'review' => $review,
+        ]);
+    }
 
     public function submitReview(Request $request, $reviewId)
     {

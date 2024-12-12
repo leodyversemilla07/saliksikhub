@@ -1,12 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Book,
-    FileText,
-    CheckCircle,
-    Clock,
-    AlertCircle,
-    Pen
-} from 'lucide-react';
+import React from 'react';
 import {
     BarChart,
     Bar,
@@ -21,260 +13,198 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Badge } from '@/Components/ui/badge';
+import { Book, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
-// Constants for Submission States
-const SUBMISSION_STATES = {
-    DRAFT: 'DRAFT',
-    SUBMITTED: 'SUBMITTED',
-    UNDER_REVIEW: 'UNDER_REVIEW',
-    REVISION_REQUESTED: 'REVISION_REQUESTED',
-    ACCEPTED: 'ACCEPTED',
-    PUBLISHED: 'PUBLISHED'
-} as const;
+// Define TypeScript types
+type ManuscriptStatus =
+    | 'Submitted'
+    | 'Under Review'
+    | 'Revision Required'
+    | 'Accepted'
+    | 'Rejected'
+    | 'Published';
 
-// Define Submission Interface
-interface Submission {
-    id: string;
-    title: string;
-    journal: string;
-    state: keyof typeof SUBMISSION_STATES;
-    submissionDate: Date | null;
-    lastUpdated: Date;
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    role: string[];
 }
 
-// Define Active and Completed Submission State Types
-type ActiveSubmissionStates = 'DRAFT' | 'UNDER_REVIEW' | 'REVISION_REQUESTED';
-type CompletedSubmissionStates = 'ACCEPTED' | 'PUBLISHED';
+interface Manuscript {
+    id: number;
+    title: string;
+    status: ManuscriptStatus;
+    created_at: string | null;
+    updated_at: string;
+}
 
-// Color Mapping for Submission States
-const STATE_COLORS: Record<Submission['state'], string> = {
-    [SUBMISSION_STATES.DRAFT]: '#6B7280', // Gray
-    [SUBMISSION_STATES.SUBMITTED]: '#3B82F6', // Blue
-    [SUBMISSION_STATES.UNDER_REVIEW]: '#F59E0B', // Yellow
-    [SUBMISSION_STATES.REVISION_REQUESTED]: '#F97316', // Orange
-    [SUBMISSION_STATES.ACCEPTED]: '#10B981', // Green
-    [SUBMISSION_STATES.PUBLISHED]: '#8B5CF6' // Purple
+// State Colors and Icons
+const STATE_COLORS: Record<ManuscriptStatus, string> = {
+    'Submitted': '#3B82F6',
+    'Under Review': '#F59E0B',
+    'Revision Required': '#F97316',
+    'Accepted': '#10B981',
+    'Rejected': '#EF4444',
+    'Published': '#8B5CF6'
 };
 
+const STATE_ICONS: Record<ManuscriptStatus, React.ElementType> = {
+    'Submitted': FileText,
+    'Under Review': Clock,
+    'Revision Required': AlertCircle,
+    'Accepted': CheckCircle,
+    'Rejected': AlertCircle,
+    'Published': Book
+};
+
+// Main Dashboard Component
 const AuthorDashboard: React.FC = () => {
-    const [submissions, setSubmissions] = useState<Submission[]>([]);
-    const [activeSubmissions, setActiveSubmissions] = useState<Submission[]>([]);
-    const [completedSubmissions, setCompletedSubmissions] = useState<Submission[]>([]);
+    const { props } = usePage<{ manuscripts: Manuscript[], auth: { user: User, roles: string[] } }>();
+    const { manuscripts } = props;
 
-    useEffect(() => {
-        const fetchSubmissions = async () => {
-            const mockSubmissions: Submission[] = [
-                {
-                    id: 'MS2024-001',
-                    title: 'Quantum Entanglement in Neural Networks',
-                    journal: 'Computational Neuroscience Quarterly',
-                    state: 'UNDER_REVIEW',
-                    submissionDate: new Date('2024-02-15'),
-                    lastUpdated: new Date('2024-03-20')
-                },
-                {
-                    id: 'MS2024-002',
-                    title: 'Epistemic Foundations of Machine Learning',
-                    journal: 'Philosophical Perspectives in Technology',
-                    state: 'DRAFT',
-                    submissionDate: null,
-                    lastUpdated: new Date('2024-04-10')
-                },
-                {
-                    id: 'MS2024-003',
-                    title: 'Cognitive Architectures in AI',
-                    journal: 'Advanced Computational Cognition',
-                    state: 'ACCEPTED',
-                    submissionDate: new Date('2024-01-10'),
-                    lastUpdated: new Date('2024-05-01')
-                },
-                {
-                    id: 'MS2024-004',
-                    title: 'Ethical Implications of Generative Models',
-                    journal: 'Technology and Ethics Quarterly',
-                    state: 'PUBLISHED',
-                    submissionDate: new Date('2023-12-05'),
-                    lastUpdated: new Date('2024-02-15')
-                }
-            ];
+    // Process Manuscripts
+    const transformManuscripts = manuscripts.map(manuscript => ({
+        ...manuscript,
+        submissionDate: manuscript.created_at ? new Date(manuscript.created_at) : null,
+        lastUpdated: new Date(manuscript.updated_at)
+    }));
 
-            setSubmissions(mockSubmissions);
+    const activeManuscripts = transformManuscripts.filter(({ status }) =>
+        ['Submitted', 'Under Review', 'Revision Required'].includes(status)
+    );
 
-            setActiveSubmissions(
-                mockSubmissions.filter(submission =>
-                    ['DRAFT', 'UNDER_REVIEW', 'REVISION_REQUESTED'].includes(submission.state)
-                ) as Submission[]
-            );
+    const completedManuscripts = transformManuscripts.filter(({ status }) =>
+        ['Accepted', 'Published'].includes(status)
+    );
 
-            setCompletedSubmissions(
-                mockSubmissions.filter(submission =>
-                    ['ACCEPTED', 'PUBLISHED'].includes(submission.state)
-                ) as Submission[]
-            );
-        };
-
-        fetchSubmissions();
-    }, []);
-
-    // Compute Submission State Distribution
-    const getSubmissionStateDistribution = () => {
-        const stateCount = submissions.reduce((acc, submission) => {
-            acc[submission.state] = (acc[submission.state] || 0) + 1;
+    const getManuscriptStateDistribution = () => {
+        const statusCount = transformManuscripts.reduce((acc, { status }) => {
+            acc[status] = (acc[status] || 0) + 1;
             return acc;
-        }, {} as Record<Submission['state'], number>);
+        }, {} as Record<ManuscriptStatus, number>);
 
-        return Object.entries(stateCount).map(([state, count]) => ({
-            name: state.replace('_', ' '),
-            value: count,
-            color: STATE_COLORS[state as Submission['state']]
+        return Object.entries(STATE_COLORS).map(([state, color]) => ({
+            name: state,
+            value: statusCount[state as ManuscriptStatus] || 0,
+            color
         }));
     };
 
-    // Compute Submissions by Month
-    const getSubmissionsByMonth = () => {
-        const monthNames = [
-            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-        ];
+    const getManuscriptsByMonth = () => {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        const monthlySubmissions = submissions.reduce((acc, submission) => {
-            if (submission.submissionDate) {
-                const month = monthNames[submission.submissionDate.getMonth()];
+        const monthlyManuscripts = transformManuscripts.reduce((acc, { submissionDate }) => {
+            if (submissionDate) {
+                const month = monthNames[submissionDate.getMonth()];
                 acc[month] = (acc[month] || 0) + 1;
             }
             return acc;
         }, {} as Record<string, number>);
 
-        return Object.entries(monthlySubmissions).map(([month, count]) => ({
-            month,
-            submissions: count
-        }));
+        return Object.entries(monthlyManuscripts).map(([month, submissions]) => ({ month, submissions }));
     };
 
-    // State Icon Mapping
-    const getStateIcon = (state: Submission['state']) => {
-        const stateIcons: Record<Submission['state'], JSX.Element> = {
-            [SUBMISSION_STATES.DRAFT]: <Pen className="text-gray-500" />,
-            [SUBMISSION_STATES.SUBMITTED]: <FileText className="text-blue-500" />,
-            [SUBMISSION_STATES.UNDER_REVIEW]: <Clock className="text-yellow-500" />,
-            [SUBMISSION_STATES.REVISION_REQUESTED]: <AlertCircle className="text-orange-500" />,
-            [SUBMISSION_STATES.ACCEPTED]: <CheckCircle className="text-green-500" />,
-            [SUBMISSION_STATES.PUBLISHED]: <Book className="text-purple-500" />
-        };
-        return stateIcons[state] || null;
+    const ManuscriptCard: React.FC<{ manuscript: Manuscript }> = ({ manuscript }) => {
+        const StateIcon = STATE_ICONS[manuscript.status];
+
+        return (
+            <Card className="mb-4 hover:shadow-lg transition-shadow duration-300">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-lg font-semibold">{manuscript.title}</CardTitle>
+                    <Badge
+                        variant="outline"
+                        style={{ backgroundColor: STATE_COLORS[manuscript.status], color: 'white' }}
+                    >
+                        {manuscript.status}
+                    </Badge>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center space-x-4">
+                        <StateIcon className="h-5 w-5" style={{ color: STATE_COLORS[manuscript.status] }} />
+                        <p className="text-sm text-muted-foreground">ID: {manuscript.id}</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
     };
 
-    // Submission Card Component
-    const SubmissionCard: React.FC<{ submission: Submission }> = ({ submission }) => (
-        <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center justify-between hover:shadow-lg transition-shadow duration-300">
-            <div className="flex items-center space-x-4">
-                {getStateIcon(submission.state)}
-                <div>
-                    <h3 className="font-semibold text-lg">{submission.title}</h3>
-                    <p className="text-gray-600">{submission.journal}</p>
-                </div>
-            </div>
-            <div className="text-right">
-                <p className="text-sm text-gray-500">
-                    Submission ID: {submission.id}
-                </p>
-                <p className="text-sm text-gray-500">
-                    Status: {submission.state.replace('_', ' ')}
-                </p>
-            </div>
-        </div>
+    const SubmissionDistributionChart: React.FC<{ data: { name: string; value: number; color: string }[] }> = ({
+        data
+    }) => (
+        <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+                <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                    {data.map(entry => (
+                        <Cell key={`cell-${entry.name}`} fill={entry.color} />
+                    ))}
+                </Pie>
+                <Tooltip />
+            </PieChart>
+        </ResponsiveContainer>
+    );
+
+    const SubmissionsByMonthChart: React.FC<{ data: { month: string; submissions: number }[] }> = ({ data }) => (
+        <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="submissions" fill="#8884d8" />
+            </BarChart>
+        </ResponsiveContainer>
     );
 
     return (
-        <>
-            <AuthenticatedLayout
-                header={
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Dashboard
-                    </h2>
-                }
-            >
-                <Head title="Author Dashboard" />
-                <div className="min-h-screen bg-gray-50 p-8">
-                    <div className="container mx-auto">
-                        <header className="mb-8">
-                            <h1 className="text-3xl font-bold text-gray-800">Research Submission Dashboard</h1>
-                            <p className="text-gray-600">Navigating the Intellectual Landscape of Academic Publishing</p>
-                        </header>
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
+            <Head title="Author Dashboard" />
+            <div className="min-h-screen bg-background p-8">
+                <div className="container mx-auto">
+                    <header className="mb-8">
+                        <h1 className="text-3xl font-bold text-foreground">Manuscript Dashboard</h1>
+                        <p className="text-muted-foreground">Track your submissions and progress.</p>
+                    </header>
 
-                        <div className="grid md:grid-cols-3 gap-8">
-                            <div className="bg-white shadow-md rounded-lg p-4">
-                                <h2 className="text-xl font-semibold mb-4 text-gray-700">Submission State Distribution</h2>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={getSubmissionStateDistribution()}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            outerRadius={80}
-                                            fill="#8884d8"
-                                            dataKey="value"
-                                        >
-                                            {getSubmissionStateDistribution().map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend layout="vertical" verticalAlign="bottom" align="center" />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-
-                            <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
-                                <h2 className="text-xl font-semibold mb-4 text-gray-700">Submissions by Month</h2>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={getSubmissionsByMonth()}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="month" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar dataKey="submissions" fill="#8884d8" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-8 mt-8">
-                            <section>
-                                <h2 className="text-2xl font-semibold mb-4 text-gray-700">Active Submissions</h2>
-                                {activeSubmissions.length > 0 ? (
-                                    activeSubmissions.map(submission => (
-                                        <SubmissionCard
-                                            key={submission.id}
-                                            submission={submission}
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="text-gray-500">No active submissions found.</p>
-                                )}
-                            </section>
-
-                            <section>
-                                <h2 className="text-2xl font-semibold mb-4 text-gray-700">Completed Submissions</h2>
-                                {completedSubmissions.length > 0 ? (
-                                    completedSubmissions.map(submission => (
-                                        <SubmissionCard
-                                            key={submission.id}
-                                            submission={submission}
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="text-gray-500">No completed submissions found.</p>
-                                )}
-                            </section>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <SubmissionDistributionChart data={getManuscriptStateDistribution()} />
+                        <div className="md:col-span-2">
+                            <SubmissionsByMonthChart data={getManuscriptsByMonth()} />
                         </div>
                     </div>
+
+                    <div className="grid md:grid-cols-2 gap-8 mt-8">
+                        <section>
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">Active Manuscripts</h2>
+                            {activeManuscripts.length > 0 ? (
+                                activeManuscripts.map(manuscript => (
+                                    <ManuscriptCard key={manuscript.id} manuscript={manuscript} />
+                                ))
+                            ) : (
+                                <p className="text-muted-foreground">No active manuscripts found.</p>
+                            )}
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">Completed Manuscripts</h2>
+                            {completedManuscripts.length > 0 ? (
+                                completedManuscripts.map(manuscript => (
+                                    <ManuscriptCard key={manuscript.id} manuscript={manuscript} />
+                                ))
+                            ) : (
+                                <p className="text-muted-foreground">No completed manuscripts found.</p>
+                            )}
+                        </section>
+                    </div>
                 </div>
-            </AuthenticatedLayout>
-        </>
+            </div>
+        </AuthenticatedLayout>
     );
 };
 

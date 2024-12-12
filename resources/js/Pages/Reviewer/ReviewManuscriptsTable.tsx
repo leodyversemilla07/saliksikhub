@@ -1,11 +1,8 @@
-"use client"
-
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Download, Eye, NotebookPen, Search } from 'lucide-react'
+import { Eye, NotebookPen, Search } from 'lucide-react'
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Input } from "@/Components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
 import { Badge } from "@/Components/ui/badge"
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
@@ -66,7 +63,7 @@ export default function ManuscriptReviewTable({ manuscripts }: ManuscriptTablePr
                     Review
                 </h2>}
             >
-                <Head title='Review'/>
+                <Head title='Review' />
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle>Manuscripts Ready for Peer Review</CardTitle>
