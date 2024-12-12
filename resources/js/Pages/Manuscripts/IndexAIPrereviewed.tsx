@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/Components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/Components/ui/accordion"
 import { ScrollArea } from "@/Components/ui/scroll-area"
+import { Head } from '@inertiajs/react';
 
 interface LanguageQuality {
     word_count: number
@@ -46,6 +47,7 @@ const ManuscriptsDashboard: React.FC<ManuscriptsDashboardProps> = ({ manuscripts
                 </h2>
             }
         >
+            <Head title='AI Review Report' />
             <div className="container mx-auto px-4 py-8">
                 <Card>
                     <CardHeader>

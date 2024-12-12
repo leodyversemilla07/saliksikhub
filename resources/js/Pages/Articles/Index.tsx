@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Input } from "@/Components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
 import { Badge } from "@/Components/ui/badge"
+import { Head } from '@inertiajs/react'
 
 // Sample initial data with only published articles
 const publishedArticles = [
@@ -48,6 +49,7 @@ const PublishedArticlesTable = () => {
                 </h2>
             }
         >
+            <Head title='Published Paper' />
             <div className="container mx-auto py-10">
                 <Card>
                     <CardHeader>

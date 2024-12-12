@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import { Inertia } from '@inertiajs/inertia';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
@@ -180,6 +181,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                     </h2>
                 }
             >
+                <Head title='Manuscript Tracking' />
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle className="text-xl font-bold">My Manuscripts</CardTitle>
@@ -317,7 +319,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                         </div>
                     </CardContent>
                 </Card>
-                
+
 
                 {/* Delete Confirmation Dialog */}
                 {

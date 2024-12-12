@@ -55,10 +55,8 @@ class ManuscriptController extends Controller
 
     public function store(Request $request)
     {
-        // Increase execution time for long-running requests (e.g., PDF parsing and API call)
         set_time_limit(240);
 
-        // Validate the incoming request
         $validated = $request->validate([
             'title' => 'required|string|min:10',
             'authors' => 'required|string|min:3',
@@ -68,75 +66,60 @@ class ManuscriptController extends Controller
         ]);
 
         try {
-            // Save the uploaded manuscript file
             if ($request->hasFile('manuscript')) {
                 $path = $request->file('manuscript')->store('manuscripts', 'public');
                 $validated['manuscript_path'] = $path;
             }
 
-            // Save manuscript data in the database
             $validated['user_id'] = Auth::id();
             $validated['status'] = Manuscript::STATUSES['SUBMITTED'];
 
             $manuscript = Manuscript::create($validated);
 
-            // Extract text from the PDF
             $filePath = Storage::disk('public')->path($validated['manuscript_path']);
             $parser = new Parser();
             $pdf = $parser->parseFile($filePath);
             $manuscriptText = $pdf->getText();
 
-            // Log the manuscript text extraction (for debugging)
             logger()->info('Extracted Manuscript Text:', ['text' => $manuscriptText]);
 
-            // Send the extracted manuscript text to the Django AI-assisted pre-review service
             $client = new Client();
             $response = $client->post('http://127.0.0.1:3000/pre_review/', [
                 'json' => [
                     'manuscript_text' => $manuscriptText,
                 ],
-                'timeout' => 240,  // Set timeout to 30 seconds
+                'timeout' => 240,
             ]);
 
-            // Check if the API request was successful
             if ($response->getStatusCode() === 200) {
                 $responseBody = json_decode($response->getBody()->getContents(), true);
 
-                // Log the response from the Django service (for debugging)
                 logger()->info('AI Pre-review Response:', ['response' => $responseBody]);
 
-                // Store AI review data in the database
-                // Store AI review data in the database
                 AiReview::create([
                     'manuscript_id' => $manuscript->id,
                     'summary' => $responseBody['summary'] ?? null,
-                    // Convert the 'keywords' array to a JSON string
                     'keywords' => isset($responseBody['keywords']) ? json_encode($responseBody['keywords']) : null,
-                    // Convert the 'language_quality' array to a JSON string
                     'language_quality' => isset($responseBody['language_quality']) ? json_encode($responseBody['language_quality']) : null,
                 ]);
 
             } else {
-                // Log an error if the AI service fails
                 logger()->error('AI Pre-review failed', [
                     'response' => $response->getBody()->getContents(),
                 ]);
             }
 
-            // Return success response with manuscript data and AI review
             return response()->json([
                 'message' => 'Manuscript submitted successfully!',
                 'data' => $manuscript->load('aiReview'),
             ], 201);
 
         } catch (Exception $e) {
-            // Log the full exception details for debugging
             logger()->error('Submission Error', [
                 'error_message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            // Return error response
             return response()->json([
                 'message' => 'An error occurred during submission.',
                 'error' => $e->getMessage(),
