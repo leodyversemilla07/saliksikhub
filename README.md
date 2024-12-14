@@ -38,7 +38,7 @@
 
 ###  Technology Stack
 
-*  [List the programming languages and frameworks used to build SaliksikHub] (e.g., PHP, Laravel, React)
+* PHP, Laravel, Inertiajs with React and Typescript.
 
 **Disclaimer:** This project is under development, and the features mentioned above may be subject to change. 
 
