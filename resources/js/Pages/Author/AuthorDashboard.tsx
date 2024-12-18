@@ -40,27 +40,27 @@ interface Manuscript {
     id: number;
     title: string;
     status: ManuscriptStatus;
-    created_at: string | null;
-    updated_at: string;
+    created_at: Date | null;
+    updated_at: Date;
 }
 
-// State Colors and Icons
+// State Icons and Colors
 const STATE_COLORS: Record<ManuscriptStatus, string> = {
-    'Submitted': '#3B82F6',
+    Submitted: '#3B82F6',
     'Under Review': '#F59E0B',
     'Revision Required': '#F97316',
-    'Accepted': '#10B981',
-    'Rejected': '#EF4444',
-    'Published': '#8B5CF6'
+    Accepted: '#10B981',
+    Rejected: '#EF4444',
+    Published: '#8B5CF6'
 };
 
 const STATE_ICONS: Record<ManuscriptStatus, React.ElementType> = {
-    'Submitted': FileText,
+    Submitted: FileText,
     'Under Review': Clock,
     'Revision Required': AlertCircle,
-    'Accepted': CheckCircle,
-    'Rejected': AlertCircle,
-    'Published': Book
+    Accepted: CheckCircle,
+    Rejected: AlertCircle,
+    Published: Book
 };
 
 // Main Dashboard Component
@@ -68,46 +68,48 @@ const AuthorDashboard: React.FC = () => {
     const { props } = usePage<{ manuscripts: Manuscript[], auth: { user: User, roles: string[] } }>();
     const { manuscripts } = props;
 
-    // Process Manuscripts
     const transformManuscripts = manuscripts.map(manuscript => ({
         ...manuscript,
         submissionDate: manuscript.created_at ? new Date(manuscript.created_at) : null,
         lastUpdated: new Date(manuscript.updated_at)
     }));
 
-    const activeManuscripts = transformManuscripts.filter(({ status }) =>
-        ['Submitted', 'Under Review', 'Revision Required'].includes(status)
+    const activeManuscripts = transformManuscripts.filter(manuscript =>
+        ['Submitted', 'Under Review', 'Revision Required'].includes(manuscript.status)
     );
 
-    const completedManuscripts = transformManuscripts.filter(({ status }) =>
-        ['Accepted', 'Published'].includes(status)
+    const completedManuscripts = transformManuscripts.filter(manuscript =>
+        ['Accepted', 'Published'].includes(manuscript.status)
     );
 
     const getManuscriptStateDistribution = () => {
-        const statusCount = transformManuscripts.reduce((acc, { status }) => {
-            acc[status] = (acc[status] || 0) + 1;
+        const statusCount = transformManuscripts.reduce((acc, manuscript) => {
+            acc[manuscript.status] = (acc[manuscript.status] || 0) + 1;
             return acc;
         }, {} as Record<ManuscriptStatus, number>);
 
-        return Object.entries(STATE_COLORS).map(([state, color]) => ({
+        return Object.keys(STATE_COLORS).map(state => ({
             name: state,
             value: statusCount[state as ManuscriptStatus] || 0,
-            color
+            color: STATE_COLORS[state as ManuscriptStatus]
         }));
     };
 
     const getManuscriptsByMonth = () => {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        const monthlyManuscripts = transformManuscripts.reduce((acc, { submissionDate }) => {
-            if (submissionDate) {
-                const month = monthNames[submissionDate.getMonth()];
+        const monthlyManuscripts = transformManuscripts.reduce((acc, manuscript) => {
+            if (manuscript.submissionDate) {
+                const month = monthNames[manuscript.submissionDate.getMonth()];
                 acc[month] = (acc[month] || 0) + 1;
             }
             return acc;
         }, {} as Record<string, number>);
 
-        return Object.entries(monthlyManuscripts).map(([month, submissions]) => ({ month, submissions }));
+        return Object.entries(monthlyManuscripts).map(([month, count]) => ({
+            month,
+            submissions: count
+        }));
     };
 
     const ManuscriptCard: React.FC<{ manuscript: Manuscript }> = ({ manuscript }) => {
@@ -121,13 +123,15 @@ const AuthorDashboard: React.FC = () => {
                         variant="outline"
                         style={{ backgroundColor: STATE_COLORS[manuscript.status], color: 'white' }}
                     >
-                        {manuscript.status}
+                        {manuscript.status.replace('_', ' ')}
                     </Badge>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center space-x-4">
                         <StateIcon className="h-5 w-5" style={{ color: STATE_COLORS[manuscript.status] }} />
-                        <p className="text-sm text-muted-foreground">ID: {manuscript.id}</p>
+                        <div>
+                            <p className="text-sm text-muted-foreground">ID: {manuscript.id}</p>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -139,7 +143,16 @@ const AuthorDashboard: React.FC = () => {
     }) => (
         <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-                <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label
+                >
                     {data.map(entry => (
                         <Cell key={`cell-${entry.name}`} fill={entry.color} />
                     ))}
@@ -163,7 +176,9 @@ const AuthorDashboard: React.FC = () => {
     );
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
+        <AuthenticatedLayout
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}
+        >
             <Head title="Author Dashboard" />
             <div className="min-h-screen bg-background p-8">
                 <div className="container mx-auto">
@@ -173,7 +188,9 @@ const AuthorDashboard: React.FC = () => {
                     </header>
 
                     <div className="grid md:grid-cols-3 gap-8">
+                        {/* Distribution Chart */}
                         <SubmissionDistributionChart data={getManuscriptStateDistribution()} />
+                        {/* Monthly Submissions Chart */}
                         <div className="md:col-span-2">
                             <SubmissionsByMonthChart data={getManuscriptsByMonth()} />
                         </div>

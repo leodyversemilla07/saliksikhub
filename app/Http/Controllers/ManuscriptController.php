@@ -8,7 +8,7 @@ use App\Models\Manuscript;
 use App\Models\Article;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Exception;
 use App\Models\ReviewerAssignment;
 use App\Models\AiReview;
@@ -83,16 +83,13 @@ class ManuscriptController extends Controller
 
             logger()->info('Extracted Manuscript Text:', ['text' => $manuscriptText]);
 
-            $client = new Client();
-            $response = $client->post('http://127.0.0.1:3000/pre_review/', [
-                'json' => [
+            $response = Http::timeout(240)
+                ->post('http://127.0.0.1:3000/pre_review/', [
                     'manuscript_text' => $manuscriptText,
-                ],
-                'timeout' => 240,
-            ]);
+                ]);
 
-            if ($response->getStatusCode() === 200) {
-                $responseBody = json_decode($response->getBody()->getContents(), true);
+            if ($response->successful()) {
+                $responseBody = $response->json();
 
                 logger()->info('AI Pre-review Response:', ['response' => $responseBody]);
 
@@ -102,10 +99,9 @@ class ManuscriptController extends Controller
                     'keywords' => isset($responseBody['keywords']) ? json_encode($responseBody['keywords']) : null,
                     'language_quality' => isset($responseBody['language_quality']) ? json_encode($responseBody['language_quality']) : null,
                 ]);
-
             } else {
                 logger()->error('AI Pre-review failed', [
-                    'response' => $response->getBody()->getContents(),
+                    'response' => $response->body(),
                 ]);
             }
 

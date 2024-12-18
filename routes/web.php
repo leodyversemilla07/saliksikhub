@@ -9,14 +9,15 @@ use App\Http\Controllers\EditorController;
 use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ManuscriptController;
+use App\Http\Controllers\PageController;
 
-Route::get('/', fn() => renderPage('Home'));
-Route::get('/current', fn() => renderPage('Current'));
-Route::get('/submissions', fn() => renderPage('Submissions'));
-Route::get('/archives', fn() => renderPage('Archives'));
-Route::get('/editorial-board', fn() => renderPage('EditorialBoard'));
-Route::get('/about-us', fn() => renderPage('About'));
-Route::get('/contact-us', fn() => renderPage('ContactUs'));
+Route::get('/', [PageController::class, 'renderPage'])->name('home')->defaults('page', 'Home');
+Route::get('/current', [PageController::class, 'renderPage'])->name('current')->defaults('page', 'Current');
+Route::get('/submissions', [PageController::class, 'renderPage'])->name('submissions')->defaults('page', 'Submissions');
+Route::get('/archives', [PageController::class, 'renderPage'])->name('archives')->defaults('page', 'Archives');
+Route::get('/editorial-board', [PageController::class, 'renderPage'])->name('editorial-board')->defaults('page', 'EditorialBoard');
+Route::get('/about-us', [PageController::class, 'renderPage'])->name('about-us')->defaults('page', 'About');
+Route::get('/contact-us', [PageController::class, 'renderPage'])->name('contact-us')->defaults('page', 'ContactUs');
 
 // Admin Routes
 Route::group([

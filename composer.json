@@ -9,10 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.9",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
-        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "smalot/pdfparser": "^2.11",
         "spatie/laravel-permission": "^6.10",
@@ -39,10 +37,7 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        },
-        "files": [
-            "app/Helpers/helpers.php"
-        ]
+        }
     },
     "scripts": {
         "post-autoload-dump": [
