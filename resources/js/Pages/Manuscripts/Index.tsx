@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import { Inertia } from '@inertiajs/inertia';
+import { Eye, Edit2, Trash2, Search, MoreHorizontal } from 'lucide-react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import {
     Select,
     SelectContent,
@@ -13,30 +24,39 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/ui/select';
-import { Eye, Edit2, Trash2, Clock, Search, MoreHorizontal } from 'lucide-react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import axios from 'axios';
-import { useToast } from '@/hooks/use-toast';
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/Components/ui/alert-dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/Components/ui/dropdown-menu';
 
 
-type Manuscript = {
+interface Manuscript {
     id: number;
     title: string;
     user_id: number;
-    created_at: string; // Changed from submissionDate
-    updated_at: string; // Changed from lastUpdated
+    created_at: string;
+    updated_at: string;
     status: 'Submitted' | 'Under Review' | 'Revision Required' | 'Accepted' | 'Rejected';
     authors: string | string[] | null;
 };
 
-interface ManuscriptTableProps {
+interface IndexProps {
     manuscripts: Manuscript[];
 }
 
-export default function Index({ manuscripts }: ManuscriptTableProps) {
+export default function Index({ manuscripts }: IndexProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [dateFilter, setDateFilter] = useState('all');
@@ -64,8 +84,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             const today = new Date();
             const filterDate = new Date();
 
-            // Normalize both dates to remove time component for accurate comparisons
-            filterDate.setHours(0, 0, 0, 0); // Start of the day
+            filterDate.setHours(0, 0, 0, 0);
 
             switch (dateFilter) {
                 case 'week':
@@ -75,10 +94,9 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                     filterDate.setMonth(today.getMonth() - 1);
                     break;
                 case 'year':
-                    // Set filterDate to the start of last year (January 1st of the previous year)
                     filterDate.setFullYear(today.getFullYear() - 1);
-                    filterDate.setMonth(0); // January
-                    filterDate.setDate(1); // 1st day of January
+                    filterDate.setMonth(0);
+                    filterDate.setDate(1);
                     break;
                 default:
                     break;
@@ -87,11 +105,10 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             filtered = filtered.filter(
                 (manuscript) => {
                     const manuscriptDate = new Date(manuscript.created_at);
-                    manuscriptDate.setHours(0, 0, 0, 0); // Normalize manuscript's date for accurate comparison
+                    manuscriptDate.setHours(0, 0, 0, 0);
 
                     if (dateFilter === 'year') {
-                        // For "year" filter, check if the manuscript is within the past year
-                        const startOfYear = new Date(today.getFullYear(), 0, 1); // Start of the current year
+                        const startOfYear = new Date(today.getFullYear(), 0, 1);
                         return manuscriptDate >= filterDate && manuscriptDate < startOfYear;
                     } else {
                         return manuscriptDate >= filterDate;
@@ -115,45 +132,39 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
         return statusColors[status];
     };
 
-    // Handle authors in different formats (string, array, or null)
     const getAuthors = (authors: string | string[] | null) => {
         if (Array.isArray(authors)) {
-            return authors;  // Already an array, return as is
+            return authors;
         }
         if (typeof authors === 'string' && authors.trim()) {
-            return authors.split(',').map((author) => author.trim()); // Split by comma if it's a string
+            return authors.split(',').map((author) => author.trim());
         }
-        return []; // Return empty array if null or empty string
+        return [];
     };
 
     const destroy = async (id: number) => {
         try {
-            await axios.delete(`/author/manuscripts/${id}`, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            await Inertia.delete(`/author/manuscripts/${id}`, {
+                onSuccess: () => {
+                    toast.toast({
+                        title: 'Success',
+                        description: 'Manuscript deleted successfully.',
+                        variant: 'default',
+                    });
                 },
-            });
-
-            setFilteredManuscripts((prev) => prev.filter((manuscript) => manuscript.id !== id));
-
-            // Use the 'default' variant or 'destructive' for success or error toasts
-            toast.toast({
-                title: 'Success',
-                description: 'Manuscript deleted successfully.',
-                variant: 'default',  // Use 'default' as per the type definition
+                onError: () => {
+                    toast.toast({
+                        title: 'Error',
+                        description: 'Failed to delete the manuscript. Please try again.',
+                        variant: 'destructive',
+                    });
+                },
+                onFinish: () => {
+                    setIsDialogOpen(false);
+                }
             });
         } catch (error) {
             console.error('Error deleting manuscript:', error);
-
-            // Use 'destructive' variant for error toast
-            toast.toast({
-                title: 'Error',
-                description: 'Failed to delete the manuscript. Please try again.',
-                variant: 'destructive',  // Use 'destructive' for error
-            });
-        }
-        finally {
-            setIsDialogOpen(false);
         }
     };
 

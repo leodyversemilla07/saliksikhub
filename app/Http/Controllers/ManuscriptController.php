@@ -191,7 +191,7 @@ class ManuscriptController extends Controller
         $manuscript = Manuscript::findOrFail($id);
         $manuscript->delete();
 
-        return response()->json(['message' => 'Deleted successfully'], 200);
+        return redirect()->route('manuscripts.index')->with('success', 'Manuscript deleted successfully');
     }
 
     public function assignReviewer(Request $request, Manuscript $manuscript)
@@ -281,8 +281,8 @@ class ManuscriptController extends Controller
                 'authors' => $manuscript->authors,
                 'aiReview' => $manuscript->aiReview ? [
                     'summary' => $manuscript->aiReview->summary,
-                    'keywords' => $manuscript->aiReview->keywords ? explode(',', $manuscript->aiReview->keywords) : [],
-                    'language_quality' => json_decode($manuscript->aiReview->language_quality, true),
+                    'keywords' => $manuscript->aiReview->keywords ? explode(',', (string) $manuscript->aiReview->keywords) : [],
+                    'language_quality' => $manuscript->aiReview->language_quality ? json_decode((string) $manuscript->aiReview->language_quality, true) : null,
                     'created_at' => $manuscript->aiReview->created_at->toDateTimeString(),
                 ] : null,
             ];
