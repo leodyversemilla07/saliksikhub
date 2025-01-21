@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import axios from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/Components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Head } from '@inertiajs/react';
+import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DetailsStep } from '@/Components/DetailsStep';
 import { ContentStep } from '@/Components/ContentStep';
@@ -62,7 +62,7 @@ export default function ManuscriptSubmissionForm() {
         }
 
         try {
-            await axios.post('/author/manuscripts', formData, {
+            await Inertia.post('/author/manuscripts', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast({

@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Badge } from '@/Components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import { NotificationDropdown } from '@/Components/layout/NotificationDropdown';
+import { UserDropdown } from '@/Components/layout/UserDropdown';
 
 interface AuthUser {
     firstname: string;
@@ -31,14 +33,6 @@ declare module '@inertiajs/core' {
     interface PageProps extends CustomPageProps { }
 }
 
-interface Notification {
-    id: string;
-    title: string;
-    message: string;
-    time: string;
-    read: boolean;
-}
-
 const links = [
     { href: 'author.dashboard', label: 'Dashboard', icon: Home, roles: ['author'] },
     { href: 'manuscripts.create', label: 'New Submissions', icon: Plus, roles: ['author'] },
@@ -55,12 +49,6 @@ const links = [
     { href: 'admin.manageUsers', label: 'User Management', icon: User, roles: ['admin'] },
 ];
 
-const sampleNotifications: Notification[] = [
-    { id: '1', title: 'New Review', message: 'Your manuscript has received a new review.', time: '5 min ago', read: false },
-    { id: '2', title: 'Revision Required', message: 'Please revise your manuscript based on reviewer comments.', time: '1 hour ago', read: false },
-    { id: '3', title: 'Manuscript Accepted', message: 'Congratulations! Your manuscript has been accepted for publication.', time: '1 day ago', read: true },
-];
-
 export default function AuthenticatedLayout({
     header,
     children,
@@ -70,7 +58,6 @@ export default function AuthenticatedLayout({
     const userRoles = auth.roles || [];
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [notifications, setNotifications] = useState<Notification[]>(sampleNotifications);
 
     useEffect(() => {
         const isDark = localStorage.getItem('darkMode') === 'true';
@@ -83,12 +70,6 @@ export default function AuthenticatedLayout({
         setIsDarkMode(newDarkMode);
         localStorage.setItem('darkMode', newDarkMode.toString());
         document.documentElement.classList.toggle('dark', newDarkMode);
-    };
-
-    const markAsRead = (id: string) => {
-        setNotifications(notifications.map(notif =>
-            notif.id === id ? { ...notif, read: true } : notif
-        ));
     };
 
     const SidebarLink = ({ href, active, icon: Icon, label, roles = [] }: {
@@ -117,99 +98,7 @@ export default function AuthenticatedLayout({
         );
     };
 
-    const UserDropdown = ({ user }: { user: AuthUser }) => (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.avatar || '/placeholder.svg?height=40&width=40'} alt={`${user.firstname} ${user.lastname}`} />
-                        <AvatarFallback>{user.firstname[0]}{user.lastname[0]}</AvatarFallback>
-                    </Avatar>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{`${user.firstname} ${user.lastname}`}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                    </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <Link href={route('profile.edit')} className="flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <Link href={route('logout')} method="post" as="button" className="w-full flex items-center">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
 
-    const NotificationDropdown = () => {
-        const unreadCount = notifications.filter(n => !n.read).length;
-
-        return (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative">
-                        <Bell className="h-5 w-5" />
-                        {unreadCount > 0 && (
-                            <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                                {unreadCount}
-                            </Badge>
-                        )}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-80" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex justify-between items-center">
-                            <span className="text-base font-semibold">Notifications</span>
-                            {unreadCount > 0 && (
-                                <Badge variant="secondary" className="ml-auto">
-                                    {unreadCount} new
-                                </Badge>
-                            )}
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <ScrollArea className="h-[300px]">
-                        {notifications.length > 0 ? (
-                            notifications.map((notif) => (
-                                <DropdownMenuItem key={notif.id} onSelect={() => markAsRead(notif.id)}>
-                                    <div className={cn("flex flex-col gap-1 w-full", !notif.read && "font-medium")}>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm">{notif.title}</span>
-                                            <span className="text-xs text-muted-foreground">{notif.time}</span>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">{notif.message}</p>
-                                    </div>
-                                </DropdownMenuItem>
-                            ))
-                        ) : (
-                            <div className="text-center py-4 text-muted-foreground">No new notifications</div>
-                        )}
-                    </ScrollArea>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-center">
-                        <Link href="/notifications" className="w-full text-sm font-medium">
-                            View all notifications
-                        </Link>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        );
-    };
 
     return (
         <div className={cn("flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200",
