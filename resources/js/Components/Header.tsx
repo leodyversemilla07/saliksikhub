@@ -25,7 +25,6 @@ const navItems = [
 ]
 
 export default function Header({ auth }: HeaderProps) {
-    const { url } = usePage();
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const getDashboardRoute = () => {
@@ -40,7 +39,6 @@ export default function Header({ auth }: HeaderProps) {
         } else if (userRoles.includes(UserRole.Author)) {
             return route('author.dashboard');
         }
-
         return route('dashboard');
     };
 
@@ -51,7 +49,7 @@ export default function Header({ auth }: HeaderProps) {
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center">
                             <img
-                                src="https://www.minsu.edu.ph/template/images/logo.png"
+                                src='storage/images/logo.png'
                                 alt="MinSU Research Journal Logo"
                                 width={40}
                                 height={40}

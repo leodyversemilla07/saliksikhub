@@ -23,7 +23,7 @@ export const UserDropdown = ({ user }: { user: AuthUser }) => (
         <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.avatar || '/placeholder.svg?height=40&width=40'} alt={`${user.firstname} ${user.lastname}`} />
+                    <AvatarImage src={user.avatar || 'public/storage/images/logo.png'} alt={`${user.firstname} ${user.lastname}`} />
                     <AvatarFallback>{user.firstname[0]}{user.lastname[0]}</AvatarFallback>
                 </Avatar>
             </Button>

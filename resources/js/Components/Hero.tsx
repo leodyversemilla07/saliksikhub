@@ -49,7 +49,7 @@ export default function Hero() {
             </div>
             <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
                 <img
-                    src="https://www.minsu.edu.ph/slider/slides_2.jpg"
+                    src='storage/images/hero_image.jpg'
                     alt="Research collage"
                     width={1920}
                     height={1080}

@@ -1,14 +1,36 @@
+// React and Inertia imports
 import { useState, useEffect, PropsWithChildren, ReactNode } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { Moon, Sun, Menu, X, Activity, Bell, BookOpen, CheckCircle, FileText, Home, Plus, Settings, Upload, User, LogOut } from 'lucide-react';
+
+// Icons
+import {
+    Moon,
+    Sun,
+    Menu,
+    X,
+    Activity,
+    BookOpen,
+    CheckCircle,
+    FileText,
+    Home,
+    Plus,
+    Upload,
+    User
+} from 'lucide-react';
+
+// Utilities
 import { cn } from '@/lib/utils';
+
+// UI Components
 import { Button } from '@/Components/ui/button';
 import { ScrollArea } from '@/Components/ui/scroll-area';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Badge } from '@/Components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from '@/Components/ui/tooltip';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { NotificationDropdown } from '@/Components/layout/NotificationDropdown';
 import { UserDropdown } from '@/Components/layout/UserDropdown';
@@ -97,8 +119,6 @@ export default function AuthenticatedLayout({
             </Link>
         );
     };
-
-
 
     return (
         <div className={cn("flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200",

@@ -8,11 +8,8 @@ use App\Models\Manuscript;
 use App\Models\Article;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Exception;
 use App\Models\ReviewerAssignment;
-use App\Models\AiReview;
-use Smalot\PdfParser\Parser;
 
 class ManuscriptController extends Controller
 {
@@ -53,10 +50,16 @@ class ManuscriptController extends Controller
         return Inertia::render('Manuscripts/Create');
     }
 
+    /**
+     * Store a new manuscript submission.
+     * 
+     * Validates input, stores PDF file, and creates manuscript record.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
-        set_time_limit(240);
-
         $validated = $request->validate([
             'title' => 'required|string|min:10',
             'authors' => 'required|string|min:3',
@@ -74,41 +77,9 @@ class ManuscriptController extends Controller
             $validated['user_id'] = Auth::id();
             $validated['status'] = Manuscript::STATUSES['SUBMITTED'];
 
-            $manuscript = Manuscript::create($validated);
+            Manuscript::create($validated);
 
-            $filePath = Storage::disk('public')->path($validated['manuscript_path']);
-            $parser = new Parser();
-            $pdf = $parser->parseFile($filePath);
-            $manuscriptText = $pdf->getText();
-
-            logger()->info('Extracted Manuscript Text:', ['text' => $manuscriptText]);
-
-            $response = Http::timeout(240)
-                ->post('http://127.0.0.1:3000/pre_review/', [
-                    'manuscript_text' => $manuscriptText,
-                ]);
-
-            if ($response->successful()) {
-                $responseBody = $response->json();
-
-                logger()->info('AI Pre-review Response:', ['response' => $responseBody]);
-
-                AiReview::create([
-                    'manuscript_id' => $manuscript->id,
-                    'summary' => $responseBody['summary'] ?? null,
-                    'keywords' => isset($responseBody['keywords']) ? json_encode($responseBody['keywords']) : null,
-                    'language_quality' => isset($responseBody['language_quality']) ? json_encode($responseBody['language_quality']) : null,
-                ]);
-            } else {
-                logger()->error('AI Pre-review failed', [
-                    'response' => $response->body(),
-                ]);
-            }
-
-            return response()->json([
-                'message' => 'Manuscript submitted successfully!',
-                'data' => $manuscript->load('aiReview'),
-            ], 201);
+            return redirect()->route('manuscripts.index')->with('success', 'Manuscript submitted successfully!');
 
         } catch (Exception $e) {
             logger()->error('Submission Error', [
@@ -116,10 +87,7 @@ class ManuscriptController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return response()->json([
-                'message' => 'An error occurred during submission.',
-                'error' => $e->getMessage(),
-            ], 500);
+            return redirect()->back()->with('error', 'An error occurred during submission.');
         }
     }
 
