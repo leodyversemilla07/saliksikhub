@@ -1,14 +1,10 @@
 import { useState } from 'react';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, Search } from 'lucide-react';
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
+import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
     auth: PageProps['auth'];
-    journalName: string;
-    logoUrl: string;
 }
 
 enum UserRole {
@@ -18,25 +14,19 @@ enum UserRole {
     Author = 'author',
 }
 
-export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
+const navItems = [
+    { name: "Home", href: "/" },
+    { name: "Current", href: "/current" },
+    { name: "Submissions", href: "/submissions" },
+    { name: "Archives", href: "/archives" },
+    { name: "Editorial Board", href: "/editorial-board" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact Us", href: "/contact" },
+]
+
+export default function Header({ auth }: HeaderProps) {
     const { url } = usePage();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const toggleMobileMenu = () => {
-        setIsMobileMenuOpen(prevState => !prevState);
-    };
-
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-    };
-
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Searching for:', searchQuery);
-    };
-
-    const isActive = (href: string) => url === href ? 'text-green-800 font-bold' : 'text-gray-600';
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const getDashboardRoute = () => {
         const userRoles = auth.roles;
@@ -55,119 +45,132 @@ export default function Header({ auth, journalName, logoUrl }: HeaderProps) {
     };
 
     return (
-        <div>
-            {/* Logo, Journal name, and Search bar */}
-            <div className="bg-white py-6 px-6 border-b">
-                <div className="max-w-screen-xl mx-auto flex justify-between items-center space-x-6">
-                    {/* Left section: Logo and Journal Name */}
-                    <div className="flex items-center space-x-4">
-                        <Link href='/'>
+        <header className="bg-white shadow-md sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center py-4 md:py-6">
+                    <div className="flex items-center">
+                        <Link href="/" className="flex items-center">
                             <img
-                                src={logoUrl}
-                                alt={`${journalName} Logo`}
-                                className="h-16 max-w-full object-contain"
+                                src="https://www.minsu.edu.ph/template/images/logo.png"
+                                alt="MinSU Research Journal Logo"
+                                width={40}
+                                height={40}
+                                className="mr-3"
                             />
-                        </Link>
-                        <Link href='/'>
-                            <div className="text-black font-bold text-2xl">{journalName}</div>
+                            <span className="text-xl md:text-2xl font-bold text-[#18652c] hover:text-[#3fb65e] transition duration-150">
+                                MinSU Research Journal
+                            </span>
                         </Link>
                     </div>
-
-                    {/* Right section: Search bar */}
-                    <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center space-x-2">
-                        <div className="flex w-full max-w-sm items-center space-x-2">
-                            <Input
-                                type="text"
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                                placeholder="Search journals or articles..."
-                                className="p-2 border rounded-md w-full focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            />
-                            <Button type="submit" className="ml-2 text-white bg-green-600 p-2 rounded-md hover:bg-green-700">
-                                Search <Search />
-                            </Button>
-                        </div>
-                    </form>
-
-                    {/* Hamburger menu icon for mobile */}
-                    <button className="lg:hidden p-2 text-green-600" onClick={toggleMobileMenu}>
-                        <Menu />
-                    </button>
-                </div>
-            </div>
-
-            {/* Navigation bar */}
-            <nav className="bg-white py-4 px-6 border-b">
-                <div className="max-w-screen-xl mx-auto flex items-center justify-between">
-                    {/* Left section: Navigation links */}
-                    <div className="hidden lg:flex space-x-6">
-                        <Link href="/" className={`${isActive('/')} hover:text-green-800`}>Home</Link>
-                        <Link href="/current" className={`${isActive('/current')} hover:text-green-800`}>Current</Link>
-                        <Link href="/submissions" className={`${isActive('/submissions')} hover:text-green-800`}>Submissions</Link>
-                        <Link href="/archives" className={`${isActive('/archives')} hover:text-green-800`}>Archives</Link>
-                        <Link href="/editorial-board" className={`${isActive('/editorial-board')} hover:text-green-800`}>Editorial Board</Link>
-                        <Link href="/about-us" className={`${isActive('/about-us')} hover:text-green-800`}>About Us</Link>
-                        <Link href="/contact-us" className={`${isActive('/contact-us')} hover:text-green-800`}>Contact Us</Link>
-                    </div>
-
-                    {/* Right section: Auth buttons */}
-                    <div className="hidden lg:flex space-x-4">
+                    <nav className="hidden md:flex space-x-8">
+                        {navItems.map((item) => (
+                            <NavLink key={item.name} href={item.href}>
+                                {item.name}
+                            </NavLink>
+                        ))}
+                    </nav>
+                    <div className="hidden md:flex items-center space-x-4">
                         {auth.user ? (
-                            <Link href={getDashboardRoute()}>
-                                <Button className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                                    Dashboard
-                                </Button>
+                            <Link
+                                href={getDashboardRoute()}
+                                className="text-sm font-medium text-white bg-[#18652c] hover:bg-[#3fb65e] px-4 py-2 rounded-md transition duration-150"
+                            >
+                                Dashboard
                             </Link>
                         ) : (
                             <>
-                                <Link href={route("login")}>
-                                    <Button className="flex-1 px-4 py-2 border bg-white border-green-600 text-green-600 hover:text-green-600 hover:border-green-600 hover:bg-gray-100 rounded-md">
-                                        Log in
-                                    </Button>
+                                <Link
+                                    href={route("login")}
+                                    className="text-sm font-medium text-[#18652c] hover:text-[#3fb65e] transition duration-150"
+                                >
+                                    Log in
                                 </Link>
-                                <Link href={route("register")}>
-                                    <Button className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 hover:text-white hover:border-green-600">
-                                        Register
-                                    </Button>
+                                <Link
+                                    href={route("register")}
+                                    className="text-sm font-medium text-white bg-[#18652c] hover:bg-[#3fb65e] px-4 py-2 rounded-md transition duration-150"
+                                >
+                                    Register
                                 </Link>
                             </>
                         )}
                     </div>
-                </div>
-            </nav>
 
-            {/* Mobile menu */}
-            <div className={`lg:hidden flex flex-col items-center space-y-4 mt-4 px-6 bg-gray-50 w-full ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
-                <Link href="/" className={`${isActive('/')} hover:text-green-800`}>Home</Link>
-                <Link href="/current" className={`${isActive('/current')} hover:text-green-800`}>Current</Link>
-                <Link href="/submissions" className={`${isActive('/submissions')} hover:text-green-800`}>Submissions</Link>
-                <Link href="/archives" className={`${isActive('/archives')} hover:text-green-800`}>Archives</Link>
-                <Link href="/editorial-board" className={`${isActive('/editorial-board')} hover:text-green-800`}>Editorial Board</Link>
-                <Link href="/about-us" className={`${isActive('/about-us')} hover:text-green-800`}>About Us</Link>
-                <Link href="/contact-us" className={`${isActive('/contact-us')} hover:text-green-800`}>Contact Us</Link>
-
-                {/* Auth buttons */}
-                {auth.user ? (
-                    <Link href={getDashboardRoute()}>
-                        <button className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                            Dashboard
+                    <div className="md:hidden">
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="inline-flex items-center justify-center p-2 rounded-md text-[#18652c] hover:text-[#3fb65e] hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#3fb65e]"
+                        >
+                            <span className="sr-only">Open main menu</span>
+                            {isMenuOpen ? (
+                                <X className="block h-6 w-6" aria-hidden="true" />
+                            ) : (
+                                <Menu className="block h-6 w-6" aria-hidden="true" />
+                            )}
                         </button>
-                    </Link>
-                ) : (
-                    <>
-                        <Link href={route("login")}>
-                            <button className="flex-1 px-4 py-2 border border-green-600 text-green-600 hover:text-green-900 hover:border-green-900 rounded-md">
-                                Log in
-                            </button>
-                        </Link>
-                        <Link href={route("register")}>
-                            <button className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-                                Register
-                            </button>
-                        </Link>
-                    </>
-                )}
+                    </div>
+                </div>
             </div>
-        </div>
+
+            {
+                isMenuOpen && (
+                    <div className="md:hidden">
+                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                            {navItems.map((item) => (
+                                <MobileNavLink key={item.name} href={item.href}>
+                                    {item.name}
+                                </MobileNavLink>
+                            ))}
+                        </div>
+                        <div className="pt-4 pb-3 border-t border-gray-200">
+                            <div className="px-2 space-y-1">
+                                {auth.user ? (
+                                    <MobileNavLink href={getDashboardRoute()}>Dashboard</MobileNavLink>
+                                ) : (
+                                    <>
+                                        <MobileNavLink href={route("login")}>Log in</MobileNavLink>
+                                        <MobileNavLink href={route("register")}>Register</MobileNavLink>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </header >
     );
 }
+
+const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+    const { url } = usePage();
+    const isActive = url === href;
+
+    return (
+        <Link
+            href={href}
+            className={`
+                text-sm font-medium text-[#18652c] hover:text-[#3fb65e] transition duration-150
+                relative pb-2
+                ${isActive ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#18652c]' : ''}
+            `}
+        >
+            {children}
+        </Link>
+    );
+};
+
+const MobileNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+    const { url } = usePage();
+    const isActive = url === href;
+
+    return (
+        <Link
+            href={href}
+            className={`
+                block px-3 py-2 rounded-md text-base font-medium text-[#18652c] hover:text-[#3fb65e] hover:bg-gray-50 transition duration-150
+                ${isActive ? 'border-l-4 border-[#18652c]' : ''}
+            `}
+        >
+            {children}
+        </Link>
+    );
+};
