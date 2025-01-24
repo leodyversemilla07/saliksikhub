@@ -58,49 +58,6 @@ export default function Login({
 
             {/* Main Content */}
             <main className="flex flex-col md:flex-row gap-8 items-center justify-center w-full max-w-6xl">
-                {/* Left Side - Illustration */}
-                <div className="w-full md:w-1/2 flex justify-center items-center relative">
-                    <div className="relative w-full max-w-lg">
-                        {/* Background Design */}
-                        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full filter blur-xl opacity-50"></div>
-
-                        {/* Main Illustration */}
-                        <div className="relative mb-6">
-                            <div className="aspect-square w-full bg-[#f0f0f0] rounded-full overflow-hidden flex items-center justify-center shadow-lg">
-                                <img
-                                    src="https://cdn.vectorstock.com/i/500p/84/93/people-sitting-in-a-circle-on-white-background-vector-26348493.jpg"
-                                    alt="Student with laptop"
-                                    className="w-3/4 h-3/4 object-cover transition-transform duration-300 hover:scale-105 scale-125"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Decorative Elements */}
-                        <div className="absolute top-6 left-6 w-16 h-16 bg-orange-200 rounded-full shadow-lg animate-pulse"></div>
-                        <div className="absolute top-12 right-10 w-16 h-16 bg-blue-200 rounded-full overflow-hidden shadow-lg">
-                            <img
-                                src="https://img.freepik.com/premium-photo/graphic-designer-digital-avatar-generative-ai_934475-9292.jpg"
-                                alt="Avatar 1"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <div className="absolute bottom-10 left-10 w-16 h-16 bg-blue-200 rounded-full overflow-hidden shadow-lg">
-                            <img
-                                src="https://img.freepik.com/free-photo/androgynous-avatar-non-binary-queer-person_23-2151100270.jpg?semt=ais_hybrid"
-                                alt="Avatar 2"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-
-                        {/* Tagline or Text */}
-                        <div className="absolute bottom-0 left-0 w-full text-center mt-8">
-                            <h3 className="text-lg font-semibold text-gray-700">Empower Your Knowledge</h3>
-                            <p className="text-sm text-gray-500">Join the MinSU Research Journal Community</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Side - Login Form */}
                 <div className="w-full md:w-1/2">
                     <div className="bg-white p-8 rounded-3xl shadow-lg">
                         <h2 className="text-3xl font-bold mb-4 text-gray-800">Welcome back 👋</h2>

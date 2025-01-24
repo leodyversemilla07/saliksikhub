@@ -2,87 +2,136 @@ import Footer from '@/Components/Footer';
 import Header from '@/Components/Header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { CheckCircle, FileText, Users, Clock, BookOpen } from "lucide-react"
 
-export default function SubmissionGuidelines({ auth }: PageProps) {
-    const journalName = "MinSU Research Journal";
-    const logoUrl = "https://minsu.edu.ph/template/images/logo.png";
+const guidelines = [
+    "Original research: All submissions must be original and not previously published or under consideration elsewhere.",
+    "Language: Manuscripts should be written in clear, concise English.",
+    "Length: Research articles should not exceed 8,000 words, including abstract, tables, figures, and references.",
+    "Format: Use double-spacing, 12-point Times New Roman font, and 1-inch margins.",
+    "Abstract: Include a structured abstract of no more than 250 words.",
+    "Keywords: Provide 4-6 keywords that best describe your research.",
+    "References: Use APA 7th edition format for all citations and references.",
+    "Figures and Tables: Include high-quality figures and tables with clear captions.",
+    "Ethical considerations: Include a statement on ethical approval and informed consent where applicable.",
+    "Conflict of Interest: Disclose any potential conflicts of interest.",
+]
 
+const steps = [
+    {
+        title: "Prepare Your Manuscript",
+        description: "Ensure your manuscript adheres to our submission guidelines.",
+        icon: FileText,
+    },
+    {
+        title: "Create an Account",
+        description: "Register on our online submission system if you haven't already.",
+        icon: Users,
+    },
+    {
+        title: "Submit Your Manuscript",
+        description: "Log in to the submission system and follow the steps to upload your manuscript and related files.",
+        icon: FileText,
+    },
+    {
+        title: "Initial Screening",
+        description: "Our editorial team will review your submission for completeness and adherence to guidelines.",
+        icon: CheckCircle,
+    },
+    {
+        title: "Peer Review",
+        description: "If your manuscript passes initial screening, it will be sent for peer review (typically 4-6 weeks).",
+        icon: Users,
+    },
+    {
+        title: "Editorial Decision",
+        description: "Based on reviewer feedback, the editor will make a decision (accept, revise, or reject).",
+        icon: CheckCircle,
+    },
+    {
+        title: "Revision (if required)",
+        description: "If revisions are requested, you'll have the opportunity to address reviewer comments.",
+        icon: Clock,
+    },
+    {
+        title: "Final Decision",
+        description: "After reviewing any revisions, the editor will make a final decision on your manuscript.",
+        icon: CheckCircle,
+    },
+    {
+        title: "Publication",
+        description: "If accepted, your article will be prepared for publication in the next available issue.",
+        icon: BookOpen,
+    },
+]
+
+export default function Submissions({ auth }: PageProps) {
     return (
         <>
             <Head title="Submissions" />
-            <Header
-                auth={auth}
-                journalName={journalName}
-                logoUrl={logoUrl}
-            />
-            <div className="max-w-screen-lg mx-auto px-6 py-12">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Submission Guidelines</h1>
+            <Header auth={auth} />
+            <div className="bg-white min-h-screen">
+                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Submissions</h1>
+                    <div className="max-w-3xl mx-auto text-center mb-12">
+                        <p className="text-xl text-[#18652c] mb-8">
+                            Thank you for considering MinSU Research Journal for your manuscript submission. We welcome high-quality
+                            research papers from various disciplines.
+                        </p>
+                        <Link
+                            href="#"
+                            className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                        >
+                            Submit Your Manuscript
+                        </Link>
+                    </div>
 
-                <p className="text-gray-700 mb-4">
-                    We welcome submissions from authors worldwide in the field of [insert research field]. To ensure a smooth submission process, please carefully review the following guidelines before submitting your manuscript.
-                </p>
+                    <div className="grid md:grid-cols-2 gap-8 mb-12">
+                        <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                            <h2 className="text-3xl font-semibold text-[#18652c] mb-6">Submission Guidelines</h2>
+                            <ul className="space-y-4">
+                                {guidelines.map((guideline, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <CheckCircle className="h-6 w-6 text-[#3fb65e] mr-3 flex-shrink-0 mt-1" />
+                                        <span className="text-[#18652c]">{guideline}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">General Requirements</h2>
-                    <ul className="list-disc list-inside text-gray-700 space-y-2">
-                        <li>All manuscripts should be submitted in English.</li>
-                        <li>Submissions must be original work and not under review elsewhere.</li>
-                        <li>Ensure that your manuscript adheres to our formatting guidelines as detailed below.</li>
-                    </ul>
-                </section>
+                        <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                            <h2 className="text-3xl font-semibold text-[#18652c] mb-6">Submission Process</h2>
+                            <ol className="space-y-6">
+                                {steps.map((step, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#3fb65e] text-white mr-4 flex-shrink-0 mt-1">
+                                            <step.icon className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-medium text-[#18652c]">{step.title}</h3>
+                                            <p className="text-[#18652c]">{step.description}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ol>
+                        </div>
+                    </div>
 
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Formatting Guidelines</h2>
-                    <ul className="list-disc list-inside text-gray-700 space-y-2">
-                        <li>Manuscripts should be submitted in Word (.doc or .docx) or LaTeX (.tex) format.</li>
-                        <li>Use a standard font like Times New Roman or Arial, size 12, and 1.5 line spacing.</li>
-                        <li>Include an abstract of 150-250 words at the beginning of the manuscript.</li>
-                        <li>References should follow the [Insert Preferred Style] format.</li>
-                    </ul>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Submission Process</h2>
-                    <ol className="list-decimal list-inside text-gray-700 space-y-2">
-                        <li>Create an account on our platform if you haven’t done so already.</li>
-                        <li>Log in to your account and navigate to the "Submit Manuscript" section.</li>
-                        <li>Fill in the required details about your manuscript, including title, authors, and abstract.</li>
-                        <li>Upload your manuscript and any supplementary files.</li>
-                        <li>Submit your manuscript. You will receive a confirmation email once the submission is complete.</li>
-                    </ol>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Peer Review Process</h2>
-                    <p className="text-gray-700">
-                        Once submitted, your manuscript will undergo an initial assessment by our editorial team. If it passes the initial review, it will be sent to experts in the field for peer review. The review process may take several weeks, and you will be notified of the outcome as soon as a decision is made.
-                    </p>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Ethics and Disclosure</h2>
-                    <p className="text-gray-700">
-                        Authors are required to adhere to the highest ethical standards. Any conflicts of interest must be disclosed at the time of submission. Plagiarism, including self-plagiarism, is strictly prohibited and will result in rejection.
-                    </p>
-                </section>
-
-                <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Contact Us</h2>
-                    <p className="text-gray-700">
-                        If you have any questions regarding the submission guidelines or the process, please contact us at
-                        <Link href="/contact-us" className="text-green-600 hover:underline"> Contact Us</Link>.
-                    </p>
-                </section>
-
-                <div className="mt-8">
-                    <Link href="/submit" className="inline-block bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
-                        Submit Your Manuscript
-                    </Link>
+                    <div className="bg-[#e6f3eb] rounded-lg p-8 shadow-lg text-center">
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Ready to Submit?</h2>
+                        <p className="text-xl text-[#18652c] mb-6">
+                            We look forward to receiving your manuscript and contributing to the advancement of knowledge in your field.
+                        </p>
+                        <Link
+                            href="#"
+                            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                        >
+                            Start Your Submission
+                        </Link>
+                    </div>
                 </div>
             </div>
-            <Footer
-                journalName={journalName}
-            />
+            <Footer />
         </>
     );
 }

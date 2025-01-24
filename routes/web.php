@@ -16,7 +16,7 @@ Route::get('/current', [PageController::class, 'renderPage'])->name('current')->
 Route::get('/submissions', [PageController::class, 'renderPage'])->name('submissions')->defaults('page', 'Submissions');
 Route::get('/archives', [PageController::class, 'renderPage'])->name('archives')->defaults('page', 'Archives');
 Route::get('/editorial-board', [PageController::class, 'renderPage'])->name('editorial-board')->defaults('page', 'EditorialBoard');
-Route::get('/about', [PageController::class, 'renderPage'])->name('about-us')->defaults('page', 'About');
+Route::get('/about', [PageController::class, 'renderPage'])->name('about-us')->defaults('page', 'AboutUs');
 Route::get('/contact', [PageController::class, 'renderPage'])->name('contact-us')->defaults('page', 'ContactUs');
 
 // Admin Routes

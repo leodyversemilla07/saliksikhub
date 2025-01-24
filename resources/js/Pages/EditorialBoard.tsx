@@ -1,93 +1,183 @@
 import Footer from '@/Components/Footer';
 import Header from '@/Components/Header';
 import { PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { useState } from "react"
+import { Mail, Linkedin, Twitter, X } from "lucide-react"
+import { Head } from '@inertiajs/react';
+
+interface BoardMember {
+    name: string
+    role: string
+    affiliation: string
+    imageUrl: string
+    bio: string
+    email: string
+    linkedin?: string
+    twitter?: string
+}
+
+const boardMembers: BoardMember[] = [
+    {
+        name: "Dr. Maria Santos",
+        role: "Editor-in-Chief",
+        affiliation: "Department of Environmental Science, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/WJZSVWQyBEAcO0uXi7GiTB9odMU4ut6spQo2v6byBDY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTQw/NzA4NDQxOS9waG90/by9wb3J0cmFpdC1v/Zi1oYXBweS1tYXR1/cmUtd29tZW4uanBn/P3M9NjEyeDYxMiZ3/PTAmaz0yMCZjPVRW/ak5iSHlyU1ZKN1hj/VFpONi1sSG1JdEhJ/RjB2VnpjSXZPWXlY/QVBwOGs9",
+        bio: "Dr. Santos is a renowned expert in environmental sustainability with over 20 years of research experience. She has published extensively on climate change impacts in Southeast Asia.",
+        email: "maria.santos@minsu.edu",
+        linkedin: "https://www.linkedin.com/in/maria-santos",
+        twitter: "https://twitter.com/mariasantos",
+    },
+    {
+        name: "Prof. Juan dela Cruz",
+        role: "Associate Editor",
+        affiliation: "Department of Social Sciences, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/_g94HYY9A-j_pDWUO2-d0MI_1gzVCq2j3lLadLOTIGI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS1waG90/by9zbWlsaW5nLWhh/cHB5LW1hdHVyZS1l/bGVnYW50LXByb2Zl/c3Nvci13aXRoLWds/YXNzZXMtZWR1Y2F0/aW9uLWtub3dsZWRn/ZS1jb25jZXB0LXRl/YWNoZXJzLWRheV8y/NjUyMjMtMzcxNC5q/cGc_c2VtdD1haXNf/aHlicmlk",
+        bio: "Prof. dela Cruz specializes in rural development and has been instrumental in shaping policies for sustainable community growth in Mindoro.",
+        email: "juan.delacruz@minsu.edu",
+        linkedin: "https://www.linkedin.com/in/juan-delacruz",
+    },
+    {
+        name: "Dr. Elena Reyes",
+        role: "Associate Editor",
+        affiliation: "Department of Marine Biology, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/a6c0VdSyEKONJHjhMbaSs4LL1hMW6mrMMOOtlH5PnkY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA4LzQ5LzI2LzY0/LzM2MF9GXzg0OTI2/NjQzN19Idkx5UlFq/RlJWN2RMbHlwME1Z/WG9wSmY3YzMzTjcx/aC5qcGc",
+        bio: "Dr. Reyes is a marine biologist focusing on coral reef conservation. Her work has significantly contributed to the protection of Mindoro's coastal ecosystems.",
+        email: "elena.reyes@minsu.edu",
+        twitter: "https://twitter.com/elenareyes",
+    },
+    {
+        name: "Dr. Roberto Tan",
+        role: "Associate Editor",
+        affiliation: "Department of Agriculture, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/ArOrVAxqq503oybgWHPyuPTdCcftNG6T-CGqjTHvGIE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNS8w/OC8wMi8yMy8zOC9h/Z25hci1ob2Vza3Vs/ZHNzb24tODcyNDA4/XzY0MC5qcGc",
+        bio: "Dr. Tan's research on sustainable farming practices has revolutionized agricultural methods in Mindoro, improving crop yields while reducing environmental impact.",
+        email: "roberto.tan@minsu.edu",
+        linkedin: "https://www.linkedin.com/in/roberto-tan",
+    },
+    {
+        name: "Prof. Ana Lim",
+        role: "Associate Editor",
+        affiliation: "Department of Education, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/v1fbYGlNBuCzgdOH-Ztjucbj4qpL1oUpbD3_EeGBUbw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/ZnJlZS1waG90by9t/ZWRpdW0tc2hvdC1z/bWlsZXktd29tYW4t/bGlicmFyeV8yMy0y/MTQ5MjA0NzUzLmpw/Zz9zZW10PWFpc19o/eWJyaWQ",
+        bio: "Prof. Lim is an expert in educational psychology, focusing on improving learning outcomes in rural areas. Her work has influenced educational policies across the Philippines.",
+        email: "ana.lim@minsu.edu",
+        twitter: "https://twitter.com/analim",
+    },
+    {
+        name: "Dr. Carlos Bautista",
+        role: "Associate Editor",
+        affiliation: "Department of Public Health, Mindoro State University",
+        imageUrl: "https://imgs.search.brave.com/-beOKffCTor4D9NMhM2qZwNRAS7LXtPFK0my7wHMHDA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxOS8w/Ni8yOS8wNC8zNi9j/b3Vuc2Vsb3ItNDMw/NTM5NF82NDAuanBn",
+        bio: "Dr. Bautista's research on tropical diseases has led to improved healthcare strategies in remote areas of Mindoro and other parts of the Philippines.",
+        email: "carlos.bautista@minsu.edu",
+        linkedin: "https://www.linkedin.com/in/carlos-bautista",
+    },
+]
 
 export default function EditorialBoard({ auth }: PageProps) {
-    const journalName = "MinSU Research Journal";
-    const logoUrl = "https://minsu.edu.ph/template/images/logo.png";
-
-    // Sample data - Replace with dynamic data from your backend
-    const boardMembers = [
-        {
-            id: 1,
-            name: "Dr. John Doe",
-            role: "Editor-in-Chief",
-            photoUrl: "https://franchisematch.com/wp-content/uploads/2015/02/john-doe.jpg",
-            bio: "Dr. John Doe is a professor of Computer Science with over 20 years of experience in artificial intelligence research...",
-            email: "johndoe@example.com",
-            profileUrl: "/profile/johndoe",
-        },
-        {
-            id: 2,
-            name: "Dr. Jane Smith",
-            role: "Associate Editor",
-            photoUrl: "https://westernfinance.org/wp-content/uploads/speaker-2-v2.jpg",
-            bio: "Dr. Jane Smith specializes in data security and privacy and has published extensively in these areas...",
-            email: "janesmith@example.com",
-            profileUrl: "/profile/janesmith",
-        },
-        {
-            id: 3,
-            name: "Dr. Bob Stark",
-            role: "Associate Editor",
-            photoUrl: "https://media.licdn.com/dms/image/C4E03AQGJOYQ9kZo1aQ/profile-displayphoto-shrink_200_200/0/1615767681032?e=2147483647&v=beta&t=5pKSYxsvoghV6AY4OYCRFQ3mu4Al5GClVzGaQ9YqMIA  ",
-            bio: "Dr. Bob Star specializes in data security and privacy and has published extensively in these areas...",
-            email: "bobstark@example.com",
-            profileUrl: "/profile/bobstark",
-        },
-        {
-            id: 4,
-            name: "Dr. Alice Guo",
-            role: "Associate Editor",
-            photoUrl: "https://birikfestival.com/wp-content/uploads/2015/04/speaker-1-v2.jpg",
-            bio: "Dr. Alice Guo specializes in data security and privacy and has published extensively in these areas...",
-            email: "aliceguo@example.com",
-            profileUrl: "/profile/aliceguo",
-        },
-        // Add more board members as needed
-    ];
+    const [selectedMember, setSelectedMember] = useState<BoardMember | null>(null)
 
     return (
         <>
             <Head title="Editorial Boord" />
+            <Header auth={auth} />
+            <div className="bg-white min-h-screen">
+                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Editorial Board</h1>
+                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+                        Our editorial board comprises distinguished scholars and researchers from various disciplines, ensuring the
+                        highest standards of academic rigor and integrity in our publications.
+                    </p>
 
-
-            <Header
-                auth={auth}
-                journalName={journalName}
-                logoUrl={logoUrl}
-            />
-            <div className="max-w-screen-lg mx-auto px-6 py-12">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Editorial Board</h1>
-                <p className="text-gray-600 mb-8">Meet the esteemed members of our editorial board who ensure the quality and integrity of our published research.</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {boardMembers.map((member) => (
-                        <div key={member.id} className="p-6 border rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex items-center space-x-4">
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {boardMembers.map((member, index) => (
+                            <div
+                                key={index}
+                                className="bg-[#f0f8f3] rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
+                                onClick={() => setSelectedMember(member)}
+                            >
                                 <img
-                                    src={member.photoUrl}
+                                    src={member.imageUrl || "/placeholder.svg"}
                                     alt={member.name}
-                                    className="w-24 h-24 rounded-full object-cover shadow-lg"
+                                    width={400}
+                                    height={400}
+                                    className="w-full h-64 object-cover"
                                 />
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800">{member.name}</h3>
-                                    <p className="text-gray-600 text-sm">{member.role}</p>
-                                    <p className="text-gray-500 text-sm mt-2">{member.email}</p>
-                                    <Link href={member.profileUrl} className="text-green-600 font-semibold hover:underline mt-4 block">
-                                        View Profile
-                                    </Link>
+                                <div className="p-6">
+                                    <h2 className="text-2xl font-semibold text-[#18652c] mb-2">{member.name}</h2>
+                                    <p className="text-[#3fb65e] font-medium mb-2">{member.role}</p>
+                                    <p className="text-[#18652c] mb-4">{member.affiliation}</p>
+                                    <p className="text-[#18652c] line-clamp-3">{member.bio}</p>
                                 </div>
                             </div>
-                            <p className="text-gray-700 mt-4">{member.bio}</p>
+                        ))}
+                    </div>
+
+                    {selectedMember && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-lg max-w-2xl w-full p-8 relative">
+                                <button
+                                    className="absolute top-4 right-4 text-[#18652c] hover:text-[#3fb65e]"
+                                    onClick={() => setSelectedMember(null)}
+                                >
+                                    <X />
+                                </button>
+                                <img
+                                    src={selectedMember.imageUrl || "/placeholder.svg"}
+                                    alt={selectedMember.name}
+                                    width={200}
+                                    height={200}
+                                    className="w-48 h-48 object-cover rounded-full mx-auto mb-6"
+                                />
+                                <h2 className="text-3xl font-semibold text-[#18652c] mb-2 text-center">{selectedMember.name}</h2>
+                                <p className="text-[#3fb65e] font-medium mb-2 text-center">{selectedMember.role}</p>
+                                <p className="text-[#18652c] mb-4 text-center">{selectedMember.affiliation}</p>
+                                <p className="text-[#18652c] mb-6">{selectedMember.bio}</p>
+                                <div className="flex justify-center space-x-4">
+                                    <a href={`mailto:${selectedMember.email}`} className="text-[#3fb65e] hover:text-[#18652c]">
+                                        <Mail className="w-6 h-6" />
+                                    </a>
+                                    {selectedMember.linkedin && (
+                                        <a
+                                            href={selectedMember.linkedin}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[#3fb65e] hover:text-[#18652c]"
+                                        >
+                                            <Linkedin className="w-6 h-6" />
+                                        </a>
+                                    )}
+                                    {selectedMember.twitter && (
+                                        <a
+                                            href={selectedMember.twitter}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[#3fb65e] hover:text-[#18652c]"
+                                        >
+                                            <Twitter className="w-6 h-6" />
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    ))}
+                    )}
+
+                    <div className="mt-16 bg-[#e6f3eb] rounded-lg p-8 shadow-lg text-center">
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Join Our Editorial Board</h2>
+                        <p className="text-xl text-[#18652c] mb-6">
+                            We are always looking for experienced researchers and academics to join our editorial board. If you're
+                            interested in contributing to the MinSU Research Journal, please contact us.
+                        </p>
+                        <a
+                            href="/contact"
+                            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                        >
+                            Contact Us
+                        </a>
+                    </div>
                 </div>
             </div>
-            <Footer
-                journalName={journalName}
-            />
+            <Footer />
         </>
     );
 }
