@@ -1,15 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\MailController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\EditorController;
-use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\EditorController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\ManuscriptController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewerController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'renderPage'])->name('home')->defaults('page', 'Home');
 Route::get('/current', [PageController::class, 'renderPage'])->name('current')->defaults('page', 'Current');
@@ -23,7 +23,7 @@ Route::get('/contact', [PageController::class, 'renderPage'])->name('contact-us'
 Route::group([
     'middleware' => ['auth', 'verified', 'role:admin'],
     'prefix' => 'admin',
-    'as' => 'admin.'
+    'as' => 'admin.',
 ], function () {
     Route::get('/', [AdminController::class, 'index'])
         ->name('dashboard');
@@ -58,7 +58,6 @@ Route::group(['middleware' => ['auth', 'verified', 'role:editor']], function () 
 
     Route::post('editor/reviewer/{manuscript}/assigned', [ManuscriptController::class, 'assignReviewer'])->name('assign.reviewer');
 });
-
 
 // Reviewer Routes
 Route::group(['middleware' => ['auth', 'verified', 'role:reviewer']], function () {
@@ -105,4 +104,4 @@ Route::middleware('auth')->group(function () {
 
 Route::get('send-mail', [MailController::class, 'index']);
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

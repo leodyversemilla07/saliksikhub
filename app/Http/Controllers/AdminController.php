@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
@@ -22,13 +22,15 @@ class AdminController extends Controller
     public function index()
     {
         $stats = $this->getDashboardStats();
-        return Inertia::render("Admin/AdminDashboard", compact('stats'));
+
+        return Inertia::render('Admin/AdminDashboard', compact('stats'));
     }
 
     public function manageUsers()
     {
         $users = $this->getUsersExceptCurrent();
         $roles = $this->getAllRoles();
+
         return Inertia::render('Admin/UserManagement', compact('users', 'roles'));
     }
 
@@ -36,9 +38,10 @@ class AdminController extends Controller
     {
         try {
             $user = $this->createUser($request->validated());
+
             return $this->successResponse('User created successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse('Failed to create user: ' . $e->getMessage());
+            return $this->errorResponse('Failed to create user: '.$e->getMessage());
         }
     }
 
@@ -46,9 +49,10 @@ class AdminController extends Controller
     {
         try {
             $this->updateUser($user, $request->validated());
+
             return $this->successResponse('User updated successfully');
         } catch (\Exception $error) {
-            return $this->errorResponse('Failed to update user: ' . $error->getMessage());
+            return $this->errorResponse('Failed to update user: '.$error->getMessage());
         }
     }
 
@@ -59,6 +63,7 @@ class AdminController extends Controller
                 return $this->errorResponse('You cannot delete your own account');
             }
             $user->delete();
+
             return $this->successResponse('User deleted successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to delete user');
@@ -69,6 +74,7 @@ class AdminController extends Controller
     {
         try {
             $userData = $this->transformUser($user);
+
             return Inertia::render('Admin/UserDetail', compact('userData'));
         } catch (ModelNotFoundException $e) {
             return $this->errorResponse('User not found');
@@ -82,7 +88,7 @@ class AdminController extends Controller
             'active_users' => $this->user->where('status', 'active')->count(),
             'admin_users' => $this->user->role('admin')->count(),
             'recent_users' => $this->user->latest()->take(5)->get()
-                ->map(fn($user) => $this->transformUser($user)),
+                ->map(fn ($user) => $this->transformUser($user)),
         ];
     }
 
@@ -93,7 +99,7 @@ class AdminController extends Controller
             ->with('roles')
             ->latest()
             ->get()
-            ->map(fn($user) => $this->transformUser($user));
+            ->map(fn ($user) => $this->transformUser($user));
     }
 
     private function getAllRoles()
@@ -127,6 +133,7 @@ class AdminController extends Controller
         ]);
 
         $user->assignRole($data['roles']);
+
         return $user;
     }
 

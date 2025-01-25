@@ -2,36 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Manuscript;
 use App\Models\Review;
-use App\Models\ReviewerAssignment;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\ManuscriptReview;
 
 class ReviewerController extends Controller
 {
     public function index()
     {
         // Display reviewer dashboard
-        return Inertia::render("Reviewer/ReviewerDashboard");
+        return Inertia::render('Reviewer/ReviewerDashboard');
     }
 
     public function reviewForm(?int $id = null)
     {
-        if (!$id) {
+        if (! $id) {
             abort(404);
         }
         $manuscript = Manuscript::findOrFail($id);
 
-        return Inertia::render("Reviewer/ReviewForm", $manuscript = [
+        return Inertia::render('Reviewer/ReviewForm', $manuscript = [
             'id' => $manuscript->id,
             'title' => $manuscript->title,
             'authors' => explode(', ', $manuscript->authors),
-            'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+            'manuscript_url' => asset('storage/'.$manuscript->manuscript_path),
         ]);
     }
 
@@ -47,6 +42,7 @@ class ReviewerController extends Controller
     public function showReviewForm($reviewId)
     {
         $review = Review::with('manuscript')->findOrFail($reviewId);
+
         return Inertia::render('Reviews/SubmitReview', [
             'review' => $review,
         ]);
@@ -83,7 +79,7 @@ class ReviewerController extends Controller
                 'authors' => explode(', ', $manuscript->authors),
                 'abstract' => $manuscript->abstract,
                 'keywords' => explode(', ', $manuscript->keywords),
-                'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+                'manuscript_url' => asset('storage/'.$manuscript->manuscript_path),
                 'status' => $manuscript->status,
                 'created_at' => $manuscript->created_at->toDateTimeString(),
                 'updated_at' => $manuscript->updated_at->toDateTimeString(),

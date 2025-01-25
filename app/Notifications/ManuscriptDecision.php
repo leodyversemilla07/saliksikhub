@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Manuscript;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -42,9 +41,9 @@ class ManuscriptDecision extends Notification
         return (new MailMessage)
             ->subject('Decision on Your Manuscript')
             ->line('A decision has been made on your manuscript.')
-            ->line('Title: ' . $this->manuscript->title)
-            ->line('Decision: ' . ucfirst($decision->decision))
-            ->line('Comments: ' . $decision->comments)
+            ->line('Title: '.$this->manuscript->title)
+            ->line('Decision: '.ucfirst($decision->decision))
+            ->line('Comments: '.$decision->comments)
             ->action('View Details', route('manuscripts.show', $this->manuscript->id));
     }
 

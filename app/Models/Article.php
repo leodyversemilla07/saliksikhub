@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
     use HasFactory;
 
     const STATUS_PUBLISHED = 'Published';
+
     const STATUS_UNPUBLISHED = 'Unpublished';
+
     const STATUS_ARCHIVED = 'Archived';
 
     protected $fillable = [
@@ -26,12 +28,12 @@ class Article extends Model
         'volume',
         'issue',
         'page_numbers',
-        'pdf_file'
+        'pdf_file',
     ];
 
     protected $casts = [
         'publication_date' => 'datetime',
-        'keywords' => 'array'
+        'keywords' => 'array',
     ];
 
     public function user()

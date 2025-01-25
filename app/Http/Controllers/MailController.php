@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TestMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TestMail;
 
 class MailController extends Controller
 {
@@ -18,20 +18,20 @@ class MailController extends Controller
         try {
             $mailData = [
                 'title' => 'The Title',
-                'body' => 'The Body'
+                'body' => 'The Body',
             ];
 
             Mail::to('leodyversemilla07@gmail.com')->send(new TestMail($mailData));
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Email sent successfully'
+                'message' => 'Email sent successfully',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to send email: ' . $e->getMessage()
+                'message' => 'Failed to send email: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -39,7 +39,6 @@ class MailController extends Controller
     /**
      * Send custom email
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function sendCustomMail(Request $request)
@@ -47,26 +46,26 @@ class MailController extends Controller
         $request->validate([
             'email' => 'required|email',
             'title' => 'required|string',
-            'body' => 'required|string'
+            'body' => 'required|string',
         ]);
 
         try {
             $mailData = [
                 'title' => $request->title,
-                'body' => $request->body
+                'body' => $request->body,
             ];
 
             Mail::to($request->email)->send(new TestMail($mailData));
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Email sent successfully'
+                'message' => 'Email sent successfully',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to send email: ' . $e->getMessage()
+                'message' => 'Failed to send email: '.$e->getMessage(),
             ], 500);
         }
     }

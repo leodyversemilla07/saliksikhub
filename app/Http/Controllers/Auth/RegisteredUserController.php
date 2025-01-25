@@ -34,7 +34,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -65,6 +65,7 @@ class RegisteredUserController extends Controller
         } elseif ($roles->contains('author')) {
             return redirect()->route('author.dashboard')->with('success', 'Registration successful. Welcome!');
         }
+
         return redirect(route('dashboard', absolute: false))->with('success', 'Registration successful. Please log in.');
     }
 }

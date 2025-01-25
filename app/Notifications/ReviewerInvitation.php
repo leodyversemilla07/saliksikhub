@@ -2,11 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Models\ReviewerAssignment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\ReviewerAssignment;
 
 class ReviewerInvitation extends Notification
 {
@@ -40,8 +39,8 @@ class ReviewerInvitation extends Notification
         return (new MailMessage)
             ->subject('Invitation to Review Manuscript')
             ->line('You have been invited to review a manuscript.')
-            ->line('Title: ' . $this->assignment->manuscript->title)
-            ->line('Due Date: ' . $this->assignment->due_date->format('Y-m-d'))
+            ->line('Title: '.$this->assignment->manuscript->title)
+            ->line('Due Date: '.$this->assignment->due_date->format('Y-m-d'))
             ->action('Accept Review', route('reviewer.accept', $this->assignment->id))
             ->line('Please respond to this invitation by accepting or declining.');
     }

@@ -14,11 +14,11 @@ class ManuscriptDecision extends Model
         'editor_id',
         'decision',
         'comments',
-        'decided_at'
+        'decided_at',
     ];
 
     protected $casts = [
-        'decided_at' => 'datetime'
+        'decided_at' => 'datetime',
     ];
 
     public function manuscript()

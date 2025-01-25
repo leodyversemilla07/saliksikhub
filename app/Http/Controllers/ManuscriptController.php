@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\Manuscript;
 use App\Models\Article;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Exception;
+use App\Models\Manuscript;
 use App\Models\ReviewerAssignment;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ManuscriptController extends Controller
 {
@@ -36,7 +36,7 @@ class ManuscriptController extends Controller
 
         $manuscripts = Manuscript::where([
             ['user_id', '=', $userId],
-            ['status', '=', 'Revision Required']
+            ['status', '=', 'Revision Required'],
         ])->get();
 
         return Inertia::render('Manuscripts/Index', ['manuscripts' => $manuscripts]);
@@ -52,10 +52,9 @@ class ManuscriptController extends Controller
 
     /**
      * Store a new manuscript submission.
-     * 
+     *
      * Validates input, stores PDF file, and creates manuscript record.
-     * 
-     * @param Request $request
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
@@ -149,7 +148,6 @@ class ManuscriptController extends Controller
 
         return redirect()->route('manuscripts.index')->with('success', 'Manuscript updated successfully.');
     }
-
 
     /**
      * Delete a manuscript.

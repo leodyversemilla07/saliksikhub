@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Article;
-use App\Models\ReviewerAssignment;
-use Inertia\Inertia;
 use App\Models\Manuscript;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use App\Notifications\ReviewerInvitation as ReviewerInvitationNotification;
 use App\Notifications\ManuscriptDecision as ManuscriptDecisionNotification;
+use App\Notifications\ReviewerInvitation as ReviewerInvitationNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class EditorController extends Controller
 {
@@ -19,20 +18,20 @@ class EditorController extends Controller
         'REJECTED' => 'rejected',
         'REVISION_REQUIRED' => 'revision_required',
         'UNDER_REVIEW' => 'under_review',
-        'SUBMITTED' => 'submitted'
+        'SUBMITTED' => 'submitted',
     ];
 
     private const MANUSCRIPT_STATUSES = [
         'accept' => self::STATUSES['ACCEPTED'],
         'reject' => self::STATUSES['REJECTED'],
-        'revision' => self::STATUSES['REVISION_REQUIRED']
+        'revision' => self::STATUSES['REVISION_REQUIRED'],
     ];
 
     // Dashboard and Index Methods
     public function index()
     {
-        return Inertia::render("Editor/EditorDashboard", [
-            'stats' => $this->getDashboardStats()
+        return Inertia::render('Editor/EditorDashboard', [
+            'stats' => $this->getDashboardStats(),
         ]);
     }
 
@@ -42,7 +41,7 @@ class EditorController extends Controller
             'manuscripts' => Manuscript::with('author')
                 ->where('status', self::STATUSES['SUBMITTED'])
                 ->latest()
-                ->get()
+                ->get(),
         ]);
     }
 
@@ -53,7 +52,7 @@ class EditorController extends Controller
                 ->where('status', self::STATUSES['ACCEPTED'])
                 ->latest()
                 ->get(),
-            'reviewers' => User::role('reviewer')->get()
+            'reviewers' => User::role('reviewer')->get(),
         ]);
     }
 
@@ -63,7 +62,7 @@ class EditorController extends Controller
             ->findOrFail($id);
 
         return Inertia::render('Manuscripts/Show', [
-            'manuscript' => $this->formatManuscriptData($manuscript)
+            'manuscript' => $this->formatManuscriptData($manuscript),
         ]);
     }
 
@@ -87,7 +86,7 @@ class EditorController extends Controller
 
         return response()->json([
             'message' => 'Reviewer assigned successfully',
-            'assignment' => $assignment
+            'assignment' => $assignment,
         ]);
     }
 
@@ -110,7 +109,7 @@ class EditorController extends Controller
 
         return response()->json([
             'message' => 'Decision recorded successfully',
-            'status' => $status
+            'status' => $status,
         ]);
     }
 
@@ -120,7 +119,7 @@ class EditorController extends Controller
             'status' => $manuscript->getReviewStatus(),
             'assignments' => $manuscript->reviewerAssignments()
                 ->with(['reviewer:id,name', 'review'])
-                ->get()
+                ->get(),
         ]);
     }
 
@@ -128,13 +127,14 @@ class EditorController extends Controller
     public function editArticles()
     {
         return Inertia::render('Editor/Articles', [
-            'articles' => Article::with('author')->latest()->get()
+            'articles' => Article::with('author')->latest()->get(),
         ]);
     }
 
     public function publishArticle(Article $article)
     {
         $article->update(['status' => 'published']);
+
         return redirect()->route('editor.editArticles')
             ->with('success', 'Article published successfully.');
     }
@@ -144,7 +144,7 @@ class EditorController extends Controller
     {
         return $request->validate([
             'reviewer_id' => 'required|exists:users,id',
-            'due_date' => 'required|date|after:today'
+            'due_date' => 'required|date|after:today',
         ]);
     }
 
@@ -152,7 +152,7 @@ class EditorController extends Controller
     {
         return $request->validate([
             'decision' => 'required|in:accept,reject,revision',
-            'comments' => 'required|string|min:10'
+            'comments' => 'required|string|min:10',
         ]);
     }
 
@@ -171,7 +171,7 @@ class EditorController extends Controller
         $manuscript->update([
             'editor_id' => Auth::id(),
             'decision_comments' => $comments,
-            'decision_date' => now()
+            'decision_date' => now(),
         ]);
         $manuscript->author->notify(new ManuscriptDecisionNotification($manuscript));
     }
@@ -184,7 +184,7 @@ class EditorController extends Controller
             'authors' => explode(', ', $manuscript->authors),
             'abstract' => $manuscript->abstract,
             'keywords' => explode(', ', $manuscript->keywords),
-            'manuscript_url' => asset('storage/' . $manuscript->manuscript_path),
+            'manuscript_url' => asset('storage/'.$manuscript->manuscript_path),
             'status' => $manuscript->status,
             'editor_comments' => $manuscript->decision_comments,
             'created_at' => $manuscript->created_at->toDateTimeString(),
@@ -195,9 +195,9 @@ class EditorController extends Controller
                     'reviewer' => $assignment->reviewer->name,
                     'due_date' => $assignment->due_date,
                     'status' => $assignment->status,
-                    'review' => $assignment->review
+                    'review' => $assignment->review,
                 ];
-            })
+            }),
         ];
     }
 
@@ -207,7 +207,7 @@ class EditorController extends Controller
             'total_manuscripts' => Manuscript::count(),
             'pending_reviews' => Manuscript::where('status', self::STATUSES['UNDER_REVIEW'])->count(),
             'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
-            'published_articles' => Article::where('status', 'published')->count()
+            'published_articles' => Article::where('status', 'published')->count(),
         ];
     }
 }

@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ReviewerAssignment extends Model
 {
     use HasFactory;
 
     const STATUS_INVITED = 'invited';
+
     const STATUS_ACCEPTED = 'accepted';
+
     const STATUS_DECLINED = 'declined';
+
     const STATUS_COMPLETED = 'completed';
 
     protected $fillable = [
@@ -20,13 +23,13 @@ class ReviewerAssignment extends Model
         'status',
         'invited_at',
         'response_at',
-        'due_date'
+        'due_date',
     ];
 
     protected $casts = [
         'invited_at' => 'datetime',
         'response_at' => 'datetime',
-        'due_date' => 'datetime'
+        'due_date' => 'datetime',
     ];
 
     public function manuscript()
@@ -48,7 +51,7 @@ class ReviewerAssignment extends Model
     {
         $this->update([
             'status' => self::STATUS_ACCEPTED,
-            'response_at' => now()
+            'response_at' => now(),
         ]);
     }
 
@@ -56,7 +59,7 @@ class ReviewerAssignment extends Model
     {
         $this->update([
             'status' => self::STATUS_DECLINED,
-            'response_at' => now()
+            'response_at' => now(),
         ]);
     }
 

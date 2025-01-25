@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -33,14 +33,14 @@ class Manuscript extends Model
         'REVISION_REQUIRED' => 'Revision Required',
         'ACCEPTED' => 'Accepted',
         'REJECTED' => 'Rejected',
-        'PUBLISHED' => 'Published'
+        'PUBLISHED' => 'Published',
     ];
 
     /**
      * The attributes that are mass assignable.
      *
      * @var string[]
-     * 
+     *
      * - title: The title of the manuscript.
      * - user_id: The ID of the user who submitted the manuscript.
      * - authors: The list of authors of the manuscript.
@@ -62,7 +62,7 @@ class Manuscript extends Model
         'manuscript_path',
         'status',
         'title',
-        'user_id'
+        'user_id',
     ];
 
     /**
@@ -72,7 +72,7 @@ class Manuscript extends Model
      */
     protected $casts = [
         'keywords' => 'array',
-        'authors' => 'array'
+        'authors' => 'array',
     ];
 
     /**
@@ -125,6 +125,7 @@ class Manuscript extends Model
                 return $this->update(['status' => $status]);
             });
         }
+
         return false;
     }
 

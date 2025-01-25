@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -28,7 +27,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'publish articles',
             'review articles',
             'submit articles',
-            'view submission status'
+            'view submission status',
         ];
 
         foreach ($permissions as $permission) {

@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+
 class Review extends Model
 {
     use HasFactory;
 
     // Constants should stay as they define review recommendations
     const RECOMMENDATION_ACCEPT = 'accept';
+
     const RECOMMENDATION_MINOR_REVISION = 'minor_revision';
+
     const RECOMMENDATION_MAJOR_REVISION = 'major_revision';
+
     const RECOMMENDATION_REJECT = 'reject';
 
     // Define the table name (if it's different from the plural form of the model name)

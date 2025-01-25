@@ -10,7 +10,6 @@ class UserStoreRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-
     public function authorize(): bool
     {
         return true;
@@ -28,7 +27,7 @@ class UserStoreRequest extends FormRequest
             'lastname' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', Password::defaults()],
-            'roles' => ['required', 'array']
+            'roles' => ['required', 'array'],
         ];
     }
 }
