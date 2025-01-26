@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import Header from '@/Components/Header';
 import Footer from '@/Components/Footer';
+import { CalendarDays, BookOpen, ArrowRight, LibraryBig } from 'lucide-react';
 
 interface JournalIssue {
     id: number;
@@ -11,20 +12,15 @@ interface JournalIssue {
     volume: number;
     issueNumber: number;
     publicationDate: string;
-    articles: number; // Number of articles in the issue
-    coverImage: string; // URL to the cover image
+    articles: number;
+    coverImage: string;
 }
 
 export default function Archives({ auth }: PageProps) {
-    const journalName = "MinSU Research Journal";
-    const logoUrl = "https://minsu.edu.ph/template/images/logo.png";
-
     const [issues, setIssues] = useState<JournalIssue[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Simulating fetching archived issues
     useEffect(() => {
-        // Replace this with an API call when ready
         const fetchData = () => {
             const mockData: JournalIssue[] = [
                 {
@@ -84,72 +80,127 @@ export default function Archives({ auth }: PageProps) {
     return (
         <>
             <Head title="Archives" />
+            <Header auth={auth} />
 
-            <Header
-                auth={auth}
-                journalName={journalName}
-                logoUrl={logoUrl}
-            />
-
-            <div className="max-w-screen-xl mx-auto px-0">
-                <div className="flex-grow bg-white from-blue-50 to-white text-black p-8">
-                    <header className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-800 mb-4">Archives of MinSU Research Journal</h1>
-                        <p className="text-lg text-gray-600">
-                            Explore our collection of past journal issues and research articles.
+            <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <header className="text-center mb-16">
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-700">
+                            Journal Archives
+                        </h1>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Explore our historical collection of groundbreaking research publications
                         </p>
+                        <div className="mt-6 flex justify-center items-center space-x-4 text-emerald-600">
+                            <LibraryBig className="w-8 h-8" />
+                            <span className="text-sm font-medium">
+                                {issues.length} Issues Archived
+                            </span>
+                        </div>
                     </header>
 
-                    <div className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {loading ? (
-                            <div className="text-center text-gray-500">Loading archived issues...</div>
+                            [...Array(3)].map((_, index) => (
+                                <div key={index} className="animate-pulse bg-white rounded-2xl p-6 shadow-lg">
+                                    <div className="h-48 bg-gray-200 rounded-xl mb-4" />
+                                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                                    <div className="h-3 bg-gray-200 rounded w-full mb-2" />
+                                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                                </div>
+                            ))
                         ) : issues.length === 0 ? (
-                            <div className="text-center text-gray-500">No archived issues available.</div>
+                            <div className="col-span-full text-center py-16">
+                                <div className="text-gray-400 mb-4">
+                                    <LibraryBig className="w-16 h-16 mx-auto" />
+                                </div>
+                                <p className="text-gray-500 text-lg">No archived issues found</p>
+                            </div>
                         ) : (
                             issues.map((issue) => (
-                                <div key={issue.id} className="bg-white p-6 rounded-xl shadow-md">
-                                    {/* Cover Image */}
-                                    <div className="mb-4">
-                                        <img
-                                            src={issue.coverImage}
-                                            alt={`Cover of ${issue.title}`}
-                                            className="w-48 h-72 object-cover rounded-md" // Adjusted to a book-like aspect ratio
-                                        />
+                                <div
+                                    key={issue.id}
+                                    className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                                >
+                                    <div className="relative h-80 perspective-1000 px-6 pt-6">
+                                        <div className="relative h-full w-full transform-style-preserve-3d transition-transform duration-500 group-hover:rotate-y-10">
+                                            <div className="absolute inset-0 bg-gray-100 shadow-book overflow-hidden">
+                                                <img
+                                                    src={issue.coverImage}
+                                                    alt={`Cover of ${issue.title}`}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-gray-800 to-gray-900">
+                                                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xs font-bold transform -rotate-90 origin-center whitespace-nowrap">
+                                                        Vol. {issue.volume}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="absolute -bottom-4 left-4 right-4 h-4 bg-gradient-to-t from-black/20 to-transparent blur-md opacity-50 transition-opacity group-hover:opacity-30"></div>
                                     </div>
 
-                                    <h2 className="text-2xl font-semibold text-gray-800">{issue.title}</h2>
-                                    <div className="text-gray-500 text-sm mb-4">
-                                        <span>Volume {issue.volume}, Issue {issue.issueNumber}</span> |{' '}
-                                        <span>Published: {new Date(issue.publicationDate).toLocaleDateString()}</span>
+                                    <div className="p-6">
+                                        <div className="mb-4 flex items-center space-x-2 text-sm text-emerald-600">
+                                            <CalendarDays className="w-4 h-4" />
+                                            <span>
+                                                {new Date(issue.publicationDate).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
+                                            </span>
+                                        </div>
+
+                                        <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                            {issue.title}
+                                        </h2>
+
+                                        <div className="flex items-center space-x-4 text-gray-500 mb-4">
+                                            <div className="flex items-center space-x-1">
+                                                <BookOpen className="w-4 h-4" />
+                                                <span>Vol. {issue.volume}</span>
+                                            </div>
+                                            <span className="text-gray-300">|</span>
+                                            <div className="flex items-center space-x-1">
+                                                <span>Issue {issue.issueNumber}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between">
+                                            <Link
+                                                href={`/journals/${issue.id}`}
+                                                className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                                            >
+                                                Explore Issue
+                                                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                                            </Link>
+                                            <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full">
+                                                {issue.articles} {issue.articles === 1 ? 'Article' : 'Articles'}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <p className="text-gray-600 mb-4">
-                                        {issue.articles} articles published in this issue.
-                                    </p>
-                                    <Link
-                                        href={`/journals/${issue.id}`}
-                                        className="text-green-500 hover:underline"
-                                    >
-                                        View Issue Details
-                                    </Link>
                                 </div>
                             ))
                         )}
                     </div>
 
-                    <div className="text-center mt-8">
-                        <button
-                            className="bg-green-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-600"
-                            onClick={() => alert('Implement pagination or load more functionality')}
-                        >
-                            Load More Issues
-                        </button>
-                    </div>
+                    {!loading && issues.length > 0 && (
+                        <div className="mt-12 text-center">
+                            <button
+                                onClick={() => alert('Implement pagination')}
+                                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                            >
+                                Load More Issues
+                                <ArrowRight className="w-5 h-5 ml-2 transform rotate-90" />
+                            </button>
+                        </div>
+                    )}
                 </div>
-            </div>
+            </main>
 
-            <Footer
-                journalName={journalName}
-            />
+            <Footer />
         </>
     );
 }

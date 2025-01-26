@@ -1,10 +1,9 @@
-import { Eye, EyeOff, Globe } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import Checkbox from '@/Components/Checkbox';
-import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 
@@ -16,24 +15,26 @@ export default function Login({
     canResetPassword: boolean;
 }) {
     const [showPassword, setShowPassword] = useState(false);
-
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
         remember: false,
     });
-
     const [generalError, setGeneralError] = useState<string | null>(null);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        setGeneralError(null); // Clear previous general errors
+        setGeneralError(null);
 
         post(route('login'), {
-            onError: (error) => {
-                // Handle unexpected server-side errors
-                if (typeof error === 'string') {
-                    setGeneralError(error);
+            onError: (errors) => {
+                if (errors.email || errors.password) {
+                    const firstErrorField = document.querySelector(
+                        errors.email ? "#email" : "#password"
+                    ) as HTMLInputElement;
+                    firstErrorField?.focus();
+                } else if (typeof errors === "string") {
+                    setGeneralError(errors);
                 }
             },
             onFinish: () => reset('password'),
@@ -41,150 +42,173 @@ export default function Login({
     };
 
     return (
-        <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 bg-gradient-to-br from-blue-50 to-white text-black">
+        <>
             <Head title="Log in" />
-
-            {/* Header */}
-            <header className="flex justify-between items-center p-6 w-full max-w-6xl bg-white rounded-xl shadow-xl mb-12">
-                <div className="flex items-center gap-4">
-                    <ApplicationLogo className="w-10 h-10" />
-                    <span className="text-2xl font-bold text-gray-800">MinSU Research Journal</span>
-                </div>
-                <div className="flex gap-4">
-                    <Globe className="w-6 h-6 text-gray-600" />
-                    <div className="w-6 h-6 text-gray-600 cursor-pointer">?</div>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="flex flex-col md:flex-row gap-8 items-center justify-center w-full max-w-6xl">
-                <div className="w-full md:w-1/2">
-                    <div className="bg-white p-8 rounded-3xl shadow-lg">
-                        <h2 className="text-3xl font-bold mb-4 text-gray-800">Welcome back 👋</h2>
-                        <p className="text-gray-600 mb-8">Log in to your account</p>
-
-                        {/* Status Message */}
-                        {status && (
-                            <div className="mb-4 text-sm font-medium text-green-600">{status}</div>
-                        )}
-
-                        {/* General Error Message */}
-                        {generalError && (
-                            <div className="mb-4 text-sm font-medium text-red-600">{generalError}</div>
-                        )}
-
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                setGeneralError(null); // Clear general errors
-                                post(route('login'), {
-                                    onError: (errors) => {
-                                        // Handle field-specific errors or general errors
-                                        if (errors.email || errors.password) {
-                                            const firstErrorField = document.querySelector(
-                                                errors.email ? "#email" : "#password"
-                                            ) as HTMLInputElement;
-                                            firstErrorField?.focus();
-                                        } else if (typeof errors === "string") {
-                                            setGeneralError(errors); // Handle unexpected general errors
-                                        }
-                                    },
-                                    onFinish: () => reset('password'),
-                                });
-                            }}
+            <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+                <div className="w-full max-w-md mx-auto p-8 bg-white rounded-xl shadow-lg space-y-8">
+                    <div className="flex flex-col items-center space-y-4">
+                        <Link href="/">
+                            <ApplicationLogo className="w-20 h-20 object-contain" />
+                        </Link>
+                        <Link
+                            href="/"
+                            className="text-2xl font-bold text-[#18652C] text-center hover:text-[#3FB65E] transition-colors"
                         >
-                            {/* Email Input */}
-                            <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Email</label>
-                                <TextInput
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    placeholder="johndoe@example.com"
-                                    value={data.email}
-                                    className={`w-full p-3 bg-gray-50 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300`}
-                                    autoComplete="username"
-                                    onChange={(e) => {
-                                        setData('email', e.target.value);
-                                    }}
-                                    required
-                                />
-                                <InputError message={errors.email} className="mt-2" />
-                            </div>
+                            MinSU Research Journal
+                        </Link>
+                    </div>
 
-                            {/* Password Input */}
-                            <div className="mb-6">
-                                <label className="block text-gray-700 mb-2">Password</label>
-                                <div className="relative">
+                    <div className="space-y-6">
+                        <div className="text-center space-y-2">
+                            <h2 className="text-2xl font-semibold text-gray-900">Login</h2>
+                            <p className="text-sm text-gray-600">
+                                Please enter your login credentials
+                            </p>
+                            {status && (
+                                <div className="mt-4 text-sm font-medium text-[#3FB65E]">
+                                    {status}
+                                </div>
+                            )}
+                        </div>
+
+                        {generalError && (
+                            <div className="p-3 bg-red-50 rounded-lg text-sm font-medium text-red-600 text-center">
+                                {generalError}
+                            </div>
+                        )}
+
+                        <form onSubmit={submit} className="space-y-6">
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="block text-sm font-medium text-[#18652C] mb-2">
+                                        Email address
+                                    </label>
                                     <TextInput
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        name="password"
-                                        placeholder="Enter at least 8+ characters"
-                                        value={data.password}
-                                        className={`w-full p-3 bg-gray-50 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg pr-12 focus:outline-none focus:ring-2 focus:ring-blue-300`}
-                                        autoComplete="new-password"
-                                        onChange={(e) => {
-                                            setData('password', e.target.value);
-                                        }}
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        placeholder="doe.john@minsu.edu.ph"
+                                        value={data.email}
+                                        className={`w-full px-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                            } rounded-lg focus:ring-2 focus:ring-[#18652C] focus:border-[#18652C] transition-colors`}
+                                        onChange={(e) => setData('email', e.target.value)}
                                         required
+                                        autoFocus
                                     />
-                                    <InputError message={errors.password} className="mt-2" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                    </button>
+                                    <InputError message={errors.email} className="mt-1" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[#18652C] mb-2">
+                                        Password
+                                    </label>
+                                    <div className="relative">
+                                        <TextInput
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            name="password"
+                                            placeholder="••••••••"
+                                            value={data.password}
+                                            className={`w-full px-4 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                                } rounded-lg focus:ring-2 focus:ring-[#18652C] focus:border-[#18652C] pr-12 transition-colors`}
+                                            onChange={(e) => setData('password', e.target.value)}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#18652C] hover:text-[#3FB65E] transition-colors"
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        </button>
+                                    </div>
+                                    <InputError message={errors.password} className="mt-1" />
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <label className="flex items-center space-x-2 cursor-pointer">
+                                        <Checkbox
+                                            id="remember"
+                                            checked={data.remember}
+                                            onChange={(e) => setData('remember', e.target.checked)}
+                                            className="text-[#18652C] focus:ring-[#18652C]"
+                                        />
+                                        <span className="text-sm text-gray-600">Remember me</span>
+                                    </label>
+                                    {canResetPassword && (
+                                        <Link
+                                            href={route('password.request')}
+                                            className="text-sm text-[#18652C] hover:text-[#3FB65E] transition-colors"
+                                        >
+                                            Forgot Password?
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Remember me and forgot password */}
-                            <div className="flex justify-between items-center mb-6">
-                                <label className="flex items-center gap-2">
-                                    <Checkbox
-                                        name="remember"
-                                        checked={data.remember}
-                                        onChange={(e) => setData('remember', e.target.checked)}
-                                    />
-                                    <span className="text-sm text-gray-600">Remember me</span>
-                                </label>
-                                {canResetPassword && (
-                                    <Link
-                                        href={route('password.request')}
-                                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    >
-                                        Forgot your password?
-                                    </Link>
-                                )}
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
+                            <Button
                                 type="submit"
-                                className={`w-full py-3 ${processing ? 'bg-green-300' : 'bg-green-500 hover:bg-green-600'
-                                    } text-white rounded-lg font-semibold text-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-300`}
+                                className="w-full py-3 rounded-lg transition-colors duration-200"
                                 disabled={processing}
                             >
-                                {processing ? 'Logging in...' : 'Login'}
-                            </button>
+                                {processing ? 'Logging in...' : 'Log In'}
+                            </Button>
                         </form>
 
-                        <div className="mt-6 text-center text-gray-600">
-                            Don't have an account?{' '}
-                            <Link href={route('register')} className="text-green-500 hover:underline">
-                                Sign up
-                            </Link>
+                        <div className="mt-8 border-t border-gray-200 pt-6">
+                            <p className="text-sm text-center text-gray-600">
+                                Don't have an account?{" "}
+                                <Link
+                                    href={route('register')}
+                                    className="font-medium text-[#18652C] hover:text-[#3FB65E] transition-colors"
+                                >
+                                    Register
+                                </Link>
+                            </p>
+
+                            <div className="mt-6 text-center space-y-3">
+                                <p className="text-xs text-gray-500">
+                                    Need assistance? Contact{" "}
+                                    <a
+                                        href="mailto:contact@minsurj.online"
+                                        className="font-medium text-[#18652C] hover:text-[#3FB65E] transition-colors"
+                                    >
+                                        support team
+                                    </a>
+                                </p>
+
+                                <div className="flex justify-center gap-4 text-xs text-gray-500">
+                                    <Link href="/terms" className="hover:text-[#3FB65E] transition-colors">
+                                        Terms of Use
+                                    </Link>
+                                    <span className="text-[#3FB65E]" >|</span>
+                                    <Link href="/privacy" className="hover:text-[#3FB65E] transition-colors">
+                                        Privacy Policy
+                                    </Link>
+                                    <span className="text-[#3FB65E]" >|</span>
+                                    <Link href="/copyright" className="hover:text-[#3FB65E] transition-colors">
+                                        Copyright Notice
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </main>
-
-            {/* Footer */}
-            <footer className="text-center mt-16 text-gray-600">
-                <p>&copy; 2024 MinSU Research Journal. All Rights Reserved.</p>
-            </footer>
-        </div>
+            </div>
+        </>
     );
 }
+
+const Button = ({
+    children,
+    className,
+    ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+    <button
+        className={`bg-[#18652C] text-white font-semibold hover:bg-[#3FB65E] focus:outline-none focus:ring-2 focus:ring-[#18652C] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
+        {...props}
+    >
+        {children}
+    </button>
+);

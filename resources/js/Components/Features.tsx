@@ -25,30 +25,35 @@ const features = [
 
 export default function Features() {
     return (
-        <div className="py-12 bg-gray-50">
+        <div className="py-24 bg-green-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="lg:text-center">
-                    <h2 className="text-base text-[#18652c] font-semibold tracking-wide uppercase">Features</h2>
-                    <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                        Why Publish with MinSU Research Journal
+                <div className="lg:text-center space-y-4 mb-16">
+                    <h2 className="inline-block font-semibold text-[#18652c] text-lg uppercase tracking-wide bg-green-100 px-4 py-2 rounded-full">
+                        Why Choose Us
+                    </h2>
+                    <p className="mt-4 text-4xl font-extrabold text-gray-900 sm:text-5xl lg:text-6xl">
+                        Elevate Your Research Impact
                     </p>
-                    <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                        MinSU Research Journal offers a platform for researchers to publish and disseminate their work to a global
-                        audience.
+                    <p className="mx-auto mt-6 max-w-3xl text-xl text-gray-600 leading-relaxed">
+                        Join a prestigious community of scholars and gain global visibility for your work through our innovative publishing platform.
                     </p>
                 </div>
 
-                <div className="mt-10">
-                    <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+                <div className="mt-16">
+                    <dl className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                         {features.map((feature) => (
-                            <div key={feature.name} className="relative">
-                                <dt>
-                                    <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-[#3fb65e] text-white">
-                                        <feature.icon className="h-6 w-6" aria-hidden="true" />
+                            <div
+                                key={feature.name}
+                                className="bg-white group relative p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-2"
+                            >
+                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="relative">
+                                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white">
+                                        <feature.icon className="h-8 w-8" aria-hidden="true" />
                                     </div>
-                                    <p className="ml-16 text-lg leading-6 font-medium text-[#18652c]">{feature.name}</p>
-                                </dt>
-                                <dd className="mt-2 ml-16 text-base text-gray-500">{feature.description}</dd>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.name}</h3>
+                                    <p className="text-gray-600 text-lg leading-relaxed">{feature.description}</p>
+                                </div>
                             </div>
                         ))}
                     </dl>

@@ -8,7 +8,7 @@ import ForAuthors from '@/Components/ForAuthors';
 import Cta from '@/Components/Cta';
 import Footer from '@/Components/Footer';
 
-export default function Welcome({ auth }: PageProps) {
+export default function Home({ auth }: PageProps) {
     return (
         <>
             <Head title="Home" />
