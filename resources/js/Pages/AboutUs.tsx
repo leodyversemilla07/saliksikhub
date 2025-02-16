@@ -51,6 +51,11 @@ export default function AboutUs({ auth }: PageProps) {
             <div className="bg-white min-h-screen">
                 <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                     <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">About Us</h1>
+                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+                        Welcome to MinSU Research Journal, a leading academic publication dedicated to advancing knowledge
+                        through high-quality research. For over three decades, we've been committed to scholarly excellence
+                        and fostering academic innovation in Mindoro and beyond.
+                    </p>
 
                     <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
                         <div>

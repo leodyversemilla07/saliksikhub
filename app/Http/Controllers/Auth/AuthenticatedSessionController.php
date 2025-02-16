@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
 
         // Get the authenticated user
         $user = Auth::user();
-        $roles = $user->getRoleNames(); // Get user roles
+        $roles = $user->getRoleNames();
 
         // Map roles to dashboard routes
         $roleRoutes = [

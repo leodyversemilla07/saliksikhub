@@ -46,7 +46,7 @@ export default function ForAuthors() {
                     {authorFeatures.map((feature) => (
                         <div
                             key={feature.name}
-                            className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-2"
+                            className="group bg-white p-8 rounded-2xl shadow-lg transition-all duration-300 ease-out"
                         >
                             <div className="mb-6">
                                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white">

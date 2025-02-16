@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react"
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const featuredArticles = [
     {
@@ -41,48 +42,37 @@ export default function FeaturedResearch() {
                     {featuredArticles.map((article, index) => (
                         <article
                             key={index}
-                            className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-2 border border-gray-100"
+                            className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out border border-gray-100"
                         >
-                            <div className="p-6 h-full flex flex-col">
+                            <div className="p-8 h-full flex flex-col bg-gradient-to-br from-white to-emerald-50/30">
                                 <div className="flex-1">
-                                    <div className="mb-4">
-                                        <span className="inline-block px-3 py-1 text-sm font-medium text-[#18652c] bg-emerald-50 rounded-full">
+                                    <div className="mb-5">
+                                        <span className="inline-block px-4 py-1.5 text-sm font-semibold text-[#18652c] bg-emerald-100/80 rounded-full shadow-sm">
                                             Case Study
                                         </span>
                                     </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-7">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-[#1a7432] transition-all duration-300">
                                         <Link
                                             href={article.link}
-                                            className="hover:text-[#1a7432] transition-colors duration-200 after:content-[''] after:absolute after:inset-0"
+                                            className="relative after:content-[''] after:absolute after:inset-0"
                                         >
                                             {article.title}
                                         </Link>
                                     </h3>
-                                    <p className="text-sm text-emerald-700 font-medium mb-3">
+                                    <p className="text-sm text-emerald-800 font-semibold mb-4 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                         {article.authors}
                                     </p>
-                                    <p className="text-gray-600 leading-6 line-clamp-3 mb-4">
+                                    <p className="text-gray-600 leading-relaxed line-clamp-3 mb-6">
                                         {article.abstract}
                                     </p>
                                 </div>
                                 <Link
                                     href={article.link}
-                                    className="inline-flex items-center text-[#1a7432] font-medium hover:text-[#3fb65e] transition-colors duration-200"
+                                    className="inline-flex items-center gap-2 text-[#1a7432] font-semibold hover:text-[#3fb65e] transition-all duration-300"
                                 >
                                     Read Full Study
-                                    <svg
-                                        className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M13 7l5 5m0 0l-5 5m5-5H6"
-                                        />
-                                    </svg>
+                                    <FaArrowRightLong className="transition-transform duration-300" />
                                 </Link>
                             </div>
                         </article>
@@ -92,24 +82,14 @@ export default function FeaturedResearch() {
                 <div className="mt-16 text-center">
                     <Link
                         href="/archives"
-                        className="inline-flex items-center px-8 py-3.5 text-base font-semibold text-white bg-[#1a7432] hover:bg-[#3fb65e] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+                        className="inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-br from-[#18652c] to-[#3fb65e] hover:from-[#145225] hover:to-[#35a051] rounded-xl shadow-md transition-all duration-300"
                     >
                         Explore Research Archive
-                        <svg
-                            className="w-5 h-5 ml-3 -mr-1"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <FaArrowRightLong />
                     </Link>
                 </div>
             </div>
-        </section> 
+        </section>
     );
 }
 

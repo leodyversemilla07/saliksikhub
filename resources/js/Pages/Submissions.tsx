@@ -78,12 +78,6 @@ export default function Submissions({ auth }: PageProps) {
                             Thank you for considering MinSU Research Journal for your manuscript submission. We welcome high-quality
                             research papers from various disciplines.
                         </p>
-                        <Link
-                            href="#"
-                            className="inline-flex items-center px-6 py-3 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
-                        >
-                            Submit Your Manuscript
-                        </Link>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8 mb-12">

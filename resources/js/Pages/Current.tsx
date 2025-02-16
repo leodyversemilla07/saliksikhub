@@ -55,21 +55,18 @@ export default function Current({ auth }: PageProps) {
 
             <main className="bg-gray-50 min-h-screen">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    {/* Header Section */}
-                    <div className="text-center mb-16">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
-                            Current Issue
-                            <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-700"></span>
-                        </h1>
-                    </div>
+                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Current Issue</h1>
+                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+                        Stay up to date with our latest research publications. Our current issue features groundbreaking studies
+                        and important findings across various scientific and technological domains.
+                    </p>
 
-                    {/* Issue Card */}
                     <div className="bg-white rounded-2xl shadow-lg p-8 mb-16 transition-all duration-300 hover:shadow-xl">
                         <div className="flex flex-col md:flex-row items-center gap-8">
                             <img
                                 src={currentIssue.coverImageUrl}
                                 alt={`Cover of ${currentIssue.volume} - ${currentIssue.issue}`}
-                                className="w-64 h-80 object-cover rounded-xl shadow-md transform hover:scale-105 transition-transform"
+                                className="w-64 h-80 object-cover rounded-xl shadow-md"
                             />
                             <div className="flex-1">
                                 <div className="mb-4">

@@ -85,13 +85,14 @@ export default function Archives({ auth }: PageProps) {
             <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <header className="text-center mb-16">
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-700">
-                            Journal Archives
-                        </h1>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Explore our historical collection of groundbreaking research publications
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Journal Archives</h1>
+                        <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+                            Explore our comprehensive collection of past journal issues. Browse through years of academic research,
+                            scholarly articles, and groundbreaking studies published in MinSU Research Journal. Access historical
+                            publications and trace the evolution of knowledge in various fields.
                         </p>
-                        <div className="mt-6 flex justify-center items-center space-x-4 text-emerald-600">
+
+                        <div className="mt-6 flex justify-center items-center space-x-4 text-[#18652c]">
                             <LibraryBig className="w-8 h-8" />
                             <span className="text-sm font-medium">
                                 {issues.length} Issues Archived

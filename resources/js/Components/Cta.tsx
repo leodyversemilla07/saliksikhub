@@ -34,10 +34,10 @@ export default function Cta() {
                     <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
                         <Link
                             href="/submissions"
-                            className="group relative flex items-center justify-center px-10 py-5 bg-emerald-100/90 hover:bg-white text-emerald-900 text-lg font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
+                            className="group relative flex items-center justify-center px-10 py-5 bg-emerald-100/90 hover:bg-white text-emerald-900 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-300"
                         >
                             <div className="absolute -inset-1 rounded-2xl bg-white/30 opacity-0 group-hover:opacity-100 blur-md transition-all duration-300" />
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 mr-3 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                             </svg>
                             Submit Manuscript

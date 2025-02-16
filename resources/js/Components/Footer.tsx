@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react'
-import { Facebook, Instagram, Twitter, Linkedin, Youtube, Mail, Phone, MapPin } from "lucide-react"
+import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin, FaYoutube } from "react-icons/fa6";
+import { LuMail, LuPhone, LuMapPin } from "react-icons/lu";
 
 const footerNavItems = [
     { name: "Home", href: "/" },
@@ -12,11 +13,11 @@ const footerNavItems = [
 ]
 
 const socialLinks = [
-    { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/MinSUResearchJournal" },
-    { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/minsuresearchjournal" },
-    { name: "Twitter", icon: Twitter, href: "https://twitter.com/MinSUResearchJ" },
-    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/company/minsu-research-journal" },
-    { name: "YouTube", icon: Youtube, href: "https://www.youtube.com/@MinSUResearchJournal" },
+    { name: "Facebook", icon: FaFacebook, href: "https://www.facebook.com/MinSUResearchJournal" },
+    { name: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/minsuresearchjournal" },
+    { name: "Twitter", icon: FaXTwitter, href: "https://www.x.com/MinSUResearchJ" },
+    { name: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/minsu-research-journal" },
+    { name: "YouTube", icon: FaYoutube, href: "https://www.youtube.com/@MinSUResearchJournal" },
 ]
 
 export default function Footer() {
@@ -100,19 +101,19 @@ export default function Footer() {
                                 </h3>
                                 <ul className="space-y-4">
                                     <li className="flex items-start">
-                                        <Mail className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
+                                        <LuMail className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
                                         <span className="ml-3 text-gray-400 text-sm">
                                             contact@minsurj.online
                                         </span>
                                     </li>
                                     <li className="flex items-start">
-                                        <Phone className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
+                                        <LuPhone className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
                                         <span className="ml-3 text-gray-400 text-sm">
                                             +63 123 456 7890
                                         </span>
                                     </li>
                                     <li className="flex items-start">
-                                        <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
+                                        <LuMapPin className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
                                         <span className="ml-3 text-gray-400 text-sm">
                                             Bongabong, Oriental Mindoro
                                         </span>

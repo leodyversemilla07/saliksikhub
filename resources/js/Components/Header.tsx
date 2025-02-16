@@ -43,10 +43,10 @@ export default function Header({ auth }: HeaderProps) {
                 <div className="flex justify-between items-center h-20">
                     <Link
                         href="/"
-                        className="flex items-center gap-3 group transition-transform hover:scale-[1.02] active:scale-95"
+                        className="flex items-center gap-3"
                     >
                         <ApplicationLogo
-                            className="transition-transform group-hover:rotate-[5deg] group-active:rotate-0"
+                            className="transition-transform"
                             width={48}
                             height={48}
                             alt="MinSU Research Journal Logo"
@@ -67,25 +67,23 @@ export default function Header({ auth }: HeaderProps) {
                             {auth?.user ? (
                                 <Link
                                     href={getDashboardRoute()}
-                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group"
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white font-semibold transition-colors duration-300 hover:from-[#145024] hover:to-[#35a051]"
                                 >
-                                    <span className="relative z-10">Dashboard</span>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a6d31] to-[#48c267] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    Dashboard
                                 </Link>
                             ) : (
                                 <>
                                     <Link
                                         href={route("login")}
-                                        className="px-6 py-2.5 rounded-xl font-medium text-gray-600 hover:bg-gray-50 hover:text-[#18652c] transition-colors duration-300 border-2 border-transparent hover:border-gray-200"
+                                        className="px-6 py-2.5 rounded-xl font-medium text-gray-600 hover:bg-gray-50 hover:text-[#18652c] transition-colors duration-300 border-2 border-transparent hover:border-gray-200 active:bg-gray-100"
                                     >
                                         Log in
                                     </Link>
                                     <Link
                                         href={route("register")}
-                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group"
+                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white font-semibold transition-colors duration-300 hover:from-[#145024] hover:to-[#35a051]"
                                     >
-                                        <span className="relative z-10">Register</span>
-                                        <div className="absolute inset-0 bg-gradient-to-br from-[#1a6d31] to-[#48c267] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        Register
                                     </Link>
                                 </>
                             )}

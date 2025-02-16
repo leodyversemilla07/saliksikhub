@@ -1,25 +1,25 @@
-import { BookOpen, Users, TrendingUp, Globe } from "lucide-react"
+import { LuBookOpen, LuUsers, LuTrendingUp, LuGlobe } from "react-icons/lu";
 
 const features = [
     {
         name: "Peer-Reviewed",
         description: "All articles undergo a rigorous peer-review process to ensure high-quality research publications.",
-        icon: Users,
+        icon: LuUsers,
     },
     {
         name: "Open Access",
         description: "MinSU Research Journal provides free and unrestricted access to all published articles.",
-        icon: Globe,
+        icon: LuGlobe,
     },
     {
         name: "Multidisciplinary",
         description: "We publish research from various academic disciplines, fostering a diverse scholarly community.",
-        icon: BookOpen,
+        icon: LuBookOpen,
     },
     {
         name: "Impact Tracking",
         description: "Track the impact of your research with comprehensive citation and usage analytics.",
-        icon: TrendingUp,
+        icon: LuTrendingUp,
     },
 ]
 
@@ -44,10 +44,9 @@ export default function Features() {
                         {features.map((feature) => (
                             <div
                                 key={feature.name}
-                                className="bg-white group relative p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-2"
+                                className="bg-white relative p-8 rounded-2xl shadow-lg"
                             >
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="relative">
+                                <div>
                                     <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white">
                                         <feature.icon className="h-8 w-8" aria-hidden="true" />
                                     </div>

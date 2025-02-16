@@ -49,6 +49,11 @@ export default function ContactUs({ auth }: PageProps) {
             <div className="bg-white min-h-screen">
                 <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                     <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Contact Us</h1>
+                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+                        Have questions or feedback? We're here to help! Our dedicated team at MinSU Research Journal is ready
+                        to assist you with any inquiries about submissions, publication processes, or general information.
+                        Reach out to us through the form below or using our contact details.
+                    </p>
 
                     <div className="grid md:grid-cols-2 gap-12">
                         <div>
