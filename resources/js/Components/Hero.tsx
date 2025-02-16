@@ -67,7 +67,7 @@ export default function Hero() {
             <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
                 <div className="relative h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full">
                     <img
-                        src='storage/images/hero.jpg'
+                        src='/images/hero.jpg'
                         alt="Research collaboration"
                         className="absolute inset-0 h-full w-full object-cover transform scale-105"
                     />

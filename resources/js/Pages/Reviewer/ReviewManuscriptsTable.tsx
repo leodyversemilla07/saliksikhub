@@ -33,12 +33,12 @@ export default function ManuscriptReviewTable({ manuscripts }: ManuscriptTablePr
 
     const getAuthors = (authors: string | string[] | null) => {
         if (Array.isArray(authors)) {
-            return authors;  // Already an array, return as is
+            return authors;
         }
         if (typeof authors === 'string' && authors.trim()) {
-            return authors.split(',').map((author) => author.trim()); // Split by comma if it's a string
+            return authors.split(',').map((author) => author.trim());
         }
-        return []; // Return empty array if null or empty string
+        return [];
     };
 
     const getStatusColor = (status: Manuscript['status']) => {
@@ -121,7 +121,7 @@ export default function ManuscriptReviewTable({ manuscripts }: ManuscriptTablePr
                                                 <span className="text-gray-400">No co-authors</span>
                                             )}</TableCell>
                                             <TableCell><div className="flex items-center gap-2">
-                                                {new Date(manuscript.updated_at).toLocaleDateString()} {/* Display updated_at */}
+                                                {new Date(manuscript.updated_at).toLocaleDateString()}
                                             </div></TableCell>
                                             <TableCell>
                                                 <div className="flex space-x-2">

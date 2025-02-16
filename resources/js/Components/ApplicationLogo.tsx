@@ -4,7 +4,7 @@ export default function ApplicationLogo(props: ImgHTMLAttributes<HTMLImageElemen
     return (
         <img
             {...props}
-            src="/storage/images/logo.png"
+            src="/images/logo.png"
             alt="MinSU Logo"
         />
     );

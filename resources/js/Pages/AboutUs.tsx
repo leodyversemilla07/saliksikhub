@@ -68,7 +68,7 @@ export default function AboutUs({ auth }: PageProps) {
                         </div>
                         <div className="relative h-64 md:h-full">
                             <img
-                                src="https://www.minsu.edu.ph/slider/slides_3.jpg"
+                                src="/images/about.jpg"
                                 alt="MinSU campus"
                                 className="w-full h-full object-cover rounded-lg shadow-lg"
                             />
