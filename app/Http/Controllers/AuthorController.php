@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manuscript;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AuthorController extends Controller
 {
     public function index()
     {
-        $manuscripts = Manuscript::all()->map(function ($manuscript) {
+        $manuscripts = Manuscript::where('user_id', Auth::id())->get()->map(function ($manuscript) {
             return [
                 'id' => $manuscript->id,
                 'title' => $manuscript->title,

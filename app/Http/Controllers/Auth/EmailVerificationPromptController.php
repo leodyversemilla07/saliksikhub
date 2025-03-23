@@ -29,20 +29,20 @@ class EmailVerificationPromptController extends Controller
      */
     protected function redirectToDashboard($user): RedirectResponse
     {
-        $roles = $user->getRoleNames(); // Get user roles
+        $roleRoutes = [
+            'admin' => 'admin.dashboard',
+            'editor' => 'editor.dashboard',
+            'reviewer' => 'reviewer.dashboard',
+            'author' => 'author.dashboard',
+        ];
 
-        // Determine which dashboard route to redirect to based on roles
-        if ($roles->contains('admin')) {
-            return redirect()->intended(route('admin.dashboard'));
-        } elseif ($roles->contains('editor')) {
-            return redirect()->intended(route('editor.dashboard'));
-        } elseif ($roles->contains('reviewer')) {
-            return redirect()->intended(route('reviewer.dashboard'));
-        } elseif ($roles->contains('author')) {
-            return redirect()->intended(route('author.dashboard'));
+        foreach ($roleRoutes as $role => $route) {
+            if ($user->hasRole($role)) {
+                return redirect()->intended(route($route, absolute: false));
+            }
         }
 
-        // Fallback to a default dashboard route if no specific role matches
-        return redirect()->intended(route('dashboard'));
+        // Fallback to default dashboard
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

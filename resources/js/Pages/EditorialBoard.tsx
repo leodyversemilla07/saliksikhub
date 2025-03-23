@@ -1,9 +1,9 @@
-import Footer from '@/Components/Footer';
-import Header from '@/Components/Header';
+import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/Components/landing-pages/Header';
 import { PageProps } from '@/types';
 import { useState } from "react"
 import { Mail, Linkedin, Twitter, X } from "lucide-react"
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 interface BoardMember {
     name: string
@@ -79,21 +79,26 @@ export default function EditorialBoard({ auth }: PageProps) {
 
     return (
         <>
-            <Head title="Editorial Boord" />
+            <Head title="Editorial Board" />
             <Header auth={auth} />
             <div className="bg-white min-h-screen">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Editorial Board</h1>
-                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
-                        Our editorial board comprises distinguished scholars and researchers from various disciplines, ensuring the
-                        highest standards of academic rigor and integrity in our publications.
-                    </p>
+                {/* Page Header */}
+                <div className="bg-gradient-to-br from-[#f0f8f3] to-white py-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-4 text-center">Editorial Board</h1>
+                        <p className="text-xl text-[#18652c] text-center max-w-3xl mx-auto">
+                            Our editorial board comprises distinguished scholars and researchers from various disciplines, ensuring the
+                            highest standards of academic rigor and integrity in our publications.
+                        </p>
+                    </div>
+                </div>
 
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {boardMembers.map((member, index) => (
                             <div
                                 key={index}
-                                className="bg-[#f0f8f3] rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
+                                className="bg-[#f0f8f3] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
                                 onClick={() => setSelectedMember(member)}
                             >
                                 <img
@@ -162,18 +167,18 @@ export default function EditorialBoard({ auth }: PageProps) {
                         </div>
                     )}
 
-                    <div className="mt-16 bg-[#e6f3eb] rounded-lg p-8 shadow-lg text-center">
+                    <div className="bg-gradient-to-br from-[#f0f8f3] to-[#e6f3eb] rounded-xl p-8 shadow-lg text-center mt-16">
                         <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Join Our Editorial Board</h2>
-                        <p className="text-xl text-[#18652c] mb-6">
+                        <p className="text-xl text-[#18652c] mb-8">
                             We are always looking for experienced researchers and academics to join our editorial board. If you're
                             interested in contributing to the MinSU Research Journal, please contact us.
                         </p>
-                        <a
-                            href="/contact"
-                            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                        <Link
+                            href={route('contact-us')}
+                            className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
                         >
                             Contact Us
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

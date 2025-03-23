@@ -31,20 +31,20 @@ class VerifyEmailController extends Controller
      */
     protected function redirectToDashboard($user): RedirectResponse
     {
-        $roles = $user->getRoleNames(); // Get user roles
+        $roleRoutes = [
+            'admin' => 'admin.dashboard',
+            'editor' => 'editor.dashboard',
+            'reviewer' => 'reviewer.dashboard',
+            'author' => 'author.dashboard',
+        ];
 
-        // Determine which dashboard route to redirect to based on roles
-        if ($roles->contains('admin')) {
-            return redirect()->route('admin.dashboard')->with('success', 'Email verified! Welcome back, Admin.');
-        } elseif ($roles->contains('editor')) {
-            return redirect()->route('editor.dashboard')->with('success', 'Email verified! Welcome back, Editor.');
-        } elseif ($roles->contains('reviewer')) {
-            return redirect()->route('reviewer.dashboard')->with('success', 'Email verified! Welcome back, Reviewer.');
-        } elseif ($roles->contains('author')) {
-            return redirect()->route('author.dashboard')->with('success', 'Email verified! Welcome back, Author.');
+        foreach ($roleRoutes as $role => $route) {
+            if ($user->hasRole($role)) {
+                return redirect()->intended(route($route, absolute: false));
+            }
         }
 
-        // Fallback to a default dashboard route if no specific role matches
-        return redirect()->route('dashboard')->with('success', 'Email verified! Welcome back!');
+        // Fallback to default dashboard
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

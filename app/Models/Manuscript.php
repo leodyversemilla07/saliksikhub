@@ -4,146 +4,155 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Class Manuscript
- *
- * This class represents a manuscript and defines its relationships with other models.
- *
- * Relationships:
- * - author: A manuscript belongs to a user who is the author.
- * - editor: A manuscript belongs to a user who is the editor.
- * - reviewerAssignments: A manuscript has many reviewer assignments.
- * - reviews: A manuscript has many reviews through reviewer assignments.
- * - decisions: A manuscript has many manuscript decisions.
- */
 class Manuscript extends Model
 {
     use HasFactory;
 
-    /**
-     * Constants representing the possible statuses of a manuscript.
-     *
-     * @var array<string, string> An associative array where the keys are status codes and the values are human-readable status descriptions.
-     */
     public const STATUSES = [
         'SUBMITTED' => 'Submitted',
         'UNDER_REVIEW' => 'Under Review',
-        'REVISION_REQUIRED' => 'Revision Required',
+        'MINOR_REVISION' => 'Minor Revision',
+        'MAJOR_REVISION' => 'Major Revision',
         'ACCEPTED' => 'Accepted',
+        'IN_COPYEDITING' => 'Copyediting',
+        'AWAITING_APPROVAL' => 'Awaiting Approval',
+        'READY_TO_PUBLISH' => 'Ready to Publish',
         'REJECTED' => 'Rejected',
         'PUBLISHED' => 'Published',
     ];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     *
-     * - title: The title of the manuscript.
-     * - user_id: The ID of the user who submitted the manuscript.
-     * - authors: The list of authors of the manuscript.
-     * - status: The current status of the manuscript.
-     * - abstract: The abstract of the manuscript.
-     * - keywords: The keywords associated with the manuscript.
-     * - manuscript_path: The file path to the manuscript document.
-     * - editor_id: The ID of the editor assigned to the manuscript.
-     * - decision_date: The date of the latest decision made on the manuscript.
-     * - decision_comments: The comments associated with the latest decision.
-     */
     protected $fillable = [
-        'abstract',
+        'user_id',
+        'title',
         'authors',
-        'decision_comments',
-        'decision_date',
-        'editor_id',
+        'abstract',
         'keywords',
         'manuscript_path',
         'status',
-        'title',
-        'user_id',
+        'revision_history',
+        'revision_comments',
+        'revised_at',
+        'editor_id',
+        'decision_date',
+        'publication_date',
+        'doi',
+        'volume',
+        'issue',
+        'page_range',
+        'final_pdf_path',
+        'author_approval_date',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array<string, string> An associative array where the keys are attribute names and the values are the types to cast to.
-     */
     protected $casts = [
-        'keywords' => 'array',
-        'authors' => 'array',
+        'revision_history' => 'array',
+        'revised_at' => 'datetime',
+        'decision_date' => 'datetime',
+        'publication_date' => 'date',
+        'author_approval_date' => 'date',
+        'final_manuscript_uploaded_at' => 'datetime',
     ];
 
     /**
-     * Class Manuscript
-     *
-     * This class represents a manuscript and defines its relationships with other models.
-     *
-     * Relationships:
-     * - author: A manuscript belongs to a user who is the author.
-     * - editor: A manuscript belongs to a user who is the editor.
-     * - reviewerAssignments: A manuscript has many reviewer assignments.
-     * - reviews: A manuscript has many reviews through reviewer assignments.
-     * - decisions: A manuscript has many manuscript decisions.
+     * Get the author of the manuscript.
      */
-    /**
-     * Relationships
-     */
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function editor()
+    /**
+     * Get the editor assigned to the manuscript.
+     */
+    public function editor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'editor_id');
     }
 
-    public function reviewerAssignments()
+    /**
+     * Get all editorial decisions for this manuscript.
+     */
+    public function editorialDecisions(): HasMany
     {
-        return $this->hasMany(ReviewerAssignment::class);
-    }
-
-    public function reviews()
-    {
-        return $this->hasManyThrough(Review::class, ReviewerAssignment::class);
-    }
-
-    public function decisions()
-    {
-        return $this->hasMany(ManuscriptDecision::class);
+        return $this->hasMany(EditorialDecision::class);
     }
 
     /**
-     * Status related methods
+     * Check if the manuscript requires a revision.
      */
-    public function updateStatus(string $status): bool
+    public function needsRevision(): bool
     {
-        if (in_array($status, array_keys(self::STATUSES), true)) {
-            return DB::transaction(function () use ($status) {
-                return $this->update(['status' => $status]);
-            });
+        return in_array($this->status, [
+            self::STATUSES['MINOR_REVISION'],
+            self::STATUSES['MAJOR_REVISION'],
+        ]);
+    }
+
+    /**
+     * Get the latest editorial decision.
+     */
+    public function getLatestDecision()
+    {
+        return $this->editorialDecisions()->latest('decision_date')->first();
+    }
+
+    /**
+     * Get the previous version of the manuscript.
+     */
+    public function getPreviousVersion()
+    {
+        if (empty($this->revision_history)) {
+            return null;
         }
 
-        return false;
-    }
-
-    public function isUnderReview(): bool
-    {
-        return $this->status === array_search('Under Review', self::STATUSES);
+        $versions = $this->revision_history;
+        return end($versions);
     }
 
     /**
-     * Decision related methods
+     * Get revision count.
      */
-    public function latestDecision()
+    public function getRevisionCount(): int
     {
-        return $this->decisions()->latest('decided_at')->first();
+        return $this->revision_history ? count($this->revision_history) : 0;
     }
 
-    public function aiReview()
+    /**
+     * Get the editor for the manuscript.
+     */
+    public function getEditor()
     {
-        return $this->hasOne(AiReview::class, 'manuscript_id', 'id');
+        if ($this->editor_id) {
+            return $this->editor;
+        }
+        
+        // If no specific editor is assigned, return the first editor
+        return User::where('role', 'editor')->first();
+    }
+
+    /**
+     * Check if the manuscript is ready for author approval.
+     */
+    public function isReadyForAuthorApproval(): bool
+    {
+        return $this->status === self::STATUSES['AWAITING_APPROVAL'];
+    }
+
+    /**
+     * Check if the manuscript is ready for publication.
+     */
+    public function isReadyForPublication(): bool
+    {
+        return $this->status === self::STATUSES['READY_TO_PUBLISH'];
+    }
+
+    /**
+     * Check if the manuscript is published.
+     */
+    public function isPublished(): bool
+    {
+        return $this->status === self::STATUSES['PUBLISHED'];
     }
 }

@@ -1,223 +1,228 @@
-import { useState } from "react"
-import { Head } from '@inertiajs/react';
+import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/Components/landing-pages/Header';
 import { PageProps } from '@/types';
-import Header from '@/Components/Header';
-import Footer from '@/Components/Footer';
-import { Link } from '@inertiajs/react';
-import { ChevronDown, ChevronUp } from "lucide-react"
-
-interface Milestone {
-    year: number
-    title: string
-    description: string
-}
-
-const milestones: Milestone[] = [
-    {
-        year: 1985,
-        title: "Foundation",
-        description: "MinSU Research Journal is established as a small, university-based publication.",
-    },
-    {
-        year: 1995,
-        title: "Expansion",
-        description: "The journal expands its scope to include research from other institutions in Mindoro.",
-    },
-    {
-        year: 2005,
-        title: "Digital Transition",
-        description: "MinSU Research Journal launches its online platform, making research more accessible.",
-    },
-    {
-        year: 2015,
-        title: "International Recognition",
-        description: "The journal receives its first international indexing, expanding its global reach.",
-    },
-    {
-        year: 2023,
-        title: "Open Access Initiative",
-        description: "MinSU Research Journal transitions to a fully open access model, removing barriers to knowledge.",
-    },
-]
+import { Head, Link } from '@inertiajs/react';
+import { BookOpen, Award, Library, Target, BarChart, Globe, Compass } from "lucide-react";
 
 export default function AboutUs({ auth }: PageProps) {
-    const [activeTab, setActiveTab] = useState<"mission" | "vision" | "values">("mission")
-    const [expandedMilestone, setExpandedMilestone] = useState<number | null>(null)
+    const scopeAreas = [
+        "Environmental Science and Sustainability",
+        "Agricultural Innovation and Food Security",
+        "Marine Biology and Coastal Management",
+        "Public Health and Community Wellness",
+        "Educational Technology and Pedagogy",
+        "Indigenous Knowledge and Cultural Studies",
+        "Renewable Energy and Climate Change",
+        "Biodiversity Conservation",
+    ];
+
+    const milestones = [
+        {
+            year: 2019,
+            title: "Journal Launch",
+            description: "MinSU Research Journal was established with the goal of publishing high-quality research from Mindoro and beyond."
+        },
+        {
+            year: 2020,
+            title: "First Volume Published",
+            description: "Successfully released our inaugural volume featuring research from across various disciplines."
+        },
+        {
+            year: 2021,
+            title: "Digital Repository",
+            description: "Launched our online repository, making all publications accessible to researchers worldwide."
+        },
+        {
+            year: 2022,
+            title: "Expanded Editorial Board",
+            description: "Welcomed distinguished scholars from various institutions to strengthen our peer review process."
+        },
+        {
+            year: 2023,
+            title: "Indexing Achievement",
+            description: "The journal was successfully indexed in multiple academic databases, increasing its visibility and impact."
+        },
+        {
+            year: 2024,
+            title: "International Collaboration",
+            description: "Established partnerships with international research institutions to foster global knowledge exchange."
+        },
+    ];
 
     return (
         <>
             <Head title="About Us" />
             <Header auth={auth} />
-            <div className="bg-white min-h-screen">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">About Us</h1>
-                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
-                        Welcome to MinSU Research Journal, a leading academic publication dedicated to advancing knowledge
-                        through high-quality research. For over three decades, we've been committed to scholarly excellence
-                        and fostering academic innovation in Mindoro and beyond.
-                    </p>
+            <main className="bg-white min-h-screen">
+                {/* Page Header */}
+                <div className="bg-gradient-to-br from-[#f0f8f3] to-white py-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-4 text-center">About Us</h1>
+                        <p className="text-xl text-[#18652c] text-center max-w-3xl mx-auto">
+                            MinSU Research Journal is the official scholarly publication of Mindoro State University, 
+                            dedicated to promoting research excellence and knowledge dissemination across disciplines.
+                        </p>
+                    </div>
+                </div>
 
-                    <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="grid md:grid-cols-2 gap-12 mb-16">
                         <div>
-                            <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Our History</h2>
-                            <p className="text-[#18652c] mb-4">
-                                Founded in 1985, the MinSU Research Journal has been at the forefront of academic publishing in Mindoro
-                                for over three decades. What began as a small, university-based publication has grown into a respected,
-                                peer-reviewed journal that attracts submissions from researchers across the Philippines and beyond.
+                            <h2 className="text-3xl font-semibold text-[#18652c] mb-6">Our Journal</h2>
+                            <p className="text-gray-700 mb-4 text-justify">
+                                Established in 2019, MinSU Research Journal serves as a platform for researchers,
+                                academics, and practitioners to share their findings and contribute to the advancement
+                                of knowledge across various fields. The journal publishes original research, review
+                                articles, case studies, and other scholarly works that meet the highest standards of
+                                academic rigor and integrity.
                             </p>
-                            <p className="text-[#18652c]">
-                                Over the years, we have published groundbreaking research in fields ranging from environmental science and
-                                agriculture to social sciences and public health, always with a focus on issues relevant to Mindoro and
-                                the broader Philippine context.
+                            <p className="text-gray-700 mb-4 text-justify">
+                                As the flagship publication of Mindoro State University, our journal reflects the
+                                institution's commitment to excellence in research and its mission to address the
+                                developmental needs of Mindoro Island and the broader Philippine society through
+                                evidence-based solutions and innovations.
+                            </p>
+                            <p className="text-gray-700 text-justify">
+                                We are committed to ensuring that all published articles undergo a rigorous
+                                double-blind peer review process, guaranteeing the quality, originality, and
+                                significance of the research presented in our journal.
                             </p>
                         </div>
-                        <div className="relative h-64 md:h-full">
-                            <img
-                                src="/images/about.jpg"
-                                alt="MinSU campus"
-                                className="w-full h-full object-cover rounded-lg shadow-lg"
-                            />
+                        <div className="flex items-center justify-center">
+                            <div className="bg-[#f0f8f3] rounded-full p-16 shadow-lg">
+                                <BookOpen className="h-32 w-32 text-[#18652c]" />
+                            </div>
                         </div>
                     </div>
 
+                    {/* Mission and Vision */}
                     <div className="mb-16">
-                        <h2 className="text-3xl font-semibold text-[#18652c] mb-6 text-center">Our Journey</h2>
-                        <div className="space-y-4">
-                            {milestones.map((milestone, index) => (
-                                <div key={index} className="border border-[#3fb65e] rounded-lg overflow-hidden">
-                                    <button
-                                        className="w-full px-6 py-4 flex justify-between items-center bg-[#f0f8f3] hover:bg-[#e6f3eb] transition-colors duration-200"
-                                        onClick={() => setExpandedMilestone(expandedMilestone === index ? null : index)}
-                                    >
-                                        <span className="text-xl font-semibold text-[#18652c]">
-                                            {milestone.year}: {milestone.title}
-                                        </span>
-                                        {expandedMilestone === index ? (
-                                            <ChevronUp className="text-[#3fb65e]" />
-                                        ) : (
-                                            <ChevronDown className="text-[#3fb65e]" />
-                                        )}
-                                    </button>
-                                    {expandedMilestone === index && (
-                                        <div className="px-6 py-4 bg-white">
-                                            <p className="text-[#18652c]">{milestone.description}</p>
-                                        </div>
-                                    )}
+                        <div className="grid md:grid-cols-2 gap-12">
+                            <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                                <div className="flex items-center mb-6">
+                                    <Target className="h-8 w-8 text-[#3fb65e] mr-3" />
+                                    <h2 className="text-3xl font-semibold text-[#18652c]">Our Mission</h2>
+                                </div>
+                                <p className="text-gray-700 text-justify">
+                                    To publish and disseminate high-quality research that contributes to the advancement
+                                    of knowledge and addresses the pressing challenges facing Mindoro Island, the
+                                    Philippines, and the global community. We aim to provide a platform for both
+                                    established and emerging researchers to share their findings and innovations,
+                                    fostering a vibrant culture of inquiry and evidence-based practice.
+                                </p>
+                            </div>
+                            <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                                <div className="flex items-center mb-6">
+                                    <Compass className="h-8 w-8 text-[#3fb65e] mr-3" />
+                                    <h2 className="text-3xl font-semibold text-[#18652c]">Our Vision</h2>
+                                </div>
+                                <p className="text-gray-700 text-justify">
+                                    To be recognized as a leading research journal in the Philippines and beyond,
+                                    known for publishing innovative, impactful, and methodologically sound research
+                                    across disciplines. We envision a journal that bridges theory and practice,
+                                    connects researchers globally, and contributes significantly to sustainable
+                                    development and knowledge creation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Core Values */}
+                    <div className="mb-16">
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-8 text-center">Our Core Values</h2>
+                        <div className="grid md:grid-cols-4 gap-6">
+                            <div className="bg-[#f0f8f3] rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow">
+                                <Award className="h-12 w-12 text-[#3fb65e] mx-auto mb-4" />
+                                <h3 className="text-xl font-medium text-[#18652c] mb-2">Excellence</h3>
+                                <p className="text-gray-700">Upholding the highest standards of academic rigor and scholarly integrity</p>
+                            </div>
+                            <div className="bg-[#f0f8f3] rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow">
+                                <Globe className="h-12 w-12 text-[#3fb65e] mx-auto mb-4" />
+                                <h3 className="text-xl font-medium text-[#18652c] mb-2">Inclusivity</h3>
+                                <p className="text-gray-700">Embracing diverse perspectives, methodologies, and research traditions</p>
+                            </div>
+                            <div className="bg-[#f0f8f3] rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow">
+                                <Library className="h-12 w-12 text-[#3fb65e] mx-auto mb-4" />
+                                <h3 className="text-xl font-medium text-[#18652c] mb-2">Relevance</h3>
+                                <p className="text-gray-700">Focusing on research that addresses real-world challenges and needs</p>
+                            </div>
+                            <div className="bg-[#f0f8f3] rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow">
+                                <BarChart className="h-12 w-12 text-[#3fb65e] mx-auto mb-4" />
+                                <h3 className="text-xl font-medium text-[#18652c] mb-2">Innovation</h3>
+                                <p className="text-gray-700">Promoting creative approaches and breakthrough discoveries</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Scope and Focus */}
+                    <div className="mb-16">
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-8 text-center">Scope and Focus Areas</h2>
+                        <p className="text-gray-700 mb-8 text-center max-w-3xl mx-auto">
+                            MinSU Research Journal is multidisciplinary in scope, with a special focus on research relevant
+                            to the sustainable development of island ecosystems and communities. Our key focus areas include:
+                        </p>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {scopeAreas.map((area, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-[#f0f8f3] rounded-lg p-4 flex items-center border border-[#e6f3eb] shadow-sm"
+                                >
+                                    <span className="w-3 h-3 bg-[#3fb65e] rounded-full mr-3"></span>
+                                    <span className="text-[#18652c]">{area}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
+                    {/* History & Milestones */}
                     <div className="mb-16">
-                        <h2 className="text-3xl font-semibold text-[#18652c] mb-6 text-center">Our Purpose</h2>
-                        <div className="flex justify-center mb-6">
-                            <div className="inline-flex rounded-md shadow-sm" role="group">
-                                {(["mission", "vision", "values"] as const).map((tab) => (
-                                    <button
-                                        key={tab}
-                                        type="button"
-                                        className={`px-4 py-2 text-sm font-medium ${activeTab === tab ? "bg-[#3fb65e] text-white" : "bg-white text-[#18652c] hover:bg-[#f0f8f3]"
-                                            } border border-[#3fb65e] ${tab === "mission" ? "rounded-l-lg" : tab === "values" ? "rounded-r-lg" : ""
-                                            }`}
-                                        onClick={() => setActiveTab(tab)}
-                                    >
-                                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                                    </button>
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-8 text-center">Our Journey</h2>
+                        <div className="relative">
+                            {/* Timeline Line */}
+                            <div className="absolute left-6 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-[#3fb65e]"></div>
+
+                            {/* Timeline Items */}
+                            <div className="space-y-12 relative">
+                                {milestones.map((milestone, index) => (
+                                    <div key={index} className={`relative flex items-start ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                                        <div className={`flex md:w-1/2 ${index % 2 === 0 ? 'md:justify-end md:pr-12' : 'md:justify-start md:pl-12'}`}>
+                                            <div className="bg-white border-2 border-[#3fb65e] w-12 h-12 rounded-full flex items-center justify-center z-10 shadow-lg">
+                                                <span className="font-bold text-[#18652c]">{milestone.year}</span>
+                                            </div>
+                                        </div>
+                                        <div className={`bg-[#f0f8f3] rounded-lg p-6 shadow-md md:w-1/2 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12'}`}>
+                                            <h3 className="text-xl font-medium text-[#18652c] mb-2">{milestone.title}</h3>
+                                            <p className="text-gray-700">{milestone.description}</p>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="bg-[#f0f8f3] p-6 rounded-lg">
-                            {activeTab === "mission" && (
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-[#18652c] mb-4">Our Mission</h3>
-                                    <p className="text-[#18652c] mb-4">
-                                        The MinSU Research Journal is dedicated to advancing knowledge and fostering academic excellence
-                                        through the publication of high-quality, peer-reviewed research. Our mission is to:
-                                    </p>
-                                    <ul className="list-disc list-inside text-[#18652c] mb-4 space-y-2">
-                                        <li>Provide a platform for researchers to share their findings with a global audience</li>
-                                        <li>Promote interdisciplinary dialogue and collaboration</li>
-                                        <li>Contribute to the development of evidence-based policies and practices</li>
-                                        <li>Support the growth of the research community in Mindoro and the Philippines</li>
-                                    </ul>
-                                </div>
-                            )}
-                            {activeTab === "vision" && (
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-[#18652c] mb-4">Our Vision</h3>
-                                    <p className="text-[#18652c] mb-4">
-                                        We envision MinSU Research Journal as a leading academic publication that:
-                                    </p>
-                                    <ul className="list-disc list-inside text-[#18652c] mb-4 space-y-2">
-                                        <li>Serves as a catalyst for innovative research and scholarly discourse</li>
-                                        <li>Bridges the gap between academic research and practical applications</li>
-                                        <li>
-                                            Fosters a global community of researchers committed to addressing pressing societal challenges
-                                        </li>
-                                        <li>Sets the standard for research excellence and ethical academic publishing in the region</li>
-                                    </ul>
-                                </div>
-                            )}
-                            {activeTab === "values" && (
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-[#18652c] mb-4">Our Values</h3>
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        {[
-                                            {
-                                                title: "Academic Integrity",
-                                                description:
-                                                    "We uphold the highest standards of academic integrity, ensuring all published research is original, ethical, and rigorously peer-reviewed.",
-                                            },
-                                            {
-                                                title: "Innovation",
-                                                description:
-                                                    "We encourage innovative research that pushes the boundaries of knowledge and addresses real-world challenges.",
-                                            },
-                                            {
-                                                title: "Inclusivity",
-                                                description:
-                                                    "We are committed to representing diverse perspectives and promoting inclusivity in academic publishing.",
-                                            },
-                                            {
-                                                title: "Sustainability",
-                                                description:
-                                                    "We prioritize research that contributes to sustainable development and environmental conservation.",
-                                            },
-                                        ].map((value, index) => (
-                                            <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-                                                <h4 className="text-lg font-semibold text-[#18652c] mb-2">{value.title}</h4>
-                                                <p className="text-[#18652c]">{value.description}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
-                    <div className="bg-[#e6f3eb] rounded-lg p-8 shadow-lg text-center">
+                    {/* CTA Section - Standardized */}
+                    <div className="bg-gradient-to-br from-[#f0f8f3] to-[#e6f3eb] rounded-xl p-8 shadow-lg text-center mt-16">
                         <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Join Our Community</h2>
-                        <p className="text-xl text-[#18652c] mb-6">
-                            Whether you're a seasoned researcher or just starting your academic journey, we invite you to be part of the
-                            MinSU Research Journal community. Together, we can advance knowledge and make a positive impact on society.
+                        <p className="text-xl text-[#18652c] mb-8">
+                            Contribute to the advancement of knowledge by submitting your research to MinSU Research Journal.
                         </p>
-                        <div className="flex justify-center space-x-4">
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link
-                                href="/submissions"
-                                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                                href={route('submissions')}
+                                className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
                             >
                                 Submit Your Research
                             </Link>
                             <Link
-                                href="/contact"
-                                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-[#18652c] bg-white hover:bg-[#f0f8f3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                                href={route('contact-us')}
+                                className="inline-flex items-center justify-center px-8 py-4 border border-[#3fb65e] text-lg font-medium rounded-xl shadow-sm text-[#3fb65e] bg-white hover:bg-[#f0f8f3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
                             >
                                 Contact Us
                             </Link>
                         </div>
                     </div>
                 </div>
-            </div>
+            </main>
             <Footer />
         </>
     );

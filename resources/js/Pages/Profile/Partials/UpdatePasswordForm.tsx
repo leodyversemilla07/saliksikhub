@@ -1,10 +1,9 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Transition } from '@headlessui/react';
+import { useRef, FormEventHandler, useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler, useRef } from 'react';
+import { Check, Lock, Eye, EyeOff } from 'lucide-react';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 
 export default function UpdatePasswordForm({
     className = '',
@@ -13,6 +12,9 @@ export default function UpdatePasswordForm({
 }) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const {
         data,
@@ -49,98 +51,143 @@ export default function UpdatePasswordForm({
     };
 
     return (
-        <section className={className}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Update Password
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+        <div className="max-w-xl">
+            <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                    Password Security
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Keeping your account secure by using a unique, strong password helps protect your personal information.
                 </p>
-            </header>
+            </div>
 
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel
-                        htmlFor="current_password"
-                        value="Current Password"
-                    />
+            <form onSubmit={updatePassword} className="space-y-6">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="current_password" className="text-gray-700 dark:text-gray-300">
+                            Current Password
+                        </Label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Lock className="h-4 w-4 text-gray-400" />
+                            </div>
+                            <Input
+                                id="current_password"
+                                ref={currentPasswordInput}
+                                type={showCurrentPassword ? 'text' : 'password'}
+                                value={data.current_password}
+                                onChange={(e) => setData('current_password', e.target.value)}
+                                className="pl-10 pr-10"
+                                placeholder="Enter your current password"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                {showCurrentPassword ? (
+                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                    <Eye className="h-4 w-4 text-gray-400" />
+                                )}
+                            </button>
+                        </div>
+                        {errors.current_password && (
+                            <p className="text-sm text-red-500">{errors.current_password}</p>
+                        )}
+                    </div>
 
-                    <TextInput
-                        id="current_password"
-                        ref={currentPasswordInput}
-                        value={data.current_password}
-                        onChange={(e) =>
-                            setData('current_password', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                    />
+                    <div className="space-y-2">
+                        <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
+                            New Password
+                        </Label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Lock className="h-4 w-4 text-gray-400" />
+                            </div>
+                            <Input
+                                id="password"
+                                ref={passwordInput}
+                                type={showNewPassword ? 'text' : 'password'}
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                className="pl-10 pr-10"
+                                placeholder="Create new password"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                {showNewPassword ? (
+                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                    <Eye className="h-4 w-4 text-gray-400" />
+                                )}
+                            </button>
+                        </div>
+                        {errors.password && (
+                            <p className="text-sm text-red-500">{errors.password}</p>
+                        )}
+                    </div>
 
-                    <InputError
-                        message={errors.current_password}
-                        className="mt-2"
-                    />
-                </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="password_confirmation" className="text-gray-700 dark:text-gray-300">
+                            Confirm Password
+                        </Label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Lock className="h-4 w-4 text-gray-400" />
+                            </div>
+                            <Input
+                                id="password_confirmation"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                className="pl-10 pr-10"
+                                placeholder="Confirm new password"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                {showConfirmPassword ? (
+                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                    <Eye className="h-4 w-4 text-gray-400" />
+                                )}
+                            </button>
+                        </div>
+                        {errors.password_confirmation && (
+                            <p className="text-sm text-red-500">{errors.password_confirmation}</p>
+                        )}
+                    </div>
 
-                <div>
-                    <InputLabel htmlFor="password" value="New Password" />
-
-                    <TextInput
-                        id="password"
-                        ref={passwordInput}
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div>
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Saved.
+                    <div className="mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Password must be at least 8 characters and include a mix of letters, numbers, and special characters.
                         </p>
-                    </Transition>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-4 pt-2">
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white"
+                    >
+                        Update Password
+                    </Button>
+
+                    {recentlySuccessful && (
+                        <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                            <Check className="h-4 w-4" />
+                            Password updated
+                        </p>
+                    )}
                 </div>
             </form>
-        </section>
+        </div>
     );
 }

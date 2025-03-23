@@ -2,8 +2,8 @@ import { Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import Header from '@/Components/Header';
-import Footer from '@/Components/Footer';
+import Header from '@/Components/landing-pages/Header';
+import Footer from '@/Components/landing-pages/Footer';
 import { CalendarDays, BookOpen, ArrowRight, LibraryBig } from 'lucide-react';
 
 interface JournalIssue {
@@ -82,29 +82,31 @@ export default function Archives({ auth }: PageProps) {
             <Head title="Archives" />
             <Header auth={auth} />
 
-            <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <header className="text-center mb-16">
-                        <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Journal Archives</h1>
-                        <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
+            <main className="bg-white min-h-screen">
+                {/* Page Header */}
+                <div className="bg-gradient-to-br from-[#f0f8f3] to-white py-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-4 text-center">Journal Archives</h1>
+                        <p className="text-xl text-[#18652c] text-center max-w-3xl mx-auto">
                             Explore our comprehensive collection of past journal issues. Browse through years of academic research,
-                            scholarly articles, and groundbreaking studies published in MinSU Research Journal. Access historical
-                            publications and trace the evolution of knowledge in various fields.
+                            scholarly articles, and groundbreaking studies published in MinSU Research Journal.
                         </p>
+                    </div>
+                </div>
 
-                        <div className="mt-6 flex justify-center items-center space-x-4 text-[#18652c]">
-                            <LibraryBig className="w-8 h-8" />
-                            <span className="text-sm font-medium">
-                                {issues.length} Issues Archived
-                            </span>
-                        </div>
-                    </header>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="flex justify-center items-center space-x-4 text-[#18652c] mb-12">
+                        <LibraryBig className="w-8 h-8" />
+                        <span className="text-lg font-medium">
+                            {issues.length} Issues Archived
+                        </span>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {loading ? (
                             [...Array(3)].map((_, index) => (
-                                <div key={index} className="animate-pulse bg-white rounded-2xl p-6 shadow-lg">
-                                    <div className="h-48 bg-gray-200 rounded-xl mb-4" />
+                                <div key={index} className="animate-pulse bg-[#f0f8f3] rounded-xl p-6 shadow-lg">
+                                    <div className="h-48 bg-gray-200 rounded-lg mb-4" />
                                     <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
                                     <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
                                     <div className="h-3 bg-gray-200 rounded w-full mb-2" />
@@ -113,16 +115,16 @@ export default function Archives({ auth }: PageProps) {
                             ))
                         ) : issues.length === 0 ? (
                             <div className="col-span-full text-center py-16">
-                                <div className="text-gray-400 mb-4">
+                                <div className="text-[#3fb65e] mb-4">
                                     <LibraryBig className="w-16 h-16 mx-auto" />
                                 </div>
-                                <p className="text-gray-500 text-lg">No archived issues found</p>
+                                <p className="text-[#18652c] text-lg">No archived issues found</p>
                             </div>
                         ) : (
                             issues.map((issue) => (
                                 <div
                                     key={issue.id}
-                                    className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                                    className="group bg-[#f0f8f3] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
                                 >
                                     <div className="relative h-80 perspective-1000 px-6 pt-6">
                                         <div className="relative h-full w-full transform-style-preserve-3d transition-transform duration-500 group-hover:rotate-y-10">
@@ -132,7 +134,7 @@ export default function Archives({ auth }: PageProps) {
                                                     alt={`Cover of ${issue.title}`}
                                                     className="w-full h-full object-cover"
                                                 />
-                                                <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-gray-800 to-gray-900">
+                                                <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-[#18652c] to-[#3fb65e]">
                                                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xs font-bold transform -rotate-90 origin-center whitespace-nowrap">
                                                         Vol. {issue.volume}
                                                     </div>
@@ -143,7 +145,7 @@ export default function Archives({ auth }: PageProps) {
                                     </div>
 
                                     <div className="p-6">
-                                        <div className="mb-4 flex items-center space-x-2 text-sm text-emerald-600">
+                                        <div className="mb-4 flex items-center space-x-2 text-sm text-[#3fb65e]">
                                             <CalendarDays className="w-4 h-4" />
                                             <span>
                                                 {new Date(issue.publicationDate).toLocaleDateString('en-US', {
@@ -154,11 +156,11 @@ export default function Archives({ auth }: PageProps) {
                                             </span>
                                         </div>
 
-                                        <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                        <h2 className="text-xl font-bold text-[#18652c] mb-2 line-clamp-2">
                                             {issue.title}
                                         </h2>
 
-                                        <div className="flex items-center space-x-4 text-gray-500 mb-4">
+                                        <div className="flex items-center space-x-4 text-gray-600 mb-4">
                                             <div className="flex items-center space-x-1">
                                                 <BookOpen className="w-4 h-4" />
                                                 <span>Vol. {issue.volume}</span>
@@ -172,12 +174,12 @@ export default function Archives({ auth }: PageProps) {
                                         <div className="flex items-center justify-between">
                                             <Link
                                                 href={`/journals/${issue.id}`}
-                                                className="flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                                                className="flex items-center text-[#3fb65e] hover:text-[#18652c] font-medium transition-colors"
                                             >
                                                 Explore Issue
                                                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                                             </Link>
-                                            <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full">
+                                            <span className="px-3 py-1 bg-[#e6f3eb] text-[#18652c] text-sm rounded-full">
                                                 {issue.articles} {issue.articles === 1 ? 'Article' : 'Articles'}
                                             </span>
                                         </div>
@@ -188,10 +190,10 @@ export default function Archives({ auth }: PageProps) {
                     </div>
 
                     {!loading && issues.length > 0 && (
-                        <div className="mt-12 text-center">
+                        <div className="mt-16 text-center">
                             <button
                                 onClick={() => alert('Implement pagination')}
-                                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                                className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
                             >
                                 Load More Issues
                                 <ArrowRight className="w-5 h-5 ml-2 transform rotate-90" />

@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    use HasFactory, Notifiable;
+
+    public const ROLE_EDITOR = 'editor';
+
+    public const ROLE_AUTHOR = 'author';
 
     /**
      * The attributes that are mass assignable.
@@ -21,9 +24,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'firstname',
         'lastname',
-        'status',
         'email',
         'password',
+        'role',
+        'affiliation',
+        'avatar',
     ];
 
     /**
@@ -37,40 +42,72 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Check if user has the given role.
+     *
+     * @param  string|array  $roles
+     */
+    public function hasRole($roles): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+
+        return $this->role === $roles;
     }
 
-    public function articles()
+    /**
+     * Set the user's role.
+     *
+     * @return $this
+     */
+    public function assignRole(string $role)
     {
-        return $this->hasMany(Article::class);
+        $this->role = $role;
+        $this->save();
+
+        return $this;
     }
 
-    public function reviews()
+    /**
+     * Get the user's full name.
+     */
+    public function getFullNameAttribute(): string
     {
-        return $this->hasMany(Review::class);
+        return "{$this->firstname} {$this->lastname}";
     }
 
-    public function manuscripts()
+    public function isEditor(): bool
+    {
+        return $this->role === self::ROLE_EDITOR;
+    }
+
+    public function isAuthor(): bool
+    {
+        return $this->role === self::ROLE_AUTHOR;
+    }
+
+    public function assignedManuscripts(): HasMany
+    {
+        return $this->hasMany(Manuscript::class, 'editor_id');
+    }
+
+    public function authoredManuscripts(): HasMany
     {
         return $this->hasMany(Manuscript::class);
     }
 
-    public function reviewerAssignments()
+    public function editorialDecisions(): HasMany
     {
-        return $this->hasMany(ReviewerAssignment::class);
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
+        return $this->hasMany(EditorialDecision::class, 'editor_id');
     }
 }

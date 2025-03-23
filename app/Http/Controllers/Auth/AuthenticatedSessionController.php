@@ -32,26 +32,19 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        // Get the authenticated user
         $user = Auth::user();
-        $roles = $user->getRoleNames();
+        $userRole = $user->role;
 
-        // Map roles to dashboard routes
         $roleRoutes = [
-            'admin' => 'admin.dashboard',
             'editor' => 'editor.dashboard',
             'reviewer' => 'reviewer.dashboard',
             'author' => 'author.dashboard',
         ];
 
-        // Find the first matching role and redirect
-        foreach ($roleRoutes as $role => $route) {
-            if ($roles->contains($role)) {
-                return redirect()->intended(route($route, absolute: false));
-            }
+        if (isset($roleRoutes[$userRole])) {
+            return redirect()->intended(route($roleRoutes[$userRole], absolute: false));
         }
 
-        // Fallback to a default dashboard route
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

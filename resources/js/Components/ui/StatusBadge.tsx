@@ -13,11 +13,6 @@ const config: Record<ManuscriptStatus, { bg: string; text: string; icon: React.E
         text: 'text-blue-700',
         icon: Send
     },
-    [ManuscriptStatus.UNDER_REVIEW]: {
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-700',
-        icon: Eye
-    },
     [ManuscriptStatus.ACCEPTED]: {
         bg: 'bg-green-100',
         text: 'text-green-700',

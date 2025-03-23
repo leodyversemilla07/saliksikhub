@@ -2,9 +2,13 @@ export interface User {
     id: number;
     firstname: string;
     lastname: string;
+    role: string;
+    affiliation?: string;
     email: string;
     email_verified_at?: string;
-    role: string[]; // Add this line to include user roles
+    created_at?: Date;
+    updated_at?: Date;
+    avatar?: string;
 }
 
 export type PageProps<
@@ -12,6 +16,5 @@ export type PageProps<
 > = T & {
     auth: {
         user: User;
-        roles: string[]; // Include roles here
     };
 };

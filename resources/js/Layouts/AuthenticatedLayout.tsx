@@ -1,84 +1,40 @@
-// React and Inertia imports
 import { useState, useEffect, PropsWithChildren, ReactNode } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
-
-// Icons
 import {
     Moon,
     Sun,
     Menu,
-    X,
-    Activity,
-    BookOpen,
-    CheckCircle,
     FileText,
-    Home,
-    Plus,
-    Upload,
-    User
+    FilePlus,
+    UserCheck,
+    LayoutDashboard,
 } from 'lucide-react';
-
-// Utilities
 import { cn } from '@/lib/utils';
-
-// UI Components
 import { Button } from '@/Components/ui/button';
-import { ScrollArea } from '@/Components/ui/scroll-area';
 import {
     Tooltip,
     TooltipContent,
-    TooltipProvider,
     TooltipTrigger
 } from '@/Components/ui/tooltip';
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import { NotificationDropdown } from '@/Components/layout/NotificationDropdown';
 import { UserDropdown } from '@/Components/layout/UserDropdown';
+import { Sidebar } from '@/Components/layout/Sidebar';
 
-interface AuthUser {
-    firstname: string;
-    lastname: string;
-    email: string;
-    avatar?: string;
-}
+const navigationMap = {
+    editor: [
+        { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
+        { href: 'editor.users.index', label: 'User Management', icon: UserCheck },
+    ],
+    author: [
+        { href: 'author.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: 'manuscripts.index', label: 'Manuscript Tracking', icon: FileText },
+        { href: 'manuscripts.create', label: 'New Submission', icon: FilePlus },
+    ]
+};
 
-interface AuthProps {
-    user: AuthUser;
-    roles?: string[];
-}
-
-interface CustomPageProps {
-    auth: AuthProps;
-}
-
-declare module '@inertiajs/core' {
-    interface PageProps extends CustomPageProps { }
-}
-
-const links = [
-    { href: 'author.dashboard', label: 'Dashboard', icon: Home, roles: ['author'] },
-    { href: 'manuscripts.create', label: 'New Submissions', icon: Plus, roles: ['author'] },
-    { href: 'manuscripts.index', label: 'Manuscript Tracking', icon: FileText, roles: ['author'] },
-    { href: 'articles.index', label: 'Published Papers', icon: CheckCircle, roles: ['author'] },
-    { href: 'manuscripts.revisions', label: 'Revision Required', icon: Upload, roles: ['author'] },
-    { href: 'manuscripts.indexAIPrereviewed', label: 'AI Review Reports', icon: Activity, roles: ['author'] },
-    { href: 'editor.dashboard', label: 'Dashboard', icon: Home, roles: ['editor'] },
-    { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: BookOpen, roles: ['editor'] },
-    { href: 'editor.reviewer.assign', label: 'Assign Reviewer', icon: User, roles: ['editor'] },
-    { href: 'reviewer.dashboard', label: 'Dashboard', icon: Home, roles: ['reviewer'] },
-    { href: 'reviewer.manuscripts.toReview', label: 'Review Manuscripts', icon: FileText, roles: ['reviewer'] },
-    { href: 'admin.dashboard', label: 'Dashboard', icon: Home, roles: ['admin'] },
-    { href: 'admin.manageUsers', label: 'User Management', icon: User, roles: ['admin'] },
-];
-
-export default function AuthenticatedLayout({
-    header,
-    children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
-    const { auth } = usePage<PageProps>().props;
-    const user = auth.user;
-    const userRoles = auth.roles || [];
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+function useDarkMode() {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
@@ -94,124 +50,211 @@ export default function AuthenticatedLayout({
         document.documentElement.classList.toggle('dark', newDarkMode);
     };
 
-    const SidebarLink = ({ href, active, icon: Icon, label, roles = [] }: {
-        href: string;
-        active: boolean;
-        icon: React.ComponentType<any>;
-        label: string;
-        roles?: string[];
-    }) => {
-        const isAccessible = roles.length === 0 || roles.some((role) => userRoles.includes(role));
-        if (!isAccessible) return null;
+    return { isDarkMode, toggleDarkMode };
+}
 
-        return (
-            <Link
-                href={href}
-                className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out",
-                    active
-                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 shadow-sm"
-                        : "text-gray-700 hover:bg-green-50 hover:text-green-600 dark:text-gray-200 dark:hover:bg-green-900/50 dark:hover:text-green-300"
-                )}
-            >
-                <Icon className="h-5 w-5" />
-                <span>{label}</span>
-            </Link>
-        );
+function useSidebarState() {
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('sidebarCollapsed') === 'true';
+        }
+        return false;
+    });
+    const [isLayoutTransitioning, setIsLayoutTransitioning] = useState(false);
+
+    const toggleDesktopSidebar = () => {
+        const newState = !isDesktopSidebarCollapsed;
+        setIsLayoutTransitioning(true);
+        setIsDesktopSidebarCollapsed(newState);
+        localStorage.setItem('sidebarCollapsed', newState.toString());
+
+        setTimeout(() => {
+            setIsLayoutTransitioning(false);
+        }, 300);
     };
 
+    return {
+        isMobileSidebarOpen,
+        isDesktopSidebarCollapsed,
+        isLayoutTransitioning,
+        openMobileSidebar: () => setIsMobileSidebarOpen(true),
+        closeMobileSidebar: () => setIsMobileSidebarOpen(false),
+        toggleDesktopSidebar
+    };
+}
+
+interface HeaderProps {
+    header?: ReactNode;
+    openMobileSidebar: () => void;
+    toggleDarkMode: () => void;
+    isDarkMode: boolean;
+}
+
+interface HeaderActionsProps {
+    toggleDarkMode: () => void;
+    isDarkMode: boolean;
+}
+
+function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode }: HeaderProps) {
     return (
-        <div className={cn("flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200",
-            { "overflow-hidden": isSidebarOpen })}>
-            {/* Sidebar */}
-            <aside
-                className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out",
-                    isSidebarOpen ? "translate-x-0" : "-translate-x-full",
-                    "lg:translate-x-0"
-                )}
-            >
-                <div className="flex items-center justify-between h-16 px-4 bg-green-600 dark:bg-green-700 text-white">
-                    <Link href="/" className="flex items-center space-x-2">
-                        <ApplicationLogo className="h-8 w-auto fill-current text-white" />
-                        <span className="text-lg font-bold">SaliksikHub</span>
-                    </Link>
+        <header className="fixed top-0 right-0 left-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm z-20 transition-all duration-300 ease-out"
+            style={{
+                left: 'var(--sidebar-width, 0px)',
+                width: 'calc(100% - var(--sidebar-width, 0px))'
+            }}>
+            <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between w-full">
+                <div className="flex items-center space-x-4">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="lg:hidden text-white hover:text-green-200"
-                        onClick={() => setIsSidebarOpen(false)}
+                        className="lg:hidden hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+                        onClick={openMobileSidebar}
                     >
-                        <X className="h-6 w-6" />
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Open menu</span>
                     </Button>
-                </div>
-                <ScrollArea className="flex-1 px-3 py-4">
-                    <nav className="space-y-1">
-                        {links.map(({ href, label, icon, roles }) => (
-                            <SidebarLink
-                                key={href}
-                                href={route(href)}
-                                active={route().current(href)}
-                                icon={icon}
-                                label={label}
-                                roles={roles}
-                            />
-                        ))}
-                    </nav>
-                </ScrollArea>
-            </aside>
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden lg:ml-64">
-                <header className="bg-white dark:bg-gray-800 shadow-sm z-10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between h-16 items-center">
-                            <div className="flex items-center">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="lg:hidden mr-2"
-                                    onClick={() => setIsSidebarOpen(true)}
-                                >
-                                    <Menu className="h-6 w-6" />
-                                </Button>
-                                <h1 className="text-xl font-semibold text-gray-800 dark:text-white">{header}</h1>
+                    <div>
+                        {header && (
+                            <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                                {header}
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <NotificationDropdown />
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Notifications</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={toggleDarkMode}
-                                            >
-                                                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{isDarkMode ? 'Light mode' : 'Dark mode'}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                                <UserDropdown user={user} />
-                            </div>
-                        </div>
+                        )}
                     </div>
-                </header>
+                </div>
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900">
-                    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <HeaderActions toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+            </div>
+        </header>
+    );
+}
+
+function HeaderActions({ toggleDarkMode, isDarkMode }: HeaderActionsProps) {
+    const { auth } = usePage<PageProps>().props;
+    const user = auth.user;
+
+    return (
+        <div className="flex items-center space-x-3">
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <NotificationDropdown />
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm shadow-lg">
+                    <p>Notifications</p>
+                </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleDarkMode}
+                        className="hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
+                    >
+                        <div className="relative w-5 h-5 flex items-center justify-center">
+                            <Sun className={cn(
+                                "absolute transition-transform duration-500 ease-in-out",
+                                isDarkMode ? "scale-0 rotate-[-180deg]" : "scale-100 rotate-0"
+                            )} />
+                            <Moon className={cn(
+                                "absolute transition-transform duration-500 ease-in-out",
+                                isDarkMode ? "scale-100 rotate-0" : "scale-0 rotate-180"
+                            )} />
+                        </div>
+                        <span className="sr-only">Toggle theme</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                    side="bottom"
+                    align="end"
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm shadow-lg px-3 py-1.5 rounded-md animate-in fade-in-50 data-[side=bottom]:slide-in-from-top-1 duration-300"
+                    sideOffset={8}
+                    avoidCollisions={true}
+                >
+                    <p className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-gray-200">
+                        {isDarkMode ? "Switch to Light mode" : "Switch to Dark mode"}
+                    </p>
+                </TooltipContent>
+            </Tooltip>
+
+            <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+            <UserDropdown user={user} />
+        </div>
+    );
+}
+
+
+export default function AuthenticatedLayout({
+    header,
+    children,
+}: PropsWithChildren<{ header?: ReactNode }>) {
+    const { auth } = usePage<PageProps>().props;
+    const { isDarkMode, toggleDarkMode } = useDarkMode();
+    const {
+        isMobileSidebarOpen,
+        isDesktopSidebarCollapsed,
+        openMobileSidebar,
+        closeMobileSidebar,
+        toggleDesktopSidebar
+    } = useSidebarState();
+
+    useEffect(() => {
+        document.documentElement.style.setProperty(
+            '--sidebar-width',
+            window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '4rem' : '18rem')
+        );
+
+        const handleResize = () => {
+            document.documentElement.style.setProperty(
+                '--sidebar-width',
+                window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '4rem' : '18rem')
+            );
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isDesktopSidebarCollapsed]);
+
+    return (
+        <div className="flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <Sidebar
+                user={auth.user}
+                navigationMap={navigationMap}
+                isMobileOpen={isMobileSidebarOpen}
+                isDesktopCollapsed={isDesktopSidebarCollapsed}
+                closeMobileSidebar={closeMobileSidebar}
+                toggleDesktopSidebar={toggleDesktopSidebar}
+            />
+
+            {isMobileSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+                    onClick={closeMobileSidebar}
+                />
+            )}
+
+            <div className={cn(
+                "flex-1 flex flex-col transition-all duration-300 ease-out",
+                isDesktopSidebarCollapsed ? "lg:ml-16" : "lg:ml-72"
+            )}
+                style={{
+                    transitionTimingFunction: isDesktopSidebarCollapsed ?
+                        "cubic-bezier(0.4, 0.0, 0.2, 1)" :
+                        "cubic-bezier(0.05, 0.7, 0.1, 1.0)"
+                }}
+            >
+                <Header
+                    header={header}
+                    openMobileSidebar={openMobileSidebar}
+                    toggleDarkMode={toggleDarkMode}
+                    isDarkMode={isDarkMode}
+                />
+
+                <main className="flex-1 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-16">
+                    <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 h-full overflow-auto">
                         {children}
                     </div>
                 </main>

@@ -1,5 +1,5 @@
-import Footer from '@/Components/Footer';
-import Header from '@/Components/Header';
+import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/Components/landing-pages/Header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { FileText, ExternalLink } from 'lucide-react';
@@ -50,18 +50,23 @@ export default function Current({ auth }: PageProps) {
 
     return (
         <>
-            <Head title="Current" />
+            <Head title="Current Issue" />
             <Header auth={auth} />
 
-            <main className="bg-gray-50 min-h-screen">
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Current Issue</h1>
-                    <p className="text-xl text-[#18652c] mb-12 text-center max-w-3xl mx-auto">
-                        Stay up to date with our latest research publications. Our current issue features groundbreaking studies
-                        and important findings across various scientific and technological domains.
-                    </p>
+            <main className="bg-white min-h-screen">
+                {/* Page Header */}
+                <div className="bg-gradient-to-br from-[#f0f8f3] to-white py-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-4 text-center">Current Issue</h1>
+                        <p className="text-xl text-[#18652c] text-center max-w-3xl mx-auto">
+                            Stay up to date with our latest research publications. Our current issue features groundbreaking studies
+                            and important findings across various scientific and technological domains.
+                        </p>
+                    </div>
+                </div>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-8 mb-16 transition-all duration-300 hover:shadow-xl">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="bg-[#f0f8f3] rounded-xl shadow-lg p-8 mb-16 transition-all duration-300 hover:shadow-xl">
                         <div className="flex flex-col md:flex-row items-center gap-8">
                             <img
                                 src={currentIssue.coverImageUrl}
@@ -70,16 +75,16 @@ export default function Current({ auth }: PageProps) {
                             />
                             <div className="flex-1">
                                 <div className="mb-4">
-                                    <span className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-medium">
+                                    <span className="inline-block bg-[#e6f3eb] text-[#18652c] px-4 py-1 rounded-full text-sm font-medium">
                                         Latest Issue
                                     </span>
                                 </div>
-                                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                                <h2 className="text-3xl font-bold text-[#18652c] mb-2">
                                     {currentIssue.volume}, {currentIssue.issue}
                                 </h2>
-                                <div className="flex items-center gap-4 text-gray-600">
+                                <div className="flex items-center gap-4 text-[#18652c]">
                                     <span className="text-lg">{currentIssue.year}</span>
-                                    <span className="h-1 w-1 bg-gray-400 rounded-full"></span>
+                                    <span className="h-1 w-1 bg-[#3fb65e] rounded-full"></span>
                                     <span className="text-lg">Published {currentIssue.publicationDate}</span>
                                 </div>
                             </div>
@@ -88,7 +93,7 @@ export default function Current({ auth }: PageProps) {
 
                     {/* Articles Grid */}
                     <section className="mb-16">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-8 border-l-4 border-green-500 pl-4">
+                        <h2 className="text-2xl font-bold text-[#18652c] mb-8 border-l-4 border-[#3fb65e] pl-4">
                             Featured Articles
                         </h2>
 
@@ -96,21 +101,21 @@ export default function Current({ auth }: PageProps) {
                             {currentIssue.articles.map((article) => (
                                 <article
                                     key={article.id}
-                                    className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+                                    className="bg-[#f0f8f3] rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
                                 >
                                     <div className="p-6">
                                         <Link href={article.url} className="group">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                                            <h3 className="text-xl font-bold text-[#18652c] mb-3 group-hover:text-[#3fb65e] transition-colors">
                                                 {article.title}
                                             </h3>
                                         </Link>
-                                        <p className="text-sm text-gray-500 mb-4">By {article.authors}</p>
-                                        <p className="text-gray-600 mb-5 text-justify">{article.abstract}</p>
+                                        <p className="text-sm text-[#18652c]/70 mb-4">By {article.authors}</p>
+                                        <p className="text-[#18652c]/80 mb-5 text-justify">{article.abstract}</p>
 
-                                        <div className="flex items-center justify-between border-t pt-4">
+                                        <div className="flex items-center justify-between border-t border-[#3fb65e]/20 pt-4">
                                             <Link
                                                 href={article.url}
-                                                className="flex items-center text-green-600 hover:text-green-700 font-medium"
+                                                className="flex items-center text-[#3fb65e] hover:text-[#18652c] font-medium transition-colors"
                                                 target="_blank"
                                             >
                                                 View Article
@@ -118,7 +123,7 @@ export default function Current({ auth }: PageProps) {
                                             </Link>
                                             <Link
                                                 href={article.pdfUrl}
-                                                className="flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors"
+                                                className="flex items-center bg-[#e6f3eb] text-[#18652c] px-4 py-2 rounded-lg hover:bg-[#d0e9dc] transition-colors"
                                                 target="_blank"
                                             >
                                                 <FileText className="w-5 h-5 mr-2" />
@@ -130,6 +135,20 @@ export default function Current({ auth }: PageProps) {
                             ))}
                         </div>
                     </section>
+
+                    {/* Standardized CTA Section */}
+                    <div className="bg-gradient-to-br from-[#f0f8f3] to-[#e6f3eb] rounded-xl p-8 shadow-lg text-center mt-16">
+                        <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Access Previous Issues</h2>
+                        <p className="text-xl text-[#18652c] mb-8">
+                            Explore our archive of past issues to discover more valuable research in your field of interest.
+                        </p>
+                        <Link
+                            href={route('archives')}
+                            className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
+                        >
+                            Browse Archives
+                        </Link>
+                    </div>
                 </div>
             </main>
 

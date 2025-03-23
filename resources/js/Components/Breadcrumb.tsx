@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react';
 interface BreadcrumbItem {
     label: string;
     href?: string;
+
 }
 
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {

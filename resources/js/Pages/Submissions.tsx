@@ -1,5 +1,5 @@
-import Footer from '@/Components/Footer';
-import Header from '@/Components/Header';
+import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/Components/landing-pages/Header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { CheckCircle, FileText, Users, Clock, BookOpen } from "lucide-react"
@@ -71,17 +71,20 @@ export default function Submissions({ auth }: PageProps) {
             <Head title="Submissions" />
             <Header auth={auth} />
             <div className="bg-white min-h-screen">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-5xl font-bold text-[#18652c] mb-8 text-center">Submissions</h1>
-                    <div className="max-w-3xl mx-auto text-center mb-12">
-                        <p className="text-xl text-[#18652c] mb-8">
+                {/* Page Header */}
+                <div className="bg-gradient-to-br from-[#f0f8f3] to-white py-16">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl font-bold text-[#18652c] mb-4 text-center">Submissions</h1>
+                        <p className="text-xl text-[#18652c] text-center max-w-3xl mx-auto">
                             Thank you for considering MinSU Research Journal for your manuscript submission. We welcome high-quality
                             research papers from various disciplines.
                         </p>
                     </div>
+                </div>
 
-                    <div className="grid md:grid-cols-2 gap-8 mb-12">
-                        <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="grid md:grid-cols-2 gap-8 mb-16">
+                        <div className="bg-[#f0f8f3] rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                             <h2 className="text-3xl font-semibold text-[#18652c] mb-6">Submission Guidelines</h2>
                             <ul className="space-y-4">
                                 {guidelines.map((guideline, index) => (
@@ -93,7 +96,7 @@ export default function Submissions({ auth }: PageProps) {
                             </ul>
                         </div>
 
-                        <div className="bg-[#f0f8f3] rounded-lg p-8 shadow-lg">
+                        <div className="bg-[#f0f8f3] rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                             <h2 className="text-3xl font-semibold text-[#18652c] mb-6">Submission Process</h2>
                             <ol className="space-y-6">
                                 {steps.map((step, index) => (
@@ -111,14 +114,15 @@ export default function Submissions({ auth }: PageProps) {
                         </div>
                     </div>
 
-                    <div className="bg-[#e6f3eb] rounded-lg p-8 shadow-lg text-center">
+                    {/* Standardized CTA Section */}
+                    <div className="bg-gradient-to-br from-[#f0f8f3] to-[#e6f3eb] rounded-xl p-8 shadow-lg text-center mt-16">
                         <h2 className="text-3xl font-semibold text-[#18652c] mb-4">Ready to Submit?</h2>
-                        <p className="text-xl text-[#18652c] mb-6">
+                        <p className="text-xl text-[#18652c] mb-8">
                             We look forward to receiving your manuscript and contributing to the advancement of knowledge in your field.
                         </p>
                         <Link
                             href="#"
-                            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition duration-150"
+                            className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-sm text-white bg-[#3fb65e] hover:bg-[#18652c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3fb65e] transition-all duration-300"
                         >
                             Start Your Submission
                         </Link>

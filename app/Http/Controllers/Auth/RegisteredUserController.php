@@ -35,6 +35,7 @@ class RegisteredUserController extends Controller
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'affiliation' => 'required|string|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -42,30 +43,30 @@ class RegisteredUserController extends Controller
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'email' => $request->email,
+            'affiliation' => $request->affiliation,
             'password' => Hash::make($request->password),
         ]);
 
-        // Assign default role (e.g., author)
         $user->assignRole('author');
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        // Assuming you assign roles during registration or have a way to determine the role
-        $roles = $user->getRoleNames(); // Get user roles
+        $roleRoutes = [
+            'admin' => 'admin.dashboard',
+            'editor' => 'editor.dashboard',
+            'reviewer' => 'reviewer.dashboard',
+            'author' => 'author.dashboard',
+        ];
 
-        // Determine the appropriate dashboard route based on roles
-        if ($roles->contains('admin')) {
-            return redirect()->route('admin.dashboard')->with('success', 'Registration successful. Welcome!');
-        } elseif ($roles->contains('editor')) {
-            return redirect()->route('editor.dashboard')->with('success', 'Registration successful. Welcome!');
-        } elseif ($roles->contains('reviewer')) {
-            return redirect()->route('reviewer.dashboard')->with('success', 'Registration successful. Welcome!');
-        } elseif ($roles->contains('author')) {
-            return redirect()->route('author.dashboard')->with('success', 'Registration successful. Welcome!');
+        foreach ($roleRoutes as $role => $route) {
+            if ($user->hasRole($role)) {
+                return redirect()->route($route)->with('success', 'Registration successful. Welcome!');
+            }
         }
 
-        return redirect(route('dashboard', absolute: false))->with('success', 'Registration successful. Please log in.');
+        return redirect()->route('dashboard')
+            ->with('success', 'Registration successful. Please log in.');
     }
 }
