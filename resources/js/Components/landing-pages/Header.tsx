@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { PageProps, User } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, X, ChevronDown, LogOut, User as UserIcon, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, User as UserIcon, LayoutDashboard, Search } from 'lucide-react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 
 interface HeaderProps {
@@ -10,14 +10,14 @@ interface HeaderProps {
 
 const navItems = [
     { name: "Home", href: route('home') },
-    { name: "Current", href: route('current') },
+    { name: "Current Issue", href: route('current') },
     {
-        name: "About",
+        name: "About Journal",
         children: [
-            { name: "Submissions", href: route('submissions') },
+            { name: "Aims & Scope", href: route('about-us') },
             { name: "Editorial Board", href: route('editorial-board') },
-            { name: "About Us", href: route('about-us') },
-            { name: "Contact Us", href: route('contact-us') },
+            { name: "Submission Guidelines", href: route('submissions') },
+            { name: "Contact", href: route('contact-us') },
         ]
     },
     { name: "Archives", href: route('archives') },
@@ -33,8 +33,11 @@ export default function Header({ auth }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [navDropdownOpen, setNavDropdownOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navDropdownRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
     const { url } = usePage();
 
     useEffect(() => {
@@ -44,6 +47,9 @@ export default function Header({ auth }: HeaderProps) {
             }
             if (navDropdownRef.current && !navDropdownRef.current.contains(event.target as Node)) {
                 setNavDropdownOpen(false);
+            }
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setSearchOpen(false);
             }
         };
 
@@ -77,19 +83,87 @@ export default function Header({ auth }: HeaderProps) {
         }
     };
 
-    const isNavLinkActive = (href: string): boolean => url.startsWith(href.split('?')[0]);
+    const isNavLinkActive = (href: string): boolean => {
+        // Extract just the pathname from both URLs for more accurate comparison
+        const hrefPath = new URL(href, window.location.origin).pathname;
+        const currentPath = new URL(url, window.location.origin).pathname;
+
+        // Special case for home page
+        if (hrefPath === '/' || hrefPath === '/home') {
+            return currentPath === '/' || currentPath === '/home';
+        }
+
+        // Special case for current issue
+        if (hrefPath.includes('/current')) {
+            return currentPath.includes('/current');
+        }
+
+        // For other pages, check exact match or if it's a subpage
+        return currentPath === hrefPath ||
+            (hrefPath !== '/' && currentPath.startsWith(hrefPath));
+    };
 
     const isNavDropdownActive = (children: { name: string, href: string }[]): boolean => {
         return children.some(child => isNavLinkActive(child.href));
     };
 
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Implement search functionality
+        console.log("Searching for:", searchQuery);
+        setSearchOpen(false);
+    };
+
     return (
-        <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <header className="bg-white border-b border-gray-200">
+            {/* Top bar with contact and search */}
+            <div className="bg-gray-50 py-2 border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm text-gray-500">
+                            ISSN: 2094-7577 | e-ISSN: 2023-5678
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <div className="relative" ref={searchRef}>
+                                <button
+                                    onClick={() => setSearchOpen(!searchOpen)}
+                                    className="p-1.5 text-gray-500 hover:text-[#18652c] focus:outline-none focus:ring-2 focus:ring-green-500 rounded-full"
+                                >
+                                    <Search className="h-4 w-4" />
+                                    <span className="sr-only">Search</span>
+                                </button>
+
+                                {searchOpen && (
+                                    <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-md border border-gray-200 p-2 animate-fadeIn z-50">
+                                        <form onSubmit={handleSearch} className="flex">
+                                            <input
+                                                type="text"
+                                                placeholder="Search articles..."
+                                                className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="px-3 py-1.5 bg-[#18652c] text-white rounded-r-md hover:bg-[#145024] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
+                                            >
+                                                <Search className="h-4 w-4" />
+                                            </button>
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main header */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
                     <Link
                         href={route('home')}
-                        className="flex flex-col items-center group focus:outline-none"
+                        className="flex items-center gap-3 group focus:outline-none"
                     >
                         <ApplicationLogo
                             className="transition-transform group-hover:scale-105"
@@ -97,9 +171,10 @@ export default function Header({ auth }: HeaderProps) {
                             height={42}
                             alt="MinSU Research Journal Logo"
                         />
-                        <span className="text-sm font-bold bg-gradient-to-r from-[#18652c] via-[#2a8d44] to-[#3fb65e] bg-clip-text text-transparent mt-1">
-                            MinSU Research Journal
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-bold text-gray-900">MinSU Research Journal</span>
+                            <span className="text-xs text-gray-500">Advancing Knowledge Through Research</span>
+                        </div>
                     </Link>
 
                     <nav className="hidden md:flex items-center gap-6">
@@ -229,7 +304,7 @@ const NavDropdown = ({
                         key={item.name}
                         href={item.href}
                         className={`
-                            block px-4 py-2 text-sm focus:outline-none focus-visible:bg-gray-50
+                            block px-4 py-2 text-sm focus:outline-none focus-visible:bg-gray-50 relative
                             ${isNavLinkActive(item.href)
                                 ? 'text-[#18652c] font-semibold bg-gray-50'
                                 : 'text-gray-700 hover:bg-gray-50 hover:text-[#18652c]'
@@ -238,6 +313,9 @@ const NavDropdown = ({
                         onClick={() => setIsOpen(false)}
                     >
                         {item.name}
+                        {isNavLinkActive(item.href) &&
+                            <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#3fb65e] rounded-full"></span>
+                        }
                     </Link>
                 ))}
             </div>
@@ -245,28 +323,7 @@ const NavDropdown = ({
     </div>
 );
 
-const MobileNavLink = ({ href, children, isActive, onClick }: {
-    href: string;
-    children: React.ReactNode;
-    isActive: boolean;
-    onClick?: () => void
-}) => (
-    <Link
-        href={href}
-        className={`
-            flex items-center px-4 py-3 rounded-xl font-medium transition-colors duration-300
-            ${isActive
-                ? 'bg-[#18652c] text-white shadow-sm'
-                : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'}
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50
-        `}
-        onClick={onClick}
-        aria-current={isActive ? 'page' : undefined}
-    >
-        {children}
-    </Link>
-);
-
+// Ensure MobileDropdown is consistent with desktop navigation styling
 const MobileDropdown = ({
     name,
     children,
@@ -286,18 +343,25 @@ const MobileDropdown = ({
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    flex items-center justify-between w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300
-                    ${isActive ? 'text-[#18652c] font-semibold' : 'text-gray-700'}
+                    flex items-center justify-between w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 relative
+                    ${isActive 
+                        ? 'text-[#18652c] bg-gray-50 font-semibold border-l-4 border-[#3fb65e]' 
+                        : 'text-gray-700'}
                     hover:bg-gray-50 active:bg-gray-100
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50
                 `}
             >
                 <span>{name}</span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <div className="flex items-center">
+                    {isActive && !isOpen &&
+                        <span className="w-2.5 h-2.5 bg-[#3fb65e] rounded-full mr-2"></span>
+                    }
+                    <ChevronDown className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </div>
             </button>
 
             {isOpen && (
-                <div className="pl-4 space-y-1.5 animate-fadeIn">
+                <div className="pl-4 space-y-1.5 animate-fadeIn border-l-2 border-[#3fb65e] ml-1">
                     {children.map((item) => (
                         <MobileNavLink
                             key={item.name}
@@ -313,6 +377,34 @@ const MobileDropdown = ({
         </div>
     );
 };
+
+const MobileNavLink = ({ href, children, isActive, onClick }: {
+    href: string;
+    children: React.ReactNode;
+    isActive: boolean;
+    onClick?: () => void
+}) => (
+    <Link
+        href={href}
+        className={`
+            flex items-center px-4 py-3 rounded-xl font-medium transition-colors duration-300 relative
+            ${isActive
+                ? 'bg-[#18652c] text-white shadow-sm border-l-4 border-[#3fb65e]'
+                : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'}
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50
+        `}
+        onClick={onClick}
+        aria-current={isActive ? 'page' : undefined}
+    >
+        {children}
+        {isActive && (
+            <>
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#3fb65e] rounded-r-full hidden"></span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></span>
+            </>
+        )}
+    </Link>
+);
 
 const AuthButtons = () => (
     <>

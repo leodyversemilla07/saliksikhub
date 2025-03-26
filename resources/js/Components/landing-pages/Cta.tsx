@@ -1,95 +1,104 @@
-import { Link } from "@inertiajs/react"
+import React from 'react';
+import { Link } from '@inertiajs/react';
+import { Mail, ArrowRight, BookOpen } from 'lucide-react';
 
 export default function Cta() {
     return (
-        <div className="relative bg-gradient-to-br from-[#18652c] via-[#134d25] to-[#0a2e16] overflow-hidden isolate">
-            <div className="absolute inset-0 opacity-15 animate-gradient-x">
-                <div className="absolute w-[200%] h-full bg-emerald-900/20">
-                    {/* CSS-based pattern with repeating circles */}
-                    <div className="absolute inset-0" 
-                         style={{
-                             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                             backgroundSize: '20px 20px'
-                         }} 
-                    />
-                    {/* Diagonal lines pattern */}
-                    <div className="absolute inset-0"
-                         style={{
-                             backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 10px)',
-                         }}
-                    />
+        <section className="bg-gradient-to-br from-[#18652c]/90 to-[#0c4017] relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <svg className="absolute top-0 left-0 w-96 h-96 text-white/5 transform -translate-x-1/3 -translate-y-1/2" 
+                    fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <circle cx="50" cy="50" r="50" />
+                </svg>
+                <svg className="absolute bottom-0 right-0 w-[40rem] h-[40rem] text-white/5 transform translate-x-1/3 translate-y-1/3" 
+                    fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <circle cx="50" cy="50" r="50" />
+                </svg>
+            </div>
+
+            <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-8">
+                        <div>
+                            <h2 className="text-3xl font-bold text-white">Advance Academic Knowledge</h2>
+                            <p className="mt-4 text-xl text-green-100">
+                                Join our community of researchers and contribute to the growing body of scholarly knowledge
+                            </p>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link
+                                href={route('submissions')}
+                                className="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-md text-base font-medium text-[#18652c] bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-700 focus:ring-white"
+                            >
+                                <BookOpen className="mr-2 h-5 w-5" />
+                                Submit Research
+                            </Link>
+                            <Link
+                                href={route('contact-us')}
+                                className="inline-flex items-center justify-center px-6 py-3 border border-green-300 rounded-md shadow-sm text-base font-medium text-white hover:bg-green-800/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-700 focus:ring-white"
+                            >
+                                <Mail className="mr-2 h-5 w-5" />
+                                Contact Editorial Team
+                            </Link>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl border border-white/20">
+                        <h3 className="text-xl font-semibold text-white mb-6">Benefits for Researchers</h3>
+                        
+                        <ul className="space-y-4 text-green-100">
+                            <li className="flex items-start">
+                                <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-800/50 text-white mr-3 flex-shrink-0 mt-1">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
+                                <span>Double-blind peer review ensuring fair evaluation</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-800/50 text-white mr-3 flex-shrink-0 mt-1">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
+                                <span>DOI assignment for all published articles</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-800/50 text-white mr-3 flex-shrink-0 mt-1">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
+                                <span>Indexed in major academic databases for improved visibility</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-800/50 text-white mr-3 flex-shrink-0 mt-1">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
+                                <span>Open access publication increasing citation potential</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-800/50 text-white mr-3 flex-shrink-0 mt-1">
+                                    <ArrowRight className="h-4 w-4" />
+                                </span>
+                                <span>Support throughout the submission and publication process</span>
+                            </li>
+                        </ul>
+                        
+                        <div className="mt-8 pt-6 border-t border-white/20">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-sm text-green-100 font-medium">Next submission deadline</p>
+                                    <p className="text-lg text-white font-bold">September 30, 2023</p>
+                                </div>
+                                <Link
+                                    href={route('register')}
+                                    className="inline-flex items-center text-green-100 hover:text-white font-medium"
+                                >
+                                    Register as an author
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div className="absolute inset-0 opacity-10">
-                <div className="absolute inset-0 bg-grid-white/[0.05] [mask-image:linear-gradient(180deg,transparent_30%,white)]" />
-            </div>
-
-            <div className="max-w-7xl mx-auto text-center py-28 px-4 sm:px-6 lg:px-8">
-                <div className="relative space-y-10">
-                    <h2 className="text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-tight tracking-tight">
-                        <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-emerald-200 to-cyan-100 pb-2 px-2 -skew-y-3 transform">
-                            Shape the Future of
-                            <span className="block mt-2 text-7xl font-black text-emerald-400 drop-shadow-lg">
-                                Academic Research
-                            </span>
-                        </span>
-                        <span className="block mt-8 text-3xl font-semibold text-emerald-100/90 bg-white/5 backdrop-blur-sm py-4 px-6 rounded-2xl border border-white/10 shadow-lg">
-                            Submit Your Work to MinSU Research Journal
-                        </span>
-                    </h2>
-
-                    <p className="mx-auto max-w-2xl text-xl leading-8 text-emerald-50/90 font-light">
-                        Join our prestigious community of scholars and contribute to meaningful academic discourse
-                        that reaches a <span className="font-medium text-white">global audience</span> of researchers
-                        and professionals.
-                    </p>
-
-                    <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
-                        <Link
-                            href="/submissions"
-                            className="group relative flex items-center justify-center px-10 py-5 bg-emerald-100/90 hover:bg-white text-emerald-900 text-lg font-semibold rounded-2xl shadow-2xl transition-all duration-300"
-                        >
-                            <div className="absolute -inset-1 rounded-2xl bg-white/30 opacity-0 group-hover:opacity-100 blur-md transition-all duration-300" />
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                            Submit Manuscript
-                        </Link>
-
-                        <Link
-                            href="/about"
-                            className="group relative flex items-center justify-center px-10 py-5 border-2 border-emerald-200/50 text-emerald-50 hover:text-white hover:border-white/80 text-lg font-semibold rounded-2xl backdrop-blur-sm transition-all duration-300 hover:bg-white/5"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 mr-3 opacity-90 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Journal Details
-                        </Link>
-                    </div>
-
-                    <div className="mt-12 flex items-center justify-center gap-4 text-sm font-medium text-emerald-200/90">
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                            <svg className="h-4 w-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            Peer-Reviewed
-                        </span>
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                            <svg className="h-4 w-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            Open Access
-                        </span>
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                            <svg className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2H5a1 1 0 110-2h12V4H4zm3 2a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clipRule="evenodd" />
-                            </svg>
-                            Indexed
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+        </section>
+    );
 }

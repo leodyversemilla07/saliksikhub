@@ -1,75 +1,159 @@
-import { Link } from "@inertiajs/react"
-import { FileText, Users, Clock, BookOpen, ArrowRight } from "lucide-react"
-
-const authorFeatures = [
-    {
-        name: "Easy Submission Process",
-        description:
-            "Our streamlined online submission system makes it simple to submit your research for publication in MinSU Research Journal.",
-        icon: FileText,
-    },
-    {
-        name: "Rigorous Peer Review",
-        description: "All submissions undergo a thorough, fair, and timely peer review process by experts in the field.",
-        icon: Users,
-    },
-    {
-        name: "Rapid Publication",
-        description: "We are committed to quick turnaround times from submission to publication of accepted articles.",
-        icon: Clock,
-    },
-    {
-        name: "Wide Readership",
-        description:
-            "Published articles gain exposure to our diverse readership of researchers, students, and professionals.",
-        icon: BookOpen,
-    },
-]
+import React from 'react';
+import { Link } from '@inertiajs/react';
+import { FileText, BookOpen, CheckCircle2, Info, ArrowRight, CalendarDays } from 'lucide-react';
 
 export default function ForAuthors() {
     return (
-        <section className="bg-gradient-to-b from-[#f7faf7] to-white py-24">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="lg:text-center space-y-6 mb-16">
-                    <span className="inline-block bg-gradient-to-r from-[#18652c] to-[#3fb65e] text-white px-6 py-2 rounded-full text-sm font-medium">
-                        For Authors
-                    </span>
-                    <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-                        Publish Your Research with<br className="hidden lg:block" /> MinSU Research Journal
-                    </h2>
-                    <p className="mx-auto mt-6 text-xl text-gray-600 max-w-3xl leading-relaxed">
-                        Join our prestigious community of researchers and amplify your work's impact through our global academic network.
-                    </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {authorFeatures.map((feature) => (
-                        <div
-                            key={feature.name}
-                            className="group bg-white p-8 rounded-2xl shadow-lg transition-all duration-300 ease-out"
-                        >
-                            <div className="mb-6">
-                                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white">
-                                    <feature.icon className="w-7 h-7" />
+        <section className="py-24 border-t border-gray-100">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-8">
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-900">Information for Authors</h2>
+                        <p className="mt-4 text-gray-600">
+                            MinSU Research Journal welcomes submissions from researchers across all disciplines. 
+                            Our publication process is designed to ensure rigorous peer review while providing authors 
+                            with a supportive and efficient experience.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">Publication Timeline</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 p-1 bg-green-100 rounded-full mt-1">
+                                    <CheckCircle2 className="h-5 w-5 text-[#18652c]" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-900">Initial Review</p>
+                                    <p className="text-sm text-gray-600">2-3 weeks after submission</p>
                                 </div>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.name}</h3>
-                            <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                            
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 p-1 bg-green-100 rounded-full mt-1">
+                                    <CheckCircle2 className="h-5 w-5 text-[#18652c]" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-900">Peer Review Process</p>
+                                    <p className="text-sm text-gray-600">4-6 weeks</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 p-1 bg-green-100 rounded-full mt-1">
+                                    <CheckCircle2 className="h-5 w-5 text-[#18652c]" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-900">Revision Period</p>
+                                    <p className="text-sm text-gray-600">2-4 weeks for author revisions</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 p-1 bg-green-100 rounded-full mt-1">
+                                    <CheckCircle2 className="h-5 w-5 text-[#18652c]" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm font-medium text-gray-900">Publication</p>
+                                    <p className="text-sm text-gray-600">4-8 weeks after acceptance</p>
+                                </div>
+                            </div>
                         </div>
-                    ))}
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Link
+                            href={route('submissions')}
+                            className="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#18652c] hover:bg-[#145024] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                            Submission Guidelines
+                        </Link>
+                        <Link
+                            href="#"
+                            className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                            Author Resources
+                        </Link>
+                    </div>
                 </div>
-
-                <div className="mt-20 text-center">
-                    <Link
-                        href="/submissions"
-                        className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-[#18652c] to-[#3fb65e] rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:gap-3 gap-2"
-                    >
-                        Submit Your Manuscript
-                        <ArrowRight className="w-5 h-5 transition-all duration-300 group-hover:translate-x-1" />
-                    </Link>
-                    <p className="mt-4 text-sm text-gray-500">
-                        Average processing time: 28 days from submission to first decision
-                    </p>
+                
+                <div className="space-y-6">
+                    {/* Key information cards */}
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 p-1 bg-green-100 rounded-md">
+                                <FileText className="h-6 w-6 text-[#18652c]" />
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Manuscript Requirements</h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    We accept original research articles, review papers, case studies, and short communications.
+                                    Manuscripts should follow APA style and include structured abstracts.
+                                </p>
+                                <Link 
+                                    href="#"
+                                    className="mt-2 inline-flex items-center text-sm font-medium text-[#18652c] hover:text-[#145024]"
+                                >
+                                    View formatting guidelines
+                                    <ArrowRight className="ml-1 h-4 w-4" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 p-1 bg-green-100 rounded-md">
+                                <BookOpen className="h-6 w-6 text-[#18652c]" />
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Open Access Policy</h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    MinSU Research Journal is committed to open access publishing. All published articles are 
+                                    immediately and permanently free for everyone to read and download.
+                                </p>
+                                <Link 
+                                    href="#"
+                                    className="mt-2 inline-flex items-center text-sm font-medium text-[#18652c] hover:text-[#145024]"
+                                >
+                                    Read our full policy
+                                    <ArrowRight className="ml-1 h-4 w-4" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 p-1 bg-green-100 rounded-md">
+                                <CalendarDays className="h-6 w-6 text-[#18652c]" />
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold text-gray-900">Publication Schedule</h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    The journal is published quarterly (March, June, September, December). 
+                                    Special issues are announced separately with specific submission deadlines.
+                                </p>
+                                <Link 
+                                    href="#"
+                                    className="mt-2 inline-flex items-center text-sm font-medium text-[#18652c] hover:text-[#145024]"
+                                >
+                                    View upcoming issues
+                                    <ArrowRight className="ml-1 h-4 w-4" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="p-4 border border-amber-200 bg-amber-50 rounded-lg">
+                        <div className="flex items-start">
+                            <Info className="h-5 w-5 text-amber-500 mt-0.5" />
+                            <p className="ml-3 text-sm text-amber-800">
+                                <span className="font-medium">Note:</span> Submissions for the December 2023 special issue on 
+                                "Sustainable Development and Climate Resilience" are now being accepted until September 30, 2023.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
