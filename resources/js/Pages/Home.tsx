@@ -1,14 +1,14 @@
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
-import Header from '@/Components/landing-pages/Header';
-import Hero from '@/Components/landing-pages/Hero';
-import Features from '@/Components/landing-pages/Features';
-import FeaturedResearch from '@/Components/landing-pages/FeaturedResearch';
-import ForAuthors from '@/Components/landing-pages/ForAuthors';
-import Cta from '@/Components/landing-pages/Cta';
-import Footer from '@/Components/landing-pages/Footer';
-import LatestArticles from '@/Components/landing-pages/LatestArticles';
-import CallForPapers from '@/Components/landing-pages/CallForPapers';
+import Header from '@/components/landing-pages/site-header';
+import Hero from '@/components/landing-pages/hero-section';
+import Features from '@/components/landing-pages/features';
+import FeaturedResearch from '@/components/landing-pages/featured-research';
+import ForAuthors from '@/components/landing-pages/for-authors';
+import Cta from '@/components/landing-pages/call-to-action';
+import Footer from '@/components/landing-pages/site-footer';
+import LatestArticles from '@/components/landing-pages/latest-articles';
+import CallForPapers from '@/components/landing-pages/call-for-papers';
 
 export default function Home({ auth }: PageProps) {
     return (

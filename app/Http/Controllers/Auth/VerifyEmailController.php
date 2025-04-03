@@ -32,19 +32,17 @@ class VerifyEmailController extends Controller
     protected function redirectToDashboard($user): RedirectResponse
     {
         $roleRoutes = [
-            'admin' => 'admin.dashboard',
             'editor' => 'editor.dashboard',
-            'reviewer' => 'reviewer.dashboard',
             'author' => 'author.dashboard',
         ];
 
         foreach ($roleRoutes as $role => $route) {
             if ($user->hasRole($role)) {
-                return redirect()->intended(route($route, absolute: false));
+                return redirect()->intended(route($route, absolute: false).'?verified=1');
             }
         }
 
         // Fallback to default dashboard
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
     }
 }

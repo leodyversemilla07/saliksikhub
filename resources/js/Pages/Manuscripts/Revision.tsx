@@ -1,15 +1,13 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { 
-    FileText, Clock, AlertCircle, Download, FileEdit, ChevronLeft, Upload, Calendar 
+import {
+    FileText, Download, FileEdit, ChevronLeft, Upload, Calendar
 } from 'lucide-react';
 import { useState, FormEvent } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Section } from '@/Components/ui/Section';
-import { PageProps } from '@/types';
-import { Button } from '@/Components/ui/button';
-import { Textarea } from '@/Components/ui/textarea';
-import { Card } from '@/Components/ui/card';
+import AuthenticatedLayout from '@/layouts/authenticated-layout';
+// import { Section } from '@/components/ui/Section';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface Decision {
@@ -39,7 +37,7 @@ interface RevisionProps {
 
 export default function Revision({ manuscript, decision }: RevisionProps) {
     const [fileError, setFileError] = useState<string | null>(null);
-    
+
     const { data, setData, post, processing, errors } = useForm({
         revised_manuscript: null as File | null,
         revision_comments: '',
@@ -48,7 +46,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         setFileError(null);
-        
+
         if (file) {
             // Validate file type
             const validTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -56,46 +54,46 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                 setFileError('Only .doc and .docx files are allowed');
                 return;
             }
-            
+
             // Validate file size (20MB max)
             if (file.size > 20 * 1024 * 1024) {
                 setFileError('File size must be less than 20MB');
                 return;
             }
-            
+
             setData('revised_manuscript', file);
         }
     };
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        
+
         if (!data.revised_manuscript) {
             setFileError('Please select a file to upload');
             return;
         }
-        
+
         post(route('manuscripts.revision.submit', manuscript.id));
     };
 
     const getRemainingDays = () => {
         if (!decision?.revision_deadline) return null;
-        
+
         const deadline = new Date(decision.revision_deadline);
         const today = new Date();
         const diffTime = deadline.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         return diffDays;
     };
-    
+
     const remainingDays = getRemainingDays();
     const isDeadlinePassed = remainingDays !== null && remainingDays < 0;
 
     return (
         <AuthenticatedLayout header="Submit Manuscript Revision">
             <Head title={`Revise: ${manuscript.title}`} />
-            
+
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
                 <div className="w-full max-w-5xl mx-auto">
                     <div className="mb-6">
@@ -108,21 +106,16 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                         </Link>
                     </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="w-full"
-                    >
+                    <div className="w-full">
                         <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg md:shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
                             <div className="relative bg-amber-600 dark:bg-amber-800 p-5 sm:p-6 md:p-8">
                                 <div className="absolute inset-0 bg-black/10 dark:bg-black/40 backdrop-blur-sm"></div>
                                 <div className="relative">
                                     <div className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium shadow-sm bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200 dark:border-amber-800/30">
-                                        <FileEdit className="h-3.5 w-3.5 mr-1" /> 
+                                        <FileEdit className="h-3.5 w-3.5 mr-1" />
                                         Revision Required
                                     </div>
-                                    
+
                                     <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-2 sm:mt-3 break-words leading-tight tracking-tight drop-shadow-md">
                                         {manuscript.title}
                                     </h1>
@@ -165,7 +158,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                     ? "text-red-700 dark:text-red-400"
                                                     : "text-amber-700 dark:text-amber-400"
                                             )}>
-                                                {isDeadlinePassed 
+                                                {isDeadlinePassed
                                                     ? `The deadline for submission was ${new Date(decision.revision_deadline).toLocaleDateString()}. Please submit as soon as possible.`
                                                     : `Please submit your revision by ${new Date(decision.revision_deadline).toLocaleDateString()} (${Math.abs(remainingDays || 0)} days ${remainingDays && remainingDays > 0 ? 'remaining' : 'overdue'}).`
                                                 }
@@ -177,7 +170,11 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
 
                             <div className="p-4 sm:p-5 md:p-6 lg:p-8">
                                 <div className="grid gap-6 sm:gap-7 md:gap-8">
-                                    <Section icon={FileText} title="Editor Comments" delay={0.1}>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <FileText className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                                            <h3 className="font-medium text-gray-900 dark:text-gray-100">Editor Comments</h3>
+                                        </div>
                                         {decision ? (
                                             <Card className="p-4">
                                                 <div className="prose dark:prose-invert max-w-none">
@@ -191,16 +188,20 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                 No specific comments provided by the editor.
                                             </p>
                                         )}
-                                    </Section>
-                                    
+                                    </div>
+
                                     {manuscript.manuscript_url && (
-                                        <Section icon={FileText} title="Current Manuscript" delay={0.2}>
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <FileText className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                                                <h3 className="font-medium text-gray-900 dark:text-gray-100">Current Manuscript</h3>
+                                            </div>
                                             <div className="bg-gray-50 dark:bg-gray-800/70 rounded-lg p-4 border border-gray-100 dark:border-gray-700/50">
                                                 <div className="flex justify-between items-center">
                                                     <div className="text-sm text-gray-700 dark:text-gray-300">
                                                         Download your current manuscript to make the requested revisions:
                                                     </div>
-                                                    
+
                                                     <a
                                                         href={manuscript.manuscript_url}
                                                         download
@@ -213,10 +214,15 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                     </a>
                                                 </div>
                                             </div>
-                                        </Section>
+                                        </div>
                                     )}
-                                    
-                                    <Section icon={Upload} title="Submit Revised Manuscript" delay={0.3}>
+
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <Upload className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                                            <h3 className="font-medium text-gray-900 dark:text-gray-100">Submit Revised Manuscript</h3>
+                                        </div>
+
                                         <form onSubmit={handleSubmit}>
                                             <div className="space-y-6">
                                                 <div>
@@ -224,8 +230,8 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                         Upload Revised Manuscript
                                                     </label>
                                                     <div className="flex flex-col items-center justify-center w-full">
-                                                        <label 
-                                                            htmlFor="dropzone-file" 
+                                                        <label
+                                                            htmlFor="dropzone-file"
                                                             className={cn(
                                                                 "flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer",
                                                                 errors.revised_manuscript || fileError
@@ -240,7 +246,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                                         ? "text-red-500 dark:text-red-400"
                                                                         : "text-gray-500 dark:text-gray-400"
                                                                 )} />
-                                                                
+
                                                                 {data.revised_manuscript ? (
                                                                     <div className="text-center">
                                                                         <p className="mb-1 text-sm font-semibold text-green-600 dark:text-green-400">
@@ -264,16 +270,16 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            
-                                                            <input 
-                                                                id="dropzone-file" 
-                                                                type="file" 
-                                                                className="hidden" 
+
+                                                            <input
+                                                                id="dropzone-file"
+                                                                type="file"
+                                                                className="hidden"
                                                                 onChange={handleFileChange}
                                                                 accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                                             />
                                                         </label>
-                                                        
+
                                                         {(fileError || errors.revised_manuscript) && (
                                                             <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                                                                 {fileError || errors.revised_manuscript}
@@ -283,13 +289,13 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                 </div>
 
                                                 <div>
-                                                    <label 
-                                                        htmlFor="revision-comments" 
+                                                    <label
+                                                        htmlFor="revision-comments"
                                                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200"
                                                     >
                                                         Revision Comments
                                                     </label>
-                                                    
+
                                                     <Textarea
                                                         id="revision-comments"
                                                         placeholder="Describe the changes you've made in response to the editor's comments..."
@@ -300,7 +306,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                             errors.revision_comments && "border-red-500 focus:ring-red-500"
                                                         )}
                                                     />
-                                                    
+
                                                     {errors.revision_comments && (
                                                         <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                                                             {errors.revision_comments}
@@ -321,8 +327,8 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                     >
                                                         Cancel
                                                     </Button>
-                                                    <Button 
-                                                        type="submit" 
+                                                    <Button
+                                                        type="submit"
                                                         disabled={processing}
                                                         className="bg-amber-600 hover:bg-amber-700 focus:ring-amber-500"
                                                     >
@@ -331,11 +337,11 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                                                 </div>
                                             </div>
                                         </form>
-                                    </Section>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

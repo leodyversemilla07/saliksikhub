@@ -30,9 +30,7 @@ class EmailVerificationPromptController extends Controller
     protected function redirectToDashboard($user): RedirectResponse
     {
         $roleRoutes = [
-            'admin' => 'admin.dashboard',
             'editor' => 'editor.dashboard',
-            'reviewer' => 'reviewer.dashboard',
             'author' => 'author.dashboard',
         ];
 

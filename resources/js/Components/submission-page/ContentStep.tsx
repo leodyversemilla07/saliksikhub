@@ -1,155 +1,141 @@
-import { useFormContext } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/Components/ui/form';
+import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/Components/ui/form';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
-import { BookOpen, Tag, Info } from 'lucide-react';
+import { FileText, Tag, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/Components/ui/tooltip';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-export function ContentStep() {
-    const { control, watch } = useFormContext();
-    const abstractValue = watch("abstract");
-    const [abstractCount, setAbstractCount] = useState(0);
-
-    const handleAbstractChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setAbstractCount(e.target.value.length);
+interface ContentStepProps {
+    data: {
+        abstract: string;
+        keywords: string;
+        [key: string]: string | File | null;
     };
+    setData: (name: string, value: string) => void;
+    errors: {
+        abstract?: string;
+        keywords?: string;
+        [key: string]: string | undefined;
+    };
+}
 
+export function ContentStep({ data, setData, errors }: ContentStepProps) {
     return (
         <div className="space-y-6 animate-fadeIn">
-            <FormField
-                control={control}
-                name="abstract"
-                render={({ field, fieldState }) => (
-                    <FormItem>
-                        <div className="flex items-center justify-between">
-                            <FormLabel htmlFor="abstract" className="font-medium">
-                                <span className="flex items-center gap-2">
-                                    <BookOpen className="w-4 h-4 text-primary" />
-                                    Abstract
-                                </span>
-                            </FormLabel>
+            <FormItem className={errors.abstract ? 'form-error' : ''}>
+                <div className="flex items-center justify-between">
+                    <FormLabel className="flex items-center gap-2 font-medium">
+                        <span className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Abstract
+                        </span>
+                    </FormLabel>
 
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm text-xs">
-                                    <p>A concise summary of your research including objectives, methods, results, and conclusions.</p>
-                                </TooltipContent>
-                            </Tooltip>
-
-                        </div>
-
-                        <FormControl>
-                            <Textarea
-                                id="abstract"
-                                placeholder="Enter a concise summary of your research..."
-                                className={cn(
-                                    "resize-none min-h-[180px] transition-all duration-200",
-                                    fieldState.invalid ? "border-red-500 focus:ring-red-500" : field.value?.length >= 100 ? "border-green-500" : ""
-                                )}
-                                rows={6}
-                                {...field}
-                                onChange={(e) => {
-                                    field.onChange(e);
-                                    handleAbstractChange(e);
-                                }}
-                            />
-                        </FormControl>
-
-                        <div className="flex items-center justify-between">
-                            <FormDescription>
-                                Provide a comprehensive summary (100-300 words).
-                            </FormDescription>
-                            <div className={`text-xs ${abstractCount < 100
-                                ? "text-red-500"
-                                : abstractCount > 300
-                                    ? "text-amber-500"
-                                    : "text-green-600"
-                                }`}>
-                                {abstractCount} / 100-300 words
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="text-muted-foreground cursor-help">
+                                <Info className="w-4 h-4" />
                             </div>
-                        </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-sm text-xs">
+                            <p>A summary of your research including objectives, methods, results, and conclusions.</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
 
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-
-            <FormField
-                control={control}
-                name="keywords"
-                render={({ field, fieldState }) => (
-                    <FormItem>
-                        <div className="flex items-center justify-between">
-                            <FormLabel htmlFor="keywords" className="font-medium">
-                                <span className="flex items-center gap-2">
-                                    <Tag className="w-4 h-4 text-primary" />
-                                    Keywords
-                                </span>
-                            </FormLabel>
-
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-sm text-xs">
-                                    <p>Keywords help others find your paper in databases and search engines.</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-
-                        <FormControl>
-                            <Input
-                                id="keywords"
-                                placeholder="e.g. artificial intelligence, machine learning, neural networks"
-                                className={cn(
-                                    "transition-all duration-200",
-                                    fieldState.invalid ? "border-red-500 focus:ring-red-500" : field.value?.length >= 3 ? "border-green-500" : ""
-                                )}
-                                {...field}
-                            />
-                        </FormControl>
-
-                        <div className="flex items-center justify-between">
-                            <FormDescription>
-                                Enter keywords related to your research, separated by commas.
-                            </FormDescription>
-
-                            {field.value && (
-                                <div className="text-xs text-muted-foreground">
-                                    {field.value.split(',').filter((k: string) => k.trim() !== '').length} keywords
-                                </div>
-                            )}
-                        </div>
-
-                        <FormMessage />
-
-                        {field.value && field.value.split(',').filter((k: string) => k.trim() !== '').length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                                {field.value.split(',').map((keyword: string, index: number) => {
-                                    if (keyword.trim() === '') return null;
-
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                                        >
-                                            {keyword.trim()}
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                <FormControl>
+                    <Textarea
+                        id="abstract"
+                        placeholder="Enter your abstract (100-300 words recommended)"
+                        className={cn(
+                            "min-h-[150px] transition-all duration-200",
+                            errors.abstract ? "border-red-500 focus:ring-red-500" :
+                                data.abstract?.length >= 100 ? "border-green-500" : ""
                         )}
-                    </FormItem>
+                        value={data.abstract}
+                        onChange={(e) => setData('abstract', e.target.value)}
+                        aria-invalid={!!errors.abstract}
+                        aria-errormessage={errors.abstract ? "abstract-error" : undefined}
+                    />
+                </FormControl>
+
+                <div className="flex items-center justify-between">
+                    <FormDescription>
+                        Provide a concise summary of your research.
+                    </FormDescription>
+                    <div className="text-xs text-muted-foreground">
+                        {data.abstract?.length || 0}/100+ characters
+                    </div>
+                </div>
+
+                {errors.abstract && <FormMessage id="abstract-error">{errors.abstract}</FormMessage>}
+            </FormItem>
+
+            <FormItem className={errors.keywords ? 'form-error' : ''}>
+                <div className="flex items-center justify-between">
+                    <FormLabel htmlFor="keywords" className="font-medium">
+                        <span className="flex items-center gap-2">
+                            <Tag className="w-4 h-4 text-primary" />
+                            Keywords
+                        </span>
+                    </FormLabel>
+
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="text-muted-foreground cursor-help">
+                                <Info className="w-4 h-4" />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-sm text-xs">
+                            <p>Keywords help readers find your paper. Include 3-6 relevant terms.</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
+
+                <FormControl>
+                    <Input
+                        id="keywords"
+                        placeholder="e.g. Machine Learning, Computer Vision, Neural Networks"
+                        className={cn(
+                            "transition-all duration-200",
+                            errors.keywords ? "border-red-500 focus:ring-red-500" :
+                                data.keywords?.length >= 3 ? "border-green-500" : ""
+                        )}
+                        value={data.keywords}
+                        onChange={(e) => setData('keywords', e.target.value)}
+                        aria-invalid={!!errors.keywords}
+                        aria-errormessage={errors.keywords ? "keywords-error" : undefined}
+                    />
+                </FormControl>
+
+                {data.keywords && data.keywords.split(',').filter((k: string) => k.trim() !== '').length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                        {data.keywords.split(',').map((keyword: string, index: number) => {
+                            if (keyword.trim() === '') return null;
+
+                            return (
+                                <div
+                                    key={index}
+                                    className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
+                                >
+                                    {keyword.trim()}
+                                </div>
+                            );
+                        })}
+                    </div>
                 )}
-            />
+
+                <div className="flex items-center justify-between">
+                    <FormDescription>
+                        List keywords separated by commas.
+                    </FormDescription>
+                    <div className="text-xs text-muted-foreground">
+                        {data.keywords?.length || 0}/3+ characters
+                    </div>
+                </div>
+
+                {errors.keywords && <FormMessage id="keywords-error">{errors.keywords}</FormMessage>}
+            </FormItem>
         </div>
     );
 }

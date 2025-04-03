@@ -51,7 +51,7 @@ export default function UpdatePasswordForm({
     };
 
     return (
-        <div className="max-w-xl">
+        <div className={`max-w-xl ${className}`}>
             <div className="mb-6">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                     Password Security

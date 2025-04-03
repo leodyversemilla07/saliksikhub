@@ -1,13 +1,17 @@
 import { useEffect, FormEventHandler, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import Header from '@/Components/landing-pages/Header';
-import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/components/landing-pages/site-header';
+import Footer from '@/components/landing-pages/site-footer';
 import { Book, Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { PageProps } from '@/types';
 
 export default function Login({ status, canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
     const [showPassword, setShowPassword] = useState(false);
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm<{
+        email: string;
+        password: string;
+        remember: boolean;
+    }>({
         email: '',
         password: '',
         remember: false,
@@ -17,7 +21,7 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
         return () => {
             reset('password');
         };
-    }, []);
+    }, [reset]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -36,7 +40,7 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                         <div className="text-center max-w-3xl mx-auto">
                             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Sign In to Your Account</h1>
                             <p className="text-xl text-gray-600">
-                                Access the MinSU Research Journal platform to manage your submissions, 
+                                Access the MinSU Research Journal platform to manage your submissions,
                                 review articles, or access exclusive content.
                             </p>
                         </div>
@@ -54,7 +58,7 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                                     </div>
                                     <h2 className="text-2xl font-bold text-gray-900 ml-3">Log in</h2>
                                 </div>
-                                
+
                                 {status && (
                                     <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg border border-green-200 flex items-start">
                                         <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
@@ -77,9 +81,8 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                                                 name="email"
                                                 value={data.email}
                                                 placeholder="your.email@example.com"
-                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                    errors.email ? 'border-red-500' : 'border-gray-300'
-                                                }`}
+                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                                    }`}
                                                 autoComplete="username"
                                                 onChange={(e) => setData('email', e.target.value)}
                                             />
@@ -111,9 +114,8 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                                                 name="password"
                                                 value={data.password}
                                                 placeholder="••••••••"
-                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                    errors.password ? 'border-red-500' : 'border-gray-300'
-                                                }`}
+                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                                    }`}
                                                 autoComplete="current-password"
                                                 onChange={(e) => setData('password', e.target.value)}
                                             />
@@ -151,7 +153,7 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                                         >
                                             {processing ? 'Logging in...' : 'Log in'}
                                         </button>
-                                        
+
                                         <div className="text-center">
                                             <span className="text-sm text-gray-600">Don't have an account?</span>
                                             <Link
@@ -252,7 +254,7 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
                     </div>
                 </div>
             </main>
-            
+
             <Footer />
         </>
     );

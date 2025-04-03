@@ -3,12 +3,12 @@ import { Head } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
 // Shadcn UI components
-import { Button } from "@/Components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/Components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
-import { Badge } from "@/Components/ui/badge";
-import { Separator } from "@/Components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default function Unauthorized() {
     const [isVisible, setIsVisible] = useState(false);

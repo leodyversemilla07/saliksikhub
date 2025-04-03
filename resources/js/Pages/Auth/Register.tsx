@@ -2,8 +2,8 @@ import { useState, FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Eye, EyeOff, User, Mail, Building, Book, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { PageProps } from '@/types';
-import Header from '@/Components/landing-pages/Header';
-import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/components/landing-pages/site-header';
+import Footer from '@/components/landing-pages/site-footer';
 
 export default function Register({ auth }: PageProps) {
     const [showPassword, setShowPassword] = useState(false);

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import Footer from '@/Components/landing-pages/Footer';
-import Header from '@/Components/landing-pages/Header';
+import Footer from '@/components/landing-pages/site-footer';
+import Header from '@/components/landing-pages/site-header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { 
     Book, Calendar, Download, FileText, Search, 
-    ChevronDown, ChevronRight, Filter, X, BookOpen
+    ChevronDown, ChevronRight, Filter, X, BookOpen,
+    Check
 } from 'lucide-react';
 
 interface JournalArticle {
@@ -296,13 +297,10 @@ export default function Archives({ auth }: PageProps) {
         setSearchQuery("");
     };
 
-    const handleYearSelect = (year: number) => {
-        setSelectedYear(prev => prev === year ? null : year);
-    };
-
-    const handleVolumeSelect = (volume: number) => {
-        setSelectedVolume(prev => prev === volume ? null : volume);
-    };
+    // The function below is not needed as we're using the onChange event directly in the select
+    // const handleVolumeSelect = (volume: number) => {
+    //     setSelectedVolume(prev => prev === volume ? null : volume);
+    // };
 
     const toggleIssueExpand = (issueId: number) => {
         setExpandedIssue(prev => prev === issueId ? null : issueId);

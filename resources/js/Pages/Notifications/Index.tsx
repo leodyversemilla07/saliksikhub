@@ -1,23 +1,40 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { PageProps } from '@/types';
 import { CheckCircle, MessageSquare, FileText, Clock, AlertCircle } from 'lucide-react';
-import { Button } from '@/Components/ui/button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import axios from 'axios';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+interface NotificationData {
+    message?: string;
+    manuscript_id?: string;
+    manuscript_title?: string;
+    decision_type?: string;
+}
 
 interface Notification {
     id: string;
     type: string;
-    data: any;
+    data: NotificationData;
     read_at: string | null;
     created_at: string;
 }
 
-export default function Notifications({ auth, notifications }: PageProps<{ notifications: any }>) {
+interface PaginatedData<T> {
+    data: T[];
+    current_page: number;
+    from: number;
+    last_page: number;
+    per_page: number;
+    to: number;
+    total: number;
+}
+
+export default function Notifications({ auth, notifications }: PageProps<{ notifications: PaginatedData<Notification> }>) {
     const [notificationState, setNotificationState] = useState(notifications.data);
     const [activeTab, setActiveTab] = useState("all");
 
@@ -45,7 +62,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
         }
     };
 
-    const getNotificationType = (data: any) => {
+    const getNotificationType = (data: NotificationData) => {
         if (data.decision_type) {
             switch (data.decision_type) {
                 case 'Accept': return 'acceptance';
@@ -69,11 +86,11 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
         }
     };
 
-    const getActionUrl = (data: any) => {
+    const getActionUrl = (data: NotificationData) => {
         if (data.manuscript_id) {
             // Use the user's role to determine the correct URL path
             const userRole = auth.user.role;
-            
+
             if (userRole === 'editor') {
                 return `/editor/manuscripts/${data.manuscript_id}`;
             } else {
@@ -83,7 +100,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
         return undefined;
     };
 
-    const getActionLabel = (data: any) => {
+    const getActionLabel = (data: NotificationData) => {
         if (data.decision_type) {
             switch (data.decision_type) {
                 case 'Accept': return 'View Details';
@@ -96,7 +113,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
         return 'View Details';
     };
 
-    const getNotificationTitle = (data: any) => {
+    const getNotificationTitle = (data: NotificationData) => {
         if (data.decision_type) {
             switch (data.decision_type) {
                 case 'Accept': return 'Manuscript Accepted';
@@ -119,15 +136,15 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
     const unreadCount = notificationState.filter((n: Notification) => n.read_at === null).length;
 
     return (
-        <AuthenticatedLayout  header="Notification">
+        <AuthenticatedLayout header="Notification">
             <Head title="Notifications" />
 
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="text-2xl">Notifications</CardTitle>
                     {unreadCount > 0 && (
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             onClick={markAllAsRead}
                             className="text-green-600 hover:text-green-700 hover:bg-green-50"
                         >
@@ -147,7 +164,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                         <TabsContent value="all" className="space-y-4">
                             {filteredNotifications.length > 0 ? (
                                 filteredNotifications.map((notification: Notification) => (
-                                    <div 
+                                    <div
                                         key={notification.id}
                                         className={cn(
                                             "p-4 border rounded-lg flex items-start gap-4 transition-colors",
@@ -164,7 +181,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                 {getNotificationIcon(getNotificationType(notification.data))}
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex-grow">
                                             <div className="flex items-center justify-between">
                                                 <h4 className={cn(
@@ -177,15 +194,15 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                     {new Date(notification.created_at).toLocaleDateString()}
                                                 </span>
                                             </div>
-                                            
+
                                             <p className="text-gray-600 mt-1">
-                                                {notification.data.message || 
-                                                 (notification.data.manuscript_title && `Regarding your manuscript: "${notification.data.manuscript_title}"`)
+                                                {notification.data.message ||
+                                                    (notification.data.manuscript_title && `Regarding your manuscript: "${notification.data.manuscript_title}"`)
                                                 }
                                             </p>
-                                            
+
                                             {notification.data && getActionUrl(notification.data) && (
-                                                <a 
+                                                <a
                                                     href={getActionUrl(notification.data)}
                                                     className="mt-2 inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700"
                                                 >
@@ -193,7 +210,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                 </a>
                                             )}
                                         </div>
-                                        
+
                                         {!notification.read_at && (
                                             <div className="flex-shrink-0 self-start mt-1">
                                                 <div className="h-3 w-3 rounded-full bg-green-600"></div>
@@ -211,7 +228,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                         <TabsContent value="unread" className="space-y-4">
                             {filteredNotifications.length > 0 ? (
                                 filteredNotifications.map((notification: Notification) => (
-                                    <div 
+                                    <div
                                         key={notification.id}
                                         className="p-4 border rounded-lg bg-green-50 flex items-start gap-4"
                                         onClick={() => markAsRead(notification.id)}
@@ -221,7 +238,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                 {getNotificationIcon(getNotificationType(notification.data))}
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex-grow">
                                             <div className="flex items-center justify-between">
                                                 <h4 className="text-base font-semibold">
@@ -231,15 +248,15 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                     {new Date(notification.created_at).toLocaleDateString()}
                                                 </span>
                                             </div>
-                                            
+
                                             <p className="text-gray-600 mt-1">
-                                                {notification.data.message || 
-                                                 (notification.data.manuscript_title && `Regarding your manuscript: "${notification.data.manuscript_title}"`)
+                                                {notification.data.message ||
+                                                    (notification.data.manuscript_title && `Regarding your manuscript: "${notification.data.manuscript_title}"`)
                                                 }
                                             </p>
-                                            
+
                                             {notification.data && getActionUrl(notification.data) && (
-                                                <a 
+                                                <a
                                                     href={getActionUrl(notification.data)}
                                                     className="mt-2 inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700"
                                                 >
@@ -247,7 +264,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                                 </a>
                                             )}
                                         </div>
-                                        
+
                                         <div className="flex-shrink-0 self-start mt-1">
                                             <div className="h-3 w-3 rounded-full bg-green-600"></div>
                                         </div>

@@ -18,31 +18,22 @@ use Illuminate\Support\Facades\DB;
 
 class ManuscriptController extends Controller
 {
-    /**
-     * Display a list of manuscripts for the authenticated user.
-     */
     public function index()
     {
         $userId = Auth::id();
 
         $manuscripts = Manuscript::where('user_id', $userId)
-            ->latest() // Sort by created_at DESC
+            ->latest()
             ->get();
 
-        return Inertia::render('Manuscripts/Index', compact('manuscripts'));
+        return Inertia::render('manuscripts/manuscripts-index', compact('manuscripts'));
     }
 
-    /**
-     * Show the form for creating a new manuscript.
-     */
     public function create()
     {
-        return Inertia::render('Manuscripts/Create');
+        return Inertia::render('manuscripts/manuscript-submission');
     }
 
-    /**
-     * Store a new manuscript submission.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -50,21 +41,19 @@ class ManuscriptController extends Controller
             'authors' => 'required|string|min:3',
             'abstract' => 'required|string|min:100',
             'keywords' => 'required|string|min:3',
-            'manuscript' => 'required|mimes:doc,docx|max:20480',
+            'manuscript' => 'required|mimes:docx|max:10240',
         ]);
 
         try {
             if ($request->hasFile('manuscript')) {
                 $userId = Auth::id();
                 $yearMonth = date('Y/m');
-                // Convert title to filename-safe string
                 $safeTitle = str_replace([' ', '/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.'], '-', $request->title);
                 $safeTitle = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $safeTitle));
 
                 $file = $request->file('manuscript');
                 $extension = $file->getClientOriginalExtension();
 
-                // Create path: manuscripts/user_id/year/month/title.{original_extension}
                 $path = Storage::disk('spaces')->putFileAs(
                     "manuscripts/{$userId}/{$yearMonth}",
                     $file,
@@ -79,7 +68,6 @@ class ManuscriptController extends Controller
 
             $manuscript = Manuscript::create($validated);
 
-            // Notify all editors about the new submission
             $editors = User::where('role', 'editor')->get();
             foreach ($editors as $editor) {
                 $editor->notify(new ManuscriptSubmitted($manuscript));
@@ -97,16 +85,12 @@ class ManuscriptController extends Controller
         }
     }
 
-    /**
-     * Show a specific manuscript.
-     */
     public function show($id)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
             $userId = Auth::id();
 
-            // Generate temporary URLs
             $manuscriptUrl = null;
             $finalPdfUrl = null;
 
@@ -140,7 +124,6 @@ class ManuscriptController extends Controller
                 }
             }
 
-            // For published manuscripts, also provide the final PDF
             if ($manuscript->status === 'Published' && $manuscript->final_pdf_path) {
                 try {
                     $finalPdfUrl = Storage::disk('spaces')->temporaryUrl(
@@ -155,7 +138,7 @@ class ManuscriptController extends Controller
                 }
             }
 
-            return Inertia::render('Manuscripts/Show', [
+            return Inertia::render('manuscripts/show-manuscript', [
                 'manuscript' => [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
@@ -168,7 +151,6 @@ class ManuscriptController extends Controller
                     'user_id' => $manuscript->user_id,
                     'created_at' => $manuscript->created_at->toDateTimeString(),
                     'updated_at' => $manuscript->updated_at->toDateTimeString(),
-                    // Add publication details for published manuscripts
                     'doi' => $manuscript->doi,
                     'volume' => $manuscript->volume,
                     'issue' => $manuscript->issue,
@@ -188,9 +170,6 @@ class ManuscriptController extends Controller
         }
     }
 
-    /**
-     * Delete a manuscript.
-     */
     public function destroy($id)
     {
         $manuscript = Manuscript::findOrFail($id);
@@ -203,7 +182,6 @@ class ManuscriptController extends Controller
     {
         $user = Auth::user();
 
-        // Debug information about notifications
         $notificationsCount = $user->notifications()->count();
         $unreadCount = $user->unreadNotifications()->count();
 
@@ -213,7 +191,7 @@ class ManuscriptController extends Controller
             'unread_notifications' => $unreadCount,
         ]);
 
-        return Inertia::render('Author/Notification', [
+        return Inertia::render('author/notification', [
             'debug' => [
                 'total_notifications' => $notificationsCount,
                 'unread_notifications' => $unreadCount
@@ -221,21 +199,16 @@ class ManuscriptController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for submitting a manuscript revision.
-     */
     public function showRevisionForm($id)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
             $userId = Auth::id();
 
-            // Security check - only the author can submit revisions
             if ($manuscript->user_id !== $userId) {
                 return redirect()->route('manuscripts.index')->with('error', 'You do not have permission to revise this manuscript.');
             }
 
-            // Check if the manuscript requires revision
             if (
                 $manuscript->status !== Manuscript::STATUSES['MINOR_REVISION'] &&
                 $manuscript->status !== Manuscript::STATUSES['MAJOR_REVISION']
@@ -244,12 +217,10 @@ class ManuscriptController extends Controller
                     ->with('error', 'This manuscript does not require a revision at this time.');
             }
 
-            // Get the most recent decision with comments
             $latestDecision = $manuscript->editorialDecisions()
                 ->latest('decision_date')
                 ->first();
 
-            // Generate a temporary URL for the current manuscript file
             $manuscriptUrl = null;
             if ($manuscript->manuscript_path) {
                 try {
@@ -265,7 +236,7 @@ class ManuscriptController extends Controller
                 }
             }
 
-            return Inertia::render('Manuscripts/Revision', [
+            return Inertia::render('manuscripts/revision', [
                 'manuscript' => [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
@@ -298,27 +269,21 @@ class ManuscriptController extends Controller
         }
     }
 
-    /**
-     * Process a manuscript revision submission.
-     */
     public function submitRevision(Request $request, $id)
     {
         $manuscript = Manuscript::findOrFail($id);
         $userId = Auth::id();
 
-        // Security check - only the author can submit revisions
         if ($manuscript->user_id !== $userId) {
             return redirect()->route('manuscripts.index')->with('error', 'You do not have permission to revise this manuscript.');
         }
 
-        // Validate the request
         $validated = $request->validate([
-            'revised_manuscript' => 'required|mimes:doc,docx|max:20480',
+            'revised_manuscript' => 'required|mimes:pdf|max:10240',
             'revision_comments' => 'required|string|min:10',
         ]);
 
         try {
-            // Store the revision history before updating
             $revisionHistory = $manuscript->revision_history ?? [];
             $revisionHistory[] = [
                 'version' => count($revisionHistory) + 1,
@@ -328,7 +293,6 @@ class ManuscriptController extends Controller
                 'comments' => $validated['revision_comments'],
             ];
 
-            // Upload the revised manuscript
             if ($request->hasFile('revised_manuscript')) {
                 $yearMonth = date('Y/m');
                 $safeTitle = str_replace([' ', '/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.'], '-', $manuscript->title);
@@ -338,28 +302,23 @@ class ManuscriptController extends Controller
                 $file = $request->file('revised_manuscript');
                 $extension = $file->getClientOriginalExtension();
 
-                // Create path with version number: manuscripts/user_id/year/month/title_v{version}.{extension}
                 $path = Storage::disk('spaces')->putFileAs(
                     "manuscripts/{$userId}/{$yearMonth}",
                     $file,
                     "{$safeTitle}_v{$version}.{$extension}"
                 );
 
-                // Update manuscript with new file path
                 $manuscript->manuscript_path = $path;
             }
 
-            // Save the previous status for notification
             $previousStatus = $manuscript->status;
 
-            // Update the manuscript status to "Submitted" to indicate it's ready for re-review
             $manuscript->status = Manuscript::STATUSES['SUBMITTED'];
             $manuscript->revision_history = $revisionHistory;
             $manuscript->revision_comments = $validated['revision_comments'];
             $manuscript->revised_at = now();
             $manuscript->save();
 
-            // Notify editors that a revision has been submitted
             $editors = User::where('role', 'editor')->get();
             logger()->info('Sending revision notifications to editors', [
                 'editor_count' => $editors->count(),
@@ -368,7 +327,6 @@ class ManuscriptController extends Controller
 
             foreach ($editors as $editor) {
                 try {
-                    // Create and use a new notification class for revision submissions
                     $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
                     logger()->info('Revision notification sent successfully', [
                         'editor_id' => $editor->id,
@@ -384,7 +342,6 @@ class ManuscriptController extends Controller
                 }
             }
 
-            // Send status change notification to author if status changed
             if ($previousStatus !== Manuscript::STATUSES['SUBMITTED']) {
                 try {
                     $manuscript->author->notify(new ManuscriptStatusChanged(
@@ -420,16 +377,9 @@ class ManuscriptController extends Controller
         }
     }
 
-    /**
-     * Show the manuscript approval form for editors
-     *
-     * @param Manuscript $manuscript
-     * @return \Inertia\Response
-     */
     public function showApproveForm(Manuscript $manuscript)
     {
         try {
-            // Generate temporary URL for the finalized manuscript
             $finalPdfUrl = null;
             if ($manuscript->final_pdf_path) {
                 try {
@@ -446,7 +396,7 @@ class ManuscriptController extends Controller
                 }
             }
 
-            return Inertia::render('Manuscripts/ApproveManuscript', [
+            return Inertia::render('manuscripts/approve-manuscript', [
                 'manuscript' => [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
@@ -465,30 +415,20 @@ class ManuscriptController extends Controller
         }
     }
 
-    /**
-     * Process the manuscript approval and prepare for publication
-     *
-     * @param Request $request
-     * @param Manuscript $manuscript
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
-     */
     public function approveManuscript(Request $request, Manuscript $manuscript)
     {
         try {
             DB::beginTransaction();
 
-            // Save previous status for notification
             $previousStatus = $manuscript->status;
 
-            $manuscript->author_approval_date = now(); // Set author approval date
+            $manuscript->author_approval_date = now();
             $manuscript->status = Manuscript::STATUSES['READY_TO_PUBLISH'];
             $manuscript->save();
 
-            // Notify the author about publication
             try {
                 $manuscript->author->notify(new ManuscriptApproved($manuscript));
 
-                // Also notify about status change
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
                     $previousStatus,
@@ -499,7 +439,6 @@ class ManuscriptController extends Controller
                     'error' => $e->getMessage(),
                     'manuscript_id' => $manuscript->id
                 ]);
-                // Continue even if notification fails
             }
 
             DB::commit();

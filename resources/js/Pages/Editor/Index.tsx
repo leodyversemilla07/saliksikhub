@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import { Link, router } from '@inertiajs/react'
-import { Button } from '@/Components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/Components/ui/card'
-import { Input } from '@/Components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
     Table,
     TableBody,
@@ -10,7 +10,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/Components/ui/table'
+} from '@/components/ui/table'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,16 +18,16 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/Components/ui/dropdown-menu'
-import { Badge } from '@/Components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/Components/ui/tooltip'
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
-    CheckCircle, Clock, Edit, Eye, FileText, Filter, MoreHorizontal,
+    CheckCircle, Clock, Edit, Eye, FileText, Filter,
     Search, ChevronRight, ChevronDown, Download, AlertTriangle,
     CalendarDays, AlertCircle, RefreshCw, XCircle, Hourglass, Info, Upload,
     Loader2
 } from 'lucide-react'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
+import AuthenticatedLayout from '@/layouts/authenticated-layout'
 import { Head } from '@inertiajs/react'
 import { cn } from "@/lib/utils"
 import { Manuscript, ManuscriptStatus } from '@/types/manuscript'
@@ -38,7 +38,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/Components/ui/dialog"
+} from "@/components/ui/dialog"
 import {
     Pagination,
     PaginationContent,
@@ -47,7 +47,7 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from "@/Components/ui/pagination"
+} from "@/components/ui/pagination"
 
 interface ManuscriptTableProps {
     manuscripts: Manuscript[]
@@ -198,7 +198,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     // Add sort functionality to filter results
     const filteredResults = useMemo(() => {
-        let filtered = manuscripts.filter(manuscript =>
+        const filtered = manuscripts.filter(manuscript =>
             manuscript.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
             (statusFilter === 'All' || manuscript.status === statusFilter)
         );
@@ -236,12 +236,13 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     const searchActive = searchTerm !== '' || statusFilter !== 'All';
 
-    const stats = {
-        totalManuscripts: manuscripts.length,
-        pendingReview: manuscripts.filter(m => m.status === ManuscriptStatus.SUBMITTED).length,
-        underReview: manuscripts.filter(m => m.status === ManuscriptStatus.UNDER_REVIEW).length,
-        completed: manuscripts.filter(m => [ManuscriptStatus.ACCEPTED, ManuscriptStatus.REJECTED].includes(m.status as any)).length
-    }
+    // Remove unused stats variable or comment it out for future use
+    // const stats = {
+    //     totalManuscripts: manuscripts.length,
+    //     pendingReview: manuscripts.filter(m => m.status === ManuscriptStatus.SUBMITTED).length,
+    //     underReview: manuscripts.filter(m => m.status === ManuscriptStatus.UNDER_REVIEW).length,
+    //     completed: manuscripts.filter(m => [ManuscriptStatus.ACCEPTED, ManuscriptStatus.REJECTED].includes(m.status as any)).length
+    // }
 
     const handleViewManuscript = (id: number) => {
         setIsLoading(true);
@@ -555,12 +556,77 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 disabled={paginatedManuscripts.length === 0}
                                             />
                                         </TableHead>
-                                        <TableHead className="w-[50px] px-2 sm:px-4">ID</TableHead>
-                                        <TableHead className="min-w-[150px]">Title</TableHead>
-                                        <TableHead className="w-[100px]">Status</TableHead>
-                                        <TableHead className="w-[120px]">Submitted</TableHead>
+                                        <TableHead 
+                                            className="w-[50px] px-2 sm:px-4 cursor-pointer"
+                                            onClick={() => setSortConfig({
+                                                key: 'id',
+                                                direction: sortConfig.key === 'id' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                            })}
+                                        >
+                                            <div className="flex items-center">
+                                                ID
+                                                {sortConfig.key === 'id' && (
+                                                    <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                )}
+                                            </div>
+                                        </TableHead>
+                                        <TableHead 
+                                            className="min-w-[150px] cursor-pointer"
+                                            onClick={() => setSortConfig({
+                                                key: 'title',
+                                                direction: sortConfig.key === 'title' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                            })}
+                                        >
+                                            <div className="flex items-center">
+                                                Title
+                                                {sortConfig.key === 'title' && (
+                                                    <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                )}
+                                            </div>
+                                        </TableHead>
+                                        <TableHead 
+                                            className="w-[100px] cursor-pointer"
+                                            onClick={() => setSortConfig({
+                                                key: 'status',
+                                                direction: sortConfig.key === 'status' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                            })}
+                                        >
+                                            <div className="flex items-center">
+                                                Status
+                                                {sortConfig.key === 'status' && (
+                                                    <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                )}
+                                            </div>
+                                        </TableHead>
+                                        <TableHead 
+                                            className="w-[120px] cursor-pointer"
+                                            onClick={() => setSortConfig({
+                                                key: 'created_at',
+                                                direction: sortConfig.key === 'created_at' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                            })}
+                                        >
+                                            <div className="flex items-center">
+                                                Submitted
+                                                {sortConfig.key === 'created_at' && (
+                                                    <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                )}
+                                            </div>
+                                        </TableHead>
                                         <TableHead className="hidden sm:table-cell">Authors</TableHead>
-                                        <TableHead className="hidden md:table-cell">Updated</TableHead>
+                                        <TableHead 
+                                            className="hidden md:table-cell cursor-pointer"
+                                            onClick={() => setSortConfig({
+                                                key: 'updated_at',
+                                                direction: sortConfig.key === 'updated_at' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                            })}
+                                        >
+                                            <div className="flex items-center">
+                                                Updated
+                                                {sortConfig.key === 'updated_at' && (
+                                                    <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                )}
+                                            </div>
+                                        </TableHead>
                                         <TableHead className="w-[80px] sm:w-[120px] text-right pr-2 sm:pr-4">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>

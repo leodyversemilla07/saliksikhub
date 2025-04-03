@@ -1,8 +1,8 @@
-import Footer from '@/Components/landing-pages/Footer';
-import Header from '@/Components/landing-pages/Header';
+import Footer from '@/components/landing-pages/site-footer';
+import Header from '@/components/landing-pages/site-header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { FileText, ExternalLink, Download, Calendar, Book, Users, FileSearch, ArrowRight, BookOpen, AlertCircle } from 'lucide-react';
+import { FileText, ExternalLink, Download, Calendar, Book, Users, FileSearch, ArrowRight, BookOpen } from 'lucide-react';
 
 export default function Current({ auth }: PageProps) {
     const currentIssue = {
@@ -267,7 +267,23 @@ export default function Current({ auth }: PageProps) {
     );
 }
 
-function ArticleCard({ article }: { article: any }) {
+interface Article {
+    id: number;
+    title: string;
+    authors: string;
+    abstract: string;
+    keywords: string[];
+    url: string;
+    pdfUrl: string;
+    doi: string;
+    pages: string;
+    citations: number;
+    downloads: number;
+    category: string;
+    institution: string;
+}
+
+function ArticleCard({ article }: { article: Article }) {
     return (
         <article className="bg-white border border-gray-200 rounded-xl overflow-hidden transition-shadow duration-300 hover:shadow-md">
             <div className="p-6">

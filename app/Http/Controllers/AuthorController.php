@@ -20,7 +20,7 @@ class AuthorController extends Controller
             ];
         });
 
-        return Inertia::render('Author/AuthorDashboard', [
+        return Inertia::render('author/author-dashboard', [
             'manuscripts' => $manuscripts,
         ]);
     }

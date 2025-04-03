@@ -1,8 +1,8 @@
 import { FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Mail, Shield, AlertCircle, Clock, CheckCircle, LogOut, RefreshCw } from 'lucide-react';
-import Header from '@/Components/landing-pages/Header';
-import Footer from '@/Components/landing-pages/Footer';
+import Header from '@/components/landing-pages/site-header';
+import Footer from '@/components/landing-pages/site-footer';
 import { PageProps } from '@/types';
 
 export default function VerifyEmail({ status, auth }: { status?: string } & PageProps) {

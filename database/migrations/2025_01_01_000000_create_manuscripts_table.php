@@ -43,7 +43,7 @@ return new class extends Migration {
             $table->string('issue', 50)->nullable();
             $table->string('page_range', 50)->nullable();
             $table->string('final_pdf_path')->nullable();
-            $table->timestamp('final_manuscript_uploaded_at')->nullable()->after('final_pdf_path');
+            $table->timestamp('final_manuscript_uploaded_at')->nullable();
             $table->date('author_approval_date')->nullable();
             $table->timestamps();
 

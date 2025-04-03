@@ -9,20 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::inertia('/', 'Home')
-    ->name('home');
-Route::inertia('/current', 'Current')
-    ->name('current');
-Route::inertia('/submissions', 'Submissions')
-    ->name('submissions');
-Route::inertia('/archives', 'Archives')
-    ->name('archives');
-Route::inertia('/editorial-board', 'EditorialBoard')
-    ->name('editorial-board');
-Route::inertia('/about', 'AboutUs')
-    ->name('about-us');
-Route::inertia('/contact', 'ContactUs')
-    ->name('contact-us');
+Route::inertia('/', 'home')->name('home');
+Route::inertia('/current', 'current')->name('current');
+Route::inertia('/submissions', 'submissions')->name('submissions');
+Route::inertia('/archives', 'archives')->name('archives');
+Route::inertia('/editorial-board', 'editorial-board')->name('editorial-board');
+Route::inertia('/about', 'about-us')->name('about-us');
+Route::inertia('/contact', 'contact-us')->name('contact-us');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -35,7 +28,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         };
     })->name('dashboard');
 
-    // Author routes
     Route::middleware(['role:author'])->group(function () {
         Route::get('/author', [AuthorController::class, 'index'])->name('author.dashboard');
 
@@ -45,58 +37,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/', [ManuscriptController::class, 'store'])->name('manuscripts.store');
             Route::get('/{id}', [ManuscriptController::class, 'show'])->name('manuscripts.show');
             Route::delete('/{id}', [ManuscriptController::class, 'destroy'])->name('manuscripts.destroy');
-
-            // New routes for manuscript revisions
             Route::get('/{id}/revision', [ManuscriptController::class, 'showRevisionForm'])->name('manuscripts.revision.form');
             Route::post('/{id}/revision', [ManuscriptController::class, 'submitRevision'])->name('manuscripts.revision.submit');
         });
 
         Route::get('/author/notifications', [ManuscriptController::class, 'notification'])->name('author.notifications');
-
-        // Author manuscript approval route
-        Route::get('author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'showApproveForm'])
-            ->name('manuscripts.approve');
-        Route::post('author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'approveManuscript'])
-            ->name('manuscripts.approve.submit');
+        Route::get('/author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'showApproveForm'])->name('manuscripts.approve');
+        Route::post('/author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'approveManuscript'])->name('manuscripts.approve.submit');
     });
 
-    // Editor routes
     Route::middleware(['role:editor'])->group(function () {
         Route::get('/editor', [EditorController::class, 'index'])->name('editor.dashboard');
-
         Route::get('/editor/edit-articles', [EditorController::class, 'editArticles'])->name('editor.editArticles');
         Route::post('/editor/articles/{article}/update', [EditorController::class, 'updateArticle'])->name('editor.updateArticle');
         Route::post('/editor/articles/{article}/publish', [EditorController::class, 'publishArticle'])->name('editor.publishArticle');
         Route::get('/editor/manuscripts', [EditorController::class, 'indexManuscripts'])->name('editor.indexManuscripts');
-
         Route::get('editor/manuscripts/{id}', [EditorController::class, 'showManuscript'])->name('editor.manuscripts.show');
+        Route::post('/editor/manuscripts/{id}/set-under-review', [EditorController::class, 'setUnderReview'])->name('editor.manuscripts.set_under_review');
+        Route::get('/editor/manuscripts/{manuscript}/decision', [EditorController::class, 'createEditorialDecision'])->name('editor.manuscripts.create_decision');
+        Route::post('/editor/manuscripts/{manuscript}/decision', [EditorController::class, 'makeDecision'])->name('editor.manuscripts.decision');
+        Route::get('/editor/manuscripts/{manuscript}/decisions', [EditorController::class, 'showEditorialDecisions'])->name('editor.manuscripts.decisions');
+        Route::post('/editor/manuscripts/{manuscript}/start-copyediting', [EditorController::class, 'startCopyEditing'])->name('editor.manuscripts.start_copyediting');
+        Route::post('/editor/manuscripts/{manuscript}/upload-finalized', [EditorController::class, 'uploadFinalizedManuscript'])->name('editor.manuscripts.upload_finalized');
+        Route::get('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])->name('editor.manuscripts.prepare_publication_form');
+        Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
-        Route::post('editor/manuscripts/{id}/set-under-review', [EditorController::class, 'setUnderReview'])->name('editor.manuscripts.set_under_review');
-
-        // Add these new routes for editorial decisions
-        Route::get('editor/manuscripts/{manuscript}/decision', [EditorController::class, 'createEditorialDecision'])->name('editor.manuscripts.create_decision');
-        Route::post('/editor/manuscripts/{manuscript}/decision', [EditorController::class, 'makeDecision'])
-            ->name('editor.manuscripts.decision');
-        Route::get('editor/manuscripts/{manuscript}/decisions', [EditorController::class, 'showEditorialDecisions'])->name('editor.manuscripts.decisions');
-
-        // Publication workflow routes
-        Route::post('editor/manuscripts/{manuscript}/start-copyediting', [EditorController::class, 'startCopyEditing'])
-            ->name('editor.manuscripts.start_copyediting');
-
-        // Add new route for uploading finalized manuscript
-        Route::post('editor/manuscripts/{manuscript}/upload-finalized', [EditorController::class, 'uploadFinalizedManuscript'])
-            ->name('editor.manuscripts.upload_finalized');
-
-        Route::get('editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])
-            ->name('editor.manuscripts.prepare_publication_form');
-        Route::post('editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])
-            ->name('editor.manuscripts.prepare_publication');
-
-        // User management routes
         Route::prefix('users')->group(function () {
-            // Ensure bulk-delete route is BEFORE the show route with wildcard parameter
             Route::post('/bulk-delete', [EditorController::class, 'bulkDestroy'])->name('editor.users.bulk-destroy');
-
             Route::get('/', [EditorController::class, 'manageUsers'])->name('editor.users.index');
             Route::post('/', [EditorController::class, 'store'])->name('editor.users.store');
             Route::put('/{user}', [EditorController::class, 'update'])->name('editor.users.update');
@@ -105,7 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-// Notification routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('api.notifications');
@@ -113,7 +79,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('api.notifications.readAll');
 });
 
-// Unauthorized page
 Route::get('/unauthorized', function () {
     return Inertia::render('error-pages/unauthorized');
 })->name('unauthorized');
@@ -124,7 +89,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Add this route for debugging only - remove in production
 Route::get('/debug-manuscript/{id}', function ($id) {
     if (app()->environment('local')) {
         $manuscript = \App\Models\Manuscript::find($id);
@@ -145,7 +109,6 @@ Route::get('/debug-manuscript/{id}', function ($id) {
     return abort(404);
 });
 
-// Add this debug route to check registered routes - FOR DEVELOPMENT ONLY
 Route::get('/debug-routes', function () {
     if (app()->environment('local')) {
         return response()->json([
