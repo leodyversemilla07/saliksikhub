@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Download, FileText, ExternalLink } from 'lucide-react';
 
@@ -93,7 +93,7 @@ const articles = {
 
 export default function FeaturedResearch() {
     const [activeCategory, setActiveCategory] = useState("most-cited");
-    
+
     return (
         <section className="py-24 border-t border-gray-100">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 space-y-6 md:space-y-0">
@@ -103,7 +103,7 @@ export default function FeaturedResearch() {
                         Highlighting exceptional scholarship and influential research from our journal
                     </p>
                 </div>
-                <Link 
+                <Link
                     href={route('archives')}
                     className="flex items-center text-[#18652c] hover:text-[#145024] font-medium"
                 >
@@ -111,7 +111,7 @@ export default function FeaturedResearch() {
                     <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
             </div>
-            
+
             {/* Category tabs */}
             <div className="border-b border-gray-200 mb-8">
                 <div className="flex overflow-x-auto space-x-8">
@@ -119,34 +119,33 @@ export default function FeaturedResearch() {
                         <button
                             key={category.id}
                             onClick={() => setActiveCategory(category.id)}
-                            className={`pb-4 px-1 text-sm font-medium whitespace-nowrap transition-colors ${
-                                activeCategory === category.id 
-                                    ? 'text-[#18652c] border-b-2 border-[#18652c]' 
-                                    : 'text-gray-500 hover:text-gray-700'
-                            }`}
+                            className={`pb-4 px-1 text-sm font-medium whitespace-nowrap transition-colors ${activeCategory === category.id
+                                ? 'text-[#18652c] border-b-2 border-[#18652c]'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
                         >
                             {category.name}
                         </button>
                     ))}
                 </div>
             </div>
-            
+
             {/* Category description */}
             <p className="mb-8 text-gray-600">
                 {categories.find(cat => cat.id === activeCategory)?.description}
             </p>
-            
+
             {/* Article cards */}
             <div className="grid md:grid-cols-2 gap-8">
                 {articles[activeCategory as keyof typeof articles].map((article, idx) => (
-                    <div 
-                        key={idx} 
+                    <div
+                        key={idx}
                         className="flex flex-col md:flex-row bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                     >
                         <div className="md:w-2/5 h-48 md:h-auto">
-                            <img 
-                                src={article.imageUrl} 
-                                alt={article.title} 
+                            <img
+                                src={article.imageUrl}
+                                alt={article.title}
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -163,7 +162,7 @@ export default function FeaturedResearch() {
                             <p className="text-sm text-gray-600 mb-4 line-clamp-2">
                                 {article.abstract}
                             </p>
-                            
+
                             <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                                 <div className="flex space-x-4">
                                     <div className="flex items-center text-xs text-gray-500">
@@ -175,8 +174,8 @@ export default function FeaturedResearch() {
                                         {article.downloads} downloads
                                     </div>
                                 </div>
-                                
-                                <Link 
+
+                                <Link
                                     href="#"
                                     className="flex items-center text-xs font-medium text-[#18652c] hover:text-[#145024]"
                                 >

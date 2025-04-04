@@ -46,9 +46,9 @@ export default function Header({ auth }: HeaderProps) {
     const [navDropdownOpen, setNavDropdownOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const navDropdownRef = useRef<HTMLDivElement>(null);
-    const searchRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const navDropdownRef = useRef<HTMLDivElement | null>(null);
+    const searchRef = useRef<HTMLDivElement | null>(null);
     const { url } = usePage();
 
     // Handle clicks outside dropdowns and search to close them
@@ -264,6 +264,24 @@ export default function Header({ auth }: HeaderProps) {
 
 // Sub-components
 
+interface NavDropdownProps {
+    name: string;
+    children: { name: string, href: string }[];
+    isActive: boolean;
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
+    dropdownRef: React.RefObject<HTMLDivElement | null>;
+    isNavLinkActive: (href: string) => boolean;
+}
+
+interface UserDropdownProps {
+    user: User;
+    dropdownOpen: boolean;
+    setDropdownOpen: (open: boolean) => void;
+    dropdownRef: React.RefObject<HTMLDivElement | null>;
+    getDashboardRoute: (userRole: string) => string;
+}
+
 const NavLink = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
     <Link
         href={href}
@@ -289,15 +307,7 @@ const NavDropdown = ({
     setIsOpen,
     dropdownRef,
     isNavLinkActive
-}: {
-    name: string;
-    children: { name: string, href: string }[];
-    isActive: boolean;
-    isOpen: boolean;
-    setIsOpen: (open: boolean) => void;
-    dropdownRef: React.RefObject<HTMLDivElement>;
-    isNavLinkActive: (href: string) => boolean;
-}) => (
+}: NavDropdownProps) => (
     <div className="relative" ref={dropdownRef}>
         <button
             onClick={() => setIsOpen(!isOpen)}
@@ -441,13 +451,7 @@ const AuthButtons = () => (
     </>
 );
 
-const UserDropdown = ({ user, dropdownOpen, setDropdownOpen, dropdownRef, getDashboardRoute }: {
-    user: User;
-    dropdownOpen: boolean;
-    setDropdownOpen: (open: boolean) => void;
-    dropdownRef: React.RefObject<HTMLDivElement>;
-    getDashboardRoute: (userRole: string) => string;
-}) => {
+const UserDropdown = ({ user, dropdownOpen, setDropdownOpen, dropdownRef, getDashboardRoute }: UserDropdownProps) => {
     const dashboardUrl = user ? getDashboardRoute(user.role) : '#';
 
     return (

@@ -1,8 +1,8 @@
-import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/Components/ui/form';
-import { Input } from '@/Components/ui/input';
-import { Textarea } from '@/Components/ui/textarea';
+import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { FileText, Tag, Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/Components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface ContentStepProps {

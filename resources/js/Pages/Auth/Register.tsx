@@ -8,7 +8,15 @@ import Footer from '@/components/landing-pages/site-footer';
 export default function Register({ auth }: PageProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm<{
+        firstname: string;
+        lastname: string;
+        email: string;
+        affiliation: string;
+        password: string;
+        password_confirmation: string;
+        agreesToTerms: boolean;
+    }>({
         firstname: '',
         lastname: '',
         email: '',

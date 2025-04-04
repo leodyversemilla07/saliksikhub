@@ -1,7 +1,7 @@
 import { ClipboardList, FileText, Users, BookOpen, Tag, FileUp, Check, AlertTriangle } from 'lucide-react';
-import { Badge } from '@/Components/ui/badge';
-import { Separator } from '@/Components/ui/separator';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ReviewStepProps {
     formValues: {

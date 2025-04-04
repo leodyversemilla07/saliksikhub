@@ -8,7 +8,7 @@ import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { cn } from '@/lib/utils';
 import { Manuscript } from '@/types/manuscript';
 import { PageProps } from '@/types';
-import { PublicationStatusBadge } from '@/components/manuscripts/PublicationStatusBadge';
+import { PublicationStatusBadge } from '@/components/manuscripts/publication-status-badge';
 
 interface ShowProps {
     manuscript: Manuscript;

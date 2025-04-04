@@ -1,8 +1,8 @@
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, X, ChevronRight, Building2, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/Components/ui/scroll-area';
-import { Button } from '@/Components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
 import ApplicationLogo from '@/components/application-logo';
 import { useEffect, useState } from 'react';
 import { User as UserType } from '@/types';
