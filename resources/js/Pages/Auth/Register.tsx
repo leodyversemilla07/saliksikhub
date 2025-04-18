@@ -1,9 +1,14 @@
 import { useState, FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Eye, EyeOff, User, Mail, Building, Book, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Mail, Building, Book, Lock, AlertCircle, CheckCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { PageProps } from '@/types';
 import Header from '@/components/landing-pages/site-header';
 import Footer from '@/components/landing-pages/site-footer';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function Register({ auth }: PageProps) {
     const [showPassword, setShowPassword] = useState(false);
@@ -56,230 +61,194 @@ export default function Register({ auth }: PageProps) {
                     <div className="flex flex-col lg:flex-row gap-12 items-start">
                         {/* Registration form */}
                         <div className="w-full lg:w-1/2 max-w-xl mx-auto">
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-                                <div className="flex items-center mb-6">
-                                    <div className="p-2 bg-[#18652c]/10 rounded-md">
-                                        <User className="h-6 w-6 text-[#18652c]" />
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center">
+                                        <div className="p-2 bg-[#18652c]/10 rounded-md">
+                                            <User className="h-6 w-6 text-[#18652c]" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-gray-900 ml-3">Register</h2>
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-900 ml-3">Register</h2>
-                                </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <form onSubmit={submit} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="firstname">First Name</Label>
+                                                <div className="relative">
+                                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <User className="h-5 w-5 text-gray-400" />
+                                                    </div>
+                                                    <Input
+                                                        id="firstname"
+                                                        type="text"
+                                                        value={data.firstname}
+                                                        className={`pl-10 ${errors.firstname ? 'border-red-500' : ''}`}
+                                                        placeholder="John"
+                                                        onChange={(e) => setData('firstname', e.target.value)}
+                                                        required
+                                                        autoFocus
+                                                    />
+                                                </div>
+                                                {errors.firstname && <p className="text-sm text-red-600">{errors.firstname}</p>}
+                                            </div>
 
-                                <form onSubmit={submit} className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 mb-1">
-                                                First Name
-                                            </label>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="lastname">Last Name</Label>
+                                                <div className="relative">
+                                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <User className="h-5 w-5 text-gray-400" />
+                                                    </div>
+                                                    <Input
+                                                        id="lastname"
+                                                        type="text"
+                                                        value={data.lastname}
+                                                        className={`pl-10 ${errors.lastname ? 'border-red-500' : ''}`}
+                                                        placeholder="Doe"
+                                                        onChange={(e) => setData('lastname', e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                {errors.lastname && <p className="text-sm text-red-600">{errors.lastname}</p>}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="email">Email Address</Label>
                                             <div className="relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <User className="h-5 w-5 text-gray-400" />
+                                                    <Mail className="h-5 w-5 text-gray-400" />
                                                 </div>
-                                                <input
-                                                    id="firstname"
+                                                <Input
+                                                    id="email"
+                                                    type="email"
+                                                    value={data.email}
+                                                    className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                                                    placeholder="your.email@example.com"
+                                                    onChange={(e) => setData('email', e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                            {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="affiliation">Institutional Affiliation</Label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <Building className="h-5 w-5 text-gray-400" />
+                                                </div>
+                                                <Input
+                                                    id="affiliation"
                                                     type="text"
-                                                    name="firstname"
-                                                    value={data.firstname}
-                                                    placeholder="John"
-                                                    className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                        errors.firstname ? 'border-red-500' : 'border-gray-300'
-                                                    }`}
-                                                    onChange={(e) => setData('firstname', e.target.value)}
+                                                    value={data.affiliation}
+                                                    className={`pl-10 ${errors.affiliation ? 'border-red-500' : ''}`}
+                                                    placeholder="University or Organization"
+                                                    onChange={(e) => setData('affiliation', e.target.value)}
                                                     required
-                                                    autoFocus
                                                 />
                                             </div>
-                                            {errors.firstname && <div className="mt-1 text-sm text-red-600">{errors.firstname}</div>}
+                                            {errors.affiliation && <p className="text-sm text-red-600">{errors.affiliation}</p>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="lastname" className="block text-sm font-medium text-gray-700 mb-1">
-                                                Last Name
-                                            </label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <User className="h-5 w-5 text-gray-400" />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="password">Password</Label>
+                                                <div className="relative">
+                                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <Lock className="h-5 w-5 text-gray-400" />
+                                                    </div>
+                                                    <Input
+                                                        id="password"
+                                                        type={showPassword ? 'text' : 'password'}
+                                                        value={data.password}
+                                                        className={`pl-10 ${errors.password ? 'border-red-500' : ''}`}
+                                                        placeholder="••••••••"
+                                                        onChange={(e) => setData('password', e.target.value)}
+                                                        required
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#18652c]"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                    </button>
                                                 </div>
-                                                <input
-                                                    id="lastname"
-                                                    type="text"
-                                                    name="lastname"
-                                                    value={data.lastname}
-                                                    placeholder="Doe"
-                                                    className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                        errors.lastname ? 'border-red-500' : 'border-gray-300'
-                                                    }`}
-                                                    onChange={(e) => setData('lastname', e.target.value)}
-                                                    required
-                                                />
+                                                {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                                             </div>
-                                            {errors.lastname && <div className="mt-1 text-sm text-red-600">{errors.lastname}</div>}
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Email Address
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <Mail className="h-5 w-5 text-gray-400" />
-                                            </div>
-                                            <input
-                                                id="email"
-                                                type="email"
-                                                name="email"
-                                                value={data.email}
-                                                placeholder="your.email@example.com"
-                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                    errors.email ? 'border-red-500' : 'border-gray-300'
-                                                }`}
-                                                onChange={(e) => setData('email', e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        {errors.email && <div className="mt-1 text-sm text-red-600">{errors.email}</div>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="affiliation" className="block text-sm font-medium text-gray-700 mb-1">
-                                            Institutional Affiliation
-                                        </label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <Building className="h-5 w-5 text-gray-400" />
-                                            </div>
-                                            <input
-                                                id="affiliation"
-                                                type="text"
-                                                name="affiliation"
-                                                value={data.affiliation}
-                                                placeholder="University or Organization"
-                                                className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                    errors.affiliation ? 'border-red-500' : 'border-gray-300'
-                                                }`}
-                                                onChange={(e) => setData('affiliation', e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        {errors.affiliation && <div className="mt-1 text-sm text-red-600">{errors.affiliation}</div>}
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                                Password
-                                            </label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <Lock className="h-5 w-5 text-gray-400" />
+                                            <div className="space-y-2">
+                                                <Label htmlFor="password_confirmation">Confirm Password</Label>
+                                                <div className="relative">
+                                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <Lock className="h-5 w-5 text-gray-400" />
+                                                    </div>
+                                                    <Input
+                                                        id="password_confirmation"
+                                                        type={showConfirmPassword ? 'text' : 'password'}
+                                                        value={data.password_confirmation}
+                                                        className={`pl-10 ${errors.password_confirmation ? 'border-red-500' : ''}`}
+                                                        placeholder="••••••••"
+                                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                                        required
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#18652c]"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                    </button>
                                                 </div>
-                                                <input
-                                                    id="password"
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    name="password"
-                                                    value={data.password}
-                                                    placeholder="••••••••"
-                                                    className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                        errors.password ? 'border-red-500' : 'border-gray-300'
-                                                    }`}
-                                                    onChange={(e) => setData('password', e.target.value)}
-                                                    required
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#18652c]"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                                </button>
+                                                {errors.password_confirmation && <p className="text-sm text-red-600">{errors.password_confirmation}</p>}
                                             </div>
-                                            {errors.password && <div className="mt-1 text-sm text-red-600">{errors.password}</div>}
                                         </div>
 
-                                        <div>
-                                            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-1">
-                                                Confirm Password
-                                            </label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <Lock className="h-5 w-5 text-gray-400" />
-                                                </div>
-                                                <input
-                                                    id="password_confirmation"
-                                                    type={showConfirmPassword ? 'text' : 'password'}
-                                                    name="password_confirmation"
-                                                    value={data.password_confirmation}
-                                                    placeholder="••••••••"
-                                                    className={`w-full pl-10 rounded-md shadow-sm focus:border-[#18652c] focus:ring focus:ring-[#18652c] focus:ring-opacity-20 ${
-                                                        errors.password_confirmation ? 'border-red-500' : 'border-gray-300'
-                                                    }`}
-                                                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                                                    required
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#18652c]"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                                </button>
-                                            </div>
-                                            {errors.password_confirmation && <div className="mt-1 text-sm text-red-600">{errors.password_confirmation}</div>}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="flex items-center h-5">
-                                            <input
+                                        <div className="flex items-center space-x-2">
+                                            <Checkbox
                                                 id="agreesToTerms"
-                                                name="agreesToTerms"
-                                                type="checkbox"
                                                 checked={data.agreesToTerms}
-                                                onChange={(e) => setData('agreesToTerms', e.target.checked)}
-                                                className="h-4 w-4 text-[#18652c] border-gray-300 rounded focus:ring-[#18652c]"
+                                                onCheckedChange={(checked) => setData('agreesToTerms', checked as boolean)}
+                                                className="border-[#18652c] data-[state=checked]:bg-[#18652c] data-[state=checked]:border-[#18652c]"
                                             />
-                                        </div>
-                                        <div className="ml-3">
-                                            <label htmlFor="agreesToTerms" className="text-sm text-gray-600">
+                                            <Label htmlFor="agreesToTerms" className="text-sm text-gray-600">
                                                 I agree to the <Link href="/terms" className="text-[#18652c] hover:text-[#145024] font-medium">Terms of Service</Link> and <Link href="/privacy" className="text-[#18652c] hover:text-[#145024] font-medium">Privacy Policy</Link>
-                                            </label>
+                                            </Label>
                                         </div>
-                                    </div>
-                                    {errors.agreesToTerms && <div className="mt-1 text-sm text-red-600">{errors.agreesToTerms}</div>}
+                                        {errors.agreesToTerms && <p className="text-sm text-red-600">{errors.agreesToTerms}</p>}
 
-                                    <div className="flex flex-col space-y-4">
-                                        <button
-                                            type="submit"
-                                            disabled={processing}
-                                            className="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-[#18652c] hover:bg-[#145024] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#18652c] disabled:opacity-75 disabled:cursor-not-allowed"
-                                        >
-                                            {processing ? (
-                                                <span className="flex items-center">
-                                                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                    </svg>
-                                                    Creating Account...
-                                                </span>
-                                            ) : (
-                                                'Create Account'
-                                            )}
-                                        </button>
-                                        
-                                        <div className="text-center">
-                                            <span className="text-sm text-gray-600">Already have an account?</span>
-                                            <Link
-                                                href={route('login')}
-                                                className="ml-1 text-sm text-[#18652c] hover:text-[#145024] font-medium focus:outline-none focus:underline"
+                                        <div className="flex flex-col space-y-4">
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                                className="w-full bg-[#18652c] hover:bg-[#145024] text-white"
                                             >
-                                                Sign in
-                                            </Link>
+                                                {processing ? (
+                                                    <span className="flex items-center">
+                                                        <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                                                        Creating Account...
+                                                    </span>
+                                                ) : (
+                                                    'Create Account'
+                                                )}
+                                            </Button>
+
+                                            <div className="text-center">
+                                                <span className="text-sm text-gray-600">Already have an account?</span>
+                                                <Link
+                                                    href={route('login')}
+                                                    className="ml-1 text-sm text-[#18652c] hover:text-[#145024] font-medium"
+                                                >
+                                                    Sign in
+                                                </Link>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
                         </div>
 
                         {/* Information section */}

@@ -16,10 +16,8 @@ export default function Home({ auth }: PageProps) {
             <Head title="MinSU Research Journal - Advancing Knowledge Through Research" />
             <Header auth={auth} />
             <main className="flex-grow bg-white">
-                {/* Hero section takes full width */}
                 <Hero />
                 
-                {/* Content sections with responsive padding and spacing */}
                 <div className="py-8 sm:py-12 md:py-16 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="space-y-12 sm:space-y-16 md:space-y-20">

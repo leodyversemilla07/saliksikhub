@@ -43,7 +43,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
                                     </div>
                                     <h2 className="text-2xl font-bold text-gray-900 ml-3">Email Verification</h2>
                                 </div>
-                                
+
                                 {status === 'verification-link-sent' && (
                                     <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg border border-green-200 flex items-start">
                                         <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
@@ -52,7 +52,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
                                 )}
 
                                 <p className="text-gray-600 mb-6">
-                                    If you didn't receive the email, we'll be happy to send you another. 
+                                    If you didn't receive the email, we'll be happy to send you another.
                                     Please also check your spam folder as verification emails sometimes end up there.
                                 </p>
 
@@ -65,7 +65,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
                                         <RefreshCw className={`h-5 w-5 mr-2 ${processing ? 'animate-spin' : ''}`} />
                                         {processing ? 'Sending...' : 'Resend Verification Email'}
                                     </button>
-                                    
+
                                     <Link
                                         href={route('logout')}
                                         method="post"
@@ -89,7 +89,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
 
                                 <div className="space-y-6">
                                     <p className="text-gray-600">
-                                        Email verification helps us ensure account security and maintain the integrity of our 
+                                        Email verification helps us ensure account security and maintain the integrity of our
                                         academic community. Here's what you can do after verification:
                                     </p>
 
@@ -146,7 +146,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
                     </div>
                 </div>
             </main>
-            
+
             <Footer />
         </>
     );

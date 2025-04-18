@@ -1,9 +1,9 @@
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
-import DeleteUserForm from './Partials/DeleteUserForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import DeleteUserForm from './partials/delete-user-form';
+import UpdatePasswordForm from './partials/update-passwordForm';
+import UpdateProfileInformationForm from './partials/update-profile-information-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 

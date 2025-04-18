@@ -21,7 +21,7 @@ class EmailVerificationPromptController extends Controller
         }
 
         // Render the email verification prompt
-        return Inertia::render('Auth/VerifyEmail', ['status' => session('status')]);
+        return Inertia::render('auth/verify-email', ['status' => session('status')]);
     }
 
     /**
