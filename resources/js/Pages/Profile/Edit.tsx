@@ -31,10 +31,10 @@ export default function Edit({
                     <CardContent className="p-0">
                         <Tabs defaultValue="profile" className="w-full">
                             <TabsList className="grid grid-cols-3 rounded-none border-b border-gray-200 dark:border-gray-700 bg-transparent">
-                                <TabsTrigger value="profile" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:bg-transparent rounded-none data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400">
+                                <TabsTrigger value="profile" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#18652c] data-[state=active]:bg-transparent rounded-none data-[state=active]:text-[#18652c] dark:data-[state=active]:text-[#3fb65e] transition-colors duration-300">
                                     Profile
                                 </TabsTrigger>
-                                <TabsTrigger value="password" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:bg-transparent rounded-none data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400">
+                                <TabsTrigger value="password" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#18652c] data-[state=active]:bg-transparent rounded-none data-[state=active]:text-[#18652c] dark:data-[state=active]:text-[#3fb65e] transition-colors duration-300">
                                     Password
                                 </TabsTrigger>
                                 <TabsTrigger value="danger" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-red-500 data-[state=active]:bg-transparent rounded-none data-[state=active]:text-red-600 dark:data-[state=active]:text-red-400">

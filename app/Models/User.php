@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
@@ -28,7 +28,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'affiliation',
+        'country', // Added country
+        'username', // Added username
         'avatar',
+        'data_collection', // Added data_collection
+        'notifications', // Added notifications
+        'review_requests', // Added review_requests
     ];
 
     /**
@@ -49,6 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'data_collection' => 'boolean', // Added cast for data_collection
+        'notifications' => 'boolean', // Added cast for notifications
+        'review_requests' => 'boolean', // Added cast for review_requests
     ];
 
     /**

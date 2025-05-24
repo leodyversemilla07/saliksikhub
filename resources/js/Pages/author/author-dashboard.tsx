@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, router as inertiaRouter } from '@inertiajs/react'; // Import router as inertiaRouter
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,8 +10,7 @@ import { Breadcrumb } from '@/components/breadcrumb';
 import {
     Book, FileText, CheckCircle, Clock, AlertCircle, TrendingUp, TrendingDown,
     Calendar, ChevronDown, Filter, Download, ArrowRight,
-    PenLine, XCircle, Eye, BarChart3,
-    Home,
+    PenLine, XCircle, Eye, BarChart3, Search, Edit3, Edit, Scissors, UserCheck, Send
 } from 'lucide-react';
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem
@@ -24,7 +23,18 @@ import {
 import { User } from '@/types';
 
 // Enhanced TypeScript interfaces
-type ManuscriptStatus = 'Submitted' | 'Revision Required' | 'Accepted' | 'Rejected' | 'Published';
+type ManuscriptStatus =
+    | 'Submitted'
+    | 'Under Review'
+    | 'Minor Revision'
+    | 'Major Revision'
+    | 'Revision Required'
+    | 'Accepted'
+    | 'Copyediting'
+    | 'Awaiting Approval'
+    | 'Ready to Publish'
+    | 'Rejected'
+    | 'Published';
 
 interface Manuscript {
     id: number;
@@ -80,19 +90,49 @@ interface StatusDistribution {
 // Visual style constants
 const STATUS_COLORS: Record<ManuscriptStatus, string> = {
     Submitted: '#3B82F6',
+    'Under Review': '#A855F7',
+    'Minor Revision': '#F59E0B',
+    'Major Revision': '#EAB308',
     'Revision Required': '#F97316',
     Accepted: '#10B981',
+    Copyediting: '#06B6D4',
+    'Awaiting Approval': '#6366F1',
+    'Ready to Publish': '#EC4899',
     Rejected: '#EF4444',
     Published: '#8B5CF6'
 };
 
 const STATUS_ICONS: Record<ManuscriptStatus, React.ElementType> = {
     Submitted: FileText,
+    'Under Review': Search,
+    'Minor Revision': Edit3,
+    'Major Revision': Edit,
     'Revision Required': AlertCircle,
     Accepted: CheckCircle,
+    Copyediting: Scissors,
+    'Awaiting Approval': UserCheck,
+    'Ready to Publish': Send,
     Rejected: XCircle,
     Published: Book
 };
+
+function getStatusBadgeStyle(status: ManuscriptStatus): string {
+    const styles: Partial<Record<ManuscriptStatus, string>> = {
+        'Submitted': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+        'Revision Required': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800',
+        'Accepted': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800',
+        'Published': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800',
+        'Rejected': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800',
+        'Under Review': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800',
+        'Minor Revision': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+        'Major Revision': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+        'Copyediting': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800',
+        'Awaiting Approval': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800',
+        'Ready to Publish': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400 border-pink-200 dark:border-pink-800',
+    };
+
+    return styles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
+}
 
 // UI Components
 import { TooltipProps } from 'recharts';
@@ -107,7 +147,7 @@ interface TooltipEntry {
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
-    if (!(active && payload && payload.length)) {
+    if (!active || !payload || !payload.length) { // Simplified conditional
         return null;
     }
 
@@ -141,24 +181,19 @@ function getAxisColor(): string {
     return isDarkMode ? "#9ca3af" : "#6b7280";
 }
 
-function getStatusBadgeStyle(status: ManuscriptStatus): string {
-    const styles = {
-        'Submitted': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800',
-        'Revision Required': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800',
-        'Accepted': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800',
-        'Published': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800',
-        'Rejected': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800',
-    };
-
-    return styles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400';
-}
-
 // Main Dashboard Component
 export default function AuthorDashboard(): React.ReactElement {
-    const { props } = usePage<{ manuscripts: Manuscript[], auth: { user: User, role: string } }>();
-    const { manuscripts } = props;
+    const { props } = usePage<{ 
+        manuscripts: Manuscript[], 
+        auth: { user: User, role: string },
+        monthlySubmissionData: ChartDataPoint[], // Add this
+        currentTimeFilter: string // Add this
+    }>();
+    const { manuscripts, monthlySubmissionData: initialMonthlySubmissionData, currentTimeFilter: initialTimeFilter } = props;
     const [activeView, setActiveView] = useState('overview');
-    const [timeFilter, setTimeFilter] = useState('6months');
+    // Use the currentTimeFilter from props to initialize, and allow frontend to change it
+    const [timeFilter, setTimeFilter] = useState(initialTimeFilter || '6months');
+    const [currentMonthlyData, setCurrentMonthlyData] = useState(initialMonthlySubmissionData || []);
 
     const transformedManuscripts: TransformedManuscript[] = manuscripts.map(manuscript => ({
         ...manuscript,
@@ -168,8 +203,8 @@ export default function AuthorDashboard(): React.ReactElement {
 
     // Manuscript status counts
     const totalManuscripts = transformedManuscripts.length;
-    const acceptedCount = transformedManuscripts.filter(m => ['Accepted', 'Published'].includes(m.status)).length;
-    const inProgressCount = transformedManuscripts.filter(m => ['Submitted', 'Revision Required'].includes(m.status)).length;
+    const acceptedCount = transformedManuscripts.filter(m => ['Accepted', 'Published', 'Ready to Publish'].includes(m.status)).length;
+    const inProgressCount = transformedManuscripts.filter(m => ['Submitted', 'Revision Required', 'Under Review', 'Minor Revision', 'Major Revision', 'Copyediting', 'Awaiting Approval'].includes(m.status)).length;
     const acceptanceRate = totalManuscripts > 0 ? Math.round((acceptedCount / totalManuscripts) * 100) : 0;
 
     // Dashboard metrics
@@ -224,6 +259,7 @@ export default function AuthorDashboard(): React.ReactElement {
     const statusDistribution: StatusDistribution[] = Object.keys(STATUS_COLORS)
         .map(status => {
             const statusKey = status as ManuscriptStatus;
+            // Filter based on the currently displayed manuscripts (which are already time-filtered by backend)
             const count = transformedManuscripts.filter(m => m.status === statusKey).length;
             return {
                 name: status,
@@ -232,15 +268,6 @@ export default function AuthorDashboard(): React.ReactElement {
             };
         })
         .filter(item => item.value > 0);
-
-    const monthlySubmissionData: ChartDataPoint[] = [
-        { month: 'Jan', submissions: 5, accepted: 3, rejected: 1 },
-        { month: 'Feb', submissions: 7, accepted: 4, rejected: 2 },
-        { month: 'Mar', submissions: 3, accepted: 2, rejected: 0 },
-        { month: 'Apr', submissions: 8, accepted: 5, rejected: 1 },
-        { month: 'May', submissions: 12, accepted: 6, rejected: 3 },
-        { month: 'Jun', submissions: 10, accepted: 7, rejected: 2 }
-    ];
 
     // Activity feed data
     const recentActivity: ActivityItem[] = transformedManuscripts
@@ -256,6 +283,11 @@ export default function AuthorDashboard(): React.ReactElement {
             lastUpdated: manuscript.lastUpdated
         }))
         .sort((a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime());
+
+    // Add useEffect to update chart data when props change (e.g., due to timeFilter)
+    React.useEffect(() => {
+        setCurrentMonthlyData(initialMonthlySubmissionData || []);
+    }, [initialMonthlySubmissionData]);
 
     // Dashboard sections
     const renderMetricsCards = () => (
@@ -326,7 +358,7 @@ export default function AuthorDashboard(): React.ReactElement {
                                 <div className="h-[350px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart
-                                            data={monthlySubmissionData}
+                                            data={currentMonthlyData} // Use currentMonthlyData
                                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                                         >
                                             <defs>
@@ -399,7 +431,7 @@ export default function AuthorDashboard(): React.ReactElement {
                                 <div className="h-[350px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
-                                            data={monthlySubmissionData}
+                                            data={currentMonthlyData} // Use currentMonthlyData
                                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={getChartGridColor()} />
@@ -449,7 +481,7 @@ export default function AuthorDashboard(): React.ReactElement {
                                 <div className="h-[350px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart
-                                            data={monthlySubmissionData}
+                                            data={currentMonthlyData} // Use currentMonthlyData
                                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={getChartGridColor()} />
@@ -949,7 +981,6 @@ export default function AuthorDashboard(): React.ReactElement {
                         {
                             label: 'Author',
                             href: '/author',
-                            icon: <Home className="h-4 w-4" />
                         },
                         {
                             label: 'Dashboard'
@@ -980,9 +1011,18 @@ export default function AuthorDashboard(): React.ReactElement {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-36">
-                                    <DropdownMenuItem onClick={() => setTimeFilter('30days')}>Last 30 Days</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTimeFilter('6months')}>Last 6 Months</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTimeFilter('1year')}>Last Year</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        setTimeFilter('30days');
+                                        inertiaRouter.get(route('author.dashboard'), { timeFilter: '30days' }, { preserveState: true, preserveScroll: true });
+                                    }}>Last 30 Days</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        setTimeFilter('6months');
+                                        inertiaRouter.get(route('author.dashboard'), { timeFilter: '6months' }, { preserveState: true, preserveScroll: true });
+                                    }}>Last 6 Months</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        setTimeFilter('1year');
+                                        inertiaRouter.get(route('author.dashboard'), { timeFilter: '1year' }, { preserveState: true, preserveScroll: true });
+                                    }}>Last Year</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button variant="outline" size="sm" className="h-8">

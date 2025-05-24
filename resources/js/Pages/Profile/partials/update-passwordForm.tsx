@@ -181,7 +181,7 @@ export default function UpdatePasswordForm({
                     </Button>
 
                     {recentlySuccessful && (
-                        <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                        <p className="text-sm text-[#18652c] dark:text-[#3fb65e] flex items-center gap-1.5 transition-colors duration-300">
                             <Check className="h-4 w-4" />
                             Password updated
                         </p>

@@ -36,7 +36,12 @@ class RegisteredUserController extends Controller
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'affiliation' => 'required|string|max:255',
+            'country' => 'required|string|max:255', // Added country validation
+            'username' => 'required|string|max:255|unique:'.User::class, // Added username validation
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'data_collection' => 'required|boolean', // Added data_collection validation
+            'notifications' => 'required|boolean', // Added notifications validation
+            'review_requests' => 'required|boolean', // Added review_requests validation
         ]);
 
         $user = User::create([
@@ -44,7 +49,12 @@ class RegisteredUserController extends Controller
             'lastname' => $request->lastname,
             'email' => $request->email,
             'affiliation' => $request->affiliation,
+            'country' => $request->country, // Added country
+            'username' => $request->username, // Added username
             'password' => Hash::make($request->password),
+            'data_collection' => $request->data_collection, // Added data_collection
+            'notifications' => $request->notifications, // Added notifications
+            'review_requests' => $request->review_requests, // Added review_requests
         ]);
 
         $user->assignRole('author');

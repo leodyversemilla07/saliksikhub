@@ -1,18 +1,20 @@
-import { useEffect, FormEventHandler, useState } from 'react';
+import { useEffect, FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Breadcrumb } from '@/components/breadcrumb';
 import Header from '@/components/landing-pages/site-header';
 import Footer from '@/components/landing-pages/site-footer';
-import { Book, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export default function Login({ status, canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
-    const [showPassword, setShowPassword] = useState(false);
+export default function Login({ canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
+    const breadcrumbItems = [
+        { label: 'Home', href: route('home') },
+        { label: 'Login' }
+    ];
+
     const { data, setData, post, processing, errors, reset } = useForm<{
         email: string;
         password: string;
@@ -35,227 +37,82 @@ export default function Login({ status, canResetPassword, auth }: PageProps<{ st
     };
 
     return (
-        <>
-            <Head title="Log in" />
+        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            <Head title="Login | Daluyang Dunong" />
             <Header auth={auth} />
 
-            <main className="flex-grow bg-white">
-                {/* Academic-style header */}
-                <div className="bg-gradient-to-br from-gray-50 to-[#f0f8f3] border-b border-gray-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-                        <div className="text-center max-w-3xl mx-auto">
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Sign In to Your Account</h1>
-                            <p className="text-xl text-gray-600">
-                                Access the MinSU Research Journal platform to manage your submissions,
-                                review articles, or access exclusive content.
-                            </p>
-                        </div>
+            <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
+                <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <Breadcrumb items={breadcrumbItems} />
+                    <div className="mb-8 text-left">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
+                            Login
+                        </h1>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            Required fields are marked with an asterisk (*).
+                        </p>
                     </div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        {/* Login form */}
-                        <div className="w-full lg:w-1/2 max-w-md mx-auto">
-                            <Card>
-                                <CardHeader>
-                                    <div className="flex items-center">
-                                        <div className="p-2 bg-[#18652c]/10 rounded-md">
-                                            <Lock className="h-6 w-6 text-[#18652c]" />
-                                        </div>
-                                        <h2 className="text-2xl font-bold text-gray-900 ml-3">Log in</h2>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    {status && (
-                                        <Alert className="mb-6 border-[#18652c] bg-[#18652c]/10 text-[#18652c]">
-                                            <AlertDescription>{status}</AlertDescription>
-                                        </Alert>
-                                    )}
-
-                                    <form onSubmit={submit} className="space-y-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="email">Email</Label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <Mail className="h-5 w-5 text-gray-400" />
-                                                </div>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    name="email"
-                                                    value={data.email}
-                                                    className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
-                                                    placeholder="your.email@example.com"
-                                                    autoComplete="username"
-                                                    onChange={(e) => setData('email', e.target.value)}
-                                                />
-                                            </div>
-                                            {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <Label htmlFor="password">Password</Label>
-                                                {canResetPassword && (
-                                                    <Link
-                                                        href={route('password.request')}
-                                                        className="text-sm text-[#18652c] hover:text-[#145024]"
-                                                    >
-                                                        Forgot password?
-                                                    </Link>
-                                                )}
-                                            </div>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <Lock className="h-5 w-5 text-gray-400" />
-                                                </div>
-                                                <Input
-                                                    id="password"
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    name="password"
-                                                    value={data.password}
-                                                    className={`pl-10 ${errors.password ? 'border-red-500' : ''}`}
-                                                    placeholder="••••••••"
-                                                    autoComplete="current-password"
-                                                    onChange={(e) => setData('password', e.target.value)}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#18652c]"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                                </button>
-                                            </div>
-                                            {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id="remember_me"
-                                                checked={data.remember}
-                                                onCheckedChange={(checked) => setData('remember', checked as boolean)}
-                                                className="border-[#18652c] data-[state=checked]:bg-[#18652c] data-[state=checked]:border-[#18652c]"
-                                            />
-                                            <Label htmlFor="remember_me" className="text-sm text-gray-600">
-                                                Remember me
-                                            </Label>
-                                        </div>
-
-                                        <div className="flex flex-col space-y-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                                className="w-full bg-[#18652c] hover:bg-[#145024] text-white"
-                                            >
-                                                {processing ? 'Logging in...' : 'Log in'}
-                                            </Button>
-
-                                            <div className="text-center">
-                                                <span className="text-sm text-gray-600">Don't have an account?</span>
-                                                <Link
-                                                    href={route('register')}
-                                                    className="ml-1 text-sm text-[#18652c] hover:text-[#145024] font-medium"
-                                                >
-                                                    Register now
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </CardContent>
-                            </Card>
+                    <form onSubmit={submit} className="space-y-6 text-left">
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email *</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.email ? 'border-red-500 dark:border-red-400' : ''}`}
+                                placeholder="Enter your email"
+                                onChange={(e) => setData('email', e.target.value)}
+                                required
+                            />
+                            {errors.email && <p className="text-sm text-red-500 dark:text-red-400">{errors.email}</p>}
                         </div>
 
-                        {/* Information section */}
-                        <div className="w-full lg:w-1/2">
-                            <div className="bg-gradient-to-br from-gray-50 to-[#f0f8f3] rounded-xl border border-gray-200 p-8">
-                                <div className="flex items-center mb-6">
-                                    <Book className="h-8 w-8 text-[#18652c]" />
-                                    <h2 className="text-2xl font-bold text-gray-900 ml-3">Journal Access Benefits</h2>
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">For Authors</h3>
-                                        <ul className="space-y-2 text-gray-600">
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Submit and track your manuscript submissions</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Respond to reviewer comments and revision requests</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Access submission history and publication metrics</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">For Reviewers</h3>
-                                        <ul className="space-y-2 text-gray-600">
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Access manuscripts assigned for peer review</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Submit comprehensive evaluation reports</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Manage your reviewer profile and expertise areas</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-2">For Subscribers</h3>
-                                        <ul className="space-y-2 text-gray-600">
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Access premium content and early releases</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Download full journal archives and special issues</span>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <div className="flex-shrink-0 h-5 w-5 rounded-full bg-[#18652c]/20 flex items-center justify-center mt-1 mr-2">
-                                                    <div className="h-2 w-2 rounded-full bg-[#18652c]"></div>
-                                                </div>
-                                                <span>Receive notifications about new publications</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password *</Label>
                             </div>
+                            {canResetPassword && (
+                                <div className="text-left">
+                                    <Link
+                                        href={route('password.request')}
+                                        className="text-sm font-medium text-[#18652c] hover:text-[#145024] dark:text-[#3fb65e] dark:hover:text-[#52c773]"
+                                    >
+                                        Forgot your password?
+                                    </Link>
+                                </div>
+                            )}
+                            <Input
+                                id="password"
+                                type="password"
+                                value={data.password}
+                                className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
+                                placeholder="••••••••"
+                                onChange={(e) => setData('password', e.target.value)}
+                                required
+                            />
+                            {errors.password && <p className="text-sm text-red-500 dark:text-red-400">{errors.password}</p>}
                         </div>
-                    </div>
+
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="remember_me"
+                                checked={data.remember}
+                                onCheckedChange={(checked) => setData('remember', checked as boolean)}
+                                className="h-4 w-4 text-[#18652c] focus:ring-[#18652c] border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:focus:ring-[#3fb65e] dark:data-[state=checked]:bg-[#3fb65e] dark:data-[state=checked]:border-[#3fb65e]"
+                            />
+                            <Label htmlFor="remember_me" className="text-sm text-gray-600 dark:text-gray-400">
+                                Keep me logged in
+                            </Label>
+                        </div>
+
+                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white">
+                            {processing ? 'Processing...' : 'Login'}
+                        </Button>
+                    </form>
                 </div>
             </main>
 
             <Footer />
-        </>
+        </div>
     );
 }

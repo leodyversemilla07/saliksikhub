@@ -66,7 +66,7 @@ export default function UpdateProfileInformation({
                                     className="h-full w-full object-cover"
                                 />
                             ) : (
-                                <div className="h-full w-full flex items-center justify-center text-4xl font-medium text-green-600 dark:text-green-300">
+                                <div className="h-full w-full flex items-center justify-center text-4xl font-medium text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300">
                                     {data.firstname[0]}{data.lastname[0]}
                                 </div>
                             )}
@@ -218,8 +218,8 @@ export default function UpdateProfileInformation({
                         )}
 
                         {status === 'verification-link-sent' && (
-                            <Alert className="mt-4 bg-green-50 border-green-200 dark:bg-green-900/30 dark:border-green-700">
-                                <AlertDescription className="text-green-800 dark:text-green-300">
+                            <Alert className="mt-4 bg-green-50 border-[#18652c]/30 dark:bg-green-900/30 dark:border-[#3fb65e]/30 transition-colors duration-300">
+                                <AlertDescription className="text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300">
                                     A new verification link has been sent to your email address.
                                 </AlertDescription>
                             </Alert>
@@ -235,7 +235,7 @@ export default function UpdateProfileInformation({
                             </Button>
 
                             {recentlySuccessful && (
-                                <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                                <p className="text-sm text-[#18652c] dark:text-[#3fb65e] flex items-center gap-1.5 transition-colors duration-300">
                                     <Check className="h-4 w-4" />
                                     Saved successfully
                                 </p>

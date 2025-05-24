@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { PageProps, User } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, X, ChevronDown, LogOut, User as UserIcon, LayoutDashboard, Search } from 'lucide-react';
-import ApplicationLogo from '@/components/application-logo';
+import { Menu, X, ChevronDown, LogOut, User as UserIcon, LayoutDashboard, Search, Sun, Moon } from 'lucide-react';
 
 // Define the NavItem interface for type safety
 interface NavItem {
@@ -16,335 +15,329 @@ interface HeaderProps {
     auth?: PageProps['auth'];
 }
 
-// Navigation items with explicit typing
+// Updated Navigation items to match OJS structure
 const navItems: NavItem[] = [
     { name: "Home", href: route('home') },
-    { name: "Current Issue", href: route('current') },
+    { name: "Current", href: route('current') },
+    { name: "Submissions", href: route('submissions') },
+    { name: "Archives", href: route('archives') },
+    { name: "Editorial Board", href: route('editorial-board') },
+    { name: "Announcements", href: route('announcements') },
     {
-        name: "About Journal",
+        name: "About",
         children: [
-            { name: "Aims & Scope", href: route('about-us') },
-            { name: "Editorial Board", href: route('editorial-board') },
-            { name: "Submission Guidelines", href: route('submissions') },
+            { name: "About the Journal", href: route('about-journal') },
+            { name: "Aims & Scope", href: route('about-aims-scope') },
             { name: "Contact", href: route('contact-us') },
         ]
     },
-    { name: "Archives", href: route('archives') },
 ];
 
-// UserAvatar component to display user's initials
+// UserAvatar component (updated for circular shape and better layout)
 const UserAvatar = ({ user }: { user: User }) => (
-    <div className="w-full h-full rounded-full bg-gradient-to-br from-[#18652c] to-[#3fb65e] flex items-center justify-center text-white font-semibold">
+    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#18652c] to-[#3fb65e] flex items-center justify-center text-white font-semibold overflow-hidden flex-shrink-0">
         {`${(user.firstname?.[0] || '').toUpperCase()}${(user.lastname?.[0] || 'U').toUpperCase()}`}
     </div>
 );
 
 // Main Header component
 export default function Header({ auth }: HeaderProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [navDropdownOpen, setNavDropdownOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+    const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const dropdownRef = useRef<HTMLDivElement | null>(null);
-    const navDropdownRef = useRef<HTMLDivElement | null>(null);
-    const searchRef = useRef<HTMLDivElement | null>(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const userDropdownRef = useRef<HTMLDivElement | null>(null);
+    const aboutDropdownRef = useRef<HTMLDivElement | null>(null);
     const { url } = usePage();
 
-    // Handle clicks outside dropdowns and search to close them
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setDropdownOpen(false);
+            if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+                setUserDropdownOpen(false);
             }
-            if (navDropdownRef.current && !navDropdownRef.current.contains(event.target as Node)) {
-                setNavDropdownOpen(false);
-            }
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                setSearchOpen(false);
+            if (aboutDropdownRef.current && !aboutDropdownRef.current.contains(event.target as Node)) {
+                setAboutDropdownOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Close mobile menu on resize to desktop
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768 && isMenuOpen) {
-                setIsMenuOpen(false);
+            if (window.innerWidth >= 768 && isMobileMenuOpen) {
+                setIsMobileMenuOpen(false);
             }
         };
-
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isMenuOpen]);
+    }, [isMobileMenuOpen]);
 
-    // Determine dashboard route based on user role
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setIsDarkMode(savedTheme === 'dark');
+            document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+        }
+    }, []);
+
+    const toggleDarkMode = () => {
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        setIsDarkMode(!isDarkMode);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    };
+
     const getDashboardRoute = (userRole: string) => {
         try {
-            if (userRole === 'editor') {
-                return route('editor.dashboard');
-            } else if (userRole === 'author') {
-                return route('author.dashboard');
-            } else {
-                return route('dashboard');
-            }
+            if (userRole === 'editor') return route('editor.dashboard');
+            if (userRole === 'author') return route('author.dashboard');
+            return route('dashboard');
         } catch (error) {
             console.warn('Dashboard route error:', error);
             return userRole === 'editor' ? '/editor/dashboard' : '/manuscripts';
         }
     };
 
-    // Check if a navigation link is active
     const isNavLinkActive = (href: string): boolean => {
         const hrefPath = new URL(href, window.location.origin).pathname;
         const currentPath = new URL(url, window.location.origin).pathname;
-
-        if (hrefPath === '/' || hrefPath === '/home') {
-            return currentPath === '/' || currentPath === '/home';
-        }
-
-        if (hrefPath.includes('/current')) {
-            return currentPath.includes('/current');
-        }
-
-        return currentPath === hrefPath ||
-            (hrefPath !== '/' && currentPath.startsWith(hrefPath));
+        if (hrefPath === '/' || hrefPath === '/home') return currentPath === '/' || currentPath === '/home';
+        if (hrefPath.includes('/current')) return currentPath.includes('/current');
+        return currentPath === hrefPath || (hrefPath !== '/' && currentPath.startsWith(hrefPath));
     };
 
-    // Check if a dropdown is active (any child link is active)
     const isNavDropdownActive = (children: { name: string, href: string }[]): boolean => {
         return children.some(child => isNavLinkActive(child.href));
     };
 
-    // Handle search submission (placeholder)
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Searching for:", searchQuery);
-        setSearchOpen(false);
-        // Implement actual search functionality here
     };
 
     return (
-        <header className="bg-white border-b border-gray-200">
-            {/* Top bar with ISSN and search */}
-            <div className="bg-gray-50 py-2 border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-500">
-                            ISSN: 2094-7577 | e-ISSN: 2023-5678
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <div className="relative" ref={searchRef}>
+        <header className={`w-full top-0 z-50 text-gray-800 dark:text-slate-100`} role="banner">
+            {/* Top Utility Bar */}
+            <div className={`bg-[#18652c]/5 dark:bg-[#18652c]/2 text-xs transition-colors duration-300`}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-10 space-x-4">
+                    <button
+                        onClick={toggleDarkMode}
+                        className="h-10 w-10 flex items-center justify-center rounded-full text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/10 dark:hover:bg-[#18652c]/20 transition-colors duration-300"
+                    >
+                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+                    <div className="flex items-center space-x-4">
+                        {auth?.user ? (
+                            <div className="relative h-full" ref={userDropdownRef}>
                                 <button
-                                    onClick={() => setSearchOpen(!searchOpen)}
-                                    className="p-1.5 text-gray-500 hover:text-[#18652c] focus:outline-none focus:ring-2 focus:ring-green-500 rounded-full"
+                                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                                    className={`h-full flex items-center gap-2 px-3 rounded text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/10 dark:hover:bg-[#18652c]/20 transition-colors duration-300 min-w-0`}
                                 >
-                                    <Search className="h-4 w-4" />
-                                    <span className="sr-only">Search</span>
+                                    <UserAvatar user={auth.user} />
+                                    <span className="hidden sm:block truncate max-w-[150px]">{`${auth.user.firstname} ${auth.user.lastname}`}</span>
+                                    <ChevronDown className="w-4 h-4 flex-shrink-0" />
                                 </button>
-
-                                {searchOpen && (
-                                    <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-md border border-gray-200 p-2 animate-fadeIn z-50">
-                                        <form onSubmit={handleSearch} className="flex">
-                                            <label htmlFor="search-input" className="sr-only">Search articles</label>
-                                            <input
-                                                id="search-input"
-                                                type="text"
-                                                placeholder="Search articles..."
-                                                className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                            />
-                                            <button
-                                                type="submit"
-                                                className="px-3 py-1.5 bg-[#18652c] text-white rounded-r-md hover:bg-[#145024] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
-                                            >
-                                                <Search className="h-4 w-4" />
-                                            </button>
-                                        </form>
+                                {userDropdownOpen && (
+                                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-black dark:ring-opacity-20 py-1 z-50 transition-colors duration-300`}>
+                                        <DropdownLink href={getDashboardRoute(auth.user.role)} icon={<LayoutDashboard className="w-4 h-4 mr-2" />}>Dashboard</DropdownLink>
+                                        <DropdownLink href={route('profile.edit')} icon={<UserIcon className="w-4 h-4 mr-2" />}>Profile</DropdownLink>
+                                        <Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className={`flex items-center w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-300`}
+                                        >
+                                            <LogOut className="w-4 h-4 mr-2" /> Log out
+                                        </Link>
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                <Link href={route('register')} className={`h-full flex items-center px-2 rounded text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/10 dark:hover:bg-[#18652c]/20 transition-colors duration-300`}>Register</Link>
+                                <Link href={route('login')} className={`h-full flex items-center px-2 rounded text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/10 dark:hover:bg-[#18652c]/20 transition-colors duration-300`}>Login</Link>
+                            </>
+                        )}
+                        <Link href={route('contact-us')} className={`h-full flex items-center px-2 rounded text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/10 dark:hover:bg-[#18652c]/20 transition-colors duration-300`}>Contact</Link>
                     </div>
                 </div>
             </div>
 
-            {/* Main header */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
-                    <Link
-                        href={route('home')}
-                        className="flex items-center gap-3 group focus:outline-none"
-                    >
-                        <ApplicationLogo
-                            className="transition-transform group-hover:scale-105"
-                            width={42}
-                            height={42}
-                            alt="MinSU Research Journal Logo"
+            {/* Main Branding Area */}
+            <div className={`bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700`}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center h-auto md:h-24">
+                    <Link href={route('home')} className="flex items-center gap-3 mb-4 md:mb-0">
+                        <img
+                            src="/images/daluyang-dunong-logo.png"
+                            className="transition-transform h-12 w-auto md:h-16"
+                            alt="Daluyang Dunong Logo"
                         />
-                        <div className="flex flex-col">
-                            <span className="text-xl font-bold text-gray-900">MinSU Research Journal</span>
-                            <span className="text-xs text-gray-500">Advancing Knowledge Through Research</span>
+                        <div className="hidden md:block">
+                            <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Daluyang Dunong</span>
+                            <span className="block text-sm text-gray-500 dark:text-slate-300">/daˈlujaŋ ˈdunoŋ/ - Channel of Knowledge</span>
                         </div>
                     </Link>
-
-                    {/* Desktop navigation */}
-                    <nav className="hidden md:flex items-center gap-6">
-                        {navItems.map((item) => (
-                            'children' in item ? (
-                                <NavDropdown
-                                    key={item.name}
-                                    name={item.name}
-                                    children={item.children as { name: string, href: string }[]}
-                                    isActive={isNavDropdownActive(item.children as { name: string, href: string }[])}
-                                    isOpen={navDropdownOpen}
-                                    setIsOpen={setNavDropdownOpen}
-                                    dropdownRef={navDropdownRef}
-                                    isNavLinkActive={isNavLinkActive}
-                                />
-                            ) : (
-                                <NavLink
-                                    key={item.name}
-                                    href={item.href!}
-                                    isActive={isNavLinkActive(item.href!)}
-                                >
-                                    {item.name}
-                                </NavLink>
-                            )
-                        ))}
-
-                        <div className="ml-4 flex items-center gap-4">
-                            {auth?.user ? (
-                                <UserDropdown
-                                    user={auth.user}
-                                    dropdownOpen={dropdownOpen}
-                                    setDropdownOpen={setDropdownOpen}
-                                    dropdownRef={dropdownRef}
-                                    getDashboardRoute={getDashboardRoute}
-                                />
-                            ) : (
-                                <AuthButtons />
-                            )}
-                        </div>
-                    </nav>
-
-                    {/* Mobile menu toggle */}
-                    <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden p-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-[#18652c] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50"
-                        aria-expanded={isMenuOpen}
-                        aria-label="Navigation menu"
-                    >
-                        {isMenuOpen ? (
-                            <X className="w-7 h-7 stroke-[2.5]" />
-                        ) : (
-                            <Menu className="w-7 h-7 stroke-[2.5]" />
-                        )}
-                    </button>
+                    <div className="md:hidden">
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className={`p-2 rounded-md text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500`}
+                            aria-expanded={isMobileMenuOpen}
+                            aria-controls="mobile-main-menu"
+                        >
+                            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Mobile menu */}
-            {isMenuOpen && (
-                <MobileMenu
-                    navItems={navItems}
-                    auth={auth}
-                    closeMenu={() => setIsMenuOpen(false)}
-                    getDashboardRoute={getDashboardRoute}
-                    isNavLinkActive={isNavLinkActive}
-                />
+            {/* Main Navigation Bar (Desktop) */}
+            <nav className={`bg-white dark:bg-gray-900 hidden md:block border-b border-gray-200 dark:border-gray-800 transition-colors duration-300`} aria-label="Main navigation">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
+                    <ul className="flex items-center space-x-1">
+                        {!auth?.user && (
+                            <NavLinkOJS href={route('login')} isActive={isNavLinkActive(route('login'))}>Login</NavLinkOJS>
+                        )}
+                        {navItems.map((item) => (
+                            item.children ? (
+                                <NavDropdownOJS
+                                    key={item.name}
+                                    name={item.name}
+                                    children={item.children}
+                                    isOpen={item.name === "About" && aboutDropdownOpen}
+                                    setIsOpen={item.name === "About" ? setAboutDropdownOpen : () => { }}
+                                    dropdownRef={item.name === "About" ? aboutDropdownRef : null}
+                                    isActive={isNavDropdownActive(item.children)}
+                                    isNavLinkActive={isNavLinkActive}
+                                />
+                            ) : (
+                                <NavLinkOJS key={item.name} href={item.href!} isActive={isNavLinkActive(item.href!)}>
+                                    {item.name}
+                                </NavLinkOJS>
+                            )
+                        ))}
+                    </ul>
+                    <div className="flex items-center">
+                        <form onSubmit={handleSearchSubmit} className="relative flex items-center group">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-slate-500 group-focus-within:text-green-500 transition-colors duration-200" />
+                                <input
+                                    type="text"
+                                    placeholder="Search articles, authors..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-64 pl-10 pr-12 py-2.5 text-sm bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:focus:border-green-400 transition-all duration-200 hover:bg-white dark:hover:bg-slate-700 shadow-sm"
+                                />
+                                <button
+                                    type="submit"
+                                    className="absolute right-1 top-1/2 transform -translate-y-1/2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium shadow-sm transition-colors duration-200 flex items-center gap-1"
+                                >
+                                    Go
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <div id="mobile-main-menu" className={`md:hidden bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700`}>
+                    <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 max-h-[calc(100vh-180px)] overflow-y-auto">
+                        {!auth?.user && (
+                            <MobileNavLinkOJS href={route('login')} isActive={isNavLinkActive(route('login'))} onClick={() => setIsMobileMenuOpen(false)}>Login</MobileNavLinkOJS>
+                        )}
+                        {navItems.map((item) => (
+                            item.children ? (
+                                <MobileDropdownOJS
+                                    key={item.name}
+                                    name={item.name}
+                                    children={item.children}
+                                    isNavLinkActive={isNavLinkActive}
+                                    closeMenu={() => setIsMobileMenuOpen(false)}
+                                />
+                            ) : (
+                                <MobileNavLinkOJS key={item.name} href={item.href!} isActive={isNavLinkActive(item.href!)} onClick={() => setIsMobileMenuOpen(false)}>
+                                    {item.name}
+                                </MobileNavLinkOJS>
+                            )
+                        ))}
+                        <div className="p-3 border-t border-gray-200 dark:border-slate-600">
+                            <form onSubmit={handleSearchSubmit} className="relative group">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-slate-500 group-focus-within:text-green-500 transition-colors duration-200" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search articles, authors..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-10 pr-16 py-3 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:focus:border-green-400 transition-all duration-200 shadow-sm"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium shadow-sm transition-colors duration-200"
+                                    >
+                                        Go
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             )}
         </header>
     );
 }
 
-// Sub-components
+// Styled sub-components for OJS theme with dark mode support
+const ojsLinkClasses = (isActive: boolean) =>
+    `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive
+        ? 'bg-green-600 text-white'
+        : 'text-gray-700 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+    }`;
 
-interface NavDropdownProps {
-    name: string;
-    children: { name: string, href: string }[];
-    isActive: boolean;
-    isOpen: boolean;
-    setIsOpen: (open: boolean) => void;
-    dropdownRef: React.RefObject<HTMLDivElement | null>;
-    isNavLinkActive: (href: string) => boolean;
-}
-
-interface UserDropdownProps {
-    user: User;
-    dropdownOpen: boolean;
-    setDropdownOpen: (open: boolean) => void;
-    dropdownRef: React.RefObject<HTMLDivElement | null>;
-    getDashboardRoute: (userRole: string) => string;
-}
-
-const NavLink = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
-    <Link
-        href={href}
-        className={`
-            relative font-medium transition-all duration-300 px-2 py-1.5 rounded-md text-center
-            ${isActive ? 'text-[#18652c] font-semibold' : 'text-gray-600 hover:text-[#18652c]'}
-            before:absolute before:-bottom-1 before:left-1/2 before:w-0 before:h-[2px] 
-            before:bg-[#3fb65e] before:transition-all before:duration-500 before:-translate-x-1/2
-            hover:before:w-full active:before:w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-100
-            ${isActive ? 'before:w-full' : ''}
-        `}
-        aria-current={isActive ? 'page' : undefined}
-    >
+const NavLinkOJS = ({ href, children, isActive }: { href: string; children: React.ReactNode; isActive: boolean }) => (
+    <Link href={href} className={ojsLinkClasses(isActive)} aria-current={isActive ? 'page' : undefined}>
         {children}
     </Link>
 );
 
-const NavDropdown = ({
-    name,
-    children,
-    isActive,
-    isOpen,
-    setIsOpen,
-    dropdownRef,
-    isNavLinkActive
-}: NavDropdownProps) => (
+interface NavDropdownOJSProps {
+    name: string;
+    children: { name: string, href: string }[];
+    isOpen: boolean;
+    setIsOpen: (open: boolean) => void;
+    dropdownRef: React.RefObject<HTMLDivElement | null> | null;
+    isActive: boolean;
+    isNavLinkActive: (href: string) => boolean;
+}
+
+const NavDropdownOJS = ({ name, children, isOpen, setIsOpen, dropdownRef, isActive, isNavLinkActive }: NavDropdownOJSProps) => (
     <div className="relative" ref={dropdownRef}>
         <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`
-                relative flex items-center gap-1 font-medium transition-all duration-300 px-2 py-1.5 rounded-md
-                ${isActive ? 'text-[#18652c] font-semibold' : 'text-gray-600 hover:text-[#18652c]'}
-                before:absolute before:-bottom-1 before:left-1/2 before:w-0 before:h-[2px] 
-                before:bg-[#3fb65e] before:transition-all before:duration-500 before:-translate-x-1/2
-                hover:before:w-full active:before:w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-100
-                ${isActive ? 'before:w-full' : ''}
-            `}
+            className={`${ojsLinkClasses(isActive)} flex items-center gap-1`}
             aria-expanded={isOpen}
             aria-haspopup="true"
         >
             {name}
-            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''} text-gray-700 dark:text-slate-200`} />
         </button>
-
         {isOpen && (
-            <div className="absolute left-0 mt-1 w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 py-1 animate-fadeIn">
+            <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-gray-200 dark:ring-black dark:ring-opacity-20 py-1 z-50">
                 {children.map((item) => (
                     <Link
                         key={item.name}
                         href={item.href}
-                        className={`
-                            block px-4 py-2 text-sm focus:outline-none focus-visible:bg-gray-50 relative
-                            ${isNavLinkActive(item.href)
-                                ? 'text-[#18652c] font-semibold bg-gray-50'
-                                : 'text-gray-700 hover:bg-gray-50 hover:text-[#18652c]'
-                            }
-                        `}
+                        className={`block px-3 py-2 text-sm ${isNavLinkActive(item.href)
+                            ? 'bg-green-600 text-white'
+                            : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+                            }`}
                         onClick={() => setIsOpen(false)}
                     >
                         {item.name}
-                        {isNavLinkActive(item.href) &&
-                            <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#3fb65e] rounded-full"></span>
-                        }
                     </Link>
                 ))}
             </div>
@@ -352,12 +345,21 @@ const NavDropdown = ({
     </div>
 );
 
-const MobileDropdown = ({
-    name,
-    children,
-    isNavLinkActive,
-    closeMenu
-}: {
+const MobileNavLinkOJS = ({ href, children, isActive, onClick }: { href: string; children: React.ReactNode; isActive: boolean; onClick?: () => void; }) => (
+    <Link
+        href={href}
+        onClick={onClick}
+        className={`block px-3 py-2 rounded-md text-base font-medium ${isActive
+            ? 'bg-green-600 text-white'
+            : 'text-gray-700 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+            }`}
+        aria-current={isActive ? 'page' : undefined}
+    >
+        {children}
+    </Link>
+);
+
+const MobileDropdownOJS = ({ name, children, isNavLinkActive, closeMenu }: {
     name: string;
     children: { name: string, href: string }[];
     isNavLinkActive: (href: string) => boolean;
@@ -367,38 +369,28 @@ const MobileDropdown = ({
     const isActive = children.some(item => isNavLinkActive(item.href));
 
     return (
-        <div className="space-y-1.5">
+        <div>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`
-                    flex items-center justify-between w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 relative
-                    ${isActive
-                        ? 'text-[#18652c] bg-gray-50 font-semibold border-l-4 border-[#3fb65e]'
-                        : 'text-gray-700'}
-                    hover:bg-gray-50 active:bg-gray-100
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50
-                `}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium ${isActive && !isOpen
+                    ? 'bg-green-600 text-white'
+                    : 'text-gray-700 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+                    }`}
             >
-                <span>{name}</span>
-                <div className="flex items-center">
-                    {isActive && !isOpen &&
-                        <span className="w-2.5 h-2.5 bg-[#3fb65e] rounded-full mr-2"></span>
-                    }
-                    <ChevronDown className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                </div>
+                {name}
+                <ChevronDown className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''} text-gray-700 dark:text-slate-200`} />
             </button>
-
             {isOpen && (
-                <div className="pl-4 space-y-1.5 animate-fadeIn border-l-2 border-[#3fb65e] ml-1">
+                <div className="pl-3 mt-1 space-y-1">
                     {children.map((item) => (
-                        <MobileNavLink
+                        <MobileNavLinkOJS
                             key={item.name}
                             href={item.href}
                             isActive={isNavLinkActive(item.href)}
                             onClick={closeMenu}
                         >
                             {item.name}
-                        </MobileNavLink>
+                        </MobileNavLinkOJS>
                     ))}
                 </div>
             )}
@@ -406,200 +398,11 @@ const MobileDropdown = ({
     );
 };
 
-const MobileNavLink = ({ href, children, isActive, onClick }: {
-    href: string;
-    children: React.ReactNode;
-    isActive: boolean;
-    onClick?: () => void
-}) => (
+const DropdownLink = ({ href, icon, children }: { href: string; icon?: React.ReactNode; children: React.ReactNode }) => (
     <Link
         href={href}
-        className={`
-            flex items-center px-4 py-3 rounded-xl font-medium transition-colors duration-300 relative
-            ${isActive
-                ? 'bg-[#18652c] text-white shadow-sm border-l-4 border-[#3fb65e]'
-                : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'}
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50
-        `}
-        onClick={onClick}
-        aria-current={isActive ? 'page' : undefined}
+        className="flex items-center w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
     >
-        {children}
-        {isActive && (
-            <>
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#3fb65e] rounded-r-full hidden"></span>
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></span>
-            </>
-        )}
+        {icon}{children}
     </Link>
-);
-
-const AuthButtons = () => (
-    <>
-        <Link
-            href={route("login")}
-            className="px-6 py-2.5 rounded-xl font-medium text-gray-600 hover:bg-gray-50 hover:text-[#18652c] transition-all duration-300 border-2 border-transparent hover:border-gray-200 active:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50"
-        >
-            Log in
-        </Link>
-        <Link
-            href={route("register")}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white font-semibold transition-all duration-300 hover:from-[#145024] hover:to-[#35a051] shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50"
-        >
-            Register
-        </Link>
-    </>
-);
-
-const UserDropdown = ({ user, dropdownOpen, setDropdownOpen, dropdownRef, getDashboardRoute }: UserDropdownProps) => {
-    const dashboardUrl = user ? getDashboardRoute(user.role) : '#';
-
-    return (
-        <div className="relative" ref={dropdownRef}>
-            <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300 border border-transparent hover:border-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50"
-                aria-expanded={dropdownOpen}
-                aria-haspopup="true"
-            >
-                <div className="w-8 h-8">
-                    <UserAvatar user={user} />
-                </div>
-                <span className="max-w-[100px] truncate">{`${user.firstname} ${user.lastname}`}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 py-1 animate-fadeIn">
-                    <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-                        <p className="font-medium text-gray-800 truncate">{user.firstname} {user.lastname}</p>
-                        <p className="truncate">{user.email}</p>
-                    </div>
-                    <DropdownLink href={dashboardUrl} icon={<LayoutDashboard className="w-4 h-4 mr-2" />}>
-                        Dashboard
-                    </DropdownLink>
-                    <DropdownLink href={route('profile.edit')} icon={<UserIcon className="w-4 h-4 mr-2" />}>
-                        Profile
-                    </DropdownLink>
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-100 focus:outline-none focus-visible:bg-red-50"
-                    >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Log out
-                    </Link>
-                </div>
-            )}
-        </div>
-    );
-};
-
-const DropdownLink = ({ href, icon, children }: { href: string; icon: React.ReactNode; children: React.ReactNode }) => (
-    <Link
-        href={href}
-        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#18652c] focus:outline-none focus-visible:bg-gray-50"
-    >
-        {icon}
-        {children}
-    </Link>
-);
-
-const MobileMenu = ({ navItems, auth, closeMenu, getDashboardRoute, isNavLinkActive }: {
-    navItems: NavItem[];
-    auth?: PageProps['auth'];
-    closeMenu: () => void;
-    getDashboardRoute: (userRole: string) => string;
-    isNavLinkActive: (href: string) => boolean;
-}) => (
-    <div className="md:hidden animate-slideDownFade">
-        <div className="px-4 pb-6 space-y-1.5 max-h-[80vh] overflow-y-auto">
-            {navItems.map((item) => (
-                'children' in item ? (
-                    <MobileDropdown
-                        key={item.name}
-                        name={item.name}
-                        children={item.children as { name: string, href: string }[]}
-                        isNavLinkActive={isNavLinkActive}
-                        closeMenu={closeMenu}
-                    />
-                ) : (
-                    <MobileNavLink
-                        key={item.name}
-                        href={item.href!}
-                        isActive={isNavLinkActive(item.href!)}
-                        onClick={closeMenu}
-                    >
-                        {item.name}
-                    </MobileNavLink>
-                )
-            ))}
-
-            <div className="pt-4 space-y-1.5 border-t border-gray-200 mt-4">
-                {auth?.user ? (
-                    <MobileUserSection
-                        user={auth.user}
-                        closeMenu={closeMenu}
-                        getDashboardRoute={getDashboardRoute}
-                    />
-                ) : (
-                    <MobileAuthButtons closeMenu={closeMenu} />
-                )}
-            </div>
-        </div>
-    </div>
-);
-
-const MobileUserSection = ({ user, closeMenu, getDashboardRoute }: {
-    user: User;
-    closeMenu: () => void;
-    getDashboardRoute: (userRole: string) => string;
-}) => (
-    <>
-        <div className="px-4 py-3 bg-gray-50 rounded-xl">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10">
-                    <UserAvatar user={user} />
-                </div>
-                <div>
-                    <p className="font-medium text-gray-800">{`${user.firstname} ${user.lastname}`}</p>
-                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                </div>
-            </div>
-        </div>
-        <MobileNavLink href={getDashboardRoute(user.role)} isActive={false} onClick={closeMenu}>
-            <LayoutDashboard className="w-5 h-5 mr-3" />
-            {user.role === 'editor' ? 'Dashboard' : 'Dashboard'}
-        </MobileNavLink>
-        <MobileNavLink href={route('profile.edit')} isActive={false} onClick={closeMenu}>
-            <UserIcon className="w-5 h-5 mr-3" />
-            Profile
-        </MobileNavLink>
-        <Link
-            href={route('logout')}
-            method="post"
-            as="button"
-            className="w-full text-left flex items-center px-4 py-3 rounded-xl font-medium transition-colors duration-300 text-red-600 hover:bg-red-50 active:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-opacity-50"
-            onClick={closeMenu}
-        >
-            <LogOut className="w-5 h-5 mr-3" />
-            Log out
-        </Link>
-    </>
-);
-
-const MobileAuthButtons = ({ closeMenu }: { closeMenu: () => void }) => (
-    <>
-        <MobileNavLink href={route("login")} isActive={false} onClick={closeMenu}>
-            Log in
-        </MobileNavLink>
-        <Link
-            href={route("register")}
-            className="block w-full px-4 py-3 rounded-xl font-medium text-center bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white shadow-sm hover:from-[#145024] hover:to-[#35a051] transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-opacity-50"
-            onClick={closeMenu}
-        >
-            Register
-        </Link>
-    </>
 );

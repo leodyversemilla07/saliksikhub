@@ -14,7 +14,9 @@ Route::inertia('/current', 'current')->name('current');
 Route::inertia('/submissions', 'submissions')->name('submissions');
 Route::inertia('/archives', 'archives')->name('archives');
 Route::inertia('/editorial-board', 'editorial-board')->name('editorial-board');
-Route::inertia('/about', 'about-us')->name('about-us');
+Route::inertia('/announcements', 'announcements')->name('announcements');
+Route::inertia('/about/aims-scope', 'about-aims-scope')->name('about-aims-scope');
+Route::inertia('/about/journal', 'about-journal')->name('about-journal');
 Route::inertia('/contact', 'contact-us')->name('contact-us');
 
 Route::middleware(['auth', 'verified'])->group(function () {
