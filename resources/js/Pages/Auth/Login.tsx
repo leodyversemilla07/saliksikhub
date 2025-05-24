@@ -1,4 +1,4 @@
-import { useEffect, FormEventHandler } from 'react';
+import { useEffect, FormEventHandler, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Breadcrumb } from '@/components/breadcrumb';
 import Header from '@/components/landing-pages/site-header';
@@ -8,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login({ canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
+    const [showPassword, setShowPassword] = useState(false);
+
     const breadcrumbItems = [
         { label: 'Home', href: route('home') },
         { label: 'Login' }
@@ -81,15 +84,28 @@ export default function Login({ canResetPassword, auth }: PageProps<{ status?: s
                                     </Link>
                                 </div>
                             )}
-                            <Input
-                                id="password"
-                                type="password"
-                                value={data.password}
-                                className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
-                                placeholder="••••••••"
-                                onChange={(e) => setData('password', e.target.value)}
-                                required
-                            />
+                            <div className="relative w-96">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={data.password}
+                                    className={`w-full pr-10 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
+                                    placeholder="••••••••"
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password && <p className="text-sm text-red-500 dark:text-red-400">{errors.password}</p>}
                         </div>
 

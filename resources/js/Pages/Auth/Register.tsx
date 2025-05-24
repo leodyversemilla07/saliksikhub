@@ -1,4 +1,4 @@
-import { useState, FormEventHandler, useEffect, useCallback, memo } from 'react';
+import { FormEventHandler, useCallback, memo } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { Breadcrumb } from '@/components/breadcrumb';
 import { PageProps } from '@/types';
@@ -10,13 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Fixed implicit 'any' type and property errors by defining the type for countries
 interface Country {
     code: string;
     name: string;
 }
 
-// TextInput Component
 const TextInput = ({ id, label, type = 'text', value, onChange, placeholder, error, required = false }: {
     id: string;
     label: string;
@@ -42,7 +40,6 @@ const TextInput = ({ id, label, type = 'text', value, onChange, placeholder, err
     </div>
 );
 
-// SelectInput Component
 const SelectInput = memo(({ id, label, value, onChange, options, error, required = false }: {
     id: string;
     label: string;
@@ -63,9 +60,6 @@ const SelectInput = memo(({ id, label, value, onChange, options, error, required
                 <SelectValue placeholder="Select a country" />
             </SelectTrigger>
             <SelectContent>
-                {/* It's good practice to also memoize SelectItem if it were a custom component and complex, 
-                    but here it's from shadcn/ui and likely optimized. The key is to prevent SelectInput 
-                    from re-rendering unnecessarily, which then prevents this map from re-running. */}
                 {options.map((option) => (
                     <SelectItem key={option.code} value={option.name}>{option.name}</SelectItem>
                 ))}
@@ -75,7 +69,6 @@ const SelectInput = memo(({ id, label, value, onChange, options, error, required
     </div>
 ));
 
-// CheckboxInput Component
 const CheckboxInput = ({ id, label, checked, onChange }: {
     id: string;
     label: string;
@@ -125,27 +118,208 @@ export default function Register({ auth }: PageProps) {
         review_requests: false,
     });
 
-    const [countries, setCountries] = useState<Country[]>([]);
-
-    useEffect(() => {
-        // The API call to fetch countries runs once on component mount.
-        // If this fetch is slow, consider bundling a static list of countries with your app
-        // or caching the response in localStorage for a faster initial load.
-        fetch('https://restcountries.com/v3.1/all')
-            .then(response => response.json())
-            .then(apiData => { // Renamed data to apiData to avoid conflict with useForm's data
-                const countryList: Country[] = apiData.map((country: { cca3: string; name: { common: string } }) => ({
-                    code: country.cca3,
-                    name: country.name.common,
-                })).sort((a: Country, b: Country) => a.name.localeCompare(b.name));
-                setCountries(countryList);
-            })
-            .catch(error => console.error('Error fetching countries:', error));
-    }, []);
+    const countries: Country[] = [
+        { code: 'AFG', name: 'Afghanistan' },
+        { code: 'ALB', name: 'Albania' },
+        { code: 'DZA', name: 'Algeria' },
+        { code: 'AND', name: 'Andorra' },
+        { code: 'AGO', name: 'Angola' },
+        { code: 'ATG', name: 'Antigua and Barbuda' },
+        { code: 'ARG', name: 'Argentina' },
+        { code: 'ARM', name: 'Armenia' },
+        { code: 'AUS', name: 'Australia' },
+        { code: 'AUT', name: 'Austria' },
+        { code: 'AZE', name: 'Azerbaijan' },
+        { code: 'BHS', name: 'Bahamas' },
+        { code: 'BHR', name: 'Bahrain' },
+        { code: 'BGD', name: 'Bangladesh' },
+        { code: 'BRB', name: 'Barbados' },
+        { code: 'BLR', name: 'Belarus' },
+        { code: 'BEL', name: 'Belgium' },
+        { code: 'BLZ', name: 'Belize' },
+        { code: 'BEN', name: 'Benin' },
+        { code: 'BTN', name: 'Bhutan' },
+        { code: 'BOL', name: 'Bolivia' },
+        { code: 'BIH', name: 'Bosnia and Herzegovina' },
+        { code: 'BWA', name: 'Botswana' },
+        { code: 'BRA', name: 'Brazil' },
+        { code: 'BRN', name: 'Brunei' },
+        { code: 'BGR', name: 'Bulgaria' },
+        { code: 'BFA', name: 'Burkina Faso' },
+        { code: 'BDI', name: 'Burundi' },
+        { code: 'KHM', name: 'Cambodia' },
+        { code: 'CMR', name: 'Cameroon' },
+        { code: 'CAN', name: 'Canada' },
+        { code: 'CPV', name: 'Cape Verde' },
+        { code: 'CAF', name: 'Central African Republic' },
+        { code: 'TCD', name: 'Chad' },
+        { code: 'CHL', name: 'Chile' },
+        { code: 'CHN', name: 'China' },
+        { code: 'COL', name: 'Colombia' },
+        { code: 'COM', name: 'Comoros' },
+        { code: 'COG', name: 'Congo' },
+        { code: 'COD', name: 'Congo (Democratic Republic)' },
+        { code: 'CRI', name: 'Costa Rica' },
+        { code: 'CIV', name: 'Côte d\'Ivoire' },
+        { code: 'HRV', name: 'Croatia' },
+        { code: 'CUB', name: 'Cuba' },
+        { code: 'CYP', name: 'Cyprus' },
+        { code: 'CZE', name: 'Czech Republic' },
+        { code: 'DNK', name: 'Denmark' },
+        { code: 'DJI', name: 'Djibouti' },
+        { code: 'DMA', name: 'Dominica' },
+        { code: 'DOM', name: 'Dominican Republic' },
+        { code: 'ECU', name: 'Ecuador' },
+        { code: 'EGY', name: 'Egypt' },
+        { code: 'SLV', name: 'El Salvador' },
+        { code: 'GNQ', name: 'Equatorial Guinea' },
+        { code: 'ERI', name: 'Eritrea' },
+        { code: 'EST', name: 'Estonia' },
+        { code: 'SWZ', name: 'Eswatini' },
+        { code: 'ETH', name: 'Ethiopia' },
+        { code: 'FJI', name: 'Fiji' },
+        { code: 'FIN', name: 'Finland' },
+        { code: 'FRA', name: 'France' },
+        { code: 'GAB', name: 'Gabon' },
+        { code: 'GMB', name: 'Gambia' },
+        { code: 'GEO', name: 'Georgia' },
+        { code: 'DEU', name: 'Germany' },
+        { code: 'GHA', name: 'Ghana' },
+        { code: 'GRC', name: 'Greece' },
+        { code: 'GRD', name: 'Grenada' },
+        { code: 'GTM', name: 'Guatemala' },
+        { code: 'GIN', name: 'Guinea' },
+        { code: 'GNB', name: 'Guinea-Bissau' },
+        { code: 'GUY', name: 'Guyana' },
+        { code: 'HTI', name: 'Haiti' },
+        { code: 'HND', name: 'Honduras' },
+        { code: 'HUN', name: 'Hungary' },
+        { code: 'ISL', name: 'Iceland' },
+        { code: 'IND', name: 'India' },
+        { code: 'IDN', name: 'Indonesia' },
+        { code: 'IRN', name: 'Iran' },
+        { code: 'IRQ', name: 'Iraq' },
+        { code: 'IRL', name: 'Ireland' },
+        { code: 'ISR', name: 'Israel' },
+        { code: 'ITA', name: 'Italy' },
+        { code: 'JAM', name: 'Jamaica' },
+        { code: 'JPN', name: 'Japan' },
+        { code: 'JOR', name: 'Jordan' },
+        { code: 'KAZ', name: 'Kazakhstan' },
+        { code: 'KEN', name: 'Kenya' },
+        { code: 'KIR', name: 'Kiribati' },
+        { code: 'PRK', name: 'Korea (North)' },
+        { code: 'KOR', name: 'Korea (South)' },
+        { code: 'KWT', name: 'Kuwait' },
+        { code: 'KGZ', name: 'Kyrgyzstan' },
+        { code: 'LAO', name: 'Laos' },
+        { code: 'LVA', name: 'Latvia' },
+        { code: 'LBN', name: 'Lebanon' },
+        { code: 'LSO', name: 'Lesotho' },
+        { code: 'LBR', name: 'Liberia' },
+        { code: 'LBY', name: 'Libya' },
+        { code: 'LIE', name: 'Liechtenstein' },
+        { code: 'LTU', name: 'Lithuania' },
+        { code: 'LUX', name: 'Luxembourg' },
+        { code: 'MDG', name: 'Madagascar' },
+        { code: 'MWI', name: 'Malawi' },
+        { code: 'MYS', name: 'Malaysia' },
+        { code: 'MDV', name: 'Maldives' },
+        { code: 'MLI', name: 'Mali' },
+        { code: 'MLT', name: 'Malta' },
+        { code: 'MHL', name: 'Marshall Islands' },
+        { code: 'MRT', name: 'Mauritania' },
+        { code: 'MUS', name: 'Mauritius' },
+        { code: 'MEX', name: 'Mexico' },
+        { code: 'FSM', name: 'Micronesia' },
+        { code: 'MDA', name: 'Moldova' },
+        { code: 'MCO', name: 'Monaco' },
+        { code: 'MNG', name: 'Mongolia' },
+        { code: 'MNE', name: 'Montenegro' },
+        { code: 'MAR', name: 'Morocco' },
+        { code: 'MOZ', name: 'Mozambique' },
+        { code: 'MMR', name: 'Myanmar' },
+        { code: 'NAM', name: 'Namibia' },
+        { code: 'NRU', name: 'Nauru' },
+        { code: 'NPL', name: 'Nepal' },
+        { code: 'NLD', name: 'Netherlands' },
+        { code: 'NZL', name: 'New Zealand' },
+        { code: 'NIC', name: 'Nicaragua' },
+        { code: 'NER', name: 'Niger' },
+        { code: 'NGA', name: 'Nigeria' },
+        { code: 'MKD', name: 'North Macedonia' },
+        { code: 'NOR', name: 'Norway' },
+        { code: 'OMN', name: 'Oman' },
+        { code: 'PAK', name: 'Pakistan' },
+        { code: 'PLW', name: 'Palau' },
+        { code: 'PSE', name: 'Palestine' },
+        { code: 'PAN', name: 'Panama' },
+        { code: 'PNG', name: 'Papua New Guinea' },
+        { code: 'PRY', name: 'Paraguay' },
+        { code: 'PER', name: 'Peru' },
+        { code: 'PHL', name: 'Philippines' },
+        { code: 'POL', name: 'Poland' },
+        { code: 'PRT', name: 'Portugal' },
+        { code: 'QAT', name: 'Qatar' },
+        { code: 'ROU', name: 'Romania' },
+        { code: 'RUS', name: 'Russia' },
+        { code: 'RWA', name: 'Rwanda' },
+        { code: 'KNA', name: 'Saint Kitts and Nevis' },
+        { code: 'LCA', name: 'Saint Lucia' },
+        { code: 'VCT', name: 'Saint Vincent and the Grenadines' },
+        { code: 'WSM', name: 'Samoa' },
+        { code: 'SMR', name: 'San Marino' },
+        { code: 'STP', name: 'São Tomé and Príncipe' },
+        { code: 'SAU', name: 'Saudi Arabia' },
+        { code: 'SEN', name: 'Senegal' },
+        { code: 'SRB', name: 'Serbia' },
+        { code: 'SYC', name: 'Seychelles' },
+        { code: 'SLE', name: 'Sierra Leone' },
+        { code: 'SGP', name: 'Singapore' },
+        { code: 'SVK', name: 'Slovakia' },
+        { code: 'SVN', name: 'Slovenia' },
+        { code: 'SLB', name: 'Solomon Islands' },
+        { code: 'SOM', name: 'Somalia' },
+        { code: 'ZAF', name: 'South Africa' },
+        { code: 'SSD', name: 'South Sudan' },
+        { code: 'ESP', name: 'Spain' },
+        { code: 'LKA', name: 'Sri Lanka' },
+        { code: 'SDN', name: 'Sudan' },
+        { code: 'SUR', name: 'Suriname' },
+        { code: 'SWE', name: 'Sweden' },
+        { code: 'CHE', name: 'Switzerland' },
+        { code: 'SYR', name: 'Syria' },
+        { code: 'TWN', name: 'Taiwan' },
+        { code: 'TJK', name: 'Tajikistan' },
+        { code: 'TZA', name: 'Tanzania' },
+        { code: 'THA', name: 'Thailand' },
+        { code: 'TLS', name: 'Timor-Leste' },
+        { code: 'TGO', name: 'Togo' },
+        { code: 'TON', name: 'Tonga' },
+        { code: 'TTO', name: 'Trinidad and Tobago' },
+        { code: 'TUN', name: 'Tunisia' },
+        { code: 'TUR', name: 'Turkey' },
+        { code: 'TKM', name: 'Turkmenistan' },
+        { code: 'TUV', name: 'Tuvalu' },
+        { code: 'UGA', name: 'Uganda' },
+        { code: 'UKR', name: 'Ukraine' },
+        { code: 'ARE', name: 'United Arab Emirates' },
+        { code: 'GBR', name: 'United Kingdom' },
+        { code: 'USA', name: 'United States' },
+        { code: 'URY', name: 'Uruguay' },
+        { code: 'UZB', name: 'Uzbekistan' },
+        { code: 'VUT', name: 'Vanuatu' },
+        { code: 'VAT', name: 'Vatican City' },
+        { code: 'VEN', name: 'Venezuela' },
+        { code: 'VNM', name: 'Vietnam' },
+        { code: 'YEM', name: 'Yemen' },
+        { code: 'ZMB', name: 'Zambia' },
+        { code: 'ZWE', name: 'Zimbabwe' }
+    ];
 
     const handleCountryChange = useCallback((value: string) => {
         setData('country', value);
-    }, [setData]); // setData from useForm is generally stable
+    }, [setData]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -205,7 +379,7 @@ export default function Register({ auth }: PageProps) {
                             id="country"
                             label="Country"
                             value={data.country}
-                            onChange={handleCountryChange} // Use the memoized callback
+                            onChange={handleCountryChange}
                             options={countries}
                             error={errors.country}
                             required
