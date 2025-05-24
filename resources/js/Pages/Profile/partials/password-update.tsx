@@ -1,11 +1,11 @@
 import { useRef, FormEventHandler, useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Check, Lock, Eye, EyeOff } from 'lucide-react';
+import { Check, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function UpdatePasswordForm({
+export default function PasswordUpdate({
     className = '',
 }: {
     className?: string;
@@ -51,140 +51,133 @@ export default function UpdatePasswordForm({
     };
 
     return (
-        <div className={`max-w-xl ${className}`}>
-            <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                    Password Security
-                </h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Keeping your account secure by using a unique, strong password helps protect your personal information.
+        <div className={`max-w-3xl mx-auto ${className}`}>
+            {/* Header Section */}
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    Update Password
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                    Ensure your account is using a long, random password to stay secure.
                 </p>
             </div>
 
             <form onSubmit={updatePassword} className="space-y-6">
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="current_password" className="text-gray-700 dark:text-gray-300">
+                        <Label htmlFor="current_password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Current Password
                         </Label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-4 w-4 text-gray-400" />
-                            </div>
+                        <div className="relative max-w-md">
                             <Input
                                 id="current_password"
                                 ref={currentPasswordInput}
                                 type={showCurrentPassword ? 'text' : 'password'}
                                 value={data.current_password}
                                 onChange={(e) => setData('current_password', e.target.value)}
-                                className="pl-10 pr-10"
+                                className="pr-12 h-11 w-full border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
                                 placeholder="Enter your current password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                             >
                                 {showCurrentPassword ? (
-                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                    <EyeOff className="h-4 w-4" />
                                 ) : (
-                                    <Eye className="h-4 w-4 text-gray-400" />
+                                    <Eye className="h-4 w-4" />
                                 )}
                             </button>
                         </div>
                         {errors.current_password && (
-                            <p className="text-sm text-red-500">{errors.current_password}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                                {errors.current_password}
+                            </p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
+                        <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             New Password
                         </Label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-4 w-4 text-gray-400" />
-                            </div>
+                        <div className="relative max-w-md">
                             <Input
                                 id="password"
                                 ref={passwordInput}
                                 type={showNewPassword ? 'text' : 'password'}
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
-                                className="pl-10 pr-10"
+                                className="pr-12 h-11 w-full border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
                                 placeholder="Create new password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                             >
                                 {showNewPassword ? (
-                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                    <EyeOff className="h-4 w-4" />
                                 ) : (
-                                    <Eye className="h-4 w-4 text-gray-400" />
+                                    <Eye className="h-4 w-4" />
                                 )}
                             </button>
                         </div>
+
                         {errors.password && (
-                            <p className="text-sm text-red-500">{errors.password}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                                {errors.password}
+                            </p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="password_confirmation" className="text-gray-700 dark:text-gray-300">
-                            Confirm Password
+                        <Label htmlFor="password_confirmation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Confirm New Password
                         </Label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-4 w-4 text-gray-400" />
-                            </div>
+                        <div className="relative max-w-md">
                             <Input
                                 id="password_confirmation"
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
-                                className="pl-10 pr-10"
+                                className="pr-12 h-11 w-full border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
                                 placeholder="Confirm new password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                             >
                                 {showConfirmPassword ? (
-                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                    <EyeOff className="h-4 w-4" />
                                 ) : (
-                                    <Eye className="h-4 w-4 text-gray-400" />
+                                    <Eye className="h-4 w-4" />
                                 )}
                             </button>
                         </div>
                         {errors.password_confirmation && (
-                            <p className="text-sm text-red-500">{errors.password_confirmation}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                                {errors.password_confirmation}
+                            </p>
                         )}
-                    </div>
-
-                    <div className="mt-1">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Password must be at least 8 characters and include a mix of letters, numbers, and special characters.
-                        </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-2">
+                <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-800">
                     <Button
                         type="submit"
                         disabled={processing}
-                        className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white"
+                        className="bg-gray-900 hover:bg-gray-800 text-white px-8 h-11 font-medium transition-colors"
                     >
-                        Update Password
+                        {processing ? 'Updating...' : 'Update Password'}
                     </Button>
 
                     {recentlySuccessful && (
-                        <p className="text-sm text-[#18652c] dark:text-[#3fb65e] flex items-center gap-1.5 transition-colors duration-300">
+                        <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
                             <Check className="h-4 w-4" />
-                            Password updated
-                        </p>
+                            <span className="text-sm">Password updated successfully!</span>
+                        </div>
                     )}
                 </div>
             </form>

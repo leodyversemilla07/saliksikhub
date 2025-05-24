@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { useForm } from "@inertiajs/react";
+import { route } from "ziggy-js";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { User, LogOut, Shield, Building2 } from "lucide-react";
 import { PageProps } from "@/types";
 
-export function UserDropdown({ user }: { user: PageProps['auth']['user'] }) {
+export function UserDropdown({ user }: { user: PageProps['auth']['user'] & { avatar_url?: string } }) {
     const { post, processing } = useForm({});
 
     const handleLogout = () => {
@@ -39,8 +40,8 @@ export function UserDropdown({ user }: { user: PageProps['auth']['user'] }) {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full focus-visible:ring-offset-0">
                     <Avatar className="h-9 w-9 border-2 border-white dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-200">
-                        {user.avatar ? (
-                            <AvatarImage src={user.avatar} alt={`${user.firstname} ${user.lastname}`} />
+                        {user.avatar_url ? (
+                            <AvatarImage src={user.avatar_url} alt={`${user.firstname} ${user.lastname}`} />
                         ) : (
                             <AvatarFallback className="bg-gradient-to-r from-green-100 to-emerald-200 dark:from-green-800 dark:to-emerald-700 text-green-700 dark:text-green-300 font-medium">
                                 {initials}
@@ -53,8 +54,8 @@ export function UserDropdown({ user }: { user: PageProps['auth']['user'] }) {
                 {/* User Info Header */}
                 <div className="flex items-center gap-3 p-3 border-b border-gray-100 dark:border-gray-800">
                     <Avatar className="h-12 w-12 border-2 border-white dark:border-gray-800 shadow-sm">
-                        {user.avatar ? (
-                            <AvatarImage src={user.avatar} alt={`${user.firstname} ${user.lastname}`} />
+                        {user.avatar_url ? (
+                            <AvatarImage src={user.avatar_url} alt={`${user.firstname} ${user.lastname}`} />
                         ) : (
                             <AvatarFallback className="bg-gradient-to-r from-green-100 to-emerald-200 dark:from-green-800 dark:to-emerald-700 text-green-700 dark:text-green-300 text-lg font-medium">
                                 {initials}

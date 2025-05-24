@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -60,6 +61,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'avatar_url',
+    ];
+
+    /**
      * Check if user has the given role.
      *
      * @param  string|array  $roles
@@ -92,6 +102,45 @@ class User extends Authenticatable
     public function getFullNameAttribute(): string
     {
         return "{$this->firstname} {$this->lastname}";
+    }
+
+    /**
+     * Get the user's avatar URL.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+        
+        // Use Storage::url() to generate the proper URL for the public disk
+        $url = Storage::disk('public')->url('avatars/' . $this->avatar);
+        
+        // For development environment, ensure we use HTTP instead of HTTPS to avoid certificate errors
+        if (app()->environment('local') && str_starts_with($url, 'https://localhost')) {
+            $url = str_replace('https://localhost', 'http://localhost', $url);
+        }
+        
+        return $url;
+    }
+
+    /**
+     * Delete the user's avatar file from storage.
+     */
+    public function deleteAvatar(): bool
+    {
+        if (!$this->avatar) {
+            return true;
+        }
+        
+        $deleted = Storage::disk('public')->delete('avatars/' . $this->avatar);
+        
+        if ($deleted) {
+            $this->avatar = null;
+            $this->save();
+        }
+        
+        return $deleted;
     }
 
     public function isEditor(): bool

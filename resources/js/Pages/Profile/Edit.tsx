@@ -1,10 +1,10 @@
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
-import DeleteUserForm from './partials/delete-user-form';
-import UpdatePasswordForm from './partials/update-password-form';
-import UpdateProfileInformationForm from './partials/update-profile-information-form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import DeleteUserForm from './partials/delete-user';
+import UpdatePasswordForm from './partials/password-update';
+import UpdateProfileInformationForm from './partials/profile-update';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Edit({
@@ -25,44 +25,45 @@ export default function Edit({
 
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
-            <Head title="Profile" />
+            <Head title="Profile Settings" />
 
-            <div className="space-y-6">
-                {/* Removed breadcrumb navigation */}
-
-                <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <CardHeader className="pb-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
-                        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                            <div className="h-1 w-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                            Account Settings
-                        </CardTitle>
-                        <CardDescription className="text-gray-500 dark:text-gray-400">
-                            Manage your account information, security, and preferences
-                        </CardDescription>
-                    </CardHeader>
+            <div className="max-w-5xl mx-auto py-6">
+                <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
                     <CardContent className="p-0">
                         <Tabs defaultValue="profile" className="w-full">
-                            <TabsList className="grid grid-cols-3 rounded-none border-b border-gray-200 dark:border-gray-700 bg-transparent">
-                                <TabsTrigger value="profile" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#18652c] data-[state=active]:bg-transparent rounded-none data-[state=active]:text-[#18652c] dark:data-[state=active]:text-[#3fb65e] transition-colors duration-300">
+                            <TabsList className="grid grid-cols-3 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 rounded-none h-14">
+                                <TabsTrigger
+                                    value="profile"
+                                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:border-b-2 data-[state=active]:border-gray-900 dark:data-[state=active]:border-white data-[state=active]:shadow-none rounded-none text-sm font-medium h-full transition-all duration-200"
+                                >
                                     Profile
                                 </TabsTrigger>
-                                <TabsTrigger value="password" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#18652c] data-[state=active]:bg-transparent rounded-none data-[state=active]:text-[#18652c] dark:data-[state=active]:text-[#3fb65e] transition-colors duration-300">
+                                <TabsTrigger
+                                    value="password"
+                                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:border-b-2 data-[state=active]:border-gray-900 dark:data-[state=active]:border-white data-[state=active]:shadow-none rounded-none text-sm font-medium h-full transition-all duration-200"
+                                >
                                     Password
                                 </TabsTrigger>
-                                <TabsTrigger value="danger" className="data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-red-500 data-[state=active]:bg-transparent rounded-none data-[state=active]:text-red-600 dark:data-[state=active]:text-red-400">
-                                    Danger Zone
+                                <TabsTrigger
+                                    value="danger"
+                                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:border-b-2 data-[state=active]:border-red-500 data-[state=active]:shadow-none rounded-none text-sm font-medium h-full data-[state=active]:text-red-600 transition-all duration-200"
+                                >
+                                    Account
                                 </TabsTrigger>
                             </TabsList>
-                            <TabsContent value="profile" className="border-none p-6 min-h-[400px]">
+
+                            <TabsContent value="profile" className="border-none p-8">
                                 <UpdateProfileInformationForm
                                     mustVerifyEmail={mustVerifyEmail}
                                     status={status}
                                 />
                             </TabsContent>
-                            <TabsContent value="password" className="border-none p-6 min-h-[400px]">
+
+                            <TabsContent value="password" className="border-none p-8">
                                 <UpdatePasswordForm />
                             </TabsContent>
-                            <TabsContent value="danger" className="border-none p-6 min-h-[400px]">
+
+                            <TabsContent value="danger" className="border-none p-8">
                                 <DeleteUserForm />
                             </TabsContent>
                         </Tabs>
