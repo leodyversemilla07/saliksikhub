@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useForm, Link, router } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import {
@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import {
     Edit, Trash2,
     Search, Filter, ChevronDown, Download, UserPlus,
-    Users, Shield, ChevronRight
+    Users, Shield
 } from 'lucide-react';
 import {
     DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
@@ -282,37 +282,35 @@ const AddUserDialog: React.FC = () => {
                             )}
                         </div>
                     </div>
+                    <DialogFooter className="gap-3 pt-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setOpen(false)}
+                            size="sm"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            size="sm"
+                            className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white"
+                        >
+                            {processing ? (
+                                <span className="flex items-center gap-2">
+                                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                    Creating User...
+                                </span>
+                            ) : (
+                                'Create User'
+                            )}
+                        </Button>
+                    </DialogFooter>
                 </form>
-
-                <DialogFooter className="gap-3 pt-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setOpen(false)}
-                        size="sm"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={processing}
-                        size="sm"
-                        className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white"
-                    >
-                        {processing ? (
-                            <span className="flex items-center gap-2">
-                                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                                Creating User...
-                            </span>
-                        ) : (
-                            'Create User'
-                        )}
-                    </Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
@@ -963,28 +961,24 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
         return range;
     };
 
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('dashboard'),
+        },
+        {
+            label: 'User Management',
+            href: route('editor.users.index'),
+            current: true,
+        },
+    ];
+
     return (
-        <AuthenticatedLayout header="User Management">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="User Management" />
 
             <div className="space-y-6">
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white">
-                            <svg className="w-3 h-3 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                            </svg>
-                            Dashboard
-                        </Link>
-                    </div>
-                    <ChevronRight className="h-3.5 w-3.5 mx-1.5 text-gray-400 dark:text-gray-500" />
-                    <div className="flex items-center">
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                            User Management
-                        </span>
-                    </div>
-                </div>
-
+                {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <UserStatsCard
                         title="Total Users"

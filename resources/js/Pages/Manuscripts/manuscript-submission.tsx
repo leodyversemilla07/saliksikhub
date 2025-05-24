@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from "sonner";
-import { Breadcrumb } from '@/components/breadcrumb';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { DetailsStep } from '@/components/manuscript-submission/details-step';
 import { ContentStep } from '@/components/manuscript-submission/content-step';
@@ -29,20 +28,11 @@ import {
 import { User } from '@/types';
 
 const steps = [
-    { id: 'details', title: 'Details', icon: FileText, description: "Basic information about your manuscript" },
-    { id: 'content', title: 'Content', icon: BookOpen, description: "Abstract and keywords for your research" },
-    { id: 'file', title: 'File Upload', icon: Upload, description: "Upload your manuscript document" },
-    { id: 'review', title: 'Review', icon: ClipboardCheck, description: "Verify submission details" },
+    { id: 'details', title: 'Manuscript Details', icon: FileText, description: "Provide the essential information about your manuscript. This helps editors and reviewers understand your work." },
+    { id: 'content', title: 'Research Content', icon: BookOpen, description: "Provide a comprehensive summary of your research and relevant keywords to help readers discover your work." },
+    { id: 'file', title: 'Manuscript Upload', icon: Upload, description: "Upload your manuscript document for submission. Ensure it follows our formatting guidelines." },
+    { id: 'review', title: 'Review Submission', icon: ClipboardCheck, description: "Please review your submission details carefully. Once submitted, modifications will require editorial approval." },
 ];
-
-interface FormSchemaType {
-    title: string;
-    authors: string;
-    abstract: string;
-    keywords: string;
-    manuscript: File | null;
-    [key: string]: string | File | null;
-}
 
 interface PageProps {
     auth: {
@@ -107,7 +97,8 @@ const useStepNavigation = (stepCount: number) => {
     };
 };
 
-const useFormCompletion = (form: ReturnType<typeof useForm<FormSchemaType>>) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const useFormCompletion = (form: any) => {
     const [submitProgress, setSubmitProgress] = useState(0);
     const totalFields = 5;
 
@@ -127,50 +118,63 @@ const useFormCompletion = (form: ReturnType<typeof useForm<FormSchemaType>>) => 
     return submitProgress;
 };
 
-const validateStep = async (form: ReturnType<typeof useForm<FormSchemaType>>, stepId: string) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const validateStep = async (form: any, stepId: string) => {
     form.clearErrors();
-
-    let fields: string[] = [];
-    let validationRules: Record<string, { required: boolean; minLength?: number; }> = {};
+    let isValid = true;
 
     switch (stepId) {
         case 'details':
-            validationRules = {
-                'title': { required: true, minLength: 10 },
-                'authors': { required: true, minLength: 3 }
-            };
-            fields = Object.keys(validationRules);
+            // Validate title
+            if (!form.data.title || form.data.title.trim() === '') {
+                form.setError('title', 'The title field is required.');
+                isValid = false;
+            } else if (form.data.title.trim().length < 10) {
+                form.setError('title', 'The title must be at least 10 characters.');
+                isValid = false;
+            }
+
+            // Validate authors
+            if (!form.data.authors || form.data.authors.trim() === '') {
+                form.setError('authors', 'The authors field is required.');
+                isValid = false;
+            } else if (form.data.authors.trim().length < 3) {
+                form.setError('authors', 'The authors must be at least 3 characters.');
+                isValid = false;
+            }
             break;
+
         case 'content':
-            validationRules = {
-                'abstract': { required: true, minLength: 100 },
-                'keywords': { required: true, minLength: 3 }
-            };
-            fields = Object.keys(validationRules);
+            // Validate abstract
+            if (!form.data.abstract || form.data.abstract.trim() === '') {
+                form.setError('abstract', 'The abstract field is required.');
+                isValid = false;
+            } else if (form.data.abstract.trim().length < 100) {
+                form.setError('abstract', 'The abstract must be at least 100 characters.');
+                isValid = false;
+            }
+
+            // Validate keywords
+            if (!form.data.keywords || form.data.keywords.trim() === '') {
+                form.setError('keywords', 'The keywords field is required.');
+                isValid = false;
+            } else if (form.data.keywords.trim().length < 3) {
+                form.setError('keywords', 'The keywords must be at least 3 characters.');
+                isValid = false;
+            }
             break;
+
         case 'file':
-            validationRules = {
-                'manuscript': { required: true }
-            };
-            fields = Object.keys(validationRules);
+            // Validate manuscript
+            if (!form.data.manuscript) {
+                form.setError('manuscript', 'The manuscript field is required.');
+                isValid = false;
+            }
             break;
+
         case 'review':
             return true;
     }
-
-    let isValid = true;
-    fields.forEach(field => {
-        const value = form.data[field];
-        const rules = validationRules[field];
-
-        if (rules.required && (!value || (typeof value === 'string' && value.trim() === ''))) {
-            form.setError(field, `The ${field} field is required.`);
-            isValid = false;
-        } else if (rules.minLength && typeof value === 'string' && value.trim().length < rules.minLength) {
-            form.setError(field, `The ${field} must be at least ${rules.minLength} characters.`);
-            isValid = false;
-        }
-    });
 
     return isValid;
 };
@@ -195,7 +199,7 @@ const HelpContent = ({ stepId }: { stepId: string }) => {
 };
 
 const useManuscriptSubmission = (resetSteps: () => void) => {
-    const form = useForm<FormSchemaType>({
+    const form = useForm({
         title: '',
         authors: '',
         abstract: '',
@@ -252,7 +256,18 @@ export default function ManuscriptSubmissionForm() {
         if (!serverErrors || Object.keys(serverErrors).length === 0) return;
 
         Object.entries(serverErrors).forEach(([field, message]) => {
-            form.setError(field, message as string);
+            // Use explicit field checks for type safety
+            if (field === 'title') {
+                form.setError('title', message as string);
+            } else if (field === 'authors') {
+                form.setError('authors', message as string);
+            } else if (field === 'abstract') {
+                form.setError('abstract', message as string);
+            } else if (field === 'keywords') {
+                form.setError('keywords', message as string);
+            } else if (field === 'manuscript') {
+                form.setError('manuscript', message as string);
+            }
         });
 
         if (serverErrors.title || serverErrors.authors) {
@@ -295,229 +310,334 @@ export default function ManuscriptSubmissionForm() {
             href: route('dashboard'),
         },
         {
-            label: 'My Manuscripts',
+            label: 'Manuscripts',
             href: route('manuscripts.index'),
         },
         {
-            label: 'New Manuscript',
+            label: 'Submit Manuscript',
         }
     ];
 
     return (
-        <AuthenticatedLayout header="Manuscript Submission">
+        <AuthenticatedLayout
+            breadcrumbItems={breadcrumbItems}
+        >
             <Head title='Submit Manuscript' />
-            <Breadcrumb items={breadcrumbItems} />
-            <div className="container mx-auto py-6 sm:py-10 px-4 animate-fadeIn">
-                <div className="max-w-4xl mx-auto">
-                    <div className="mb-6 text-center mt-6">
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            Submit New Manuscript
-                        </h1>
-                        <p className="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                            Follow our step-by-step process to submit your manuscript. Each section helps ensure your submission meets our requirements.
-                        </p>
-                    </div>
-
-                    <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-muted/30 p-4 rounded-lg">
-                        <div className="flex-1 w-full">
-                            <ProgressIndicator
-                                steps={steps.map(step => step.title)}
-                                currentStep={currentStep}
-                                completedSteps={completedSteps}
-                            />
+            <div>
+                <div className="w-full py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="w-full">
+                        <div className="mb-12 text-center">
+                            <div className="relative inline-block">
+                                <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 blur-3xl rounded-full scale-150"></div>
+                                <h1 className="relative text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent leading-tight">
+                                    Submit New Manuscript
+                                </h1>
+                            </div>
+                            <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                                Follow our streamlined process to submit your manuscript. Each step is designed to ensure your submission meets our editorial standards and gets the attention it deserves.
+                            </p>
                         </div>
 
-                        <div className="flex flex-col items-center bg-background p-4 rounded-lg shadow-sm">
-                            <CircleProgress
-                                percentage={submitProgress}
-                                size={80}
-                                strokeWidth={6}
-                            />
-                            <span className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {submitProgress}% Complete
-                            </span>
-                        </div>
-                    </div>
-
-                    {showValidationAlert && (
-                        <Alert
-                            variant="destructive"
-                            className="mb-6 animate-slideDown transition-all shadow-md border-l-4 border-l-red-500 bg-red-50 dark:bg-red-900/20"
-                        >
-                            <AlertTitle className="flex items-center gap-2">
-                                <span className="inline-block p-1 rounded-full bg-red-100">
-                                    <AlertCircle className="w-4 h-4 text-red-600" />
-                                </span>
-                                Validation Error
-                            </AlertTitle>
-                            <AlertDescription className="pl-6">
-                                Please fix the highlighted fields before proceeding.
-                            </AlertDescription>
-                        </Alert>
-                    )}
-
-                    <Card className="border-none shadow-xl transition-all duration-200 animate-fadeIn hover:shadow-2xl backdrop-blur bg-background/95">
-                        <CardHeader className="border-b bg-muted/50 dark:bg-gray-800/50 dark:border-gray-700 rounded-t-xl">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-full bg-primary/10 text-primary dark:bg-primary/20">
-                                    <CurrentStepIcon className="w-7 h-7" />
-                                </div>
-                                <div className="flex-1">
-                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent flex items-center gap-2">
-                                        {steps[currentStep].title}
-                                        <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
-                                            <DialogTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-6 w-6 rounded-full"
-                                                >
-                                                    <Info className="h-4 w-4 text-muted-foreground" />
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle className="flex items-center gap-2">
-                                                        <CurrentStepIcon className="w-5 h-5 text-primary" />
-                                                        About "{steps[currentStep].title}" Step
-                                                    </DialogTitle>
-                                                </DialogHeader>
-                                                <div className="py-3">
-                                                    <HelpContent stepId={steps[currentStep].id} />
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button onClick={() => setShowHelpDialog(false)}>
-                                                        Got it
-                                                    </Button>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </CardTitle>
-                                    <CardDescription className="mt-1 text-base">
-                                        {steps[currentStep].description}
-                                    </CardDescription>
+                        <div className="mb-8 grid grid-cols-1 xl:grid-cols-4 gap-6">
+                            <div className="xl:col-span-3">
+                                <div className="bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 p-6 rounded-2xl shadow-lg flex justify-center">
+                                    <ProgressIndicator
+                                        steps={steps.map(step => step.title)}
+                                        currentStep={currentStep}
+                                        completedSteps={completedSteps}
+                                    />
                                 </div>
                             </div>
-                        </CardHeader>
 
-                        <CardContent className="pt-6 pb-2">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                if (isLastStep) {
-                                    handleSubmit();
-                                } else {
-                                    nextStep();
-                                }
-                            }} className="space-y-6">
-                                <div className="min-h-[300px] transition-all duration-300 animate-fadeIn">
-                                    {currentStep === 0 && (
-                                        <DetailsStep
-                                            data={form.data}
-                                            setData={form.setData}
-                                            errors={form.errors}
-                                            clearErrors={() => form.clearErrors()}
-                                        />
-                                    )}
-                                    {currentStep === 1 && (
-                                        <ContentStep
-                                            data={form.data}
-                                            setData={form.setData}
-                                            errors={form.errors}
-                                            clearErrors={() => form.clearErrors()}
-                                        />
-                                    )}
-                                    {currentStep === 2 && (
-                                        <FileUploadStep
-                                            data={form.data}
-                                            setData={form.setData}
-                                            errors={form.errors}
-                                            progress={form.progress}
-                                            clearErrors={() => form.clearErrors()}
-                                        />
-                                    )}
-                                    {currentStep === 3 && <ReviewStep formValues={form.data} />}
+                            <div className="xl:col-span-1">
+                                <div className="flex flex-col items-center bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/80 dark:to-gray-900/60 p-6 rounded-xl shadow-lg backdrop-blur-sm border border-white/30 dark:border-gray-600/30 h-full justify-center">
+                                    <CircleProgress
+                                        percentage={submitProgress}
+                                        size={90}
+                                        strokeWidth={8}
+                                    />
+                                    <span className="mt-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        {submitProgress}% Complete
+                                    </span>
                                 </div>
-                            </form>
-                        </CardContent>
+                            </div>
+                        </div>
 
-                        <CardFooter className="flex justify-between py-6 border-t mt-6 bg-muted/30 dark:border-gray-700 rounded-b-xl">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={goToPrevStep}
-                                disabled={currentStep === 0}
-                                className={`min-w-[100px] group transition-all duration-200 ${currentStep === 0 ? 'opacity-50' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-                                aria-label="Previous step"
+                        {showValidationAlert && (
+                            <Alert
+                                variant="destructive"
+                                className="mb-6 animate-slideDown transition-all shadow-md border-l-4 border-l-red-500 bg-red-50 dark:bg-red-900/20"
                             >
-                                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                                {isMobile ? '' : 'Previous'}
-                            </Button>
+                                <AlertTitle className="flex items-center gap-2">
+                                    <span className="inline-block p-1 rounded-full bg-red-100">
+                                        <AlertCircle className="w-4 h-4 text-red-600" />
+                                    </span>
+                                    Validation Error
+                                </AlertTitle>
+                                <AlertDescription className="pl-6">
+                                    Please fix the highlighted fields before proceeding.
+                                </AlertDescription>
+                            </Alert>
+                        )}
 
-                            <div className="flex items-center gap-3">
-                                {isLastStep ? (
-                                    <Button
-                                        type="button"
-                                        disabled={processing || submitProgress < 100}
-                                        onClick={handleSubmit}
-                                        className="min-w-[120px] gap-2 relative overflow-hidden group transition-all duration-300"
-                                    >
-                                        <span className="relative z-10 flex items-center">
-                                            {processing ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                    Submitting...
-                                                </>
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            {/* Main Form Area */}
+                            <div className="lg:col-span-3">
+                                <Card className="border-none shadow-xl transition-all duration-200 animate-fadeIn hover:shadow-2xl backdrop-blur bg-background/95 h-fit">
+                                    <CardHeader className="border-b bg-muted/50 dark:bg-gray-800/50 dark:border-gray-700 rounded-t-xl">
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-3 rounded-full bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-400">
+                                                <CurrentStepIcon className="w-7 h-7" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center gap-2">
+                                                    {steps[currentStep].title}
+                                                    <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
+                                                        <DialogTrigger asChild>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-6 w-6 rounded-full"
+                                                            >
+                                                                <Info className="h-4 w-4 text-muted-foreground" />
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent>
+                                                            <DialogHeader>
+                                                                <DialogTitle className="flex items-center gap-2">
+                                                                    <CurrentStepIcon className="w-5 h-5 text-green-600" />
+                                                                    About "{steps[currentStep].title}" Step
+                                                                </DialogTitle>
+                                                            </DialogHeader>
+                                                            <div className="py-3">
+                                                                <HelpContent stepId={steps[currentStep].id} />
+                                                            </div>
+                                                            <DialogFooter>
+                                                                <Button onClick={() => setShowHelpDialog(false)}>
+                                                                    Got it
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                </CardTitle>
+                                                <CardDescription className="mt-1 text-base">
+                                                    {steps[currentStep].description}
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent className="pt-6 pb-2">
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            if (isLastStep) {
+                                                handleSubmit();
+                                            } else {
+                                                nextStep();
+                                            }
+                                        }} className="space-y-6">
+                                            <div className="min-h-[400px] transition-all duration-300 animate-fadeIn">
+                                                {currentStep === 0 && (
+                                                    <DetailsStep
+                                                        data={form.data}
+                                                        setData={form.setData}
+                                                        errors={form.errors}
+                                                        clearErrors={() => form.clearErrors()}
+                                                    />
+                                                )}
+                                                {currentStep === 1 && (
+                                                    <ContentStep
+                                                        data={form.data}
+                                                        setData={form.setData}
+                                                        errors={form.errors}
+                                                        clearErrors={() => form.clearErrors()}
+                                                    />
+                                                )}
+                                                {currentStep === 2 && (
+                                                    <FileUploadStep
+                                                        data={form.data}
+                                                        setData={form.setData}
+                                                        errors={form.errors}
+                                                        progress={form.progress}
+                                                        clearErrors={() => form.clearErrors()}
+                                                    />
+                                                )}
+                                                {currentStep === 3 && <ReviewStep formValues={form.data} />}
+                                            </div>
+                                        </form>
+                                    </CardContent>
+
+                                    <CardFooter className="flex justify-between py-6 border-t mt-6 bg-gradient-to-r from-muted/20 to-muted/40 dark:border-gray-700 rounded-b-xl backdrop-blur-sm">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={goToPrevStep}
+                                            disabled={currentStep === 0}
+                                            className={`min-w-[100px] group transition-all duration-300 ${currentStep === 0
+                                                ? 'opacity-50 cursor-not-allowed'
+                                                : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-700 hover:border-green-500/30 hover:shadow-md'
+                                                }`}
+                                            aria-label="Previous step"
+                                        >
+                                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
+                                            {isMobile ? '' : 'Previous'}
+                                        </Button>
+
+                                        <div className="flex items-center gap-3">
+                                            {isLastStep ? (
+                                                <Button
+                                                    type="button"
+                                                    disabled={processing || submitProgress < 100}
+                                                    onClick={handleSubmit}
+                                                    className="min-w-[120px] gap-2 relative overflow-hidden group transition-all duration-300 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl disabled:opacity-50"
+                                                >
+                                                    <span className="relative z-10 flex items-center">
+                                                        {processing ? (
+                                                            <>
+                                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                                Submitting...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <CheckCircle2 className="w-4 h-4 mr-2" />
+                                                                Submit Manuscript
+                                                            </>
+                                                        )}
+                                                    </span>
+                                                    <span className="absolute inset-0 bg-gradient-to-r from-green-700 to-emerald-700 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                                                </Button>
                                             ) : (
-                                                <>
-                                                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                                                    Submit
-                                                </>
+                                                <Button
+                                                    type="button"
+                                                    onClick={nextStep}
+                                                    className="min-w-[100px] group bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                                    aria-label="Next step"
+                                                >
+                                                    {isMobile ? '' : 'Continue'}
+                                                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                                                </Button>
                                             )}
-                                        </span>
-                                        <span className="absolute inset-0 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        type="button"
-                                        onClick={nextStep}
-                                        className="min-w-[100px] group bg-primary hover:bg-primary/90 transition-all duration-300"
-                                        aria-label="Next step"
-                                    >
-                                        {isMobile ? '' : 'Next'}
-                                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                    </Button>
-                                )}
+                                        </div>
+                                    </CardFooter>
+                                </Card>
                             </div>
-                        </CardFooter>
-                    </Card>
 
-                    <div className="mt-8 p-6 bg-blue-50/50 backdrop-blur border border-blue-100 rounded-xl shadow-sm dark:bg-blue-900/10 dark:border-blue-800/30">
-                        <h3 className="text-base font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center">
-                            <Info className="h-5 w-5 mr-2" />
-                            Submission Guidelines
-                        </h3>
-                        <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2.5 list-none pl-7">
-                            <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                Follow formatting guidelines outlined in the author instructions
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                Ensure your abstract (100-300 words) highlights the significance of your research
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                Choose specific keywords that accurately represent your paper's content
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                Remove all identifying information for blind peer review
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                Check references for accuracy and proper formatting before submission
-                            </li>
-                        </ul>
+                            {/* Sidebar Area */}
+                            <div className="lg:col-span-1 space-y-6">
+                                {/* Submission Guidelines */}
+                                <Card className="bg-gradient-to-br from-green-50/80 to-emerald-50/60 backdrop-blur border border-green-100 shadow-lg dark:from-green-900/20 dark:to-emerald-900/10 dark:border-green-800/30 sticky top-6">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center gap-2">
+                                            <Info className="h-5 w-5" />
+                                            Submission Guidelines
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-0">
+                                        <ul className="text-sm text-green-700 dark:text-green-300 space-y-3">
+                                            <li className="flex items-start gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-900/20">
+                                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                                <span>Follow formatting guidelines outlined in the author instructions</span>
+                                            </li>
+                                            <li className="flex items-start gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-900/20">
+                                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                                <span>Ensure your abstract (100-300 words) highlights the significance of your research</span>
+                                            </li>
+                                            <li className="flex items-start gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-900/20">
+                                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                                <span>Choose specific keywords that accurately represent your paper's content</span>
+                                            </li>
+                                            <li className="flex items-start gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-900/20">
+                                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                                <span>Remove all identifying information for blind peer review</span>
+                                            </li>
+                                            <li className="flex items-start gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-900/20">
+                                                <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                                <span>Check references for accuracy and proper formatting before submission</span>
+                                            </li>
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Help & Support Card */}
+                                <Card className="bg-gradient-to-br from-blue-50/80 to-indigo-50/60 backdrop-blur border border-blue-100 shadow-lg dark:from-blue-900/20 dark:to-indigo-900/10 dark:border-blue-800/30">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="text-lg font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
+                                            <Info className="h-5 w-5" />
+                                            Need Help?
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-0 space-y-4">
+                                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                                            Having trouble with your submission? Our editorial team is here to help.
+                                        </p>
+                                        <div className="space-y-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full justify-start text-blue-700 border-blue-200 hover:bg-blue-50 dark:text-blue-300 dark:border-blue-700 dark:hover:bg-blue-900/20"
+                                            >
+                                                📧 Contact Editorial Team
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full justify-start text-blue-700 border-blue-200 hover:bg-blue-50 dark:text-blue-300 dark:border-blue-700 dark:hover:bg-blue-900/20"
+                                            >
+                                                📋 View Author Guidelines
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full justify-start text-blue-700 border-blue-200 hover:bg-blue-50 dark:text-blue-300 dark:border-blue-700 dark:hover:bg-blue-900/20"
+                                            >
+                                                💬 Live Chat Support
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Progress Summary Card */}
+                                <Card className="bg-gradient-to-br from-amber-50/80 to-orange-50/60 backdrop-blur border border-amber-100 shadow-lg dark:from-amber-900/20 dark:to-orange-900/10 dark:border-amber-800/30">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="text-lg font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                                            <ClipboardCheck className="h-5 w-5" />
+                                            Progress Summary
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-0 space-y-4">
+                                        <div className="space-y-2">
+                                            {steps.map((step, index) => (
+                                                <div key={step.id} className="flex items-center gap-2 text-sm">
+                                                    <div className={`w-3 h-3 rounded-full flex items-center justify-center ${completedSteps.includes(index)
+                                                        ? 'bg-green-500'
+                                                        : currentStep === index
+                                                            ? 'bg-amber-500'
+                                                            : 'bg-gray-200 dark:bg-gray-600'
+                                                        }`}>
+                                                        {completedSteps.includes(index) && (
+                                                            <CheckCircle2 className="w-2 h-2 text-white" />
+                                                        )}
+                                                    </div>
+                                                    <span className={`${completedSteps.includes(index)
+                                                        ? 'text-green-700 dark:text-green-300 font-medium'
+                                                        : currentStep === index
+                                                            ? 'text-amber-700 dark:text-amber-300 font-medium'
+                                                            : 'text-gray-500 dark:text-gray-400'
+                                                        }`}>
+                                                        {step.title}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="pt-2 border-t border-amber-200 dark:border-amber-700">
+                                            <p className="text-xs text-amber-600 dark:text-amber-400">
+                                                {completedSteps.length} of {steps.length} steps completed
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

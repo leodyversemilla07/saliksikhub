@@ -20,6 +20,12 @@ import {
 import { NotificationDropdown } from '@/components/layout/notification-dropdown';
 import { UserDropdown } from '@/components/layout/user-dropdown';
 import { AuthenticatedSidebar } from '@/components/layout/authenticated-sidebar';
+import { Breadcrumb } from '@/components/breadcrumb';
+
+interface BreadcrumbItem {
+    label: string;
+    href?: string;
+}
 
 const navigationMap = {
     editor: [
@@ -89,6 +95,7 @@ interface HeaderProps {
     openMobileSidebar: () => void;
     toggleDarkMode: () => void;
     isDarkMode: boolean;
+    breadcrumbItems?: BreadcrumbItem[];
 }
 
 interface HeaderActionsProps {
@@ -96,7 +103,7 @@ interface HeaderActionsProps {
     isDarkMode: boolean;
 }
 
-function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode }: HeaderProps) {
+function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode, breadcrumbItems }: HeaderProps) {
     return (
         <header className="fixed top-0 right-0 left-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm z-20 transition-all duration-300 ease-out"
             style={{
@@ -104,7 +111,7 @@ function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode }: Heade
                 width: 'calc(100% - var(--sidebar-width, 0px))'
             }}>
             <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between w-full">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 flex-1">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -115,11 +122,18 @@ function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode }: Heade
                         <span className="sr-only">Open menu</span>
                     </Button>
 
-                    <div>
+                    <div className="flex flex-col space-y-1 flex-1">
                         {header && (
                             <div className="text-xl font-bold text-green-600 dark:text-green-400">
                                 {header}
                             </div>
+                        )}
+                        {breadcrumbItems && breadcrumbItems.length > 0 && (
+                            <Breadcrumb 
+                                items={breadcrumbItems} 
+                                className="mb-0 text-xl font-bold text-green-600 dark:text-green-400"
+                                maxLength={30}
+                            />
                         )}
                     </div>
                 </div>
@@ -190,7 +204,11 @@ function HeaderActions({ toggleDarkMode, isDarkMode }: HeaderActionsProps) {
 export default function AuthenticatedLayout({
     header,
     children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
+    breadcrumbItems,
+}: PropsWithChildren<{ 
+    header?: ReactNode;
+    breadcrumbItems?: BreadcrumbItem[];
+}>) {
     const { auth } = usePage<PageProps>().props;
     const { isDarkMode, toggleDarkMode } = useDarkMode();
     const {
@@ -204,13 +222,13 @@ export default function AuthenticatedLayout({
     useEffect(() => {
         document.documentElement.style.setProperty(
             '--sidebar-width',
-            window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '4rem' : '18rem')
+            window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '5rem' : '20rem')
         );
 
         const handleResize = () => {
             document.documentElement.style.setProperty(
                 '--sidebar-width',
-                window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '4rem' : '18rem')
+                window.innerWidth < 1024 ? '0px' : (isDesktopSidebarCollapsed ? '5rem' : '20rem')
             );
         };
 
@@ -238,7 +256,7 @@ export default function AuthenticatedLayout({
 
             <div className={cn(
                 "flex-1 flex flex-col transition-all duration-300 ease-out",
-                isDesktopSidebarCollapsed ? "lg:ml-16" : "lg:ml-72"
+                isDesktopSidebarCollapsed ? "lg:ml-20" : "lg:ml-80"
             )}
                 style={{
                     transitionTimingFunction: isDesktopSidebarCollapsed ?
@@ -251,6 +269,7 @@ export default function AuthenticatedLayout({
                     openMobileSidebar={openMobileSidebar}
                     toggleDarkMode={toggleDarkMode}
                     isDarkMode={isDarkMode}
+                    breadcrumbItems={breadcrumbItems}
                 />
 
                 <main className="flex-1 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-16">

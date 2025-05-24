@@ -60,7 +60,7 @@ class AuthorController extends Controller
             $currentMonth->addMonth();
         }
 
-        return Inertia::render('author/author-dashboard', [
+        return Inertia::render('author/dashboard', [
             'manuscripts' => $manuscriptsData,
             'monthlySubmissionData' => $monthlySubmissionData,
             'currentTimeFilter' => $timeFilter, // Pass the active filter back to frontend

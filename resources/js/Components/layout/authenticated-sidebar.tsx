@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ChevronLeft, X, ChevronRight, Building2, User } from 'lucide-react';
+import { ChevronLeft, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -37,25 +37,39 @@ const SidebarLink = ({
         <Link
             href={route(href)}
             className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150",
+                "group relative flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ease-out",
                 isActive
-                    ? "bg-gradient-to-r from-green-50/90 to-emerald-50/90 text-green-700 dark:from-green-900/60 dark:to-emerald-900/60 dark:text-green-300 shadow-sm border-l-2 border-green-500 dark:border-green-400"
-                    : "text-gray-700 hover:bg-gray-100/70 hover:text-green-600 dark:text-gray-300 dark:hover:bg-gray-800/70 dark:hover:text-green-300",
-                isDesktopCollapsed && "justify-center"
+                    ? "bg-gradient-to-r from-green-50 to-emerald-50/80 text-green-700 dark:from-green-900/40 dark:to-emerald-900/40 dark:text-green-300 shadow-sm ring-1 ring-green-200/50 dark:ring-green-700/30"
+                    : "text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-50/50 hover:text-green-600 dark:text-gray-300 dark:hover:from-gray-800/50 dark:hover:to-gray-700/30 dark:hover:text-green-300 hover:shadow-sm",
+                isDesktopCollapsed && "justify-center px-3"
             )}
         >
+            {/* Active indicator */}
+            {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-r-full" />
+            )}
+
             <Icon className={cn(
-                "flex-shrink-0",
-                isDesktopCollapsed ? "h-5 w-5 mx-auto" : "h-5 w-5",
-                isActive ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"
+                "flex-shrink-0 transition-all duration-200",
+                isDesktopCollapsed ? "h-5 w-5" : "h-5 w-5",
+                isActive
+                    ? "text-green-600 dark:text-green-400 scale-110"
+                    : "text-gray-500 dark:text-gray-400 group-hover:text-green-500 group-hover:scale-105"
             )} />
 
             <span className={cn(
-                "truncate transition-all duration-200",
+                "truncate transition-all duration-200 font-medium",
                 isDesktopCollapsed ? "w-0 opacity-0 absolute" : "w-auto opacity-100 relative"
             )}>
                 {label}
             </span>
+
+            {/* Tooltip for collapsed state */}
+            {isDesktopCollapsed && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    {label}
+                </div>
+            )}
         </Link>
     );
 };
@@ -67,96 +81,52 @@ const MobileSidebar = ({
     navigationMap
 }: Pick<SidebarProps, 'isMobileOpen' | 'user' | 'closeMobileSidebar' | 'navigationMap'>) => {
     return (
-        <aside
-            className={cn(
-                "fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800/95 backdrop-blur-sm border-r border-gray-200 dark:border-gray-700 shadow-lg transform transition-all duration-300 ease-in-out lg:hidden flex flex-col",
-                isMobileOpen ? "translate-x-0" : "-translate-x-full"
-            )}
-        >
-            <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-green-600 to-emerald-500 dark:from-green-700/90 dark:to-emerald-600/90 text-white flex-shrink-0 shadow-md">
-                <Link href="/" className="flex items-center space-x-2">
-                    <ApplicationLogo className="h-8 w-auto fill-current text-white filter drop-shadow-md" />
-                    <span className="text-lg font-bold tracking-tight">SaliksikHub</span>
-                </Link>
-                <Button
-                    variant="ghost"
-                    size="icon"
+        <>
+            {/* Mobile overlay */}
+            {isMobileOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
                     onClick={closeMobileSidebar}
-                    className="text-white hover:text-white hover:bg-white/20"
-                >
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close sidebar</span>
-                </Button>
-            </div>
+                />
+            )}
 
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-50/80 dark:from-gray-800/80 dark:to-gray-800/50 backdrop-blur-sm flex-shrink-0">
-                <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 aspect-square flex-shrink-0 rounded-full bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 dark:from-green-900 dark:via-emerald-900 dark:to-teal-800 flex items-center justify-center text-green-700 dark:text-green-200 font-medium text-xl shadow-md ring-2 ring-white/20 dark:ring-black/20">
-                        {user.firstname.charAt(0)}
-                    </div>
-                    <div className="overflow-hidden">
-                        <p className="text-base font-semibold text-gray-800 dark:text-gray-200 truncate">
-                            {user.firstname} {user.lastname}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {user.email}
-                        </p>
-                        <div className="mt-2 gap-1 flex flex-col">
-                            <RoleTag role={user.role} />
-                            {user.affiliation && (
-                                <div className="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 truncate bg-gray-100 dark:bg-gray-700/60 px-2 py-1 rounded-md">
-                                    <Building2 className="h-3 w-3 mr-1 flex-shrink-0" />
-                                    <span className="truncate">{user.affiliation}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+            <aside
+                className={cn(
+                    "fixed inset-y-0 left-0 z-50 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/80 dark:border-gray-700/80 shadow-2xl transform transition-all duration-300 ease-out lg:hidden flex flex-col",
+                    isMobileOpen ? "translate-x-0" : "-translate-x-full"
+                )}
+            >
+                {/* Enhanced header */}
+                <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 dark:from-green-700/90 dark:via-emerald-600/90 dark:to-teal-600/90 text-white flex-shrink-0 shadow-lg relative overflow-hidden">
+                    {/* Background pattern */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-50"></div>
+
+                    <Link href="/" className="flex items-center space-x-3 relative z-10">
+                        <ApplicationLogo className="h-9 w-auto fill-current text-white filter drop-shadow-lg" />
+                        <span className="text-xl font-bold tracking-tight text-white drop-shadow-sm">SaliksikHub</span>
+                    </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={closeMobileSidebar}
+                        className="text-white hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 relative z-10"
+                    >
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close sidebar</span>
+                    </Button>
                 </div>
-            </div>
 
-            <NavigationSection
-                user={user}
-                navigationMap={navigationMap}
-                isDesktopCollapsed={false}
-                isTransitioning={false}
-                isMobile={true}
-            />
+                <NavigationSection
+                    user={user}
+                    navigationMap={navigationMap}
+                    isDesktopCollapsed={false}
+                />
 
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 mt-auto flex-shrink-0">
-                <FooterContent />
-            </div>
-        </aside>
-    );
-};
-
-const RoleTag = ({ role }: { role: string }) => {
-    const getRoleInfo = (role: string) => {
-        switch (role) {
-            case 'author':
-                return {
-                    label: 'Author | Researcher',
-                    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300'
-                };
-            case 'editor':
-                return {
-                    label: 'Editor | Administrator',
-                    color: 'bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-300'
-                };
-            default:
-                return {
-                    label: role.charAt(0).toUpperCase() + role.slice(1),
-                    color: 'bg-gray-100 text-gray-800 dark:bg-gray-700/60 dark:text-gray-300'
-                };
-        }
-    };
-
-    const roleInfo = getRoleInfo(role);
-
-    return (
-        <div className={`inline-flex items-center text-xs px-2 py-1 rounded-md font-medium ${roleInfo.color}`}>
-            <User className="h-3 w-3 mr-1 flex-shrink-0" />
-            <span>{roleInfo.label}</span>
-        </div>
+                <div className="p-4 border-t border-gray-200/60 dark:border-gray-700/60 mt-auto flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/50">
+                    <FooterContent />
+                </div>
+            </aside>
+        </>
     );
 };
 
@@ -172,9 +142,9 @@ const DesktopSidebar = ({
     return (
         <aside
             className={cn(
-                "hidden lg:flex lg:flex-col fixed inset-y-0 left-0 z-40 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/95 backdrop-blur-sm shadow-md",
+                "hidden lg:flex lg:flex-col fixed inset-y-0 left-0 z-40 border-r border-gray-200/60 dark:border-gray-700/60 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-xl",
                 "transform transition-all duration-300 ease-out",
-                isDesktopCollapsed ? "w-16" : "w-72"
+                isDesktopCollapsed ? "w-20" : "w-80"
             )}
             style={{
                 transitionTimingFunction: isDesktopCollapsed ?
@@ -182,25 +152,29 @@ const DesktopSidebar = ({
                     "cubic-bezier(0.05, 0.7, 0.1, 1.0)"
             }}
         >
+            {/* Enhanced header */}
             <div className={cn(
-                "h-16 bg-gradient-to-r from-green-600 to-emerald-500 dark:from-green-700/90 dark:to-emerald-600/90 flex items-center transition-all duration-300 flex-shrink-0 shadow-sm",
-                isDesktopCollapsed ? "px-2 justify-center" : "px-4 justify-between"
+                "h-16 bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 dark:from-green-700/90 dark:via-emerald-600/90 dark:to-teal-600/90 flex items-center transition-all duration-300 flex-shrink-0 shadow-lg relative overflow-hidden",
+                isDesktopCollapsed ? "px-3 justify-center" : "px-4 justify-between"
             )}>
+                {/* Background pattern */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-50"></div>
+
                 {isDesktopCollapsed ? (
-                    <div className="flex justify-center w-full transition-all duration-300">
-                        <Link href="/">
+                    <div className="flex justify-center w-full transition-all duration-300 relative z-10">
+                        <Link href="/" className="group">
                             <ApplicationLogo
-                                className="h-8 w-auto fill-current text-white filter drop-shadow-md"
+                                className="h-9 w-auto fill-current text-white filter drop-shadow-lg group-hover:scale-110 transition-transform duration-200"
                             />
                         </Link>
                     </div>
                 ) : (
-                    <Link href="/" className="flex items-center space-x-2 transition-all duration-300">
+                    <Link href="/" className="flex items-center space-x-3 transition-all duration-300 group relative z-10">
                         <ApplicationLogo
-                            className="h-8 w-auto fill-current text-white filter drop-shadow-md"
+                            className="h-9 w-auto fill-current text-white filter drop-shadow-lg group-hover:scale-105 transition-transform duration-200"
                         />
                         <span className={cn(
-                            "text-lg font-bold text-white tracking-tight transition-opacity duration-300",
+                            "text-xl font-bold text-white tracking-tight transition-opacity duration-300 drop-shadow-sm",
                             isTransitioning ? "opacity-0" : "opacity-100"
                         )}>SaliksikHub</span>
                     </Link>
@@ -212,7 +186,7 @@ const DesktopSidebar = ({
                         size="icon"
                         onClick={toggleDesktopSidebar}
                         className={cn(
-                            "text-white hover:text-white hover:bg-white/20 transition-opacity duration-300",
+                            "text-white hover:text-white hover:bg-white/20 rounded-xl transition-all duration-200 relative z-10",
                             isTransitioning ? "opacity-0" : "opacity-100"
                         )}
                     >
@@ -222,45 +196,18 @@ const DesktopSidebar = ({
                 )}
             </div>
 
-            {isDesktopCollapsed ? (
-                <div className="flex justify-center py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+            {/* Expand button for collapsed state */}
+            {isDesktopCollapsed && (
+                <div className="flex justify-center py-4 border-b border-gray-200/60 dark:border-gray-700/60 flex-shrink-0 bg-gray-50/30 dark:bg-gray-800/30">
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={toggleDesktopSidebar}
-                        className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                        className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-gray-700/80 rounded-xl transition-all duration-200 hover:scale-105"
                     >
                         <ChevronRight className="h-5 w-5" />
                         <span className="sr-only">Expand sidebar</span>
                     </Button>
-                </div>
-            ) : (
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-50/80 dark:from-gray-800/80 dark:to-gray-800/50 backdrop-blur-sm flex-shrink-0 transition-all duration-300">
-                    <div className="flex items-center space-x-3">
-                        <div className="h-12 w-12 aspect-square flex-shrink-0 rounded-full bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 dark:from-green-900 dark:via-emerald-900 dark:to-teal-800 flex items-center justify-center text-green-700 dark:text-green-200 font-medium text-xl shadow-md ring-2 ring-white/20 dark:ring-black/20">
-                            {user.firstname.charAt(0)}
-                        </div>
-                        <div className={cn(
-                            "overflow-hidden transition-opacity duration-300",
-                            isTransitioning ? "opacity-0" : "opacity-100"
-                        )}>
-                            <p className="text-base font-semibold text-gray-800 dark:text-gray-200 truncate">
-                                {user.firstname} {user.lastname}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {user.email}
-                            </p>
-                            <div className="mt-2 gap-1 flex flex-col">
-                                <RoleTag role={user.role} />
-                                {user.affiliation && (
-                                    <div className="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 truncate bg-gray-100 dark:bg-gray-700/60 px-2 py-1 rounded-md">
-                                        <Building2 className="h-3 w-3 mr-1 flex-shrink-0" />
-                                        <span className="truncate">{user.affiliation}</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             )}
 
@@ -268,13 +215,11 @@ const DesktopSidebar = ({
                 user={user}
                 navigationMap={navigationMap}
                 isDesktopCollapsed={isDesktopCollapsed}
-                isTransitioning={isTransitioning}
-                isMobile={false}
             />
 
             {!isDesktopCollapsed && (
                 <div className={cn(
-                    "p-4 border-t border-gray-200 dark:border-gray-700 mt-auto flex-shrink-0 transition-opacity duration-300",
+                    "p-4 border-t border-gray-200/60 dark:border-gray-700/60 mt-auto flex-shrink-0 transition-opacity duration-300 bg-gray-50/30 dark:bg-gray-800/30",
                     isTransitioning ? "opacity-0" : "opacity-100"
                 )}>
                     <FooterContent />
@@ -287,37 +232,20 @@ const DesktopSidebar = ({
 const NavigationSection = ({
     user,
     navigationMap,
-    isDesktopCollapsed,
-    isTransitioning,
-    isMobile = false
+    isDesktopCollapsed
 }: {
     user: UserType;
     navigationMap: NavigationMap;
     isDesktopCollapsed: boolean;
-    isTransitioning: boolean;
-    isMobile?: boolean;
 }) => {
     return (
         <ScrollArea className="flex-1 overflow-y-auto">
-            <div className={cn("py-4", isDesktopCollapsed ? "px-2" : "px-3")}>
+            <div className={cn("py-6", isDesktopCollapsed ? "px-3" : "px-4")}>
                 {navigationMap[user.role] && (
-                    <div key={user.role} className="mb-8">
-                        {!isDesktopCollapsed && !isMobile && (
-                            <h3 className={cn(
-                                "px-3 mb-3 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2 transition-opacity duration-300",
-                                isTransitioning ? "opacity-0" : "opacity-100"
-                            )}>
-                                <div className="h-0.5 w-3 bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-400 dark:to-emerald-400 rounded-full" />
-                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                            </h3>
-                        )}
-                        {isMobile && (
-                            <h3 className="px-3 mb-3 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                                <div className="h-0.5 w-3 bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-400 dark:to-emerald-400 rounded-full"></div>
-                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                            </h3>
-                        )}
-                        <div className="space-y-1.5">
+                    <div key={user.role} className="space-y-2">
+
+                        {/* Navigation links */}
+                        <div className="space-y-1">
                             {navigationMap[user.role].map((link) => (
                                 <SidebarLink
                                     key={link.href}
@@ -337,18 +265,36 @@ const NavigationSection = ({
 
 const FooterContent = () => {
     return (
-        <div className="rounded-lg bg-gray-50 dark:bg-gray-700/50 p-3.5 shadow-inner">
-            <p className="text-xs text-gray-600 dark:text-gray-300 mb-2 font-medium">
-                SaliksikHub <span className="text-green-600 dark:text-green-400 font-semibold">v1.0</span>
-            </p>
-            <div className="flex items-center gap-3">
-                <Link href="#" className="text-xs text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors duration-200">
+        <div className="rounded-xl bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-800/80 dark:to-gray-700/40 p-4 shadow-inner border border-gray-200/50 dark:border-gray-600/30">
+            <div className="text-center mb-3">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    SaliksikHub
+                </p>
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                    v1.0
+                </span>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 text-xs">
+                <Link
+                    href="#"
+                    className="text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors duration-200 hover:underline"
+                >
                     Help & Support
                 </Link>
-                <div className="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-                <Link href="#" className="text-xs text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors duration-200">
+                <div className="h-1 w-1 rounded-full bg-gray-300 dark:bg-gray-500"></div>
+                <Link
+                    href="#"
+                    className="text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors duration-200 hover:underline"
+                >
                     Feedback
                 </Link>
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-gray-200/60 dark:border-gray-600/30">
+                <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+                    © 2025 Research Platform
+                </p>
             </div>
         </div>
     );

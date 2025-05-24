@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import DeleteUserForm from './partials/delete-user-form';
-import UpdatePasswordForm from './partials/update-passwordForm';
+import UpdatePasswordForm from './partials/update-password-form';
 import UpdateProfileInformationForm from './partials/update-profile-information-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,8 +11,20 @@ export default function Edit({
     mustVerifyEmail,
     status,
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('dashboard'),
+        },
+        {
+            label: 'Profile Settings',
+            href: route('profile.edit'),
+            current: true,
+        },
+    ];
+
     return (
-        <AuthenticatedLayout header="Profile Settings">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Profile" />
 
             <div className="space-y-6">

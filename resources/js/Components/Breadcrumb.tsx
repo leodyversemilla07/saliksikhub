@@ -4,7 +4,6 @@ import { twMerge } from 'tailwind-merge';
 interface BreadcrumbItem {
     label: string;
     href?: string;
-    icon?: React.ReactNode;
 }
 
 interface BreadcrumbProps {

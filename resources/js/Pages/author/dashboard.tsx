@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Breadcrumb } from '@/components/breadcrumb';
+
 import {
     Book, FileText, CheckCircle, Clock, AlertCircle, TrendingUp, TrendingDown,
     Calendar, ChevronDown, Filter, Download, ArrowRight,
@@ -291,40 +291,46 @@ export default function AuthorDashboard(): React.ReactElement {
 
     // Dashboard sections
     const renderMetricsCards = () => (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {dashboardMetrics.map((metric, index) => (
-                <Card key={index} className="overflow-hidden transition-all duration-300 hover:shadow-md">
-                    <CardContent className="p-6">
+                <Card key={index} className="group relative overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-1 border-0 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-100/20 dark:to-gray-700/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <CardContent className="p-6 relative z-10">
                         <div className="flex items-start justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{metric.title}</p>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-baseline gap-2">
-                                    {metric.value}
-                                    <span className={cn(
-                                        "flex items-center text-xs px-1.5 py-0.5 rounded-full font-medium",
-                                        metric.trend.direction === 'up'
-                                            ? "text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/40"
-                                            : "text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/40"
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className={cn(
+                                        "p-2.5 rounded-xl bg-gradient-to-br shadow-lg transform group-hover:scale-110 transition-transform duration-300",
+                                        metric.color,
+                                        "text-white"
                                     )}>
-                                        {metric.trend.direction === 'up' ? (
-                                            <TrendingUp className="h-3 w-3 mr-0.5" />
-                                        ) : (
-                                            <TrendingDown className="h-3 w-3 mr-0.5" />
-                                        )}
-                                        {metric.trend.value}
-                                    </span>
+                                        <metric.icon className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 tracking-wide">{metric.title}</p>
+                                        <span className={cn(
+                                            "inline-flex items-center text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r shadow-sm",
+                                            metric.trend.direction === 'up'
+                                                ? "from-emerald-100 to-green-100 text-emerald-700 dark:from-emerald-900/40 dark:to-green-900/40 dark:text-emerald-300"
+                                                : "from-red-100 to-pink-100 text-red-700 dark:from-red-900/40 dark:to-pink-900/40 dark:text-red-300"
+                                        )}>
+                                            {metric.trend.direction === 'up' ? (
+                                                <TrendingUp className="h-3 w-3 mr-1" />
+                                            ) : (
+                                                <TrendingDown className="h-3 w-3 mr-1" />
+                                            )}
+                                            {metric.trend.value}
+                                        </span>
+                                    </div>
+                                </div>
+                                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+                                    {metric.value}
                                 </h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{metric.description}</p>
-                            </div>
-                            <div className={cn(
-                                "p-3 rounded-lg bg-gradient-to-br",
-                                metric.color,
-                                "text-white shadow-sm"
-                            )}>
-                                <metric.icon className="h-5 w-5" />
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{metric.description}</p>
                             </div>
                         </div>
                     </CardContent>
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Card>
             ))}
         </div>
@@ -970,24 +976,18 @@ export default function AuthorDashboard(): React.ReactElement {
         </TabsContent>
     );
 
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('author.dashboard'),
+        }
+    ];
+
     return (
-        <AuthenticatedLayout header="Author Dashboard">
-            <Head title="Author Dashboard" />
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+            <Head title="Dashboard" />
 
             <div className="space-y-6">
-                {/* Breadcrumbs */}
-                <Breadcrumb
-                    items={[
-                        {
-                            label: 'Author',
-                            href: '/author',
-                        },
-                        {
-                            label: 'Dashboard'
-                        }
-                    ]}
-                />
-
                 {/* Stats Overview */}
                 {renderMetricsCards()}
 

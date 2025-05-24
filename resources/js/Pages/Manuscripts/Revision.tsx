@@ -90,8 +90,28 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
     const remainingDays = getRemainingDays();
     const isDeadlinePassed = remainingDays !== null && remainingDays < 0;
 
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('dashboard'),
+        },
+        {
+            label: 'Manuscripts',
+            href: route('manuscripts.index'),
+        },
+        {
+            label: manuscript.title,
+            href: route('manuscripts.show', manuscript.id),
+        },
+        {
+            label: 'Submit Revision',
+            href: route('manuscripts.revision', manuscript.id),
+            current: true,
+        },
+    ];
+
     return (
-        <AuthenticatedLayout header="Submit Manuscript Revision">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Revise: ${manuscript.title}`} />
 
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">

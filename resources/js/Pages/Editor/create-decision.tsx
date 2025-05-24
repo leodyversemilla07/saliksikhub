@@ -43,17 +43,8 @@ interface Props {
     decisionTypes: DecisionTypes;
 }
 
-type FormDataConvertible = string | number | boolean | File | Blob | null | undefined;
-
-interface DecisionFormData {
-    decision: string;
-    comments: string;
-    revision_deadline: string;
-    [key: string]: string | FormDataConvertible;
-}
-
 export default function CreateDecision({ manuscript }: Props) {
-    const { data, setData, errors, post, processing, reset, setError } = useForm<DecisionFormData>({
+    const { data, setData, errors, post, processing, reset, setError } = useForm({
         decision: '',
         comments: '',
         revision_deadline: '',
@@ -115,6 +106,21 @@ export default function CreateDecision({ manuscript }: Props) {
         return formErrors;
     };
 
+    const breadcrumbItems = [
+        {
+            label: 'Editor Dashboard',
+            href: route('editor.dashboard'),
+        },
+        {
+            label: 'Manuscripts',
+            href: route('editor.indexManuscripts'),
+        },
+        {
+            label: 'Editorial Decision',
+            href: route('editor.manuscripts.decision', manuscript.id),
+        }
+    ];
+
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -122,7 +128,7 @@ export default function CreateDecision({ manuscript }: Props) {
 
         if (Object.keys(validationErrors).length > 0) {
             for (const [field, message] of Object.entries(validationErrors)) {
-                setError(field, message);
+                setError(field as keyof typeof data, message);
             }
             return;
         }
@@ -146,7 +152,7 @@ export default function CreateDecision({ manuscript }: Props) {
     };
 
     return (
-        <AuthenticatedLayout header="Editorial Decision">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Editorial Decision" />
 
             <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
@@ -583,7 +589,7 @@ export default function CreateDecision({ manuscript }: Props) {
 
                                 <div className="text-sm">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-xs uppercase text-muted-foreground">Comfments to Author</span>
+                                        <span className="text-xs uppercase text-muted-foreground">Comments to Author</span>
                                         <span className="text-xs bg-muted/50 px-1.5 py-0.5 rounded">
                                             {data.comments.length} chars
                                         </span>

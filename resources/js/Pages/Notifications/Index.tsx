@@ -135,8 +135,20 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
 
     const unreadCount = notificationState.filter((n: Notification) => n.read_at === null).length;
 
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('dashboard'),
+        },
+        {
+            label: 'Notifications',
+            href: route('notifications.index'),
+            current: true,
+        },
+    ];
+
     return (
-        <AuthenticatedLayout header="Notification">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Notifications" />
 
             <Card>

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { Link, router } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -23,12 +22,12 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
     CheckCircle, Clock, Edit, Eye, FileText, Filter,
-    Search, ChevronRight, ChevronDown, Download, AlertTriangle,
+    Search, ChevronDown, Download, AlertTriangle,
     CalendarDays, AlertCircle, RefreshCw, XCircle, Hourglass, Info, Upload,
     Loader2
 } from 'lucide-react'
 import AuthenticatedLayout from '@/layouts/authenticated-layout'
-import { Head } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
 import { cn } from "@/lib/utils"
 import { Manuscript, ManuscriptStatus } from '@/types/manuscript'
 import {
@@ -73,7 +72,7 @@ interface StatusBadgeProps {
 const StatusBadge = ({ status }: StatusBadgeProps) => {
     const normalizedStatus = status.toUpperCase() as keyof typeof STATUS_CONFIG;
     const config = STATUS_CONFIG[normalizedStatus] || { color: 'gray', icon: Info, display: status };
-    
+
     const Icon = config.icon;
     const colorClass = `bg-gradient-to-r from-${config.color}-50 to-${config.color}-100 text-${config.color}-700 
         dark:bg-${config.color}-900/50 dark:text-${config.color}-300 border border-${config.color}-300 
@@ -236,13 +235,16 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     const searchActive = searchTerm !== '' || statusFilter !== 'All';
 
-    // Remove unused stats variable or comment it out for future use
-    // const stats = {
-    //     totalManuscripts: manuscripts.length,
-    //     pendingReview: manuscripts.filter(m => m.status === ManuscriptStatus.SUBMITTED).length,
-    //     underReview: manuscripts.filter(m => m.status === ManuscriptStatus.UNDER_REVIEW).length,
-    //     completed: manuscripts.filter(m => [ManuscriptStatus.ACCEPTED, ManuscriptStatus.REJECTED].includes(m.status as any)).length
-    // }
+    const breadcrumbItems = [
+        {
+            label: 'Dashboard',
+            href: route('editor.dashboard'),
+        },
+        {
+            label: 'Submitted Manuscripts',
+            href: route('editor.indexManuscripts'),
+        }
+    ];
 
     const handleViewManuscript = (id: number) => {
         setIsLoading(true);
@@ -438,27 +440,10 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
     };
 
     return (
-        <AuthenticatedLayout header="Submitted Manuscripts">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Submitted Manuscripts" />
 
             <div className="space-y-8">
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
-                            <svg className="w-3.5 h-3.5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                            </svg>
-                            Dashboard
-                        </Link>
-                    </div>
-                    <ChevronRight className="h-3.5 w-3.5 mx-1.5 text-gray-400 dark:text-gray-500" />
-                    <div className="flex items-center">
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                            My Manuscripts
-                        </span>
-                    </div>
-                </div>
-
                 <Card className="shadow-md border border-gray-200/70 dark:border-gray-800">
                     <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white/80 dark:from-gray-900/90 dark:to-gray-800/90 pb-4">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -556,7 +541,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 disabled={paginatedManuscripts.length === 0}
                                             />
                                         </TableHead>
-                                        <TableHead 
+                                        <TableHead
                                             className="w-[50px] px-2 sm:px-4 cursor-pointer"
                                             onClick={() => setSortConfig({
                                                 key: 'id',
@@ -570,7 +555,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 )}
                                             </div>
                                         </TableHead>
-                                        <TableHead 
+                                        <TableHead
                                             className="min-w-[150px] cursor-pointer"
                                             onClick={() => setSortConfig({
                                                 key: 'title',
@@ -584,7 +569,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 )}
                                             </div>
                                         </TableHead>
-                                        <TableHead 
+                                        <TableHead
                                             className="w-[100px] cursor-pointer"
                                             onClick={() => setSortConfig({
                                                 key: 'status',
@@ -598,7 +583,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 )}
                                             </div>
                                         </TableHead>
-                                        <TableHead 
+                                        <TableHead
                                             className="w-[120px] cursor-pointer"
                                             onClick={() => setSortConfig({
                                                 key: 'created_at',
@@ -613,7 +598,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                             </div>
                                         </TableHead>
                                         <TableHead className="hidden sm:table-cell">Authors</TableHead>
-                                        <TableHead 
+                                        <TableHead
                                             className="hidden md:table-cell cursor-pointer"
                                             onClick={() => setSortConfig({
                                                 key: 'updated_at',

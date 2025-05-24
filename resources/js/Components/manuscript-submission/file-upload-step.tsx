@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, File, Info, X, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Upload, File, Info, X, CheckCircle2, AlertCircle, FileText, HardDrive } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FileUploadStepProps {
     data: {
@@ -28,15 +29,15 @@ export function FileUploadStep({ data, setData, errors, progress }: FileUploadSt
     // Validate file when it changes
     useEffect(() => {
         if (!data.manuscript) return;
-        
+
         setValidationMessage(null);
-        
+
         // Validate file size (10MB max)
         const maxSize = 10 * 1024 * 1024; // 10MB in bytes
         if (data.manuscript.size > maxSize) {
             setValidationMessage(`File is too large. Maximum size is 10MB.`);
         }
-        
+
         // Validate file type (only DOCX)
         const allowedTypes = [
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -95,136 +96,267 @@ export function FileUploadStep({ data, setData, errors, progress }: FileUploadSt
         if (typeof progress === 'number') return progress;
         return progress.percentage || 0;
     };
-    
+
     const hasError = !!errors.manuscript || !!validationMessage;
+    const isFileValid = data.manuscript && !hasError;
 
     return (
-        <div className="space-y-6 animate-fadeIn">
-            <div className={hasError ? 'form-error space-y-2' : 'space-y-2'}>
-                <div className="flex items-center justify-between">
-                    <label htmlFor="manuscript" className="flex items-center gap-2 font-medium">
-                        <span className="flex items-center gap-2">
-                            <File className="w-4 h-4 text-primary" />
-                            Manuscript Document
-                        </span>
-                    </label>
-
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="text-muted-foreground cursor-help">
-                                <Info className="w-4 h-4" />
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm text-xs">
-                            <p>Upload your manuscript in DOCX format. Maximum file size is 10MB.</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-
-                <div
-                    className={cn(
-                        "border-2 border-dashed rounded-lg p-6 transition-colors duration-200 cursor-pointer text-center",
+        <div className="space-y-8 animate-fadeIn">
+            {/* File Upload Section */}
+            <Card className={cn(
+                "transition-all duration-300 border-2",
+                hasError ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
+                    isFileValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
                         isDragOver ? "border-primary bg-primary/5" :
-                            hasError ? "border-red-500 bg-red-50 dark:bg-red-900/10" :
-                                data.manuscript ? "border-green-500 bg-green-50 dark:bg-green-900/10" :
-                                    "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    )}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    {data.manuscript ? (
-                        <div className="flex flex-col items-center">
+                            "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
+            )}>
+                <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
                             <div className={cn(
-                                "mb-3 w-12 h-12 rounded-full flex items-center justify-center",
-                                hasError 
-                                    ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
-                                    : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                                "p-2 rounded-full transition-colors",
+                                hasError ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
+                                    isFileValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
+                                        "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
                             )}>
-                                {hasError ? <AlertTriangle className="w-6 h-6" /> : <CheckCircle className="w-6 h-6" />}
+                                {hasError ? (
+                                    <AlertCircle className="w-5 h-5" />
+                                ) : isFileValid ? (
+                                    <CheckCircle2 className="w-5 h-5" />
+                                ) : (
+                                    <FileText className="w-5 h-5" />
+                                )}
                             </div>
-                            <div className="font-medium">{data.manuscript.name}</div>
-                            <div className="text-sm text-muted-foreground mt-1">
-                                {formatBytes(data.manuscript.size)} · {data.manuscript.type}
+                            <div>
+                                <label htmlFor="manuscript" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    Manuscript Document
+                                </label>
+                                <p className="text-sm text-muted-foreground">
+                                    Upload your research manuscript in DOCX format
+                                </p>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-3 gap-1"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveFile();
-                                }}
-                            >
-                                <X className="w-4 h-4" /> Remove File
-                            </Button>
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center">
-                            <div className="mb-3 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:bg-primary/20">
-                                <Upload className="w-6 h-6" />
-                            </div>
-                            <div className="font-medium">Drag and drop your file here</div>
-                            <div className="text-sm text-muted-foreground mt-1">
-                                or click to browse (DOCX format, max 10MB)
-                            </div>
-                            <Button variant="outline" size="sm" className="mt-3">
-                                Browse Files
-                            </Button>
-                        </div>
-                    )}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        id="manuscript"
-                        accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        onChange={handleFileChange}
-                        className="hidden"
-                    />
-                </div>
 
-                {progress !== null && getProgressPercentage() > 0 && getProgressPercentage() < 100 && (
-                    <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                            <span>Uploading...</span>
-                            <span>{getProgressPercentage()}%</span>
+                        <div className="flex items-center gap-2">
+                            {data.manuscript && (
+                                <>
+                                    <Badge variant={isFileValid ? "default" : "secondary"} className="text-xs">
+                                        {formatBytes(data.manuscript.size)}
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs">
+                                        DOCX
+                                    </Badge>
+                                </>
+                            )}
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
+                                        <Info className="w-4 h-4" />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs">
+                                    <p>Upload your manuscript in DOCX format. Maximum file size is 10MB. Remove identifying information for blind review.</p>
+                                </TooltipContent>
+                            </Tooltip>
                         </div>
-                        <Progress value={getProgressPercentage()} className="h-2" />
                     </div>
-                )}
 
-                <div className="flex items-center justify-between mt-2">
-                    <p className="text-sm text-muted-foreground">
-                        Upload your manuscript in DOCX format.
-                    </p>
-                </div>
+                    <div className="space-y-4">
+                        <div
+                            className={cn(
+                                "border-2 border-dashed rounded-lg p-8 transition-all duration-300 cursor-pointer text-center",
+                                isDragOver ? "border-primary bg-primary/10 scale-[1.02]" :
+                                    hasError ? "border-red-300 bg-red-50/50" :
+                                        isFileValid ? "border-green-300 bg-green-50/50" :
+                                            "border-gray-300 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-800/50"
+                            )}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            {data.manuscript ? (
+                                <div className="flex flex-col items-center space-y-4">
+                                    <div className={cn(
+                                        "w-16 h-16 rounded-full flex items-center justify-center transition-colors",
+                                        hasError
+                                            ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                                            : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                                    )}>
+                                        {hasError ? <AlertCircle className="w-8 h-8" /> : <CheckCircle2 className="w-8 h-8" />}
+                                    </div>
 
-                {validationMessage && (
-                    <Alert variant="destructive" className="mt-3 py-2 text-sm">
-                        <AlertDescription className="flex items-center">
-                            <AlertTriangle className="h-4 w-4 mr-2" />
-                            {validationMessage}
-                        </AlertDescription>
-                    </Alert>
-                )}
+                                    <div className="text-center space-y-2">
+                                        <div className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                            {data.manuscript.name}
+                                        </div>
+                                        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-1">
+                                                <HardDrive className="w-4 h-4" />
+                                                {formatBytes(data.manuscript.size)}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <File className="w-4 h-4" />
+                                                DOCX Document
+                                            </div>
+                                        </div>
+                                    </div>
 
-                {errors.manuscript && <p id="manuscript-error" className="text-sm text-red-500 mt-1">{errors.manuscript}</p>}
-            </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-2 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-950/20"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemoveFile();
+                                        }}
+                                    >
+                                        <X className="w-4 h-4" />
+                                        Remove File
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center space-y-4">
+                                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:bg-primary/20">
+                                        <Upload className="w-8 h-8" />
+                                    </div>
 
-            <div className="bg-blue-50 border border-blue-100 rounded-md p-3 dark:bg-blue-900/20 dark:border-blue-800/50">
-                <h4 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center">
-                    <Info className="w-4 h-4 mr-2" />
-                    Manuscript Requirements
-                </h4>
-                <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 list-disc pl-5">
-                    <li>File format: DOCX (Microsoft Word)</li>
-                    <li>Maximum file size: 10MB</li>
-                    <li>Include all figures, tables, and references</li>
-                    <li>Remove any identifying information for blind peer review</li>
-                    <li>Follow the formatting guidelines in the author instructions</li>
-                </ul>
-            </div>
+                                    <div className="text-center space-y-2">
+                                        <div className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                            {isDragOver ? "Drop your file here" : "Drag and drop your manuscript"}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                            or click to browse your computer
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            Supports DOCX format • Maximum 10MB
+                                        </div>
+                                    </div>
+
+                                    <Button variant="outline" size="sm" className="gap-2">
+                                        <Upload className="w-4 h-4" />
+                                        Choose File
+                                    </Button>
+                                </div>
+                            )}
+
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                id="manuscript"
+                                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </div>
+
+                        {/* Upload Progress */}
+                        {progress !== null && getProgressPercentage() > 0 && getProgressPercentage() < 100 && (
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Uploading manuscript...</span>
+                                    <span className="font-medium text-primary">{getProgressPercentage()}%</span>
+                                </div>
+                                <Progress value={getProgressPercentage()} className="h-3" />
+                            </div>
+                        )}
+
+                        {/* Validation Messages */}
+                        {validationMessage && (
+                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                                <AlertCircle className="w-4 h-4" />
+                                <p className="text-sm font-medium">{validationMessage}</p>
+                            </div>
+                        )}
+
+                        {errors.manuscript && (
+                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                                <AlertCircle className="w-4 h-4" />
+                                <p className="text-sm font-medium">{errors.manuscript}</p>
+                            </div>
+                        )}
+
+                        {!hasError && isFileValid && (
+                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                                <CheckCircle2 className="w-4 h-4" />
+                                <p className="text-sm font-medium">File uploaded successfully and ready for submission!</p>
+                            </div>
+                        )}
+
+                        <div className="text-xs text-muted-foreground bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
+                            <strong>Upload Guidelines:</strong> Ensure your manuscript is in DOCX format, includes all figures and references, and has identifying information removed for blind review.
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Requirements Section */}
+            <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/20">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                            <Info className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                Manuscript Requirements
+                            </h3>
+                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                                Please ensure your manuscript meets these requirements
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">File Format</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Microsoft Word DOCX format only</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">File Size</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Maximum 10MB file size</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">Content</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Include all figures, tables, and references</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">Anonymization</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Remove identifying information for blind review</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">Formatting</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Follow journal formatting guidelines</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <div className="font-medium text-blue-900 dark:text-blue-100 text-sm">Language</div>
+                                    <div className="text-xs text-blue-700 dark:text-blue-300">Clear, professional academic writing</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

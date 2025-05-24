@@ -237,8 +237,24 @@ export default function ApproveManuscript({ manuscript }: PageProps<{ manuscript
         </div>
     );
 
+    const breadcrumbItems = [
+        {
+            label: 'Editor Dashboard',
+            href: route('editor.dashboard'),
+        },
+        {
+            label: 'Manuscripts',
+            href: route('editor.indexManuscripts'),
+        },
+        {
+            label: 'Approve Manuscript',
+            href: route('editor.approve-manuscript', manuscript.id),
+            current: true,
+        },
+    ];
+
     return (
-        <AuthenticatedLayout header="Approve Manuscript">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Approve Manuscript" />
 
             <div className="py-6 sm:py-12">

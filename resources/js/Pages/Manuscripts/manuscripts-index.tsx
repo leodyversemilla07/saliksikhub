@@ -11,7 +11,6 @@ import {
     Edit,
     Eye,
     FileText,
-    Home,
     Hourglass,
     Info,
     Plus,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-react';
 
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { Breadcrumb } from '@/components/breadcrumb';
+
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -72,20 +71,6 @@ import { PageProps } from '@/types';
 
 interface IndexProps {
     manuscripts: Manuscript[];
-}
-
-interface StatCardProps {
-    title: string;
-    count: number;
-    description: string;
-    icon: React.ReactNode;
-    gradientColors: string;
-    trend?: {
-        value: number;
-        isPositive: boolean;
-    };
-    onClick?: () => void;
-    isLoading?: boolean;
 }
 
 const getAuthors = (authors: string | string[] | null): string[] => {
@@ -334,51 +319,6 @@ const CreateNewButton = () => (
     </Link>
 );
 
-const StatCard = ({ title, count, description, icon, gradientColors, trend, onClick, isLoading = false }: StatCardProps) => (
-    <Card
-        className={`border ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''} 
-        bg-gradient-to-br ${gradientColors} shadow-sm relative overflow-hidden group`}
-        onClick={onClick}
-    >
-        <div className="absolute right-0 top-0 opacity-10 group-hover:opacity-20 transition-opacity">
-            <div className="p-6">
-                {React.isValidElement(icon) &&
-                    React.cloneElement(icon, {
-                        className: "w-24 h-24 text-gray-900 dark:text-white"
-                    } as React.HTMLAttributes<SVGElement>)
-                }
-            </div>
-        </div>
-        <CardContent className="p-5">
-            <div className="flex flex-col space-y-3">
-                <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-md bg-white/80 dark:bg-gray-800/40 shadow-sm">
-                        {React.isValidElement(icon) &&
-                            React.cloneElement(icon, {
-                                className: "w-5 h-5"
-                            } as React.HTMLAttributes<SVGElement>)
-                        }
-                    </div>
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">{title}</h3>
-                </div>
-                <div className="space-y-1">
-                    {isLoading ? (
-                        <div className="h-8 w-28 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md"></div>
-                    ) : (
-                        <div className="text-2xl font-bold">{count}</div>
-                    )}
-                    <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
-                </div>
-                {trend && (
-                    <div className={`flex items-center text-xs font-medium ${trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        <span>{trend.isPositive ? '↑' : '↓'} {trend.value}%</span>
-                    </div>
-                )}
-            </div>
-        </CardContent>
-    </Card>
-);
-
 export default function Index({ manuscripts }: IndexProps) {
     const { auth } = usePage<PageProps>().props;
     const [searchQuery, setSearchQuery] = useState('');
@@ -492,34 +432,6 @@ export default function Index({ manuscripts }: IndexProps) {
         setSelectedManuscripts([]);
     };
 
-    const stats = useMemo(() => {
-        const statusCounts = manuscripts.reduce((acc, manuscript) => {
-            acc[manuscript.status] = (acc[manuscript.status] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>);
-
-        const inProgress = (statusCounts[ManuscriptStatus.UNDER_REVIEW] || 0) +
-            (statusCounts[ManuscriptStatus.MINOR_REVISION] || 0) +
-            (statusCounts[ManuscriptStatus.MAJOR_REVISION] || 0);
-
-        const completed = (statusCounts[ManuscriptStatus.ACCEPTED] || 0) +
-            (statusCounts[ManuscriptStatus.PUBLISHED] || 0);
-
-        const inProgressTrend = manuscripts.length > 0 ?
-            { value: Math.round(inProgress / manuscripts.length * 100), isPositive: inProgress > 0 } : undefined;
-
-        const completedTrend = manuscripts.length > 0 ?
-            { value: Math.round(completed / manuscripts.length * 100), isPositive: true } : undefined;
-
-        return {
-            total: manuscripts.length,
-            inProgress,
-            completed,
-            inProgressTrend,
-            completedTrend
-        };
-    }, [manuscripts]);
-
     const handlePageChange = (page: number) => {
         if (page < 1 || page > totalPages) return;
         setCurrentPage(page);
@@ -571,50 +483,22 @@ export default function Index({ manuscripts }: IndexProps) {
 
     const searchActive = searchQuery.trim() !== '' || statusFilter !== 'all';
 
+    const breadcrumbItems = [
+        {
+            label: auth.user.role === 'editor' ? 'Dashboard' : 'Dashboard',
+            href: auth.user.role === 'editor' ? route('editor.dashboard') : route('dashboard'),
+        },
+        {
+            label: 'Manuscripts',
+            href: auth.user.role === 'editor' ? route('editor.manuscripts.index') : route('manuscripts.index'),
+        }
+    ];
+
     return (
-        <AuthenticatedLayout header="Manuscript Tracking">
-            <Head title="Manuscript Tracking" />
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+            <Head title="Manuscripts" />
 
             <div className="space-y-8">
-                <Breadcrumb
-                    items={[
-                        {
-                            label: auth.user.role === 'editor' ? 'Dashboard' : 'Home',
-                            href: auth.user.role === 'editor' ? route('editor.dashboard') : route('dashboard'),
-                            icon: <Home className="h-4 w-4" />
-                        },
-                        {
-                            label: 'My Manuscripts'
-                        }
-                    ]}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <StatCard
-                        title="Total Manuscripts"
-                        count={stats.total}
-                        description="All your submitted manuscripts"
-                        icon={<FileText />}
-                        gradientColors="from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30"
-                    />
-                    <StatCard
-                        title="In Progress"
-                        count={stats.inProgress}
-                        description="Under review or needs revision"
-                        icon={<Clock />}
-                        gradientColors="from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/30"
-                        trend={stats.inProgressTrend}
-                    />
-                    <StatCard
-                        title="Completed"
-                        count={stats.completed}
-                        description="Accepted or published manuscripts"
-                        icon={<CheckCircle />}
-                        gradientColors="from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30"
-                        trend={stats.completedTrend}
-                    />
-                </div>
-
                 <Card className="shadow-md border border-gray-200/70 dark:border-gray-800">
                     <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white/80 dark:from-gray-900/90 dark:to-gray-800/90 pb-4">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">

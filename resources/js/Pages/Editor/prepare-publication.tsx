@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, Link, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { ChevronRight, CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -97,6 +97,21 @@ export default function PreparePublication({ manuscript, currentVolumes, current
         }
     };
 
+    const breadcrumbItems = [
+        {
+            label: 'Editor Dashboard',
+            href: route('editor.dashboard'),
+        },
+        {
+            label: 'Manuscripts',
+            href: route('editor.indexManuscripts'),
+        },
+        {
+            label: 'Prepare for Publication',
+            href: route('editor.manuscripts.prepare_publication', manuscript.id),
+        }
+    ];
+
     const handleButtonClick = () => {
         const form = document.getElementById('publication-form');
         if (form) {
@@ -105,33 +120,10 @@ export default function PreparePublication({ manuscript, currentVolumes, current
     };
 
     return (
-        <AuthenticatedLayout header="Prepare Publication">
+        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Prepare for Publication" />
 
             <div className="space-y-8">
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center">
-                        <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
-                            <svg className="w-3.5 h-3.5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                            </svg>
-                            Dashboard
-                        </Link>
-                    </div>
-                    <ChevronRight className="h-3.5 w-3.5 mx-1.5 text-gray-400 dark:text-gray-500" />
-                    <div className="flex items-center">
-                        <Link href={route('editor.indexManuscripts')} className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors">
-                            Manuscripts
-                        </Link>
-                    </div>
-                    <ChevronRight className="h-3.5 w-3.5 mx-1.5 text-gray-400 dark:text-gray-500" />
-                    <div className="flex items-center">
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                            Prepare for Publication
-                        </span>
-                    </div>
-                </div>
-
                 <Card className="shadow-md border border-gray-200/70 dark:border-gray-800">
                     <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white/80 dark:from-gray-900/90 dark:to-gray-800/90 pb-4">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">

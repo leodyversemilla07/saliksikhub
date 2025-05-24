@@ -23,8 +23,8 @@ class EditorController extends Controller
 {
     public function index()
     {
-        return Inertia::render('editor/editor-dashboard', [
-            'stats' => $this->getDashboardStats(),
+        return Inertia::render('editor/dashboard', [
+            'dashboardData' => $this->getComprehensiveDashboardData(),
         ]);
     }
 
@@ -290,6 +290,224 @@ class EditorController extends Controller
             'total_manuscripts' => Manuscript::count(),
             'pending_reviews' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
             'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
+        ];
+    }
+
+    private function getComprehensiveDashboardData()
+    {
+        // Get date ranges
+        $currentMonth = now();
+        $lastMonth = now()->subMonth();
+        $startOfYear = now()->startOfYear();
+        
+        // Basic metrics with trends
+        $totalManuscripts = Manuscript::count();
+        $totalLastMonth = Manuscript::where('created_at', '<', $currentMonth->startOfMonth())->count();
+        
+        $newSubmissions = Manuscript::whereMonth('created_at', $currentMonth->month)
+            ->whereYear('created_at', $currentMonth->year)
+            ->count();
+        $newSubmissionsLastMonth = Manuscript::whereMonth('created_at', $lastMonth->month)
+            ->whereYear('created_at', $lastMonth->year)
+            ->count();
+        
+        $publishedArticles = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+            ->whereMonth('created_at', $currentMonth->month)
+            ->whereYear('created_at', $currentMonth->year)
+            ->count();
+        $publishedLastMonth = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+            ->whereMonth('created_at', $lastMonth->month)
+            ->whereYear('created_at', $lastMonth->year)
+            ->count();
+        
+        // Active reviewers (users with editor role)
+        $activeReviewers = User::where('role', 'editor')->count();
+        
+        // Calculate trends
+        $submissionsTrend = $newSubmissionsLastMonth > 0 
+            ? round((($newSubmissions - $newSubmissionsLastMonth) / $newSubmissionsLastMonth) * 100, 1)
+            : ($newSubmissions > 0 ? 100 : 0);
+        
+        $publishedTrend = $publishedLastMonth > 0 
+            ? round((($publishedArticles - $publishedLastMonth) / $publishedLastMonth) * 100, 1)
+            : ($publishedArticles > 0 ? 100 : 0);
+        
+        // Monthly submission data for charts (last 12 months)
+        $monthlySubmissions = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $month = $date->format('M');
+            
+            $submissions = Manuscript::whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->count();
+            
+            $published = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->count();
+            
+            $rejected = Manuscript::where('status', Manuscript::STATUSES['REJECTED'])
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->count();
+            
+            $monthlySubmissions[] = [
+                'month' => $month,
+                'submissions' => $submissions,
+                'published' => $published,
+                'rejected' => $rejected
+            ];
+        }
+        
+        // Submission status distribution
+        $statusDistribution = [
+            [
+                'name' => 'Under Review',
+                'value' => Manuscript::where('status', Manuscript::STATUSES['UNDER_REVIEW'])->count(),
+                'color' => '#3B82F6'
+            ],
+            [
+                'name' => 'Needs Revision',
+                'value' => Manuscript::whereIn('status', [
+                    Manuscript::STATUSES['MINOR_REVISION'],
+                    Manuscript::STATUSES['MAJOR_REVISION']
+                ])->count(),
+                'color' => '#8B5CF6'
+            ],
+            [
+                'name' => 'Ready for Decision',
+                'value' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
+                'color' => '#10B981'
+            ],
+            [
+                'name' => 'In Production',
+                'value' => Manuscript::whereIn('status', [
+                    Manuscript::STATUSES['ACCEPTED'],
+                    Manuscript::STATUSES['IN_COPYEDITING'],
+                    Manuscript::STATUSES['AWAITING_APPROVAL'],
+                    Manuscript::STATUSES['READY_TO_PUBLISH']
+                ])->count(),
+                'color' => '#F59E0B'
+            ]
+        ];
+        
+        // Revision rounds distribution
+        $revisionRounds = [
+            [
+                'name' => 'No Revision',
+                'value' => Manuscript::where('status', Manuscript::STATUSES['ACCEPTED'])
+                    ->orWhere('status', Manuscript::STATUSES['PUBLISHED'])
+                    ->whereNull('revision_history')
+                    ->count(),
+                'color' => '#10B981'
+            ],
+            [
+                'name' => '1 Round',
+                'value' => Manuscript::whereNotNull('revision_history')
+                    ->whereRaw('JSON_LENGTH(revision_history) = 1')
+                    ->count(),
+                'color' => '#3B82F6'
+            ],
+            [
+                'name' => '2 Rounds',
+                'value' => Manuscript::whereNotNull('revision_history')
+                    ->whereRaw('JSON_LENGTH(revision_history) = 2')
+                    ->count(),
+                'color' => '#F59E0B'
+            ],
+            [
+                'name' => '3+ Rounds',
+                'value' => Manuscript::whereNotNull('revision_history')
+                    ->whereRaw('JSON_LENGTH(revision_history) >= 3')
+                    ->count(),
+                'color' => '#EF4444'
+            ]
+        ];
+        
+        // Recent submissions (last 10)
+        $recentSubmissions = Manuscript::with('author')
+            ->latest('created_at')
+            ->take(10)
+            ->get()
+            ->map(function ($manuscript) {
+                return [
+                    'id' => $manuscript->id,
+                    'title' => $manuscript->title,
+                    'author' => $manuscript->author->firstname . ' ' . $manuscript->author->lastname,
+                    'status' => $manuscript->status,
+                    'submitted_date' => $manuscript->created_at->format('M j, Y'),
+                    'days_since_submission' => $manuscript->created_at->diffInDays(now())
+                ];
+            });
+        
+        // Overdue reviews
+        $overdueReviews = Manuscript::where('status', Manuscript::STATUSES['UNDER_REVIEW'])
+            ->where('created_at', '<', now()->subDays(30))
+            ->count();
+        
+        if ($overdueReviews > 0) {
+            $alerts[] = [
+                'type' => 'warning',
+                'title' => 'Overdue Reviews',
+                'message' => "{$overdueReviews} manuscripts have been under review for over 30 days",
+                'count' => $overdueReviews,
+                'action' => 'View Overdue'
+            ];
+        }
+        
+        // Pending decisions
+        $pendingDecisions = Manuscript::whereIn('status', [
+            Manuscript::STATUSES['SUBMITTED'],
+            Manuscript::STATUSES['UNDER_REVIEW']
+        ])->count();
+        
+        if ($pendingDecisions > 0) {
+            $alerts[] = [
+                'type' => 'info',
+                'title' => 'Pending Editorial Decisions',
+                'message' => "{$pendingDecisions} manuscripts awaiting editorial action",
+                'count' => $pendingDecisions,
+                'action' => 'Review Now'
+            ];
+        }
+        
+        return [
+            'metrics' => [
+                [
+                    'title' => 'New Submissions',
+                    'value' => (string)$newSubmissions,
+                    'trend' => $submissionsTrend >= 0 ? 'up' : 'down',
+                    'percentage' => abs($submissionsTrend) . '%',
+                    'description' => 'Last 30 days',
+                    'color' => 'from-blue-500 to-indigo-600'
+                ],
+                [
+                    'title' => 'Published Articles',
+                    'value' => (string)$publishedArticles,
+                    'trend' => $publishedTrend >= 0 ? 'up' : 'down',
+                    'percentage' => abs($publishedTrend) . '%',
+                    'description' => 'Last 30 days',
+                    'color' => 'from-green-500 to-emerald-600'
+                ],
+                [
+                    'title' => 'Active Reviewers',
+                    'value' => (string)$activeReviewers,
+                    'trend' => 'up',
+                    'percentage' => '0%',
+                    'description' => 'Available reviewers',
+                    'color' => 'from-purple-500 to-violet-600'
+                ]
+            ],
+            'monthlySubmissions' => $monthlySubmissions,
+            'statusDistribution' => $statusDistribution,
+            'revisionRounds' => $revisionRounds,
+            'recentSubmissions' => $recentSubmissions,
+            'stats' => [
+                'total_manuscripts' => $totalManuscripts,
+                'pending_reviews' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
+                'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
+            ]
         ];
     }
 
