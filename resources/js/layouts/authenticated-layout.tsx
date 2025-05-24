@@ -129,8 +129,8 @@ function Header({ header, openMobileSidebar, toggleDarkMode, isDarkMode, breadcr
                             </div>
                         )}
                         {breadcrumbItems && breadcrumbItems.length > 0 && (
-                            <Breadcrumb 
-                                items={breadcrumbItems} 
+                            <Breadcrumb
+                                items={breadcrumbItems}
                                 className="mb-0 text-xl font-bold text-green-600 dark:text-green-400"
                                 maxLength={30}
                             />
@@ -205,7 +205,7 @@ export default function AuthenticatedLayout({
     header,
     children,
     breadcrumbItems,
-}: PropsWithChildren<{ 
+}: PropsWithChildren<{
     header?: ReactNode;
     breadcrumbItems?: BreadcrumbItem[];
 }>) {

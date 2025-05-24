@@ -70,27 +70,6 @@ enum UserRole {
     AUTHOR = "author",
 }
 
-// User Stats Card Component
-const UserStatsCard: React.FC<{ title: string, value: string, icon: React.ElementType, color: string }> = ({
-    title, value, icon: Icon, color
-}) => {
-    return (
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-md">
-            <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</p>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
-                    </div>
-                    <div className={`p-3 rounded-lg bg-gradient-to-br ${color} text-white shadow-sm`}>
-                        <Icon className="h-5 w-5" />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
-
 // Add User Dialog Component
 const AddUserDialog: React.FC = () => {
     const [open, setOpen] = useState(false);
@@ -822,21 +801,6 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
         return results;
     }, [debouncedSearchTerm, selectedRole, safeUsers.data]);
 
-    const roleCount = useMemo(() => {
-        if (debouncedSearchTerm || selectedRole) {
-            return {
-                all: filteredUsers.length,
-                editor: filteredUsers.filter(user => user.role === UserRole.EDITOR).length,
-                author: filteredUsers.filter(user => user.role === UserRole.AUTHOR).length
-            };
-        }
-        return {
-            all: safeUsers.total,
-            editor: safeUsers.data.filter(user => user.role === UserRole.EDITOR).length,
-            author: safeUsers.data.filter(user => user.role === UserRole.AUTHOR).length
-        };
-    }, [debouncedSearchTerm, selectedRole, filteredUsers, safeUsers]);
-
     const toggleSelectAll = () => {
         if (selectedUsers.length === filteredUsers.length) {
             setSelectedUsers([]);
@@ -978,28 +942,6 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
             <Head title="User Management" />
 
             <div className="space-y-6">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <UserStatsCard
-                        title="Total Users"
-                        value={String(safeUsers.total)}
-                        icon={Users}
-                        color="from-green-500 to-emerald-600"
-                    />
-                    <UserStatsCard
-                        title="Authors"
-                        value={String(roleCount.author)}
-                        icon={UserPlus}
-                        color="from-blue-500 to-indigo-600"
-                    />
-                    <UserStatsCard
-                        title="Editors"
-                        value={String(roleCount.editor)}
-                        icon={Shield}
-                        color="from-purple-500 to-pink-600"
-                    />
-                </div>
-
                 <Card className="shadow-sm">
                     <CardHeader className="border-b bg-gray-50/50 dark:bg-gray-800/50 pb-3">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">

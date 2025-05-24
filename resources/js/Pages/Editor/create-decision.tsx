@@ -108,7 +108,7 @@ export default function CreateDecision({ manuscript }: Props) {
 
     const breadcrumbItems = [
         {
-            label: 'Editor Dashboard',
+            label: 'Dashboard',
             href: route('editor.dashboard'),
         },
         {
@@ -155,10 +155,10 @@ export default function CreateDecision({ manuscript }: Props) {
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Editorial Decision" />
 
-            <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <div className="flex items-center justify-center">
-                        <div className="flex items-center w-full max-w-3xl justify-between">
+                        <div className="flex items-center w-full max-w-6xl justify-between px-4">
                             {[
                                 { step: 1, title: "Review Info", icon: <FileText className="h-4 w-4" /> },
                                 { step: 2, title: "Make Decision", icon: <ClipboardCheck className="h-4 w-4" /> },
@@ -198,7 +198,7 @@ export default function CreateDecision({ manuscript }: Props) {
                     </div>
                 </div>
 
-                <Card className="shadow-lg border-t-4 border-t-primary mb-8">
+                <Card className="shadow-lg border-t-4 border-t-primary mb-8 max-w-7xl mx-auto">
                     <CardHeader className="bg-gradient-to-r from-muted/30 to-muted/10">
                         <div className="flex items-center justify-between">
                             <div>

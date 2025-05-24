@@ -139,7 +139,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
 
     const breadcrumbItems = [
         {
-            label: 'Editor Dashboard',
+            label: 'Dashboard',
             href: route('editor.dashboard'),
         }
     ];
