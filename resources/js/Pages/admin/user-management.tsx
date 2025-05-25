@@ -598,7 +598,7 @@ const DeleteUserDialog: React.FC<{ user: User }> = ({ user }) => {
                             variant="destructive"
                             className="hover:bg-destructive/90 transition-colors w-9 h-9 p-0"
                         >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4 text-white" />
                             <span className="sr-only">Delete</span>
                         </Button>
                     </AlertDialogTrigger>
@@ -820,9 +820,9 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
     const getRoleColor = (role: string) => {
         switch (role) {
             case UserRole.EDITOR:
-                return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800';
+                return 'bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 dark:from-amber-900/50 dark:to-amber-800/50 dark:text-amber-200 border border-amber-300 dark:border-amber-600';
             default:
-                return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
+                return 'bg-gradient-to-r from-green-50 to-green-100 text-green-700 dark:from-green-900/50 dark:to-green-800/50 dark:text-green-200 border border-green-300 dark:border-green-600';
         }
     };
 
@@ -942,8 +942,8 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
             <Head title="User Management" />
 
             <div className="space-y-6">
-                <Card className="shadow-sm">
-                    <CardHeader className="border-b bg-gray-50/50 dark:bg-gray-800/50 pb-3">
+                <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-slate-200/50 dark:border-slate-700/50 shadow-xl">
+                    <CardHeader className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-slate-200/50 dark:border-slate-700/50 pb-4">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <div>
                                 <CardTitle className="text-lg font-semibold">User Accounts</CardTitle>
@@ -958,18 +958,18 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                     <CardContent className="p-6">
                         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
                             <div className="relative w-full sm:w-72 md:w-96">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-400 dark:text-green-500" />
                                 <Input
                                     placeholder="Search users..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 w-full"
+                                    className="pl-10 w-full focus:ring-green-500 focus:border-green-500 dark:focus:ring-green-400 dark:focus:border-green-400 transition-all duration-200"
                                 />
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-10">
+                                        <Button variant="outline" size="sm" className="h-10 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 hover:border-green-200 dark:hover:border-green-700 transition-all duration-200">
                                             <Filter className="h-3.5 w-3.5 mr-2" />
                                             Filter
                                             <ChevronDown className="h-3.5 w-3.5 ml-2" />
@@ -996,7 +996,7 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                         <DropdownMenuSeparator />
                                     </DropdownMenuContent>
                                 </DropdownMenu>
-                                <Button variant="outline" size="sm" className="h-10">
+                                <Button variant="outline" size="sm" className="h-10 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 hover:border-green-200 dark:hover:border-green-700 transition-all duration-200">
                                     <Download className="h-3.5 w-3.5 mr-2" />
                                     Export
                                 </Button>
@@ -1004,8 +1004,8 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                         </div>
 
                         {selectedUsers.length > 0 && (
-                            <div className="mb-4 p-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-md flex items-center justify-between">
-                                <span className="text-sm font-medium ml-2">
+                            <div className="mb-6 p-4 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15 border border-green-200/70 dark:border-green-700/50 rounded-lg flex items-center justify-between shadow-sm backdrop-blur-sm">
+                                <span className="text-sm font-semibold ml-2 text-green-700 dark:text-green-300">
                                     {selectedUsers.length} user{selectedUsers.length > 1 ? 's' : ''} selected
                                 </span>
                                 <div className="flex gap-2">
@@ -1013,18 +1013,20 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                         size="sm"
                                         variant="destructive"
                                         onClick={() => handleBulkAction('delete')}
+                                        className="flex items-center gap-2 px-3 py-2 h-auto"
                                     >
-                                        Delete Selected
+                                        <Trash2 className="w-4 h-4 text-white" />
+                                        <span className="text-white font-medium">Delete Selected</span>
                                     </Button>
                                 </div>
                             </div>
                         )}
 
-                        <div className="rounded-lg border shadow-sm">
+                        <div className="rounded-lg border border-slate-200/50 dark:border-slate-700/50 shadow-sm overflow-hidden">
                             <div className="w-full">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="bg-gray-50/80 dark:bg-gray-800/50">
+                                        <TableRow className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-800/50 dark:to-gray-900/40 border-b border-slate-200/50 dark:border-slate-700/50">
                                             <TableHead className="w-12 text-center">
                                                 <Checkbox
                                                     checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
@@ -1049,8 +1051,8 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                                 <TableRow
                                                     key={user.id}
                                                     className={cn(
-                                                        "hover:bg-gray-50/70 dark:hover:bg-gray-800/50 transition-all duration-200",
-                                                        selectedUsers.includes(user.id) && "bg-green-50/50 dark:bg-green-900/20"
+                                                        "hover:bg-gradient-to-r hover:from-green-50/30 hover:to-emerald-50/20 dark:hover:from-green-900/20 dark:hover:to-emerald-900/10 transition-all duration-200 border-b border-slate-100/50 dark:border-slate-800/50",
+                                                        selectedUsers.includes(user.id) && "bg-gradient-to-r from-green-50/60 to-emerald-50/40 dark:from-green-900/30 dark:to-emerald-900/20"
                                                     )}
                                                 >
                                                     <TableCell className="text-center">
@@ -1131,10 +1133,17 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                         ) : (
                                             <TableRow>
                                                 <TableCell colSpan={8} className="h-32 text-center">
-                                                    <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                                                        <Users className="h-8 w-8 mb-2 opacity-40" />
-                                                        <p className="text-base font-medium mb-1">No users found</p>
-                                                        <p className="text-sm">Try adjusting your search or filters</p>
+                                                    <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 py-8">
+                                                        <div className="relative mb-4">
+                                                            <div className="absolute inset-0 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full animate-pulse"></div>
+                                                            <Users className="h-12 w-12 relative text-green-400 dark:text-green-500" />
+                                                        </div>
+                                                        <p className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">No users found</p>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                            {debouncedSearchTerm || selectedRole
+                                                                ? "Try adjusting your search or filters"
+                                                                : "Get started by adding your first user"}
+                                                        </p>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -1145,7 +1154,7 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                         </div>
 
                         {filteredUsers.length > 0 && (
-                            <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-4 border-t mt-4">
+                            <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-4 border-t border-slate-200/50 dark:border-slate-700/50 mt-6 bg-gradient-to-r from-gray-50/30 to-gray-100/20 dark:from-gray-800/20 dark:to-gray-900/10 rounded-lg px-4">
                                 <div className="flex items-center gap-3">
                                     <p className="text-sm text-gray-500 dark:text-gray-400">
                                         Showing <span className="font-medium">
@@ -1185,7 +1194,7 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
 
                                 {!debouncedSearchTerm && !selectedRole && (
                                     <div className="flex flex-col sm:flex-row items-center gap-4">
-                                        <div className="flex items-center gap-2 bg-gradient-to-r from-green-50/80 to-emerald-50/80 dark:from-green-900/20 dark:to-emerald-900/30 border border-green-200/70 dark:border-green-800/30 text-green-700 dark:text-green-300 rounded-md px-3 py-1.5 shadow-sm">
+                                        <div className="flex items-center gap-2 bg-gradient-to-r from-green-50/90 to-emerald-50/90 dark:from-green-900/30 dark:to-emerald-900/40 border border-green-200/80 dark:border-green-800/40 text-green-700 dark:text-green-300 rounded-lg px-4 py-2 shadow-sm backdrop-blur-sm">
                                             <div className="flex items-center">
                                                 <span className="text-xs font-medium text-green-600/80 dark:text-green-400/70 mr-1">Page</span>
                                                 <span className="font-bold text-green-700 dark:text-green-300">{safeUsers.current_page}</span>
@@ -1203,8 +1212,8 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                                     <PaginationPrevious
                                                         onClick={() => safeUsers.prev_page_url && handlePageChange(safeUsers.prev_page_url)}
                                                         className={cn(
-                                                            "text-sm rounded-md py-1 px-2.5 hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors",
-                                                            !safeUsers.prev_page_url ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                            "text-sm rounded-lg py-2 px-3 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 transition-all duration-200",
+                                                            !safeUsers.prev_page_url ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-green-600 dark:hover:text-green-400 hover:border-green-200 dark:hover:border-green-700"
                                                         )}
                                                     />
                                                 </PaginationItem>
@@ -1229,7 +1238,9 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                                                         onClick={() => link.url && handlePageChange(link.url)}
                                                                         isActive={link.active}
                                                                         className={cn(
-                                                                            link.active && "bg-green-600 text-white hover:bg-green-700 hover:text-white",
+                                                                            "transition-all duration-200 rounded-lg",
+                                                                            link.active && "bg-gradient-to-r from-green-600 to-emerald-500 text-white hover:from-green-700 hover:to-emerald-600 shadow-md",
+                                                                            !link.active && "hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 hover:text-green-600 dark:hover:text-green-400",
                                                                             link.url ? "cursor-pointer" : "cursor-not-allowed opacity-50"
                                                                         )}
                                                                     >
@@ -1260,7 +1271,9 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                                                     onClick={() => handlePageChange(pageUrl)}
                                                                     isActive={isActive}
                                                                     className={cn(
-                                                                        isActive && "bg-green-600 text-white hover:bg-green-700 hover:text-white",
+                                                                        "transition-all duration-200 rounded-lg",
+                                                                        isActive && "bg-gradient-to-r from-green-600 to-emerald-500 text-white hover:from-green-700 hover:to-emerald-600 shadow-md",
+                                                                        !isActive && "hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 hover:text-green-600 dark:hover:text-green-400",
                                                                         "cursor-pointer"
                                                                     )}
                                                                 >
@@ -1275,8 +1288,8 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                                     <PaginationNext
                                                         onClick={() => safeUsers.next_page_url && handlePageChange(safeUsers.next_page_url)}
                                                         className={cn(
-                                                            "text-sm rounded-md py-1 px-2.5 hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors",
-                                                            !safeUsers.next_page_url ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                            "text-sm rounded-lg py-2 px-3 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/30 dark:hover:to-emerald-900/20 transition-all duration-200",
+                                                            !safeUsers.next_page_url ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-green-600 dark:hover:text-green-400 hover:border-green-200 dark:hover:border-green-700"
                                                         )}
                                                     />
                                                 </PaginationItem>
@@ -1316,7 +1329,7 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                             <AlertDialogAction
                                 onClick={handleBulkDelete}
                                 disabled={isBulkProcessing}
-                                className="bg-destructive hover:bg-destructive/90 transition-colors"
+                                className="bg-destructive hover:bg-destructive/90 transition-colors flex items-center gap-2"
                                 id="confirm-bulk-delete"
                                 name="confirm-bulk-delete"
                             >
@@ -1329,7 +1342,10 @@ export default function UserManagement({ users }: { users: PaginatedUser }) {
                                         Deleting...
                                     </span>
                                 ) : (
-                                    `Delete ${selectedUsers.length} User${selectedUsers.length > 1 ? 's' : ''}`
+                                    <span className="flex items-center gap-2">
+                                        <Trash2 className="w-4 h-4 text-white" />
+                                        Delete {selectedUsers.length} User{selectedUsers.length > 1 ? 's' : ''}
+                                    </span>
                                 )}
                             </AlertDialogAction>
                         </AlertDialogFooter>

@@ -91,38 +91,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/debug-manuscript/{id}', function ($id) {
-    if (app()->environment('local')) {
-        $manuscript = \App\Models\Manuscript::find($id);
-        if (!$manuscript) {
-            return response()->json(['error' => 'Manuscript not found'], 404);
-        }
-
-        return response()->json([
-            'id' => $manuscript->id,
-            'title' => $manuscript->title,
-            'status' => $manuscript->status,
-            'raw_status' => $manuscript->getRawOriginal('status'),
-            'is_accepted' => $manuscript->status === \App\Models\Manuscript::STATUSES['ACCEPTED'],
-            'accepted_value' => \App\Models\Manuscript::STATUSES['ACCEPTED'],
-            'all_statuses' => \App\Models\Manuscript::STATUSES
-        ]);
-    }
-    return abort(404);
-});
-
-Route::get('/debug-routes', function () {
-    if (app()->environment('local')) {
-        return response()->json([
-            'prepare_publication_form' => route('editor.manuscripts.prepare_publication_form', 1),
-            'prepare_publication' => route('editor.manuscripts.prepare_publication', 1),
-            'all_routes' => array_filter(
-                Route::getRoutes()->getRoutesByMethod()['GET'] ?? [],
-                fn($route) => str_contains($route->getName() ?? '', 'prepare_publication')
-            )
-        ]);
-    }
-    return abort(404);
-})->name('debug.routes');
-
 require __DIR__ . '/auth.php';

@@ -877,7 +877,7 @@ class EditorController extends Controller
         $currentVolumes = Manuscript::select('volume')->distinct()->whereNotNull('volume')->orderBy('volume', 'desc')->pluck('volume');
         $currentIssues = Manuscript::select('issue')->distinct()->whereNotNull('issue')->orderBy('issue', 'desc')->pluck('issue');
 
-        return Inertia::render('Editor/PreparePublication', [
+        return Inertia::render('editor/prepare-publication', [
             'manuscript' => $manuscript,
             'currentVolumes' => $currentVolumes,
             'currentIssues' => $currentIssues
@@ -889,8 +889,8 @@ class EditorController extends Controller
         try {
             $validated = $request->validate([
                 'doi' => 'required|string|max:255|unique:manuscripts,doi,' . $manuscript->id,
-                'volume' => 'required|integer|min:1',
-                'issue' => 'required|integer|min:1',
+                'volume' => 'required|string|max:50',
+                'issue' => 'required|string|max:50',
                 'page_range' => 'required|string|max:50',
                 'publication_date' => 'required|date',
             ]);

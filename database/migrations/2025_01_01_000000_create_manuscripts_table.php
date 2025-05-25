@@ -45,6 +45,7 @@ return new class extends Migration {
             $table->string('final_pdf_path')->nullable();
             $table->timestamp('final_manuscript_uploaded_at')->nullable();
             $table->date('author_approval_date')->nullable();
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
 
             // Add indexes for better query performance

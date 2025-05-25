@@ -44,6 +44,7 @@ class Manuscript extends Model
         'page_range',
         'final_pdf_path',
         'author_approval_date',
+        'published_at',
     ];
 
     protected $casts = [
@@ -53,6 +54,7 @@ class Manuscript extends Model
         'publication_date' => 'date',
         'author_approval_date' => 'date',
         'final_manuscript_uploaded_at' => 'datetime',
+        'published_at' => 'datetime',
     ];
 
     /**

@@ -111,7 +111,7 @@ export default function Unauthorized() {
                                 <Button asChild variant="link" size="sm" className="gap-2 h-auto p-0 text-primary">
                                     <a href="mailto:contact@minsujr.online">
                                         <Mail className="h-4 w-4" />
-                                        contact@minsujr.online
+                                        contact@ddmrj.minsu.edu.ph
                                     </a>
                                 </Button>
                             </div>

@@ -1,14 +1,6 @@
 import React from 'react';
 import { useForm, Link, Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { CalendarIcon } from 'lucide-react';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,11 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -73,6 +60,8 @@ export default function PreparePublication({ manuscript, currentVolumes, current
                         id: "publish-toast",
                         description: `"${manuscript.title}" has been published and is now available to readers.`
                     });
+                    // Redirect to manuscripts index page
+                    window.location.href = route('editor.indexManuscripts');
                 },
                 onError: () => {
                     setIsSubmitting(false);
@@ -99,7 +88,7 @@ export default function PreparePublication({ manuscript, currentVolumes, current
 
     const breadcrumbItems = [
         {
-            label: 'Editor Dashboard',
+            label: 'Dashboard',
             href: route('editor.dashboard'),
         },
         {
@@ -112,209 +101,188 @@ export default function PreparePublication({ manuscript, currentVolumes, current
         }
     ];
 
-    const handleButtonClick = () => {
-        const form = document.getElementById('publication-form');
-        if (form) {
-            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        }
-    };
-
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Prepare for Publication" />
 
-            <div className="space-y-8">
-                <Card className="shadow-md border border-gray-200/70 dark:border-gray-800">
-                    <CardHeader className="border-b bg-gradient-to-r from-gray-50 to-white/80 dark:from-gray-900/90 dark:to-gray-800/90 pb-4">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                            <div>
-                                <CardTitle className="text-xl font-bold tracking-tight text-green-700 dark:text-green-400">
-                                    Prepare Manuscript for Publication
-                                </CardTitle>
-                                <CardDescription className="text-gray-600 dark:text-gray-400">
-                                    Enter publication details to finalize the manuscript
-                                </CardDescription>
-                            </div>
-                        </div>
-                    </CardHeader>
+            <div className="max-w-2xl mx-auto">
+                {/* Manuscript Info */}
+                <div className="mb-8 p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+                    <div className="flex items-start justify-between mb-3">
+                        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            {manuscript.title}
+                        </h2>
+                        <Badge variant="secondary" className="ml-4 shrink-0">
+                            {manuscript.status}
+                        </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                        ID: {manuscript.id}
+                    </p>
+                </div>
 
-                    <CardContent className="p-6 space-y-6">
-                        <div className="p-4 bg-green-50/80 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
-                                    <h3 className="text-sm font-medium text-green-700 dark:text-green-400">Manuscript Details</h3>
-                                    <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border-green-300 dark:border-green-700">
-                                        {manuscript.status}
-                                    </Badge>
-                                </div>
-                                <h2 className="font-semibold text-lg text-gray-800 dark:text-gray-100">{manuscript.title}</h2>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Manuscript ID: #{manuscript.id}
-                                </p>
-                            </div>
-                        </div>
-
-                        <form id="publication-form" onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-2">
-                                <Label htmlFor="manuscript-doi">DOI (Digital Object Identifier)</Label>
-                                <Input
-                                    id="manuscript-doi"
-                                    name="doi"
-                                    value={data.doi}
-                                    onChange={e => setData('doi', e.target.value)}
-                                    placeholder="Enter DOI (e.g., 10.1234/journal.12345)"
-                                    className={cn(errors.doi && "border-red-500 focus:ring-red-500")}
-                                    aria-describedby="doi-description"
-                                />
-                                {errors.doi &&
-                                    <p className="text-sm text-red-500 mt-1" id="doi-error">{errors.doi}</p>
-                                }
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1" id="doi-description">
-                                    The unique identifier for this publication
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div className="space-y-2">
-                                    <Label htmlFor="manuscript-volume">Volume</Label>
-                                    <Select
-                                        name="volume"
-                                        value={data.volume}
-                                        onValueChange={(value) => setData('volume', value)}
-                                    >
-                                        <SelectTrigger
-                                            id="manuscript-volume"
-                                            className={cn(errors.volume && "border-red-500 focus:ring-red-500")}
-                                            aria-describedby={errors.volume ? "volume-error" : undefined}
-                                        >
-                                            <SelectValue placeholder="Select volume" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {currentVolumes.map((volume) => (
-                                                <SelectItem key={volume} value={volume.toString()}>
-                                                    Volume {volume}
-                                                </SelectItem>
-                                            ))}
-                                            <SelectItem value={(currentVolumes.length > 0 ? Math.max(...currentVolumes) + 1 : 1).toString()}>
-                                                {currentVolumes.length > 0 ? Math.max(...currentVolumes) + 1 : 1} (New)
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.volume &&
-                                        <p className="text-sm text-red-500 mt-1" id="volume-error">{errors.volume}</p>
-                                    }
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="manuscript-issue">Issue</Label>
-                                    <Select
-                                        name="issue"
-                                        value={data.issue}
-                                        onValueChange={(value) => setData('issue', value)}
-                                    >
-                                        <SelectTrigger
-                                            id="manuscript-issue"
-                                            className={cn(errors.issue && "border-red-500 focus:ring-red-500")}
-                                            aria-describedby={errors.issue ? "issue-error" : undefined}
-                                        >
-                                            <SelectValue placeholder="Select issue" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {currentIssues.map((issue) => (
-                                                <SelectItem key={issue} value={issue.toString()}>
-                                                    Issue {issue}
-                                                </SelectItem>
-                                            ))}
-                                            <SelectItem value={(currentIssues.length > 0 ? Math.max(...currentIssues) + 1 : 1).toString()}>
-                                                {currentIssues.length > 0 ? Math.max(...currentIssues) + 1 : 1} (New)
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.issue &&
-                                        <p className="text-sm text-red-500 mt-1" id="issue-error">{errors.issue}</p>
-                                    }
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="manuscript-page-range">Page Range</Label>
-                                <Input
-                                    id="manuscript-page-range"
-                                    name="page_range"
-                                    value={data.page_range}
-                                    onChange={e => setData('page_range', e.target.value)}
-                                    placeholder="e.g., 123-145"
-                                    className={cn(errors.page_range && "border-red-500 focus:ring-red-500")}
-                                    aria-describedby="page-range-description"
-                                />
-                                {errors.page_range &&
-                                    <p className="text-sm text-red-500 mt-1" id="page-range-error">{errors.page_range}</p>
-                                }
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1" id="page-range-description">
-                                    Page range in the published issue
-                                </p>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="manuscript-publication-date">Publication Date</Label>
-                                <div className="relative">
-                                    <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        id="manuscript-publication-date"
-                                        name="publication_date"
-                                        type="date"
-                                        value={data.publication_date}
-                                        onChange={e => setData('publication_date', e.target.value)}
-                                        className={cn("pl-10", errors.publication_date && "border-red-500 focus:ring-red-500")}
-                                        aria-describedby="publication-date-description"
-                                    />
-                                </div>
-                                {errors.publication_date &&
-                                    <p className="text-sm text-red-500 mt-1" id="publication-date-error">{errors.publication_date}</p>
-                                }
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1" id="publication-date-description">
-                                    Date when the manuscript will be published
-                                </p>
-                            </div>
-
-                            {submitError && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-600">
-                                    {submitError}
-                                </div>
+                {/* Publication Form */}
+                <form id="publication-form" onSubmit={handleSubmit} className="space-y-6">
+                    {/* DOI Field */}
+                    <div className="space-y-2">
+                        <Label htmlFor="manuscript-doi" className="text-sm font-medium">
+                            DOI
+                        </Label>
+                        <Input
+                            id="manuscript-doi"
+                            name="doi"
+                            value={data.doi}
+                            onChange={e => setData('doi', e.target.value)}
+                            placeholder="10.1234/journal.12345"
+                            className={cn(
+                                "border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-100 focus:ring-0",
+                                errors.doi && "border-red-500 focus:border-red-500"
                             )}
+                        />
+                        {errors.doi && (
+                            <p className="text-sm text-red-600">{errors.doi}</p>
+                        )}
+                    </div>
 
-                            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
-                                <Link href={route('editor.indexManuscripts')} className="w-full sm:w-auto">
-                                    <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
-                                </Link>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            type="submit"
-                                            onClick={handleButtonClick}
-                                            disabled={processing || isSubmitting}
-                                            className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto mt-2 sm:mt-0"
-                                        >
-                                            {(processing || isSubmitting) ? 'Publishing...' : 'Publish Manuscript'}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        Finalize and publish this manuscript
-                                    </TooltipContent>
-                                </Tooltip>
-                            </div>
-
-                            {process.env.NODE_ENV !== 'production' && (
-                                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs">
-                                    <p>Debug Info:</p>
-                                    <p>Form Processing: {processing ? 'Yes' : 'No'}</p>
-                                    <p>Is Submitting: {isSubmitting ? 'Yes' : 'No'}</p>
-                                    <p>Route: {route('editor.manuscripts.prepare_publication', manuscript.id)}</p>
-                                </div>
+                    {/* Volume and Issue */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="manuscript-volume" className="text-sm font-medium">
+                                Volume
+                            </Label>
+                            <Select
+                                name="volume"
+                                value={data.volume}
+                                onValueChange={(value) => setData('volume', value)}
+                            >
+                                <SelectTrigger
+                                    id="manuscript-volume"
+                                    className={cn(
+                                        "border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-100 focus:ring-0",
+                                        errors.volume && "border-red-500 focus:border-red-500"
+                                    )}
+                                >
+                                    <SelectValue placeholder="Select volume" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {currentVolumes.map((volume) => (
+                                        <SelectItem key={volume} value={volume.toString()}>
+                                            Volume {volume}
+                                        </SelectItem>
+                                    ))}
+                                    <SelectItem value={(currentVolumes.length > 0 ? Math.max(...currentVolumes) + 1 : 1).toString()}>
+                                        Volume {currentVolumes.length > 0 ? Math.max(...currentVolumes) + 1 : 1} (New)
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.volume && (
+                                <p className="text-sm text-red-600">{errors.volume}</p>
                             )}
-                        </form>
-                    </CardContent>
-                </Card>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="manuscript-issue" className="text-sm font-medium">
+                                Issue
+                            </Label>
+                            <Select
+                                name="issue"
+                                value={data.issue}
+                                onValueChange={(value) => setData('issue', value)}
+                            >
+                                <SelectTrigger
+                                    id="manuscript-issue"
+                                    className={cn(
+                                        "border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-100 focus:ring-0",
+                                        errors.issue && "border-red-500 focus:border-red-500"
+                                    )}
+                                >
+                                    <SelectValue placeholder="Select issue" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {currentIssues.map((issue) => (
+                                        <SelectItem key={issue} value={issue.toString()}>
+                                            Issue {issue}
+                                        </SelectItem>
+                                    ))}
+                                    <SelectItem value={(currentIssues.length > 0 ? Math.max(...currentIssues) + 1 : 1).toString()}>
+                                        Issue {currentIssues.length > 0 ? Math.max(...currentIssues) + 1 : 1} (New)
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.issue && (
+                                <p className="text-sm text-red-600">{errors.issue}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Page Range */}
+                    <div className="space-y-2">
+                        <Label htmlFor="manuscript-page-range" className="text-sm font-medium">
+                            Page Range
+                        </Label>
+                        <Input
+                            id="manuscript-page-range"
+                            name="page_range"
+                            value={data.page_range}
+                            onChange={e => setData('page_range', e.target.value)}
+                            placeholder="123-145"
+                            className={cn(
+                                "border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-100 focus:ring-0",
+                                errors.page_range && "border-red-500 focus:border-red-500"
+                            )}
+                        />
+                        {errors.page_range && (
+                            <p className="text-sm text-red-600">{errors.page_range}</p>
+                        )}
+                    </div>
+
+                    {/* Publication Date */}
+                    <div className="space-y-2">
+                        <Label htmlFor="manuscript-publication-date" className="text-sm font-medium">
+                            Publication Date
+                        </Label>
+                        <Input
+                            id="manuscript-publication-date"
+                            name="publication_date"
+                            type="date"
+                            value={data.publication_date}
+                            onChange={e => setData('publication_date', e.target.value)}
+                            className={cn(
+                                "border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-gray-100 focus:ring-0",
+                                errors.publication_date && "border-red-500 focus:border-red-500"
+                            )}
+                        />
+                        {errors.publication_date && (
+                            <p className="text-sm text-red-600">{errors.publication_date}</p>
+                        )}
+                    </div>
+
+                    {/* Submit Error */}
+                    {submitError && (
+                        <div className="p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                            <p className="text-sm text-red-700 dark:text-red-400">{submitError}</p>
+                        </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <Link href={route('editor.indexManuscripts')}>
+                            <Button
+                                variant="outline"
+                                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                            >
+                                Cancel
+                            </Button>
+                        </Link>
+                        <Button
+                            type="submit"
+                            disabled={processing || isSubmitting}
+                            className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-0 focus:ring-offset-0"
+                        >
+                            {(processing || isSubmitting) ? 'Publishing...' : 'Publish'}
+                        </Button>
+                    </div>
+                </form>
             </div>
         </AuthenticatedLayout>
     );
