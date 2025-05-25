@@ -9,6 +9,7 @@ import {
     FilePlus,
     UserCheck,
     LayoutDashboard,
+    AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,12 +32,14 @@ const navigationMap = {
     editor: [
         { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
+        { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
         { href: 'editor.users.index', label: 'User Management', icon: UserCheck },
     ],
     author: [
         { href: 'author.dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: 'manuscripts.index', label: 'Manuscript Tracking', icon: FileText },
         { href: 'manuscripts.create', label: 'New Submission', icon: FilePlus },
+        { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
     ]
 };
 

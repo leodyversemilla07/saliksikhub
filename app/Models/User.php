@@ -67,6 +67,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'avatar_url',
+        'name',
     ];
 
     /**
@@ -102,6 +103,14 @@ class User extends Authenticatable
     public function getFullNameAttribute(): string
     {
         return "{$this->firstname} {$this->lastname}";
+    }
+
+    /**
+     * Get the user's name (alias for full_name for frontend compatibility).
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute();
     }
 
     /**

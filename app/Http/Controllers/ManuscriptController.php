@@ -9,10 +9,12 @@ use App\Notifications\ManuscriptSubmitted;
 use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptStatusChanged;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
@@ -167,6 +169,47 @@ class ManuscriptController extends Controller
             ]);
 
             return redirect()->back()->with('error', 'An error occurred while loading the manuscript.');
+        }
+    }
+
+    /**
+     * Show a published manuscript publicly (no authentication required).
+     */
+    public function showPublic($id)
+    {
+        try {
+            $manuscript = Manuscript::findOrFail($id);
+
+            // Only allow viewing of published manuscripts
+            if ($manuscript->status !== Manuscript::STATUSES['PUBLISHED']) {
+                abort(404, 'Manuscript not found or not publicly available');
+            }
+
+            return Inertia::render('manuscripts/public-view', [
+                'manuscript' => [
+                    'id' => $manuscript->id,
+                    'title' => $manuscript->title,
+                    'authors' => explode(', ', $manuscript->authors),
+                    'abstract' => $manuscript->abstract,
+                    'keywords' => explode(', ', $manuscript->keywords),
+                    'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->id) : null,
+                    'doi' => $manuscript->doi,
+                    'volume' => $manuscript->volume,
+                    'issue' => $manuscript->issue,
+                    'page_range' => $manuscript->page_range,
+                    'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
+                    'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
+                ],
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Public Manuscript Show Error', [
+                'error_message' => $e->getMessage(),
+                'manuscript_id' => $id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            abort(404, 'Manuscript not found');
         }
     }
 
@@ -471,6 +514,63 @@ class ManuscriptController extends Controller
             }
 
             return redirect()->back()->with('error', 'Failed to approve manuscript: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Serve manuscript PDF file.
+     */
+    public function servePdf($id)
+    {
+        try {
+            $manuscript = Manuscript::findOrFail($id);
+            
+            // Check if the manuscript has a PDF and is published
+            if (!$manuscript->final_pdf_path) {
+                abort(404, 'PDF not found');
+            }
+            
+            if ($manuscript->status !== Manuscript::STATUSES['PUBLISHED']) {
+                abort(403, 'PDF not publicly available - manuscript not yet published');
+            }
+
+            // Get the file from storage
+            if (!Storage::disk('spaces')->exists($manuscript->final_pdf_path)) {
+                Log::error('PDF file not found in storage', [
+                    'manuscript_id' => $id,
+                    'pdf_path' => $manuscript->final_pdf_path
+                ]);
+                abort(404, 'PDF file not found in storage');
+            }
+
+            $fileContent = Storage::disk('spaces')->get($manuscript->final_pdf_path);
+            
+            // Generate a filename for download
+            $filename = sprintf(
+                '%s_manuscript_%d.pdf',
+                Str::slug($manuscript->title, '_'),
+                $manuscript->id
+            );
+
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
+                ->header('Cache-Control', 'public, max-age=3600')
+                ->header('X-Content-Type-Options', 'nosniff');
+
+        } catch (ModelNotFoundException $e) {
+            Log::warning('Manuscript not found for PDF serving', [
+                'manuscript_id' => $id,
+            ]);
+            abort(404, 'Manuscript not found');
+        } catch (Exception $e) {
+            Log::error('Error serving manuscript PDF', [
+                'error' => $e->getMessage(),
+                'manuscript_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            abort(500, 'Error serving PDF file');
         }
     }
 }

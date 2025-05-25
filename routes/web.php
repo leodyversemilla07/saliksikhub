@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\IssueController;
 use App\Http\Controllers\ManuscriptController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::inertia('/', 'home')->name('home');
-Route::inertia('/current', 'current')->name('current');
+Route::get('/current', [IssueController::class, 'current'])->name('current');
 Route::inertia('/submissions', 'submissions')->name('submissions');
 Route::inertia('/archives', 'archives')->name('archives');
 Route::inertia('/editorial-board', 'editorial-board')->name('editorial-board');
@@ -18,6 +19,12 @@ Route::inertia('/announcements', 'announcements')->name('announcements');
 Route::inertia('/about/aims-scope', 'about-aims-scope')->name('about-aims-scope');
 Route::inertia('/about/journal', 'about-journal')->name('about-journal');
 Route::inertia('/contact', 'contact-us')->name('contact-us');
+
+// Public PDF access for published manuscripts
+Route::get('/manuscripts/{id}/pdf', [ManuscriptController::class, 'servePdf'])->name('manuscripts.pdf');
+
+// Public manuscript view for published manuscripts
+Route::get('/manuscripts/{id}', [ManuscriptController::class, 'showPublic'])->name('manuscripts.public.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -79,6 +86,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('api.notifications');
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
     Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('api.notifications.readAll');
+    
+    // Issue routes
+    Route::resource('issues', IssueController::class);
+    Route::post('issues/{issue}/comments', [IssueController::class, 'storeComment'])->name('issues.comments.store');
+    Route::get('issues/{issue}/assign-manuscripts', [IssueController::class, 'showAssignManuscriptsForm'])->name('issues.assign-manuscripts.form');
+    Route::post('issues/{issue}/assign-manuscripts', [IssueController::class, 'assignManuscripts'])->name('issues.assign-manuscripts');
+    Route::delete('issues/{issue}/manuscripts/{manuscript}', [IssueController::class, 'unassignManuscript'])->name('issues.manuscripts.unassign');
 });
 
 Route::get('/unauthorized', function () {

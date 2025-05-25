@@ -26,6 +26,7 @@ class Manuscript extends Model
 
     protected $fillable = [
         'user_id',
+        'issue_id',
         'title',
         'authors',
         'abstract',
@@ -79,6 +80,14 @@ class Manuscript extends Model
     public function editorialDecisions(): HasMany
     {
         return $this->hasMany(EditorialDecision::class);
+    }
+
+    /**
+     * Get the issue this manuscript is assigned to.
+     */
+    public function issue(): BelongsTo
+    {
+        return $this->belongsTo(Issue::class);
     }
 
     /**
@@ -156,5 +165,13 @@ class Manuscript extends Model
     public function isPublished(): bool
     {
         return $this->status === self::STATUSES['PUBLISHED'];
+    }
+
+    /**
+     * Get the user (author) of the manuscript (alias for author relationship).
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
