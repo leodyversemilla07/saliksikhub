@@ -1,47 +1,47 @@
-## SaliksikHub: A Dynamic Research Journal Management System with AI-assisted Pre-review
+## **SaliksikHub: A Research Journal Management System**
 
-**SaliksikHub** (Saliksik means "research" in Filipino) is a web-based system designed to streamline the research journal management process. It offers a user-friendly interface for authors, reviewers, and editors to collaborate efficiently. SaliksikHub also incorporates AI-powered pre-review features to expedite the initial screening of submissions.
+**SaliksikHub** (from the Filipino word *"saliksik"*, meaning *research*) is a web-based platform that helps manage the research journal publication process. It provides an easy-to-use interface for authors, reviewers, and editors to work together more efficiently.
 
-###  Key Features
+### **Key Features**
 
-* **Manuscript Submission and Tracking:** Authors can easily submit manuscripts, track their progress, and receive updates throughout the review process.
-* **Double-Blind Review System:** SaliksikHub ensures anonymity between authors and reviewers for a fair and unbiased evaluation.
-* **AI-assisted Pre-review:** Utilize AI capabilities to identify potential formatting issues, plagiarism, and keyword relevance, assisting editors in initial review decisions. (Optional: Specify the specific AI model used)
-* **Reviewer Management:** Assign reviewers with relevant expertise, track their progress, and manage feedback communication.
-* **Editorial Workflow Management:** Editors can efficiently manage submissions, assign reviewers, and track the overall review process.
-* **Detailed Reports and Analytics:** Generate insightful reports on submissions, reviews, and reviewer performance.
+* **Manuscript Submission and Tracking:** Authors can submit their work, follow its progress, and receive updates throughout the review.
+* **Double-Blind Review:** Keeps authors and reviewers anonymous to ensure fair and unbiased evaluations.
+* **Pre-Review Checks:** Helps editors quickly spot formatting issues, possible plagiarism, and keyword relevance before the full review.
+* **Reviewer Management:** Makes it easy to assign reviewers, track their work, and handle feedback.
+* **Editorial Workflow:** Helps editors organize submissions, manage reviews, and monitor the whole process.
+* **Reports and Analytics:** Generates helpful reports about submissions, reviews, and reviewer performance.
 
-###  Benefits
+### **Benefits**
 
-* **Enhanced Efficiency:** SaliksikHub automates tasks and streamlines workflows, saving time and resources for all stakeholders.
-* **Improved Quality:** AI-assisted pre-review helps maintain high-quality submissions through initial screening.
-* **Transparency and Fairness:** The double-blind review system ensures unbiased evaluations for authors.
-* **Data-driven Decision Making:** Gain valuable insights from detailed reports and analytics for continuous improvement.
+* **Saves Time:** Simplifies tasks and speeds up the review process.
+* **Better Submissions:** Pre-review checks help improve the quality of submissions.
+* **Fair Review Process:** Double-blind reviews promote transparency and fairness.
+* **Smart Decisions:** Reports and data support continuous improvement.
 
-###  Getting Started
+### **Getting Started**
 
-**1. Installation**
+1. **Installation**
+   *SaliksikHub is still in development.* Installation instructions will be available soon.
 
-* SaliksikHub is currently under development. (If applicable, provide installation instructions for future releases)
+2. **Contributing**
+   Contributions are welcome. Guidelines will be provided for open-source contributors.
 
-**2. Contributing**
+3. **Documentation**
+   User and developer guides will be published once available.
 
-* We welcome contributions from the open-source community. (If applicable, provide instructions on contributing to the codebase)
+4. **Support**
+   For questions or help, contact \[email protected]
 
-**3. Documentation**
+### **Technology Stack**
 
-* Comprehensive user guides and developer documentation will be available soon. (Provide links to documentation when available)
+Built with **PHP**, **Laravel**, **Inertia.js**, **React**, and **TypeScript**.
 
-**4. Support**
+> **Note:** This system is currently under development. Features may change in future versions.
 
-* For any questions or support requests, please contact [email protected]
+### **License**
 
-###  Technology Stack
+SaliksikHub is released under the \[License Name] license. \[Link to license details]
 
-* PHP, Laravel, Inertiajs with React and Typescript.
+---
 
-**Disclaimer:** This project is under development, and the features mentioned above may be subject to change. 
-
-###  License
-
-SaliksikHub is licensed under the [License Name] license. ([Link to License details])
+Let me know if you'd like a version for marketing, investors, GitHub README, or for academic proposals.
