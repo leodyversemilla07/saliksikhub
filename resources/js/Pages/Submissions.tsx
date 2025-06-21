@@ -1,5 +1,5 @@
-import Footer from '@/components/landing-pages/site-footer';
-import Header from '@/components/landing-pages/site-header';
+import Footer from '@/components/site-footer';
+import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect, useMemo } from 'react';

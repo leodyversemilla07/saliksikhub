@@ -1,8 +1,8 @@
 import { useState, FormEventHandler } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { Breadcrumb } from '@/components/breadcrumb';
-import Header from '@/components/landing-pages/site-header';
-import Footer from '@/components/landing-pages/site-footer';
+import Header from '@/components/site-header';
+import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

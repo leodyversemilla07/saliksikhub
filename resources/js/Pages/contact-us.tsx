@@ -1,6 +1,6 @@
-import Header from '@/components/landing-pages/site-header';
+import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import Footer from '@/components/landing-pages/site-footer';
+import Footer from '@/components/site-footer';
 import { Breadcrumb } from '@/components/breadcrumb';
 import { Head } from '@inertiajs/react';
 

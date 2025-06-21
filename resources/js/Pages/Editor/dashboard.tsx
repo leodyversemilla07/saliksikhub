@@ -102,13 +102,13 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
     }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{label}</p>
+                <div className="bg-popover p-3 border rounded-lg shadow-lg">
+                    <p className="text-sm font-medium text-popover-foreground mb-1">{label}</p>
                     {payload.map((entry, index: number) => (
                         <div key={`tooltip-item-${index}`} className="flex items-center gap-2 text-xs">
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill || entry.stroke || '#888' }}></div>
-                            <span className="text-gray-600 dark:text-gray-300">{entry.name || entry.dataKey || 'Value'}:</span>
-                            <span className="font-medium text-gray-900 dark:text-gray-100">{entry.value}</span>
+                            <span className="text-muted-foreground">{entry.name || entry.dataKey || 'Value'}:</span>
+                            <span className="font-medium text-popover-foreground">{entry.value}</span>
                         </div>
                     ))}
                 </div>
@@ -133,7 +133,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
             case 'Rejected':
                 return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+                return 'bg-muted text-muted-foreground';
         }
     };
 
@@ -150,7 +150,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
 
             <div className="space-y-6">
                 {/* Stats Overview Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {dashboardData.metrics.map((metric, index) => {
                         const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
                             'New Submissions': FileText,
@@ -164,8 +164,8 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{metric.title}</p>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-baseline gap-2">
+                                            <p className="text-sm font-medium text-muted-foreground mb-1">{metric.title}</p>
+                                            <h3 className="text-2xl sm:text-3xl font-bold text-foreground flex items-baseline gap-2">
                                                 {metric.value}
                                                 <span className={cn(
                                                     "flex items-center text-xs px-1.5 py-0.5 rounded-full font-medium",
@@ -177,7 +177,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                                     {metric.percentage}
                                                 </span>
                                             </h3>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{metric.description}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">{metric.description}</p>
                                         </div>
                                         <div className={cn(
                                             "p-3 rounded-lg bg-gradient-to-br",
@@ -201,13 +201,13 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                             <CardTitle className="text-base font-medium">Submission Trends</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <div className="pt-3 px-3 pb-6 h-[350px]">
+                            <div className="p-6 h-[350px]">
                                 <Tabs
                                     value={activeTab}
                                     onValueChange={handleTabChange}
                                     className="h-full"
                                 >
-                                    <div className="flex justify-end mb-3">
+                                    <div className="flex justify-end mb-4">
                                         <TabsList className="h-8 p-0.5">
                                             <TabsTrigger value="area" className="text-xs px-2 h-7">Area</TabsTrigger>
                                             <TabsTrigger value="bar" className="text-xs px-2 h-7">Bar</TabsTrigger>
@@ -392,7 +392,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                 </Tabs>
                             </div>
                         </CardContent>
-                        <CardFooter className="border-t px-6 py-3">
+                        <CardFooter className="border-t px-6 py-4">
                             <Button variant="outline" className="w-full sm:w-auto text-xs h-8">
                                 <Download className="h-3 w-3 mr-1.5" />
                                 Export Data
@@ -422,7 +422,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                         <CardContent className="p-0">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
                                 {/* Distribution Pie Charts */}
-                                <div className="p-3 h-[350px] border-r border-gray-200 dark:border-gray-800">
+                                <div className="p-6 h-[350px] border-r border-border">
                                     <h4 className="text-sm text-center font-medium mb-4">Submission Status</h4>
                                     <ResponsiveContainer width="100%" height="80%">
                                         <PieChart>
@@ -451,7 +451,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                         </PieChart>
                                     </ResponsiveContainer>
                                 </div>
-                                <div className="p-3 h-[350px]">
+                                <div className="p-6 h-[350px]">
                                     <h4 className="text-sm text-center font-medium mb-4">Revision Rounds</h4>
                                     <ResponsiveContainer width="100%" height="80%">
                                         <PieChart>
@@ -482,7 +482,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="border-t px-6 py-3 flex items-center justify-between">
+                        <CardFooter className="border-t px-6 py-4 flex items-center justify-between">
                             <Button variant="outline" className="text-xs h-8">
                                 <Download className="h-3 w-3 mr-1.5" />
                                 Export Data
@@ -507,28 +507,28 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                                            <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2">ID</th>
-                                            <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2">Manuscript</th>
-                                            <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2">Status</th>
-                                            <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 hidden md:table-cell">Author</th>
-                                            <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 hidden md:table-cell">Submitted</th>
-                                            <th className="text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2">Days</th>
+                                        <tr className="border-b bg-muted/50">
+                                            <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3">ID</th>
+                                            <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3">Manuscript</th>
+                                            <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3">Status</th>
+                                            <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3 hidden md:table-cell">Author</th>
+                                            <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3 hidden md:table-cell">Submitted</th>
+                                            <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider px-6 py-3">Days</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+                                    <tbody className="bg-card divide-y divide-border">
                                         {dashboardData.recentSubmissions.length > 0 ? (
                                             dashboardData.recentSubmissions.map((submission) => (
-                                                <tr key={`submission-${submission.id}`} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                                                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                <tr key={`submission-${submission.id}`} className="hover:bg-muted/50">
+                                                    <td className="px-6 py-4 text-sm font-medium text-foreground">
                                                         #{submission.id}
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                                    <td className="px-6 py-4 text-sm text-foreground">
                                                         <div className="max-w-xs truncate font-medium">
                                                             {submission.title}
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm">
+                                                    <td className="px-6 py-4 text-sm">
                                                         <span className={cn(
                                                             "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
                                                             getStatusBadgeStyles(submission.status)
@@ -536,20 +536,20 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                                             {submission.status}
                                                         </span>
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                                                    <td className="px-6 py-4 text-sm text-muted-foreground hidden md:table-cell">
                                                         {submission.author}
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                                                    <td className="px-6 py-4 text-sm text-muted-foreground hidden md:table-cell">
                                                         {submission.submitted_date}
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-right">
+                                                    <td className="px-6 py-4 text-sm text-muted-foreground text-right">
                                                         {submission.days_since_submission}d
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                                                <td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">
                                                     No recent submissions
                                                 </td>
                                             </tr>
@@ -563,5 +563,5 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
             </div>
         </AuthenticatedLayout>
     );
-};
+}
 

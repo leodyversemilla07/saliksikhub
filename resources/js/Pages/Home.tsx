@@ -1,7 +1,7 @@
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
-import Header from '@/components/landing-pages/site-header';
-import Footer from '@/components/landing-pages/site-footer';
+import Header from '@/components/site-header';
+import Footer from '@/components/site-footer';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Calendar, FilePlus2, Check } from 'lucide-react';
 

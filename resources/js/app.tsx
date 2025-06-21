@@ -72,7 +72,7 @@ createInertiaApp({
 
         root.render(
             <>
-                <TooltipProvider delayDuration={300}>
+                <TooltipProvider>
                     <App {...props} />
                 </TooltipProvider>
                 <Toaster />
@@ -80,7 +80,7 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#4B5563',
+        color: 'oklch(var(--primary))',
     },
 });
 

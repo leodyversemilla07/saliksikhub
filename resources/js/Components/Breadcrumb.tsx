@@ -1,5 +1,13 @@
 import { Link } from '@inertiajs/react';
-import { twMerge } from 'tailwind-merge';
+import {
+    Breadcrumb as UiBreadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem as UiBreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { cn } from '@/lib/utils';
 
 interface BreadcrumbItem {
     label: string;
@@ -17,34 +25,46 @@ export function Breadcrumb({
     className,
     maxLength
 }: BreadcrumbProps) {
-    return (
-        <nav className={twMerge("mb-8 text-sm text-gray-500 dark:text-gray-400", className)}>
-            {items.map((item, index) => (
-                <span key={index}>
-                    {index > 0 && <span className="mx-2">/</span>}
-                    {renderItem(item, index === items.length - 1, maxLength)}
-                </span>
-            ))}
-        </nav>
-    );
-}
-
-function renderItem(item: BreadcrumbItem, isLast: boolean, maxLength?: number) {
-    const label = maxLength && item.label.length > maxLength
-        ? `${item.label.substring(0, maxLength)}...`
-        : item.label;
-
-    if (item.href && !isLast) {
-        return (
-            <Link
-                href={item.href}
-                className="hover:underline text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300"
-                title={item.label}
-            >
-                {label}
-            </Link>
-        );
+    if (!items || items.length === 0) {
+        return null;
     }
 
-    return <span title={item.label}>{label}</span>;
+    return (
+        <UiBreadcrumb className={cn("mb-8", className)}>
+            <BreadcrumbList>
+                {items.map((item, index) => {
+                    const isLast = index === items.length - 1;
+                    const label = maxLength && item.label.length > maxLength
+                        ? `${item.label.substring(0, maxLength)}...`
+                        : item.label;
+
+                    return (
+                        <div key={index} className="flex items-center">
+                            <UiBreadcrumbItem>
+                                {item.href && !isLast ? (
+                                    <BreadcrumbLink 
+                                        asChild
+                                        className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
+                                        title={item.label}
+                                    >
+                                        <Link href={item.href}>
+                                            {label}
+                                        </Link>
+                                    </BreadcrumbLink>
+                                ) : (
+                                    <BreadcrumbPage 
+                                        className="text-green-600 dark:text-green-400 font-medium"
+                                        title={item.label}
+                                    >
+                                        {label}
+                                    </BreadcrumbPage>
+                                )}
+                            </UiBreadcrumbItem>
+                            {!isLast && <BreadcrumbSeparator />}
+                        </div>
+                    );
+                })}
+            </BreadcrumbList>
+        </UiBreadcrumb>
+    );
 }

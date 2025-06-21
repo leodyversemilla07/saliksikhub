@@ -1,5 +1,5 @@
-import Footer from '@/components/landing-pages/site-footer';
-import Header from '@/components/landing-pages/site-header';
+import Footer from '@/components/site-footer';
+import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import { FileText, Calendar, Users, Hash, MapPin } from 'lucide-react';

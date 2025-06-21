@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import Header from '@/components/landing-pages/site-header';
-import Footer from '@/components/landing-pages/site-footer';
+import Header from '@/components/site-header';
+import Footer from '@/components/site-footer';
 import { Book, Calendar, ListChecks, Archive } from 'lucide-react';
 import { Breadcrumb } from '@/components/breadcrumb';
 

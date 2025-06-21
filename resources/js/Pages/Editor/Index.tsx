@@ -492,20 +492,32 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Submitted Manuscripts" />
-            <div className="space-y-6">
+            <div className="space-y-6 max-w-full">
+                {/* Page Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            Submitted Manuscripts
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Review and manage manuscript submissions
+                        </p>
+                    </div>
+                </div>
+
                 {/* Search and Controls Section */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60">
-                    <div className="px-6 py-5">
+                    <div className="px-4 sm:px-6 py-5">
                         <div className="flex flex-col gap-4">
                             {/* Controls Row */}
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         {filteredResults.length} {filteredResults.length === 1 ? 'manuscript' : 'manuscripts'} found
                                     </p>
                                     {selectedManuscripts.length > 0 && (
-                                        <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                                            <span>•</span>
+                                        <div className="flex items-center gap-2 text-sm text-primary">
+                                            <span className="hidden sm:inline">•</span>
                                             <span>{selectedManuscripts.length} selected</span>
                                         </div>
                                     )}
@@ -515,7 +527,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                     variant="outline"
                                     size="sm"
                                     disabled={selectedManuscripts.length === 0}
-                                    className="border-gray-300 dark:border-gray-600 hover:border-green-400 hover:text-green-600 dark:hover:border-green-500 dark:hover:text-green-400 transition-all"
+                                    className="w-full sm:w-auto border-gray-300 dark:border-gray-600 hover:border-primary hover:text-primary transition-all"
                                 >
                                     <Download className="h-4 w-4 mr-2" />
                                     Export ({selectedManuscripts.length})
@@ -524,13 +536,13 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
                             {/* Search and Filter Row */}
                             <div className="flex flex-col sm:flex-row gap-3">
-                                <div className="relative flex-1 group">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                                <div className="relative flex-1 group min-w-0">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                                     <Input
                                         placeholder="Search by title, author, or ID..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10 border-gray-300 dark:border-gray-600 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-900"
+                                        className="pl-10 border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary bg-white dark:bg-gray-900"
                                     />
                                 </div>
 
@@ -538,7 +550,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-[200px] justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
+                                            className="w-full sm:w-[200px] justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
                                         >
                                             <div className="flex items-center">
                                                 <Filter className="h-4 w-4 mr-2" />
@@ -547,7 +559,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                             <ChevronDown className="h-4 w-4 opacity-50" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[200px]">
+                                    <DropdownMenuContent align="end" className="w-full sm:w-[200px]">
                                         <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
@@ -589,7 +601,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                     {paginatedManuscripts.length > 0 ? (
                         <>
                             {/* Desktop Table View */}
-                            <div className="hidden lg:block">
+                            <div className="hidden xl:block">
                                 <div className="overflow-x-auto">
                                     <Table>
                                         <TableHeader>
@@ -597,7 +609,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                 <TableHead className="w-12 text-center">
                                                     <input
                                                         type="checkbox"
-                                                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                                        className="rounded border-gray-300 text-primary focus:ring-primary"
                                                         checked={
                                                             paginatedManuscripts.length > 0 &&
                                                             paginatedManuscripts.every(manuscript => selectedManuscripts.includes(manuscript.id))
@@ -606,7 +618,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     />
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                    className="cursor-pointer hover:text-primary"
                                                     onClick={() => setSortConfig({
                                                         key: 'id',
                                                         direction: sortConfig.key === 'id' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
@@ -615,12 +627,12 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     <div className="flex items-center font-semibold">
                                                         ID
                                                         {sortConfig.key === 'id' && (
-                                                            <span className="ml-1 text-green-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                         )}
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                    className="cursor-pointer hover:text-primary"
                                                     onClick={() => setSortConfig({
                                                         key: 'title',
                                                         direction: sortConfig.key === 'title' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
@@ -629,12 +641,12 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     <div className="flex items-center font-semibold">
                                                         Manuscript Details
                                                         {sortConfig.key === 'title' && (
-                                                            <span className="ml-1 text-green-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                         )}
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                    className="cursor-pointer hover:text-primary"
                                                     onClick={() => setSortConfig({
                                                         key: 'status',
                                                         direction: sortConfig.key === 'status' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
@@ -643,12 +655,12 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     <div className="flex items-center font-semibold">
                                                         Status
                                                         {sortConfig.key === 'status' && (
-                                                            <span className="ml-1 text-green-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                         )}
                                                     </div>
                                                 </TableHead>
                                                 <TableHead
-                                                    className="cursor-pointer hover:text-green-600 dark:hover:text-green-400"
+                                                    className="cursor-pointer hover:text-primary"
                                                     onClick={() => setSortConfig({
                                                         key: 'created_at',
                                                         direction: sortConfig.key === 'created_at' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
@@ -657,7 +669,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     <div className="flex items-center font-semibold">
                                                         Timeline
                                                         {sortConfig.key === 'created_at' && (
-                                                            <span className="ml-1 text-green-600">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                         )}
                                                     </div>
                                                 </TableHead>
@@ -670,14 +682,14 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     key={manuscript.id}
                                                     className={cn(
                                                         "group cursor-pointer transition-all hover:bg-gray-50/80 dark:hover:bg-gray-800/50 border-b border-gray-200/40 dark:border-gray-700/40",
-                                                        selectedManuscripts.includes(manuscript.id) && "bg-green-50/60 dark:bg-green-900/20"
+                                                        selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
                                                     )}
                                                     onClick={() => handleViewManuscript(manuscript.id)}
                                                 >
                                                     <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
                                                         <input
                                                             type="checkbox"
-                                                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                                            className="rounded border-gray-300 text-primary focus:ring-ring"
                                                             checked={selectedManuscripts.includes(manuscript.id)}
                                                             onChange={() => toggleSelectManuscript(manuscript.id)}
                                                         />
@@ -687,7 +699,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="max-w-md">
-                                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-2">
+                                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors line-clamp-2">
                                                                 {manuscript.title}
                                                             </h3>
                                                             <div className="mt-1">
@@ -755,7 +767,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                                             variant="ghost"
                                                                             size="sm"
                                                                             onClick={() => handleEditorialDecision(manuscript.id)}
-                                                                            className="h-8 w-8 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors"
+                                                                            className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
                                                                         >
                                                                             <AlertCircle className="h-4 w-4" />
                                                                         </Button>
@@ -791,7 +803,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                                                                 setManuscriptToCopyEdit(manuscript.id);
                                                                                 setShowUploadDialog(true);
                                                                             }}
-                                                                            className="h-8 w-8 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 transition-colors"
+                                                                            className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
                                                                         >
                                                                             <Upload className="h-4 w-4" />
                                                                         </Button>
@@ -831,20 +843,20 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                             </div>
 
                             {/* Mobile Card View */}
-                            <div className="lg:hidden divide-y divide-gray-200 dark:divide-gray-700">
+                            <div className="xl:hidden divide-y divide-gray-200 dark:divide-gray-700">
                                 {paginatedManuscripts.map((manuscript) => (
                                     <div
                                         key={manuscript.id}
                                         className={cn(
                                             "p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer",
-                                            selectedManuscripts.includes(manuscript.id) && "bg-green-50 dark:bg-green-900/20"
+                                            selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
                                         )}
                                         onClick={() => handleViewManuscript(manuscript.id)}
                                     >
                                         <div className="flex items-start space-x-3">
                                             <input
                                                 type="checkbox"
-                                                className="mt-1 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                                className="mt-1 rounded border-gray-300 text-primary focus:ring-ring"
                                                 checked={selectedManuscripts.includes(manuscript.id)}
                                                 onChange={(e) => {
                                                     e.stopPropagation();
@@ -905,71 +917,77 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
                 {/* Pagination */}
                 {filteredResults.length > 0 && totalPages > 1 && (
-                    <div className="bg-white dark:bg-gray-800 border-t border-gray-200/60 dark:border-gray-700/60 px-6 py-4 rounded-b-lg">
+                    <div className="bg-white dark:bg-gray-800 border-t border-gray-200/60 dark:border-gray-700/60 px-4 sm:px-6 py-4 rounded-b-lg">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Showing <span className="font-medium text-gray-900 dark:text-gray-100">
-                                        {(currentPage - 1) * pageSize + 1}
-                                    </span> to <span className="font-medium text-gray-900 dark:text-gray-100">
-                                        {Math.min(currentPage * pageSize, filteredResults.length)}
-                                    </span> of <span className="font-medium text-gray-900 dark:text-gray-100">
-                                        {filteredResults.length}
-                                    </span> manuscripts
+                            <div className="flex items-center gap-4 order-2 sm:order-1">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
+                                    <span className="block sm:inline">
+                                        Showing <span className="font-medium text-gray-900 dark:text-gray-100">
+                                            {(currentPage - 1) * pageSize + 1}
+                                        </span> to <span className="font-medium text-gray-900 dark:text-gray-100">
+                                            {Math.min(currentPage * pageSize, filteredResults.length)}
+                                        </span>
+                                    </span>
+                                    <span className="block sm:inline sm:ml-1">
+                                        of <span className="font-medium text-gray-900 dark:text-gray-100">
+                                            {filteredResults.length}
+                                        </span> manuscripts
+                                    </span>
                                 </p>
                             </div>
 
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                                            className={cn(
-                                                "cursor-pointer hover:text-green-600 dark:hover:text-green-400",
-                                                currentPage <= 1 && "opacity-50 cursor-not-allowed"
-                                            )}
-                                        />
-                                    </PaginationItem>
+                            <div className="order-1 sm:order-2">
+                                <Pagination>
+                                    <PaginationContent>
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                                                className={cn(
+                                                    "cursor-pointer hover:text-primary",
+                                                    currentPage <= 1 && "opacity-50 cursor-not-allowed"
+                                                )}
+                                            />
+                                        </PaginationItem>
 
-                                    {generatePagination(currentPage, totalPages).map((item, index) => {
-                                        if (item === 'ellipsis-start' || item === 'ellipsis-end') {
+                                        {generatePagination(currentPage, totalPages).map((item, index) => {
+                                            if (item === 'ellipsis-start' || item === 'ellipsis-end') {
+                                                return (
+                                                    <PaginationItem key={`${item}-${index}`}>
+                                                        <PaginationEllipsis />
+                                                    </PaginationItem>
+                                                );
+                                            }
+
+                                            const page = item as number;
+                                            const isActive = page === currentPage;
+
                                             return (
-                                                <PaginationItem key={`${item}-${index}`}>
-                                                    <PaginationEllipsis />
+                                                <PaginationItem key={`page-${page}`}>
+                                                    <PaginationLink
+                                                        onClick={() => handlePageChange(page)}
+                                                        isActive={isActive}
+                                                        className={cn(
+                                                            "cursor-pointer",
+                                                            isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
+                                                        )}
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
                                                 </PaginationItem>
                                             );
-                                        }
+                                        })}
 
-                                        const page = item as number;
-                                        const isActive = page === currentPage;
-
-                                        return (
-                                            <PaginationItem key={`page-${page}`}>
-                                                <PaginationLink
-                                                    onClick={() => handlePageChange(page)}
-                                                    isActive={isActive}
-                                                    className={cn(
-                                                        "cursor-pointer",
-                                                        isActive && "bg-green-600 text-white hover:bg-green-700 hover:text-white"
-                                                    )}
-                                                >
-                                                    {page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        );
-                                    })}
-
-                                    <PaginationItem>
-                                        <PaginationNext
+                                        <PaginationItem>                                            <PaginationNext
                                             onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
                                             className={cn(
-                                                "cursor-pointer hover:text-green-600 dark:hover:text-green-400",
+                                                "cursor-pointer hover:text-primary",
                                                 currentPage >= totalPages && "opacity-50 cursor-not-allowed"
                                             )}
                                         />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -1147,8 +1165,8 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                             </label>
 
                             <div className={`mt-1 border-2 border-dashed rounded-lg transition-colors ${uploadFile
-                                ? 'bg-green-50 border-green-300 dark:bg-green-900/20 dark:border-green-700'
-                                : 'border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-600'
+                                ? 'bg-accent/20 border-primary'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-primary'
                                 }`}>
                                 <div className="flex flex-col items-center justify-center py-6 px-4">
                                     {!uploadFile ? (
