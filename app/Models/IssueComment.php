@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class IssueComment extends Model
 {
-    use HasFactory;    protected $fillable = [
+    use HasFactory;
+
+    protected $fillable = [
         'issue_id',
         'user_id',
         'content',

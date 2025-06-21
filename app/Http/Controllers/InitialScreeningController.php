@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Notifications\ManuscriptStatusChanged;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -41,7 +40,7 @@ class InitialScreeningController extends Controller
             // Automatically determine next status based on screening results
             if ($manuscript->passesInitialScreening()) {
                 $manuscript->status = Manuscript::STATUSES['UNDER_REVIEW'];
-                
+
                 // Notify editors that manuscript is ready for review
                 $editors = User::where('role', 'editor')->get();
                 foreach ($editors as $editor) {
@@ -69,10 +68,10 @@ class InitialScreeningController extends Controller
         } catch (Exception $e) {
             Log::error('Error during initial screening', [
                 'error' => $e->getMessage(),
-                'manuscript_id' => $manuscript->id
+                'manuscript_id' => $manuscript->id,
             ]);
 
-            return back()->with('error', 'Failed to complete initial screening: ' . $e->getMessage());
+            return back()->with('error', 'Failed to complete initial screening: '.$e->getMessage());
         }
     }
 }

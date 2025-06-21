@@ -37,11 +37,11 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'affiliation' => ['nullable', 'string', 'max:255'],
             'avatar' => [
-                'nullable', 
-                'image', 
-                'mimes:jpeg,png,jpg,gif,webp', 
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
                 'max:2048', // 2MB max file size
-                'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000'
+                'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
             ],
         ];
     }

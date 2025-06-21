@@ -48,9 +48,9 @@ class ManuscriptDecision extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $mailMessage = (new MailMessage)
-            ->subject('Decision on Your Manuscript: ' . $this->manuscript->title)
-            ->greeting('Dear ' . $notifiable->name . ',')
-            ->line('A decision has been made on your manuscript titled "' . $this->manuscript->title . '".');
+            ->subject('Decision on Your Manuscript: '.$this->manuscript->title)
+            ->greeting('Dear '.$notifiable->name.',')
+            ->line('A decision has been made on your manuscript titled "'.$this->manuscript->title.'".');
 
         switch ($this->decision->decision_type) {
             case EditorialDecision::DECISION_TYPES['ACCEPT']:
@@ -62,13 +62,13 @@ class ManuscriptDecision extends Notification implements ShouldQueue
             case EditorialDecision::DECISION_TYPES['MINOR_REVISION']:
                 $mailMessage->line('Your manuscript requires minor revisions before it can be accepted for publication.');
                 if ($this->decision->revision_deadline) {
-                    $mailMessage->line('Please submit your revision by: ' . $this->decision->revision_deadline->format('F j, Y'));
+                    $mailMessage->line('Please submit your revision by: '.$this->decision->revision_deadline->format('F j, Y'));
                 }
                 break;
             case EditorialDecision::DECISION_TYPES['MAJOR_REVISION']:
                 $mailMessage->line('Your manuscript requires major revisions before it can be considered for publication.');
                 if ($this->decision->revision_deadline) {
-                    $mailMessage->line('Please submit your revision by: ' . $this->decision->revision_deadline->format('F j, Y'));
+                    $mailMessage->line('Please submit your revision by: '.$this->decision->revision_deadline->format('F j, Y'));
                 }
                 break;
             default:
@@ -78,7 +78,7 @@ class ManuscriptDecision extends Notification implements ShouldQueue
         return $mailMessage
             ->line('Editor\'s Comments:')
             ->line($this->decision->comments_to_author)
-            ->action('View Manuscript', url('/author/manuscripts/' . $this->manuscript->id))
+            ->action('View Manuscript', url('/author/manuscripts/'.$this->manuscript->id))
             ->line('Thank you for submitting to our journal.');
     }
 

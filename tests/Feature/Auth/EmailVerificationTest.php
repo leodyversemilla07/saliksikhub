@@ -29,7 +29,7 @@ test('email can be verified', function () {
 
     Event::assertDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
-    
+
     if ($user->hasRole('editor')) {
         $response->assertRedirect(route('editor.dashboard', absolute: false).'?verified=1');
     } else {

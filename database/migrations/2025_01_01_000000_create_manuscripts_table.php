@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -28,12 +29,12 @@ return new class extends Migration {
                 'Awaiting Approval',
                 'Ready to Publish',
                 'Rejected',
-                'Published'
+                'Published',
             ])->default('Submitted');
             $table->enum('screening_status', [
                 'Pending',
                 'Passed',
-                'Failed'
+                'Failed',
             ])->default('Pending');
             $table->text('screening_comments')->nullable();
             $table->timestamp('screened_at')->nullable();

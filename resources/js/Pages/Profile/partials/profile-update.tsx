@@ -1,11 +1,12 @@
 import { useState, FormEventHandler } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { route } from 'ziggy-js';
-import { Upload, Check } from 'lucide-react';
+import { Check, Mail, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 interface User {
     id: number;
@@ -36,7 +37,7 @@ export default function ProfileUpdate({
         user.avatar_url || null
     );
 
-    const { data, setData, post, errors, processing, recentlySuccessful } =
+    const { data, setData, post, errors, processing } =
         useForm({
             firstname: user.firstname || '',
             lastname: user.lastname || '',
@@ -56,6 +57,8 @@ export default function ProfileUpdate({
                 setAvatarPreview(updatedUser.avatar_url || null);
                 // Reset form avatar field
                 setData('avatar', null);
+                // Show success toast
+                toast.success('Profile updated successfully!');
             }
         });
     };
@@ -73,65 +76,78 @@ export default function ProfileUpdate({
     };
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="max-w-xl bg-card border rounded-lg p-4 space-y-4">
+            {/* Header */}
+            <div>
+                <h2 className="text-lg font-semibold text-foreground">
                     Profile Information
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                     Update your basic account information and profile settings.
                 </p>
+
+                {/* User Role Badge */}
+                <div className="flex items-center gap-2 mt-2">
+                    <Badge variant="secondary">
+                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </Badge>
+                    {user.email_verified_at && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                            <Check className="h-3 w-3 mr-1" />
+                            Email Verified
+                        </Badge>
+                    )}
+                </div>
             </div>
 
-            <form onSubmit={submit} className="space-y-8">
+            <form onSubmit={submit} className="space-y-4">
                 {/* Avatar Section */}
-                <div className="flex items-start space-x-6 pb-8 border-b border-gray-100 dark:border-gray-800">
-                    <div className="relative">
-                        <div className="h-20 w-20 rounded-full overflow-hidden bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-sm">
-                            {avatarPreview ? (
-                                <img
-                                    src={avatarPreview}
-                                    alt="User avatar"
-                                    className="h-full w-full object-cover"
-                                    onError={() => {
-                                        console.log('Image failed to load:', avatarPreview);
-                                        setAvatarPreview(null);
-                                    }}
+                <div className="bg-muted/50 rounded-lg p-4 border">
+                    <div className="flex items-center space-x-4">
+                        <div className="relative">
+                            <div className="h-16 w-16 rounded-full overflow-hidden bg-muted border">
+                                {avatarPreview ? (
+                                    <img
+                                        src={avatarPreview}
+                                        alt="User avatar"
+                                        className="h-full w-full object-cover"
+                                        onError={() => {
+                                            setAvatarPreview(null);
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="h-full w-full flex items-center justify-center text-sm font-medium text-muted-foreground">
+                                        {((data.firstname as string)?.[0] || '?').toUpperCase()}{((data.lastname as string)?.[0] || '?').toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
+                            <label htmlFor="avatar" className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
+                                <Camera className="h-3 w-3" />
+                                <input
+                                    id="avatar"
+                                    type="file"
+                                    accept="image/*"
+                                    className="sr-only"
+                                    onChange={handleAvatarChange}
                                 />
-                            ) : (
-                                <div className="h-full w-full flex items-center justify-center text-xl font-semibold text-gray-500 dark:text-gray-400">
-                                    {((data.firstname as string)?.[0] || '?').toUpperCase()}{((data.lastname as string)?.[0] || '?').toUpperCase()}
-                                </div>
-                            )}
+                            </label>
                         </div>
-                        <label htmlFor="avatar" className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 p-2 rounded-full border-2 border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm">
-                            <Upload className="h-4 w-4 text-gray-500" />
-                            <input
-                                id="avatar"
-                                type="file"
-                                accept="image/*"
-                                className="sr-only"
-                                onChange={handleAvatarChange}
-                            />
-                        </label>
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            Profile Photo
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                            Update your profile picture. JPG or PNG, max 2MB.
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                            Recommended size: 400x400 pixels
-                        </p>
+                        <div>
+                            <h3 className="font-medium text-foreground">
+                                Profile Photo
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                JPG or PNG, max 2MB.
+                            </p>
+                        </div>
                     </div>
                 </div>
+
                 {/* Form Fields */}
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-2">
-                            <Label htmlFor="firstname" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <Label htmlFor="firstname" className="text-sm font-medium">
                                 First Name
                             </Label>
                             <Input
@@ -139,16 +155,15 @@ export default function ProfileUpdate({
                                 type="text"
                                 value={data.firstname as string}
                                 onChange={(e) => setData('firstname', e.target.value)}
-                                className="h-11 w-full max-w-xs border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
-                                placeholder="First name"
+                                placeholder="Enter your first name"
                             />
                             {errors.firstname && (
-                                <p className="text-sm text-red-600 dark:text-red-400">{errors.firstname}</p>
+                                <p className="text-sm text-destructive">{errors.firstname}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="lastname" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <Label htmlFor="lastname" className="text-sm font-medium">
                                 Last Name
                             </Label>
                             <Input
@@ -156,17 +171,16 @@ export default function ProfileUpdate({
                                 type="text"
                                 value={data.lastname as string}
                                 onChange={(e) => setData('lastname', e.target.value)}
-                                className="h-11 w-full max-w-xs border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
-                                placeholder="Last name"
+                                placeholder="Enter your last name"
                             />
                             {errors.lastname && (
-                                <p className="text-sm text-red-600 dark:text-red-400">{errors.lastname}</p>
+                                <p className="text-sm text-destructive">{errors.lastname}</p>
                             )}
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <Label htmlFor="email" className="text-sm font-medium">
                             Email Address
                         </Label>
                         <Input
@@ -174,16 +188,15 @@ export default function ProfileUpdate({
                             type="email"
                             value={data.email as string}
                             onChange={(e) => setData('email', e.target.value)}
-                            className="h-11 w-full max-w-md border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
-                            placeholder="email@example.com"
+                            placeholder="Enter your email address"
                         />
                         {errors.email && (
-                            <p className="text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+                            <p className="text-sm text-destructive">{errors.email}</p>
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="affiliation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <Label htmlFor="affiliation" className="text-sm font-medium">
                             Affiliation
                         </Label>
                         <Input
@@ -191,32 +204,25 @@ export default function ProfileUpdate({
                             type="text"
                             value={data.affiliation as string}
                             onChange={(e) => setData('affiliation', e.target.value)}
-                            className="h-11 w-full max-w-lg border-gray-300 dark:border-gray-600 focus:border-gray-900 dark:focus:border-white focus:ring-0 transition-colors"
-                            placeholder="Organization or institution"
+                            placeholder="Enter your affiliation"
                         />
                         {errors.affiliation && (
-                            <p className="text-sm text-red-600 dark:text-red-400">{errors.affiliation}</p>
+                            <p className="text-sm text-destructive">{errors.affiliation}</p>
                         )}
                     </div>
                 </div>
 
-                {status === 'profile-updated' && (
-                    <Alert className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
-                        <AlertDescription className="text-green-800 dark:text-green-200 text-sm">
-                            Your profile has been updated successfully.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
+                {/* Status Messages */}
                 {mustVerifyEmail && user.email_verified_at === null && (
-                    <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800">
-                        <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">
-                            Your email address is unverified.{' '}
+                    <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20">
+                        <Mail className="h-4 w-4 text-amber-600" />
+                        <AlertDescription className="text-amber-800 dark:text-amber-200">
+                            Your email address is unverified.
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="underline hover:no-underline font-medium"
+                                className="ml-2 underline hover:no-underline"
                             >
                                 Click here to re-send the verification email.
                             </Link>
@@ -225,28 +231,22 @@ export default function ProfileUpdate({
                 )}
 
                 {status === 'verification-link-sent' && (
-                    <Alert className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
-                        <AlertDescription className="text-green-800 dark:text-green-200 text-sm">
+                    <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
+                        <Check className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-800 dark:text-green-200">
                             A new verification link has been sent to your email address.
                         </AlertDescription>
                     </Alert>
                 )}
 
-                <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-gray-800">
+                {/* Action Button */}
+                <div className="flex items-center justify-between pt-3 border-t">
                     <Button
                         type="submit"
                         disabled={processing}
-                        className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 h-11 px-8 font-medium transition-colors"
                     >
                         {processing ? 'Saving...' : 'Save Changes'}
                     </Button>
-
-                    {recentlySuccessful && (
-                        <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium">
-                            <Check className="h-4 w-4" />
-                            <span>Saved successfully</span>
-                        </div>
-                    )}
                 </div>
             </form>
         </div>

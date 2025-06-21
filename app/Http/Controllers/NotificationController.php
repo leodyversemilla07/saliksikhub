@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -18,7 +16,7 @@ class NotificationController extends Controller
         $notifications = $user->notifications()->paginate(15);
 
         return Inertia::render('Notifications/Index', [
-            'notifications' => $notifications
+            'notifications' => $notifications,
         ]);
     }
 
@@ -39,9 +37,9 @@ class NotificationController extends Controller
                     'title' => $this->getNotificationTitle($notification->data),
                     'message' => $this->getNotificationMessage($notification->data),
                     'time' => $notification->created_at->diffForHumans(),
-                    'read' => !is_null($notification->read_at),
+                    'read' => ! is_null($notification->read_at),
                     'actionUrl' => $this->getActionUrl($notification->data),
-                    'actionLabel' => $this->getActionLabel($notification->data)
+                    'actionLabel' => $this->getActionLabel($notification->data),
                 ];
             });
 
@@ -49,7 +47,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'notifications' => $notifications,
-            'unreadCount' => $unreadCount
+            'unreadCount' => $unreadCount,
         ]);
     }
 
@@ -63,6 +61,7 @@ class NotificationController extends Controller
 
         if ($notification) {
             $notification->markAsRead();
+
             return response()->json(['success' => true]);
         }
 
@@ -136,7 +135,7 @@ class NotificationController extends Controller
 
         // Check if we have previous and new status
         if (isset($data['previous_status']) && isset($data['new_status'])) {
-            return 'Status Changed: ' . $data['new_status'];
+            return 'Status Changed: '.$data['new_status'];
         }
 
         if (isset($data['decision_type'])) {
@@ -160,7 +159,7 @@ class NotificationController extends Controller
         }
 
         if (isset($data['manuscript_title'])) {
-            return 'Submission Update: ' . substr($data['manuscript_title'], 0, 30) . '...';
+            return 'Submission Update: '.substr($data['manuscript_title'], 0, 30).'...';
         }
 
         return 'System Notification';
@@ -176,8 +175,8 @@ class NotificationController extends Controller
             isset($data['type']) && $data['type'] === 'status_change' &&
             isset($data['previous_status']) && isset($data['new_status'])
         ) {
-            return 'Your manuscript "' . $data['manuscript_title'] . '" status has changed from ' .
-                $data['previous_status'] . ' to ' . $data['new_status'] . '.';
+            return 'Your manuscript "'.$data['manuscript_title'].'" status has changed from '.
+                $data['previous_status'].' to '.$data['new_status'].'.';
         }
 
         if (isset($data['decision_type']) && isset($data['manuscript_title'])) {
@@ -209,10 +208,10 @@ class NotificationController extends Controller
 
             // Generate the appropriate URL based on user role
             if ($user->role === 'editor') {
-                return '/editor/manuscripts/' . $data['manuscript_id'];
+                return '/editor/manuscripts/'.$data['manuscript_id'];
             } else {
                 // Use manuscript.show route for authors
-                return '/author/manuscripts/' . $data['manuscript_id'];
+                return '/author/manuscripts/'.$data['manuscript_id'];
             }
         }
 

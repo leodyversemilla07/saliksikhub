@@ -26,14 +26,14 @@ class AuthorApprovalRequired extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        $recipientName = $notifiable->firstname . ' ' . $notifiable->lastname;
+        $recipientName = $notifiable->firstname.' '.$notifiable->lastname;
 
         return (new MailMessage)
-            ->subject('Your Approval Is Required: ' . $this->manuscript->title)
-            ->greeting('Hello ' . $recipientName . ',')
-            ->line('Your manuscript "' . $this->manuscript->title . '" is ready for your final approval before publication.')
+            ->subject('Your Approval Is Required: '.$this->manuscript->title)
+            ->greeting('Hello '.$recipientName.',')
+            ->line('Your manuscript "'.$this->manuscript->title.'" is ready for your final approval before publication.')
             ->line('Please review the final version and confirm your approval to proceed with publication.')
-            ->action('Review and Approve', url('/author/manuscripts/' . $this->manuscript->id . '/approve'))
+            ->action('Review and Approve', url('/author/manuscripts/'.$this->manuscript->id.'/approve'))
             ->line('Thank you for publishing with SaliksikHub.');
     }
 
@@ -42,7 +42,7 @@ class AuthorApprovalRequired extends Notification implements ShouldQueue
         return [
             'manuscript_id' => $this->manuscript->id,
             'manuscript_title' => $this->manuscript->title,
-            'message' => 'Your approval is required for the final version of manuscript "' . $this->manuscript->title . '" before publication.',
+            'message' => 'Your approval is required for the final version of manuscript "'.$this->manuscript->title.'" before publication.',
             'type' => 'author_approval_required',
         ];
     }

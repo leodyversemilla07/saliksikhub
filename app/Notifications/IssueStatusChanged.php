@@ -12,7 +12,9 @@ class IssueStatusChanged extends Notification
     use Queueable;
 
     protected $issue;
+
     protected $oldStatus;
+
     protected $newStatus;
 
     /**
@@ -39,14 +41,14 @@ class IssueStatusChanged extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Issue Status Updated: ' . $this->issue->title)
-            ->greeting('Hello ' . $notifiable->firstname . '!')
+            ->subject('Issue Status Updated: '.$this->issue->title)
+            ->greeting('Hello '.$notifiable->firstname.'!')
             ->line('An issue you are involved with has been updated.')
-            ->line('**Title:** ' . $this->issue->title)
-            ->line('**Status changed from:** ' . ucfirst(str_replace('_', ' ', $this->oldStatus)))
-            ->line('**Status changed to:** ' . ucfirst(str_replace('_', ' ', $this->newStatus)))
-            ->line('**Priority:** ' . ucfirst($this->issue->priority))
-            ->action('View Issue', url('/issues/' . $this->issue->id))
+            ->line('**Title:** '.$this->issue->title)
+            ->line('**Status changed from:** '.ucfirst(str_replace('_', ' ', $this->oldStatus)))
+            ->line('**Status changed to:** '.ucfirst(str_replace('_', ' ', $this->newStatus)))
+            ->line('**Priority:** '.ucfirst($this->issue->priority))
+            ->action('View Issue', url('/issues/'.$this->issue->id))
             ->line('Thank you for your attention to this matter.');
     }
 
@@ -62,7 +64,7 @@ class IssueStatusChanged extends Notification
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
             'issue_priority' => $this->issue->priority,
-            'message' => 'Issue status changed from ' . ucfirst(str_replace('_', ' ', $this->oldStatus)) . ' to ' . ucfirst(str_replace('_', ' ', $this->newStatus)),
+            'message' => 'Issue status changed from '.ucfirst(str_replace('_', ' ', $this->oldStatus)).' to '.ucfirst(str_replace('_', ' ', $this->newStatus)),
         ];
     }
 }

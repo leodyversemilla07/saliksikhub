@@ -13,7 +13,9 @@ class ManuscriptStatusChanged extends Notification implements ShouldQueue
     use Queueable;
 
     protected $manuscript;
+
     protected $previousStatus;
+
     protected $newStatus;
 
     /**
@@ -49,16 +51,16 @@ class ManuscriptStatusChanged extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Get the full name of the recipient
-        $recipientName = $notifiable->firstname . ' ' . $notifiable->lastname;
-        
+        $recipientName = $notifiable->firstname.' '.$notifiable->lastname;
+
         return (new MailMessage)
-            ->subject('Manuscript Status Update: ' . $this->manuscript->title)
-            ->greeting('Hello ' . $recipientName . ',')
+            ->subject('Manuscript Status Update: '.$this->manuscript->title)
+            ->greeting('Hello '.$recipientName.',')
             ->line('The status of your manuscript has changed.')
-            ->line('Title: ' . $this->manuscript->title)
-            ->line('Previous Status: ' . $this->previousStatus)
-            ->line('New Status: ' . $this->newStatus)
-            ->action('View Manuscript', url('/author/manuscripts/' . $this->manuscript->id))
+            ->line('Title: '.$this->manuscript->title)
+            ->line('Previous Status: '.$this->previousStatus)
+            ->line('New Status: '.$this->newStatus)
+            ->action('View Manuscript', url('/author/manuscripts/'.$this->manuscript->id))
             ->line('Thank you for using SaliksikHub.');
     }
 
@@ -72,11 +74,11 @@ class ManuscriptStatusChanged extends Notification implements ShouldQueue
     {
         return [
             'manuscript_id' => $this->manuscript->id,
-            'manuscript_title' => $this->manuscript->title, 
+            'manuscript_title' => $this->manuscript->title,
             'previous_status' => $this->previousStatus,
             'new_status' => $this->newStatus,
-            'message' => 'Your manuscript "' . $this->manuscript->title . '" status has changed from ' . 
-                $this->previousStatus . ' to ' . $this->newStatus . '.',
+            'message' => 'Your manuscript "'.$this->manuscript->title.'" status has changed from '.
+                $this->previousStatus.' to '.$this->newStatus.'.',
             'type' => 'status_change',  // Adding explicit type for better frontend handling
         ];
     }

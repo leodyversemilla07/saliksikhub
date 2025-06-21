@@ -44,13 +44,13 @@ class ManuscriptRevisionSubmitted extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Revised Manuscript Submitted: ' . $this->manuscript->title)
-            ->greeting('Hello ' . $notifiable->name . ',')
+            ->subject('Revised Manuscript Submitted: '.$this->manuscript->title)
+            ->greeting('Hello '.$notifiable->name.',')
             ->line('A revised manuscript has been submitted to SaliksikHub.')
-            ->line('Title: ' . $this->manuscript->title)
-            ->line('Authors: ' . $this->manuscript->authors)
+            ->line('Title: '.$this->manuscript->title)
+            ->line('Authors: '.$this->manuscript->authors)
             ->line('The manuscript has been revised based on previous review feedback.')
-            ->action('Review Revised Submission', url('/editor/manuscripts/' . $this->manuscript->id))
+            ->action('Review Revised Submission', url('/editor/manuscripts/'.$this->manuscript->id))
             ->line('Thank you for your attention to this submission.');
     }
 
@@ -65,7 +65,7 @@ class ManuscriptRevisionSubmitted extends Notification implements ShouldQueue
         return [
             'manuscript_id' => $this->manuscript->id,
             'manuscript_title' => $this->manuscript->title,
-            'message' => 'A revised version of "' . $this->manuscript->title . '" has been submitted for review.',
+            'message' => 'A revised version of "'.$this->manuscript->title.'" has been submitted for review.',
             'type' => 'revision_submitted',
         ];
     }

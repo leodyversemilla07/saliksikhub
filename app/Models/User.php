@@ -118,18 +118,18 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return null;
         }
-        
+
         // Use Storage::url() to generate the proper URL for the public disk
-        $url = Storage::disk('public')->url('avatars/' . $this->avatar);
-        
+        $url = Storage::disk('public')->url('avatars/'.$this->avatar);
+
         // For development environment, ensure we use HTTP instead of HTTPS to avoid certificate errors
         if (app()->environment('local') && str_starts_with($url, 'https://localhost')) {
             $url = str_replace('https://localhost', 'http://localhost', $url);
         }
-        
+
         return $url;
     }
 
@@ -138,17 +138,17 @@ class User extends Authenticatable
      */
     public function deleteAvatar(): bool
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return true;
         }
-        
-        $deleted = Storage::disk('public')->delete('avatars/' . $this->avatar);
-        
+
+        $deleted = Storage::disk('public')->delete('avatars/'.$this->avatar);
+
         if ($deleted) {
             $this->avatar = null;
             $this->save();
         }
-        
+
         return $deleted;
     }
 

@@ -12,6 +12,7 @@ class IssueAssigned extends Notification
     use Queueable;
 
     protected $issue;
+
     protected $manuscript;
 
     /**
@@ -38,23 +39,23 @@ class IssueAssigned extends Notification
     {
         $messageBuilder = (new MailMessage)
             ->subject('Manuscript Assigned to Journal Issue')
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->greeting('Hello '.$notifiable->name.'!')
             ->line('Your manuscript has been assigned to a journal issue.');
-        
+
         if ($this->manuscript) {
-            $messageBuilder->line('**Manuscript:** ' . $this->manuscript->title);
+            $messageBuilder->line('**Manuscript:** '.$this->manuscript->title);
         }
-        
-        $messageBuilder->line('**Journal Issue:** Volume ' . $this->issue->volume_number . ', Issue ' . $this->issue->issue_number)
-            ->line('**Publication Date:** ' . ($this->issue->publication_date ? $this->issue->publication_date->format('F j, Y') : 'To be determined'));
-        
+
+        $messageBuilder->line('**Journal Issue:** Volume '.$this->issue->volume_number.', Issue '.$this->issue->issue_number)
+            ->line('**Publication Date:** '.($this->issue->publication_date ? $this->issue->publication_date->format('F j, Y') : 'To be determined'));
+
         if ($this->issue->issue_title) {
-            $messageBuilder->line('**Issue Title:** ' . $this->issue->issue_title);
+            $messageBuilder->line('**Issue Title:** '.$this->issue->issue_title);
         }
-        
-        $messageBuilder->action('View Issue', url('/issues/' . $this->issue->id))
+
+        $messageBuilder->action('View Issue', url('/issues/'.$this->issue->id))
             ->line('Thank you for your contribution to our journal!');
-            
+
         return $messageBuilder;
     }
 
@@ -68,14 +69,14 @@ class IssueAssigned extends Notification
             'issue_id' => $this->issue->id,
             'volume_number' => $this->issue->volume_number,
             'issue_number' => $this->issue->issue_number,
-            'message' => 'Your manuscript has been assigned to Journal Volume ' . $this->issue->volume_number . ', Issue ' . $this->issue->issue_number,
+            'message' => 'Your manuscript has been assigned to Journal Volume '.$this->issue->volume_number.', Issue '.$this->issue->issue_number,
         ];
-        
+
         if ($this->manuscript) {
             $data['manuscript_id'] = $this->manuscript->id;
             $data['manuscript_title'] = $this->manuscript->title;
         }
-        
+
         return $data;
     }
 }

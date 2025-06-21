@@ -13,6 +13,7 @@ class ManuscriptApproved extends Notification implements ShouldQueue
     use Queueable;
 
     protected $manuscript;
+
     protected $comment;
 
     public function __construct(Manuscript $manuscript, string $comment = '')
@@ -28,19 +29,19 @@ class ManuscriptApproved extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        $recipientName = $notifiable->firstname . ' ' . $notifiable->lastname;
-        
+        $recipientName = $notifiable->firstname.' '.$notifiable->lastname;
+
         $message = (new MailMessage)
-            ->subject('Author Approved Manuscript: ' . $this->manuscript->title)
-            ->greeting('Hello ' . $recipientName . ',')
-            ->line('The author has approved the final version of manuscript "' . $this->manuscript->title . '" for publication.')
-            ->action('View Manuscript', url('/editor/manuscripts/' . $this->manuscript->id . '/prepare-publication'));
-            
-        if (!empty($this->comment)) {
+            ->subject('Author Approved Manuscript: '.$this->manuscript->title)
+            ->greeting('Hello '.$recipientName.',')
+            ->line('The author has approved the final version of manuscript "'.$this->manuscript->title.'" for publication.')
+            ->action('View Manuscript', url('/editor/manuscripts/'.$this->manuscript->id.'/prepare-publication'));
+
+        if (! empty($this->comment)) {
             $message->line('Author Comment:')
-                    ->line('"' . $this->comment . '"');
+                ->line('"'.$this->comment.'"');
         }
-        
+
         return $message->line('The manuscript is now ready for publication.');
     }
 
@@ -49,14 +50,14 @@ class ManuscriptApproved extends Notification implements ShouldQueue
         $data = [
             'manuscript_id' => $this->manuscript->id,
             'manuscript_title' => $this->manuscript->title,
-            'message' => 'Author has approved manuscript "' . $this->manuscript->title . '" for publication.',
+            'message' => 'Author has approved manuscript "'.$this->manuscript->title.'" for publication.',
             'type' => 'manuscript_approved',
         ];
-        
-        if (!empty($this->comment)) {
+
+        if (! empty($this->comment)) {
             $data['comment'] = $this->comment;
         }
-        
+
         return $data;
     }
 }

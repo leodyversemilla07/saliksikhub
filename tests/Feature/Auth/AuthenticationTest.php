@@ -10,7 +10,7 @@ test('login screen can be rendered', function () {
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create([
-        'role' => 'editor'
+        'role' => 'editor',
     ]);
 
     $response = $this->post('/login', [

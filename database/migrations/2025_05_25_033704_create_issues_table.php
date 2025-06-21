@@ -29,7 +29,7 @@ return new class extends Migration
 
             // Add unique constraint for volume/issue combination
             $table->unique(['volume_number', 'issue_number'], 'unique_volume_issue');
-            
+
             // Add useful indexes
             $table->index(['status']);
             $table->index(['publication_date']);

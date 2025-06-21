@@ -5,18 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\ManuscriptApproved;
-use App\Notifications\ManuscriptSubmitted;
 use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptStatusChanged;
+use App\Notifications\ManuscriptSubmitted;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 
 class ManuscriptController extends Controller
 {
@@ -237,8 +237,8 @@ class ManuscriptController extends Controller
         return Inertia::render('author/notification', [
             'debug' => [
                 'total_notifications' => $notificationsCount,
-                'unread_notifications' => $unreadCount
-            ]
+                'unread_notifications' => $unreadCount,
+            ],
         ]);
     }
 
@@ -365,7 +365,7 @@ class ManuscriptController extends Controller
             $editors = User::where('role', 'editor')->get();
             logger()->info('Sending revision notifications to editors', [
                 'editor_count' => $editors->count(),
-                'manuscript_id' => $manuscript->id
+                'manuscript_id' => $manuscript->id,
             ]);
 
             foreach ($editors as $editor) {
@@ -374,13 +374,13 @@ class ManuscriptController extends Controller
                     logger()->info('Revision notification sent successfully', [
                         'editor_id' => $editor->id,
                         'editor_email' => $editor->email,
-                        'manuscript_id' => $manuscript->id
+                        'manuscript_id' => $manuscript->id,
                     ]);
                 } catch (Exception $e) {
                     logger()->error('Failed to send revision notification', [
                         'error' => $e->getMessage(),
                         'editor_id' => $editor->id,
-                        'manuscript_id' => $manuscript->id
+                        'manuscript_id' => $manuscript->id,
                     ]);
                 }
             }
@@ -396,12 +396,12 @@ class ManuscriptController extends Controller
                     logger()->info('Status change notification sent to author', [
                         'manuscript_id' => $manuscript->id,
                         'previous_status' => $previousStatus,
-                        'new_status' => Manuscript::STATUSES['SUBMITTED']
+                        'new_status' => Manuscript::STATUSES['SUBMITTED'],
                     ]);
                 } catch (Exception $e) {
                     logger()->error('Failed to send status change notification to author', [
                         'error' => $e->getMessage(),
-                        'manuscript_id' => $manuscript->id
+                        'manuscript_id' => $manuscript->id,
                     ]);
                 }
             }
@@ -434,7 +434,7 @@ class ManuscriptController extends Controller
                     Log::error('Failed to generate temporary URL', [
                         'error' => $e->getMessage(),
                         'manuscript_id' => $manuscript->id,
-                        'path' => $manuscript->final_pdf_path
+                        'path' => $manuscript->final_pdf_path,
                     ]);
                 }
             }
@@ -446,15 +446,15 @@ class ManuscriptController extends Controller
                     'authors' => explode(', ', $manuscript->authors),
                     'status' => $manuscript->status,
                     'final_pdf_url' => $finalPdfUrl,
-                ]
+                ],
             ]);
         } catch (Exception $e) {
             Log::error('Error showing approval form', [
                 'error' => $e->getMessage(),
-                'manuscript_id' => $manuscript->id
+                'manuscript_id' => $manuscript->id,
             ]);
 
-            return redirect()->back()->with('error', 'Failed to load approval form: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load approval form: '.$e->getMessage());
         }
     }
 
@@ -480,7 +480,7 @@ class ManuscriptController extends Controller
             } catch (Exception $e) {
                 Log::error('Failed to send publication notification', [
                     'error' => $e->getMessage(),
-                    'manuscript_id' => $manuscript->id
+                    'manuscript_id' => $manuscript->id,
                 ]);
             }
 
@@ -490,7 +490,7 @@ class ManuscriptController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Manuscript has been marked as ready to publish.',
-                    'redirect' => route('manuscripts.index')
+                    'redirect' => route('manuscripts.index'),
                 ]);
             }
 
@@ -503,17 +503,17 @@ class ManuscriptController extends Controller
             Log::error('Error approving manuscript', [
                 'error' => $e->getMessage(),
                 'manuscript_id' => $manuscript->id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to approve manuscript: ' . $e->getMessage()
+                    'message' => 'Failed to approve manuscript: '.$e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to approve manuscript: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to approve manuscript: '.$e->getMessage());
         }
     }
 
@@ -524,27 +524,27 @@ class ManuscriptController extends Controller
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
-            
+
             // Check if the manuscript has a PDF and is published
-            if (!$manuscript->final_pdf_path) {
+            if (! $manuscript->final_pdf_path) {
                 abort(404, 'PDF not found');
             }
-            
+
             if ($manuscript->status !== Manuscript::STATUSES['PUBLISHED']) {
                 abort(403, 'PDF not publicly available - manuscript not yet published');
             }
 
             // Get the file from storage
-            if (!Storage::disk('spaces')->exists($manuscript->final_pdf_path)) {
+            if (! Storage::disk('spaces')->exists($manuscript->final_pdf_path)) {
                 Log::error('PDF file not found in storage', [
                     'manuscript_id' => $id,
-                    'pdf_path' => $manuscript->final_pdf_path
+                    'pdf_path' => $manuscript->final_pdf_path,
                 ]);
                 abort(404, 'PDF file not found in storage');
             }
 
             $fileContent = Storage::disk('spaces')->get($manuscript->final_pdf_path);
-            
+
             // Generate a filename for download
             $filename = sprintf(
                 '%s_manuscript_%d.pdf',
@@ -554,7 +554,7 @@ class ManuscriptController extends Controller
 
             return response($fileContent)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
+                ->header('Content-Disposition', 'inline; filename="'.$filename.'"')
                 ->header('Cache-Control', 'public, max-age=3600')
                 ->header('X-Content-Type-Options', 'nosniff');
 
@@ -567,9 +567,9 @@ class ManuscriptController extends Controller
             Log::error('Error serving manuscript PDF', [
                 'error' => $e->getMessage(),
                 'manuscript_id' => $id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             abort(500, 'Error serving PDF file');
         }
     }

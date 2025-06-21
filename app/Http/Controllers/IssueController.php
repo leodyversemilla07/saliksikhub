@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Issue;
 use App\Models\Manuscript;
-use App\Models\User;
-use App\Notifications\IssueAssigned;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +13,13 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class IssueController extends Controller
-{    /**
+{
+    /**
      * Display a listing of journal issues.
      */
     public function index(Request $request)
-    {        $query = Issue::with(['user'])
+    {
+        $query = Issue::with(['user'])
             ->withCount('manuscripts')
             ->orderedByVolumeIssue();
 
@@ -36,9 +36,9 @@ class IssueController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('issue_title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('theme', 'like', "%{$search}%")
-                  ->orWhere('doi', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('theme', 'like', "%{$search}%")
+                    ->orWhere('doi', 'like', "%{$search}%");
             });
         }
 
@@ -63,6 +63,7 @@ class IssueController extends Controller
             } else {
                 $issue->cover_image_url = null;
             }
+
             return $issue;
         });
 
@@ -82,8 +83,8 @@ class IssueController extends Controller
     public function create()
     {
         return Inertia::render('Issues/Create');
-    }    
-    
+    }
+
     /**
      * Store a newly created journal issue.
      */
@@ -143,7 +144,7 @@ class IssueController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error creating journal issue', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
@@ -153,15 +154,15 @@ class IssueController extends Controller
                 ->withErrors(['error' => 'Failed to create journal issue. Please try again.'])
                 ->withInput();
         }
-    }    
-    
+    }
+
     /**
      * Display the specified journal issue.
      */
     public function show(Issue $issue)
     {
         $issue->load(['user', 'manuscripts.user']);
-        
+
         // Generate temporary URL for cover image if it exists
         $coverImageUrl = null;
         if ($issue->cover_image) {
@@ -178,7 +179,7 @@ class IssueController extends Controller
                 ]);
             }
         }
-        
+
         return Inertia::render('Issues/Show', [
             'issue' => $issue,
             'manuscripts' => $issue->manuscripts,
@@ -194,8 +195,8 @@ class IssueController extends Controller
         return Inertia::render('Issues/Edit', [
             'issue' => $issue,
         ]);
-    }    
-    
+    }
+
     /**
      * Update the specified journal issue.
      */
@@ -210,7 +211,7 @@ class IssueController extends Controller
             'status' => 'required|in:draft,in_review,published,archived',
             'theme' => 'nullable|string|max:255',
             'editorial_note' => 'nullable|string',
-            'doi' => 'nullable|string|max:255|unique:issues,doi,' . $issue->id,
+            'doi' => 'nullable|string|max:255|unique:issues,doi,'.$issue->id,
             'cover_image' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120', // 5MB max
         ]);
 
@@ -261,12 +262,14 @@ class IssueController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error updating journal issue', [
                 'error' => $e->getMessage(),
                 'issue_id' => $issue->id,
                 'user_id' => Auth::id(),
-            ]);            return redirect()->back()
+            ]);
+
+            return redirect()->back()
                 ->withErrors(['error' => 'Failed to update journal issue. Please try again.'])
                 ->withInput();
         }
@@ -292,7 +295,8 @@ class IssueController extends Controller
 
     /**
      * Remove the specified journal issue.
-     */    public function destroy(Issue $issue)
+     */
+    public function destroy(Issue $issue)
     {
         try {
             // Check if issue has manuscripts
@@ -329,7 +333,9 @@ class IssueController extends Controller
             return redirect()->back()
                 ->with('error', 'Failed to delete journal issue. Please try again.');
         }
-    }/**
+    }
+
+    /**
      * Assign manuscripts to an issue.
      */
     public function assignManuscripts(Request $request, Issue $issue)
@@ -344,14 +350,14 @@ class IssueController extends Controller
 
             // Get the manuscripts being assigned
             $manuscripts = Manuscript::whereIn('id', $validated['data']['manuscript_ids'])->get();
-            
+
             // Verify all manuscripts are valid for assignment
             foreach ($manuscripts as $manuscript) {
-                if (!in_array($manuscript->status, ['Ready to Publish', 'Accepted', 'Published'])) {
+                if (! in_array($manuscript->status, ['Ready to Publish', 'Accepted', 'Published'])) {
                     return redirect()->back()
                         ->with('error', "Manuscript '{$manuscript->title}' is not in a valid status for assignment.");
                 }
-                
+
                 if ($manuscript->issue_id && $manuscript->issue_id != $issue->id) {
                     return redirect()->back()
                         ->with('error', "Manuscript '{$manuscript->title}' is already assigned to another issue.");
@@ -362,10 +368,10 @@ class IssueController extends Controller
             foreach ($manuscripts as $manuscript) {
                 $manuscript->update([
                     'issue_id' => $issue->id,
-                    'volume' => (string)$issue->volume_number,
-                    'issue' => (string)$issue->issue_number,
+                    'volume' => (string) $issue->volume_number,
+                    'issue' => (string) $issue->issue_number,
                 ]);
-                
+
                 // Notify author about assignment to journal issue
                 if ($manuscript->user) {
                     $manuscript->user->notify(new \App\Notifications\IssueAssigned($issue, $manuscript));
@@ -379,7 +385,7 @@ class IssueController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error assigning manuscripts to issue', [
                 'error' => $e->getMessage(),
                 'issue_id' => $issue->id,
@@ -389,7 +395,9 @@ class IssueController extends Controller
             return redirect()->back()
                 ->with('error', 'Failed to assign manuscripts. Please try again.');
         }
-    }/**
+    }
+
+    /**
      * Show manuscripts assignment form for an issue.
      */
     public function showAssignManuscriptsForm(Issue $issue)
@@ -397,15 +405,15 @@ class IssueController extends Controller
         // Get manuscripts that are ready for publication and not assigned to any issue
         // Using case-insensitive comparison for status values to handle potential inconsistencies
         $availableManuscripts = Manuscript::with(['user'])
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereNull('issue_id')
-                      ->orWhere('issue_id', 0); // Handle any zero values that might exist
+                    ->orWhere('issue_id', 0); // Handle any zero values that might exist
             })
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereIn('status', ['Ready to Publish', 'Accepted', 'Published'])
-                      ->orWhereRaw('LOWER(status) = ?', ['ready to publish'])
-                      ->orWhereRaw('LOWER(status) = ?', ['accepted'])
-                      ->orWhereRaw('LOWER(status) = ?', ['published']);
+                    ->orWhereRaw('LOWER(status) = ?', ['ready to publish'])
+                    ->orWhereRaw('LOWER(status) = ?', ['accepted'])
+                    ->orWhereRaw('LOWER(status) = ?', ['published']);
             })
             ->get();
 
@@ -468,7 +476,7 @@ class IssueController extends Controller
 
                     case 'publish':
                         $issue->status = 'published';
-                        if (!$issue->publication_date) {
+                        if (! $issue->publication_date) {
                             $issue->publication_date = now();
                         }
                         $issue->save();
@@ -483,7 +491,7 @@ class IssueController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error in bulk update for journal issues', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
@@ -520,7 +528,7 @@ class IssueController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error unassigning manuscript from issue', [
                 'error' => $e->getMessage(),
                 'issue_id' => $issue->id,
@@ -531,7 +539,9 @@ class IssueController extends Controller
             return redirect()->back()
                 ->with('error', 'Failed to unassign manuscript. Please try again.');
         }
-    }    /**
+    }
+
+    /**
      * Display the current issue.
      */
     public function current()
@@ -541,10 +551,10 @@ class IssueController extends Controller
             ->latest('publication_date')
             ->first();
 
-        if (!$currentIssue) {
+        if (! $currentIssue) {
             // No published issue found, render with empty data
             return Inertia::render('current', [
-                'currentIssue' => null
+                'currentIssue' => null,
             ]);
         }
 
@@ -570,14 +580,14 @@ class IssueController extends Controller
                 $keywords = $manuscript->keywords;
                 if (is_string($keywords)) {
                     $keywords = explode(', ', $keywords);
-                } elseif (!is_array($keywords)) {
+                } elseif (! is_array($keywords)) {
                     $keywords = [];
                 }
 
                 return [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
-                    'authors' => $authors ?: 'Unknown Author',                          
+                    'authors' => $authors ?: 'Unknown Author',
                     'abstract' => $manuscript->abstract ?: '',
                     'keywords' => $keywords,
                     'url' => route('manuscripts.public.show', $manuscript->id),
@@ -587,7 +597,7 @@ class IssueController extends Controller
                     'citations' => 0, // TODO: Implement citation tracking
                     'downloads' => 0, // TODO: Implement download tracking
                     'category' => 'Research Article', // TODO: Add categories to manuscripts
-                    'institution' => $manuscript->user->affiliation ?? 'Mindoro State University'
+                    'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
                 ];
             });
 
@@ -602,15 +612,15 @@ class IssueController extends Controller
             'volume' => $currentIssue->volume_number,
             'number' => $currentIssue->issue_number,
             'year' => $currentIssue->publication_date->year,
-            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (" . $currentIssue->publication_date->year . "): DDMRJ - Current Issue",
+            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.'): DDMRJ - Current Issue',
             'specialIssueTitle' => $currentIssue->issue_title,
             'publicationDate' => $currentIssue->publication_date->toDateString(),
             'coverImageUrl' => $coverImageUrl,
-            'articles' => $articles
-        ];          
-        
+            'articles' => $articles,
+        ];
+
         return Inertia::render('current', [
-            'currentIssue' => $issueData
+            'currentIssue' => $issueData,
         ]);
     }
 }

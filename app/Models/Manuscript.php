@@ -119,6 +119,7 @@ class Manuscript extends Model
         }
 
         $versions = $this->revision_history;
+
         return end($versions);
     }
 
@@ -138,7 +139,7 @@ class Manuscript extends Model
         if ($this->editor_id) {
             return $this->editor;
         }
-        
+
         // If no specific editor is assigned, return the first editor
         return User::where('role', 'editor')->first();
     }

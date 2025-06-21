@@ -11,10 +11,13 @@ class Issue extends Model
 {
     use HasFactory;
 
-    // Journal Issue Status Constants    
+    // Journal Issue Status Constants
     const STATUS_DRAFT = 'draft';
+
     const STATUS_IN_REVIEW = 'in_review';
+
     const STATUS_PUBLISHED = 'published';
+
     const STATUS_ARCHIVED = 'archived';
 
     public const STATUSES = [
@@ -22,8 +25,8 @@ class Issue extends Model
         self::STATUS_IN_REVIEW => 'In Review',
         self::STATUS_PUBLISHED => 'Published',
         self::STATUS_ARCHIVED => 'Archived',
-    ];    
-    
+    ];
+
     protected $fillable = [
         'volume_number',
         'issue_number',
@@ -130,8 +133,8 @@ class Issue extends Model
     public static function getLatestVolume(): int
     {
         return self::max('volume_number') ?? 1;
-    }    
-    
+    }
+
     /**
      * Get the next issue number for a given volume.
      */
@@ -168,8 +171,8 @@ class Issue extends Model
     public function scopeCurrentYear($query)
     {
         return $query->whereYear('publication_date', now()->year);
-    }    
-    
+    }
+
     /**
      * Scope to order by volume and issue number.
      */

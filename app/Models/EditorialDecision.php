@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Manuscript;
 
 class EditorialDecision extends Model
 {
@@ -19,12 +17,12 @@ class EditorialDecision extends Model
         'decision_date',
         'revision_deadline',
         'status',
-        'decision_file_path'
+        'decision_file_path',
     ];
 
     protected $casts = [
         'decision_date' => 'datetime',
-        'revision_deadline' => 'date'
+        'revision_deadline' => 'date',
     ];
 
     // Define constants for decision types that match both the form and database
@@ -32,7 +30,7 @@ class EditorialDecision extends Model
         'ACCEPT' => 'Accept',
         'MINOR_REVISION' => 'Minor Revision',
         'MAJOR_REVISION' => 'Major Revision',
-        'REJECT' => 'Reject'
+        'REJECT' => 'Reject',
     ];
 
     public const STATUSES = [
