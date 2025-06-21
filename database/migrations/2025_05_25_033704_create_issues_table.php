@@ -13,26 +13,27 @@ return new class extends Migration
     {
         Schema::create('issues', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->integer('volume_number');
+            $table->integer('issue_number');
+            $table->string('issue_title');
             $table->text('description');
-            $table->enum('type', ['bug', 'feature_request', 'technical', 'editorial', 'manuscript_related', 'user_support', 'system']);
-            $table->enum('priority', ['low', 'medium', 'high', 'critical']);
-            $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
-            $table->foreignId('reporter_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('assignee_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('manuscript_id')->nullable()->constrained('manuscripts')->onDelete('cascade');
-            $table->date('due_date')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->date('publication_date')->nullable();
+            $table->string('cover_image')->nullable();
+            $table->string('doi')->nullable();
+            $table->string('theme')->nullable();
+            $table->text('editorial_note')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('status', ['draft', 'in_review', 'published', 'archived'])->default('draft');
             $table->text('resolution_notes')->nullable();
-            $table->json('labels')->nullable();
-            $table->json('attachments')->nullable();
             $table->timestamps();
 
-            $table->index(['status', 'priority']);
-            $table->index(['assignee_id', 'status']);
-            $table->index(['reporter_id']);
-            $table->index(['type']);
-            $table->index(['due_date']);
+            // Add unique constraint for volume/issue combination
+            $table->unique(['volume_number', 'issue_number'], 'unique_volume_issue');
+            
+            // Add useful indexes
+            $table->index(['status']);
+            $table->index(['publication_date']);
+            $table->index(['volume_number', 'issue_number']);
         });
     }
 

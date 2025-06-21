@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('manuscripts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('issue_id')->nullable();
             $table->string('title', 255);
             $table->text('authors');
             $table->text('abstract');
@@ -29,6 +30,14 @@ return new class extends Migration {
                 'Rejected',
                 'Published'
             ])->default('Submitted');
+            $table->enum('screening_status', [
+                'Pending',
+                'Passed',
+                'Failed'
+            ])->default('Pending');
+            $table->text('screening_comments')->nullable();
+            $table->timestamp('screened_at')->nullable();
+            $table->foreignId('screened_by')->nullable()->constrained('users')->nullOnDelete();
             $table->json('revision_history')->nullable();
             $table->text('revision_comments')->nullable();
             $table->timestamp('revised_at')->nullable();
@@ -47,6 +56,9 @@ return new class extends Migration {
             $table->date('author_approval_date')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
+
+            // Add foreign key constraints
+            $table->foreign('issue_id')->references('id')->on('issues')->onDelete('set null');
 
             // Add indexes for better query performance
             $table->index('status');

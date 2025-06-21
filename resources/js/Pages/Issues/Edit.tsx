@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, X, AlertCircle } from 'lucide-react';
+import { Upload, X, AlertCircle, FileText, Eye, BookOpen, Archive } from 'lucide-react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 
 interface JournalIssue {
@@ -33,7 +33,15 @@ interface EditProps {
 
 export default function Edit({ issue }: EditProps) {
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+    const [hasExistingImage, setHasExistingImage] = useState<boolean>(!!issue.cover_image);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Initialize with existing image if available
+    React.useEffect(() => {
+        if (issue.cover_image && !coverImagePreview) {
+            setCoverImagePreview(`/storage/${issue.cover_image}`);
+        }
+    }, [issue.cover_image, coverImagePreview]);
 
     const { data, setData, post, processing, errors } = useForm({
         volume_number: issue.volume_number.toString(),
@@ -57,14 +65,14 @@ export default function Edit({ issue }: EditProps) {
                 alert('Please select an image file (jpg, jpeg, png, webp)');
                 return;
             }
-              // Validate file size (5MB)
+            // Validate file size (5MB)
             if (file.size > 5 * 1024 * 1024) {
                 alert('File size must be less than 5MB');
                 return;
             }
-            
+
             setData('cover_image', file);
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -72,8 +80,9 @@ export default function Edit({ issue }: EditProps) {
             };
             reader.readAsDataURL(file);
         }
-    };    const removeCoverImage = () => {
+    }; const removeCoverImage = () => {
         setCoverImagePreview(null);
+        setHasExistingImage(false);
         setData('cover_image', null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -109,16 +118,16 @@ export default function Edit({ issue }: EditProps) {
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Edit Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
-
             <div className="py-12">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
                     <Card>
                         <CardHeader>
                             <CardTitle>Edit Journal Issue Details</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                {/* Basic Information Section */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {/* Volume Number */}
                                     <div>
                                         <Label htmlFor="volume_number">Volume Number *</Label>
@@ -152,41 +161,7 @@ export default function Edit({ issue }: EditProps) {
                                             <p className="text-red-500 text-sm mt-1">{errors.issue_number}</p>
                                         )}
                                     </div>
-                                </div>
 
-                                {/* Issue Title */}
-                                <div>
-                                    <Label htmlFor="issue_title">Issue Title</Label>
-                                    <Input
-                                        id="issue_title"
-                                        type="text"
-                                        value={data.issue_title}
-                                        onChange={(e) => setData('issue_title', e.target.value)}
-                                        className={errors.issue_title ? 'border-red-500' : ''}
-                                        placeholder="Optional descriptive title for this issue"
-                                    />
-                                    {errors.issue_title && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.issue_title}</p>
-                                    )}
-                                </div>
-
-                                {/* Description */}
-                                <div>
-                                    <Label htmlFor="description">Description</Label>
-                                    <Textarea
-                                        id="description"
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                        className={errors.description ? 'border-red-500' : ''}
-                                        placeholder="Brief description of this journal issue..."
-                                        rows={4}
-                                    />
-                                    {errors.description && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-                                    )}
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Publication Date */}
                                     <div>
                                         <Label htmlFor="publication_date">Publication Date</Label>
@@ -213,110 +188,179 @@ export default function Edit({ issue }: EditProps) {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="draft">📝 Draft</SelectItem>
-                                                <SelectItem value="in_review">👁️ In Review</SelectItem>
-                                                <SelectItem value="published">📚 Published</SelectItem>
-                                                <SelectItem value="archived">📦 Archived</SelectItem>
+                                                <SelectItem value="draft">
+                                                    <div className="flex items-center gap-2">
+                                                        <FileText className="h-4 w-4" />
+                                                        Draft
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="in_review">
+                                                    <div className="flex items-center gap-2">
+                                                        <Eye className="h-4 w-4" />
+                                                        In Review
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="published">
+                                                    <div className="flex items-center gap-2">
+                                                        <BookOpen className="h-4 w-4" />
+                                                        Published
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="archived">
+                                                    <div className="flex items-center gap-2">
+                                                        <Archive className="h-4 w-4" />
+                                                        Archived
+                                                    </div>
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                         {errors.status && (
                                             <p className="text-red-500 text-sm mt-1">{errors.status}</p>
                                         )}
                                     </div>
-                                </div>                                {/* Theme */}
-                                <div>
-                                    <Label htmlFor="theme">Theme/Special Focus</Label>
-                                    <Input
-                                        id="theme"
-                                        type="text"
-                                        value={data.theme}
-                                        onChange={(e) => setData('theme', e.target.value)}
-                                        className={errors.theme ? 'border-red-500' : ''}
-                                        placeholder="e.g., 'Climate Change', 'AI in Healthcare'"
-                                    />
-                                    {errors.theme && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.theme}</p>
-                                    )}
                                 </div>
 
-                                {/* Cover Image Upload */}
-                                <div>
-                                    <Label htmlFor="cover_image">Cover Image</Label>
-                                    <div className="mt-2">
-                                        <div className="flex items-center justify-center w-full">
-                                            <div className="w-full">
-                                                {coverImagePreview ? (
-                                                    <div className="relative">
-                                                        <img
-                                                            src={coverImagePreview}
-                                                            alt="Cover image preview"
-                                                            className="w-full max-w-md mx-auto h-64 object-cover rounded-lg border border-gray-300"
+                                {/* Content Section */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className="space-y-6">
+                                        {/* Issue Title */}
+                                        <div>
+                                            <Label htmlFor="issue_title">Issue Title</Label>
+                                            <Input
+                                                id="issue_title"
+                                                type="text"
+                                                value={data.issue_title}
+                                                onChange={(e) => setData('issue_title', e.target.value)}
+                                                className={errors.issue_title ? 'border-red-500' : ''}
+                                                placeholder="Optional descriptive title for this issue"
+                                            />
+                                            {errors.issue_title && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.issue_title}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Description */}
+                                        <div>
+                                            <Label htmlFor="description">Description</Label>
+                                            <Textarea
+                                                id="description"
+                                                value={data.description}
+                                                onChange={(e) => setData('description', e.target.value)}
+                                                className={errors.description ? 'border-red-500' : ''}
+                                                placeholder="Brief description of this journal issue..."
+                                                rows={4}
+                                            />
+                                            {errors.description && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                                            )}
+                                        </div>
+
+                                        {/* Theme */}
+                                        <div>
+                                            <Label htmlFor="theme">Theme/Special Focus</Label>
+                                            <Input
+                                                id="theme"
+                                                type="text"
+                                                value={data.theme}
+                                                onChange={(e) => setData('theme', e.target.value)}
+                                                className={errors.theme ? 'border-red-500' : ''}
+                                                placeholder="e.g., 'Climate Change', 'AI in Healthcare'"
+                                            />
+                                            {errors.theme && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.theme}</p>
+                                            )}
+                                        </div>
+
+                                        {/* DOI */}
+                                        <div>
+                                            <Label htmlFor="doi">DOI</Label>
+                                            <Input
+                                                id="doi"
+                                                type="text"
+                                                value={data.doi}
+                                                onChange={(e) => setData('doi', e.target.value)}
+                                                className={errors.doi ? 'border-red-500' : ''}
+                                                placeholder="e.g., 10.1234/journal.v3i2"
+                                            />
+                                            {errors.doi && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.doi}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {/* Cover Image Upload */}
+                                        <div>
+                                            <Label htmlFor="cover_image">Cover Image</Label>
+                                            <div className="mt-2">
+                                                <div className="flex items-center justify-center w-full">
+                                                    <div className="w-full">
+                                                        {(coverImagePreview || hasExistingImage) ? (
+                                                            <div className="relative">                                                                <img
+                                                                src={coverImagePreview || `/storage/${issue.cover_image}`}
+                                                                alt="Cover image preview"
+                                                                className="w-full h-80 object-cover rounded-lg border border-gray-300"
+                                                                onError={() => {
+                                                                    console.log('Image failed to load:', coverImagePreview || `/storage/${issue.cover_image}`);
+                                                                    setHasExistingImage(false);
+                                                                    setCoverImagePreview(null);
+                                                                }}
+                                                            />
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="destructive"
+                                                                    size="sm"
+                                                                    className="absolute top-2 right-2"
+                                                                    onClick={removeCoverImage}
+                                                                >
+                                                                    <X className="h-4 w-4" />
+                                                                </Button>
+                                                                {/* Debug info - remove in production */}
+                                                                <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs p-1 rounded">
+                                                                    {coverImagePreview ? 'New' : 'Existing'}: {issue.cover_image || 'No image'}
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <label
+                                                                htmlFor="cover_image"
+                                                                className="flex flex-col items-center justify-center w-full h-80 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
+                                                            >
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                    <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                                                    </p>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        PNG, JPG, JPEG or WEBP (MAX. 5MB)
+                                                                    </p>
+                                                                </div>
+                                                            </label>
+                                                        )}
+                                                        <input
+                                                            ref={fileInputRef}
+                                                            id="cover_image"
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={handleCoverImageChange}
+                                                            className="hidden"
                                                         />
-                                                        <Button
-                                                            type="button"
-                                                            variant="destructive"
-                                                            size="sm"
-                                                            className="absolute top-2 right-2"
-                                                            onClick={removeCoverImage}
-                                                        >
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
                                                     </div>
-                                                ) : (
-                                                    <label
-                                                        htmlFor="cover_image"
-                                                        className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
-                                                    >
-                                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                            <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
-                                                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                                <span className="font-semibold">Click to upload</span> or drag and drop
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                                PNG, JPG, JPEG or WEBP (MAX. 5MB)
-                                                            </p>
-                                                        </div>
-                                                    </label>
+                                                </div>
+                                                {errors.cover_image && (
+                                                    <div className="flex items-center gap-2 text-red-600 mt-2">
+                                                        <AlertCircle className="w-4 h-4" />
+                                                        <p className="text-sm">{errors.cover_image}</p>
+                                                    </div>
                                                 )}
-                                                <input
-                                                    ref={fileInputRef}
-                                                    id="cover_image"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleCoverImageChange}
-                                                    className="hidden"
-                                                />
+                                                <p className="text-xs text-gray-500 mt-2">
+                                                    Upload a cover image for this journal issue. Recommended size: 800x1000px or similar aspect ratio.
+                                                </p>
                                             </div>
                                         </div>
-                                        {errors.cover_image && (
-                                            <div className="flex items-center gap-2 text-red-600 mt-2">
-                                                <AlertCircle className="w-4 h-4" />
-                                                <p className="text-sm">{errors.cover_image}</p>
-                                            </div>
-                                        )}
-                                        <p className="text-xs text-gray-500 mt-2">
-                                            Upload a cover image for this journal issue. Recommended size: 800x1000px or similar aspect ratio.
-                                        </p>
                                     </div>
                                 </div>
 
-                                {/* DOI */}
-                                <div>
-                                    <Label htmlFor="doi">DOI</Label>
-                                    <Input
-                                        id="doi"
-                                        type="text"
-                                        value={data.doi}
-                                        onChange={(e) => setData('doi', e.target.value)}
-                                        className={errors.doi ? 'border-red-500' : ''}
-                                        placeholder="e.g., 10.1234/journal.v3i2"
-                                    />
-                                    {errors.doi && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.doi}</p>
-                                    )}
-                                </div>
-
-                                {/* Editorial Note */}
+                                {/* Editorial Note - Full Width */}
                                 <div>
                                     <Label htmlFor="editorial_note">Editorial Note</Label>
                                     <Textarea
@@ -325,7 +369,7 @@ export default function Edit({ issue }: EditProps) {
                                         onChange={(e) => setData('editorial_note', e.target.value)}
                                         className={errors.editorial_note ? 'border-red-500' : ''}
                                         placeholder="Editorial comments or notes for this issue..."
-                                        rows={3}
+                                        rows={4}
                                     />
                                     {errors.editorial_note && (
                                         <p className="text-red-500 text-sm mt-1">{errors.editorial_note}</p>

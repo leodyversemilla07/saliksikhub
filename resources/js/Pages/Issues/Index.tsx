@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Filter, BookOpen, Calendar, Eye, Edit, Archive, FileText } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Search, BookOpen, Calendar, Eye, Edit, Archive, FileText, X } from 'lucide-react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 
 interface JournalIssue {
@@ -80,7 +80,51 @@ const getStatusIcon = (status: string) => {
 export default function Index({ issues, filters }: IndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
-    const [selectedVolume, setSelectedVolume] = useState(filters.volume || 'all');
+    const [selectedVolume, setSelectedVolume] = useState(filters.volume || 'all');    // Remove the useEffect that was causing page reloads
+    // All filtering is now handled client-side for better performance
+
+    // Get unique volumes from issues data
+    const availableVolumes = useMemo(() => {
+        const volumes = issues.data.map(issue => issue.volume_number);
+        return [...new Set(volumes)].sort((a, b) => b - a); // Sort descending
+    }, [issues.data]);    // Client-side filtering for all filters (search, status, volume)
+    const filteredIssues = useMemo(() => {
+        let filtered = issues.data;
+
+        // Apply search filter
+        if (searchTerm.trim()) {
+            const searchLower = searchTerm.toLowerCase();
+            filtered = filtered.filter(issue =>
+                issue.issue_title.toLowerCase().includes(searchLower) ||
+                issue.description.toLowerCase().includes(searchLower) ||
+                (issue.doi && issue.doi.toLowerCase().includes(searchLower)) ||
+                (issue.theme && issue.theme.toLowerCase().includes(searchLower)) ||
+                issue.volume_number.toString().includes(searchLower) ||
+                issue.issue_number.toString().includes(searchLower)
+            );
+        }
+
+        // Apply status filter
+        if (selectedStatus !== 'all') {
+            filtered = filtered.filter(issue => issue.status === selectedStatus);
+        }
+
+        // Apply volume filter
+        if (selectedVolume !== 'all') {
+            filtered = filtered.filter(issue => issue.volume_number.toString() === selectedVolume);
+        }
+
+        return filtered;
+    }, [issues.data, searchTerm, selectedStatus, selectedVolume]);
+
+    // Get active filters count
+    const activeFiltersCount = useMemo(() => {
+        let count = 0;
+        if (searchTerm) count++;
+        if (selectedStatus !== 'all') count++;
+        if (selectedVolume !== 'all') count++;
+        return count;
+    }, [searchTerm, selectedStatus, selectedVolume]);
 
     const breadcrumbItems = [
         {
@@ -91,122 +135,200 @@ export default function Index({ issues, filters }: IndexProps) {
             label: 'Journal Issues',
             href: route('issues.index'),
         }
-    ];
-
-    const handleFilter = () => {
-        router.get('/issues', {
-            search: searchTerm,
-            status: selectedStatus === 'all' ? '' : selectedStatus,
-            volume: selectedVolume === 'all' ? '' : selectedVolume,
-        }, {
-            preserveState: true,
-            replace: true,
-        });
-    };
-
-    const clearFilters = () => {
+    ];    const clearFilters = () => {
         setSearchTerm('');
         setSelectedStatus('all');
         setSelectedVolume('all');
-        router.get('/issues', {}, {
-            preserveState: true,
-            replace: true,
-        });
-    };    return (
+        // No server request needed - all filtering is client-side
+    };
+
+    const removeFilter = (filterType: string) => {
+        switch (filterType) {
+            case 'search':
+                setSearchTerm('');
+                break;
+            case 'status':
+                setSelectedStatus('all');
+                break;
+            case 'volume':
+                setSelectedVolume('all');
+                break;
+        }
+    };
+
+    return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Journal Issues" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {/* Header with Create Button */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                            Journal Issues
-                        </h2>
+                <div className="w-full">
+
+                    {/* Header with Stats and Create Button */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                Journal Issues
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                {issues.total} total issues • {activeFiltersCount > 0 && `${filteredIssues.length} filtered • `}
+                                Manage your research publication volumes
+                            </p>
+                        </div>
                         <Link href="/issues/create">
-                            <Button className="bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white hover:from-[#145024] hover:to-[#35a051] transition-all duration-300">
-                                <Plus className="h-5 w-5 mr-1" />
-                                Create Issue
+                            <Button className="bg-gradient-to-br from-[#18652c] to-[#3fb65e] text-white hover:from-[#145024] hover:to-[#35a051] transition-all duration-300 shadow-lg">
+                                <Plus className="h-4 w-4 mr-2" />
+                                New Issue
                             </Button>
                         </Link>
                     </div>
 
-                    {/* Filters */}
-                    <Card className="mb-6">
-                        <CardHeader>
-                            <CardTitle className="flex items-center">
-                                <Filter className="h-5 w-5 mr-2" />
-                                Filters
-                            </CardTitle>
-                        </CardHeader>                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder="Search journal issues..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
-                                    />
-                                </div>
+                    {/* Compact Filters */}
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6 shadow-sm">
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            {/* Search Bar */}
+                            <div className="flex-1 relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Input
+                                    placeholder="Search by title, description, DOI, or theme..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-600 focus:ring-green-500 focus:border-green-500"
+                                />
+                            </div>
 
-                                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Status" />
+                            {/* Status Filter */}
+                            <div className="w-full lg:w-48">
+                                <Select value={selectedStatus} onValueChange={(value) => {
+                                    setSelectedStatus(value);
+                                }}>
+                                    <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-600">
+                                        <SelectValue placeholder="All Statuses" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Statuses</SelectItem>
-                                        <SelectItem value="draft">Draft</SelectItem>
-                                        <SelectItem value="in_review">In Review</SelectItem>
-                                        <SelectItem value="published">Published</SelectItem>
-                                        <SelectItem value="archived">Archived</SelectItem>
+                                        <SelectItem value="draft">
+                                            <div className="flex items-center">
+                                                <Edit className="h-4 w-4 mr-2" />
+                                                Draft
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="in_review">
+                                            <div className="flex items-center">
+                                                <Eye className="h-4 w-4 mr-2" />
+                                                In Review
+                                            </div>
+                                        </SelectItem>
+                                        
+                                        <SelectItem value="published">
+                                            <div className="flex items-center">
+                                                <BookOpen className="h-4 w-4 mr-2" />
+                                                Published
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="archived">
+                                            <div className="flex items-center">
+                                                <Archive className="h-4 w-4 mr-2" />
+                                                Archived
+                                            </div>
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
 
-                                <Select value={selectedVolume} onValueChange={setSelectedVolume}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Volume" />
+                            {/* Volume Filter */}
+                            <div className="w-full lg:w-40">
+                                <Select value={selectedVolume} onValueChange={(value) => {
+                                    setSelectedVolume(value);
+                                }}>
+                                    <SelectTrigger className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-600">
+                                        <SelectValue placeholder="All Volumes" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Volumes</SelectItem>
-                                        {/* Dynamic volume options would be populated from backend */}
-                                        <SelectItem value="1">Volume 1</SelectItem>
-                                        <SelectItem value="2">Volume 2</SelectItem>
-                                        <SelectItem value="3">Volume 3</SelectItem>
-                                        <SelectItem value="4">Volume 4</SelectItem>
-                                        <SelectItem value="5">Volume 5</SelectItem>
+                                        {availableVolumes.map((volume) => (
+                                            <SelectItem key={volume} value={volume.toString()}>
+                                                Volume {volume}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
-
-                                <div className="flex space-x-2">
-                                    <Button onClick={handleFilter} className="flex-1">
-                                        Apply
-                                    </Button>
-                                    <Button variant="outline" onClick={clearFilters} className="flex-1">
-                                        Clear
-                                    </Button>
-                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
+
+                            {/* Clear Filters Button */}
+                            {activeFiltersCount > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={clearFilters}
+                                    className="text-gray-600 hover:text-gray-800 border-gray-300"
+                                >
+                                    <X className="h-4 w-4 mr-1" />
+                                    Clear ({activeFiltersCount})
+                                </Button>
+                            )}
+                        </div>
+
+                        {/* Active Filters */}
+                        {activeFiltersCount > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                {searchTerm && (
+                                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100">
+                                        Search: "{searchTerm}"
+                                        <X
+                                            className="h-3 w-3 ml-1 cursor-pointer"
+                                            onClick={() => removeFilter('search')}
+                                        />
+                                    </Badge>
+                                )}
+                                {selectedStatus !== 'all' && (
+                                    <Badge variant="secondary" className="bg-green-50 text-green-700 hover:bg-green-100">
+                                        Status: {selectedStatus.replace('_', ' ')}
+                                        <X
+                                            className="h-3 w-3 ml-1 cursor-pointer"
+                                            onClick={() => removeFilter('status')}
+                                        />
+                                    </Badge>
+                                )}
+                                {selectedVolume !== 'all' && (
+                                    <Badge variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-100">
+                                        Volume: {selectedVolume}
+                                        <X
+                                            className="h-3 w-3 ml-1 cursor-pointer"
+                                            onClick={() => removeFilter('volume')}
+                                        />
+                                    </Badge>
+                                )}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Issues List */}
-                    <div className="space-y-4">                        {issues.data.length === 0 ? (
+                    <div className="space-y-4">
+                        {filteredIssues.length === 0 ? (
                             <Card>
                                 <CardContent className="text-center py-12">
                                     <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Journal Issues Found</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                        {searchTerm ? 'No matching issues found' : 'No Journal Issues Found'}
+                                    </h3>
                                     <p className="text-gray-500 mb-4">
-                                        Get started by creating your first journal issue.
+                                        {searchTerm
+                                            ? `No issues match your search "${searchTerm}". Try adjusting your search terms.`
+                                            : 'Get started by creating your first journal issue.'
+                                        }
                                     </p>
-                                    <Link href="/issues/create">
-                                        <Button>
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Create Issue
-                                        </Button>
-                                    </Link>
+                                    {!searchTerm && (
+                                        <Link href="/issues/create">
+                                            <Button>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Create Issue
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </CardContent>
-                            </Card>                        ) : (                            issues.data.map((issue) => (
+                            </Card>
+                        ) : (
+                            filteredIssues.map((issue) => (
                                 <Card key={issue.id} className="hover:shadow-md transition-shadow">
                                     <CardContent className="p-6">
                                         <div className="flex items-start justify-between">
@@ -223,7 +345,7 @@ export default function Index({ issues, filters }: IndexProps) {
                                                     />
                                                 </div>
                                             )}
-                                            
+
                                             <div className="flex-1">
                                                 <div className="flex items-center space-x-3 mb-3">
                                                     {getStatusIcon(issue.status)}
@@ -293,7 +415,9 @@ export default function Index({ issues, filters }: IndexProps) {
                                 </Card>
                             ))
                         )}
-                    </div>                    {/* Pagination */}
+                    </div>
+
+                    {/* Pagination */}
                     {issues.last_page > 1 && (
                         <div className="mt-6 flex justify-center">
                             <div className="flex space-x-2">
@@ -301,8 +425,15 @@ export default function Index({ issues, filters }: IndexProps) {
                                     <Button
                                         key={page}
                                         variant={page === issues.current_page ? 'default' : 'outline'}
-                                        size="sm"
-                                        onClick={() => router.get(`/issues?page=${page}`)}
+                                        size="sm"                                        onClick={() => {
+                                            // Simple pagination without filters since all filtering is client-side
+                                            router.visit(`/issues?page=${page}`, {
+                                                preserveState: true,
+                                                preserveScroll: false,
+                                                replace: true,
+                                                only: ['issues'],
+                                            });
+                                        }}
                                     >
                                         {page}
                                     </Button>

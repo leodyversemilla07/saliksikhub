@@ -156,14 +156,16 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
             label: `Vol. ${issue.volume_number}, Issue ${issue.issue_number}`,
             href: route('issues.show', issue.id),
         }
-    ];
-
+    ];    
+    
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">                    {/* Header Card */}
+                <div className="w-full px-4 sm:px-6 lg:px-8 space-y-6">                    
+                    
+                    {/* Header Card */}
                     <Card>
                         <CardHeader>
                             <div className="flex justify-between items-start">
@@ -209,13 +211,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                             <Edit className="h-4 w-4 mr-2" />
                                             Edit
                                         </Button>
-                                    </Link>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => router.visit(route('issues.index'))}
-                                    >
-                                        Back to Issues
-                                    </Button>
+                                    </Link>     
                                 </div>
                             </div>
                         </CardHeader>

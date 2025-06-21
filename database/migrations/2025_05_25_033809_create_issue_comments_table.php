@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('issue_id')->constrained('issues')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('comment');
+            $table->text('content');
             $table->boolean('is_internal')->default(false);
             $table->json('attachments')->nullable();
             $table->timestamps();
