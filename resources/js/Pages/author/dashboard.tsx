@@ -183,8 +183,8 @@ function getAxisColor(): string {
 
 // Main Dashboard Component
 export default function AuthorDashboard(): React.ReactElement {
-    const { props } = usePage<{ 
-        manuscripts: Manuscript[], 
+    const { props } = usePage<{
+        manuscripts: Manuscript[],
         auth: { user: User, role: string },
         monthlySubmissionData: ChartDataPoint[], // Add this
         currentTimeFilter: string // Add this
@@ -293,27 +293,36 @@ export default function AuthorDashboard(): React.ReactElement {
     const renderMetricsCards = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {dashboardMetrics.map((metric, index) => (
-                <Card key={index} className="group relative overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-1 border-0 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 backdrop-blur-sm">
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-100/20 dark:to-gray-700/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <Card
+                    key={index}
+                    className={cn(
+                        "relative overflow-hidden",
+                        "bg-card text-card-foreground border border-border shadow-sm"
+                    )}
+                >
+                    <div className="absolute inset-0 pointer-events-none" />
                     <CardContent className="p-6 relative z-10">
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <div className={cn(
-                                        "p-2.5 rounded-xl bg-gradient-to-br shadow-lg transform group-hover:scale-110 transition-transform duration-300",
-                                        metric.color,
-                                        "text-white"
-                                    )}>
-                                        <metric.icon className="h-5 w-5" />
+                                    <div
+                                        className={cn(
+                                            "p-2.5 rounded-xl shadow-lg flex items-center justify-center",
+                                            "bg-primary"
+                                        )}
+                                    >
+                                        <metric.icon className="h-5 w-5 text-primary-foreground" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 tracking-wide">{metric.title}</p>
-                                        <span className={cn(
-                                            "inline-flex items-center text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r shadow-sm",
-                                            metric.trend.direction === 'up'
-                                                ? "from-emerald-100 to-green-100 text-emerald-700 dark:from-emerald-900/40 dark:to-green-900/40 dark:text-emerald-300"
-                                                : "from-red-100 to-pink-100 text-red-700 dark:from-red-900/40 dark:to-pink-900/40 dark:text-red-300"
-                                        )}>
+                                        <p className="text-sm font-semibold text-card-foreground tracking-wide">{metric.title}</p>
+                                        <span
+                                            className={cn(
+                                                "inline-flex items-center text-xs px-2 py-1 rounded-full font-medium shadow-sm",
+                                                metric.trend.direction === 'up'
+                                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                                    : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
+                                            )}
+                                        >
                                             {metric.trend.direction === 'up' ? (
                                                 <TrendingUp className="h-3 w-3 mr-1" />
                                             ) : (
@@ -323,14 +332,13 @@ export default function AuthorDashboard(): React.ReactElement {
                                         </span>
                                     </div>
                                 </div>
-                                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+                                <h3 className="text-3xl font-bold text-card-foreground mb-1 tracking-tight">
                                     {metric.value}
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{metric.description}</p>
+                                <p className="text-sm text-muted-foreground">{metric.description}</p>
                             </div>
                         </div>
                     </CardContent>
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Card>
             ))}
         </div>
@@ -341,7 +349,7 @@ export default function AuthorDashboard(): React.ReactElement {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Submissions Analysis Chart */}
                 <Card className="lg:col-span-2 shadow-sm">
-                    <CardHeader className="border-b bg-gray-50/50 dark:bg-gray-800/50 pb-3">
+                    <CardHeader className="border-b pb-3">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                             <div>
                                 <CardTitle className="text-lg font-semibold">Submission Analytics</CardTitle>
@@ -531,9 +539,13 @@ export default function AuthorDashboard(): React.ReactElement {
 
                 {/* Status Distribution */}
                 <Card className="shadow-sm">
-                    <CardHeader className="border-b bg-gray-50/50 dark:bg-gray-800/50 pb-3">
-                        <CardTitle className="text-lg font-semibold">Manuscript Status</CardTitle>
-                        <CardDescription>Distribution of your manuscripts</CardDescription>
+                    <CardHeader className="border-b pb-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <div>
+                                <CardTitle className="text-lg font-semibold">Manuscript Status</CardTitle>
+                                <CardDescription>Distribution of your manuscripts</CardDescription>
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent className="pt-6 pb-4">
                         <div className="h-[300px] w-full">
@@ -987,14 +999,14 @@ export default function AuthorDashboard(): React.ReactElement {
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Dashboard" />
 
-            <div className="space-y-6">
+            <div className="space-y-6 bg-background text-foreground min-h-screen">
                 {/* Stats Overview */}
                 {renderMetricsCards()}
 
                 {/* Main Tabs */}
                 <Tabs defaultValue="overview" value={activeView} onValueChange={setActiveView}>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-                        <TabsList className="h-10">
+                        <TabsList className="h-10 bg-background text-foreground">
                             <TabsTrigger value="overview" className="px-4">Overview</TabsTrigger>
                             <TabsTrigger value="manuscripts" className="px-4">My Manuscripts</TabsTrigger>
                             <TabsTrigger value="activity" className="px-4">Recent Activity</TabsTrigger>

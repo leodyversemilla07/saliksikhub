@@ -2,23 +2,38 @@ import { Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { ClipboardCheck, Search } from "lucide-react";
 
 export default function AboutAimsScope({ auth }: PageProps) {
-    const breadcrumbItems = [
-        { href: '/', label: 'Home' },
-        { href: '/about-journal', label: 'About the Journal' },
-        { href: '', label: 'Aims & Scope' }
-    ];
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title="Aims & Scope | Daluyang Dunong" />
             <Header auth={auth} />
             <main className="flex-grow"> {/* Styles moved to outer div, main is just flex-grow */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/about-journal">About the Journal</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Aims & Scope</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                         Aims & Scope

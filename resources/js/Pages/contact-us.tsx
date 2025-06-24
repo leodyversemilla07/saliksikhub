@@ -1,15 +1,17 @@
 import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import Footer from '@/components/site-footer';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Head } from '@inertiajs/react';
 
 export default function ContactUs({ auth }: PageProps) {
-    const breadcrumbItems = [
-        { href: '/', label: 'Home' },
-        { href: '', label: 'Contact Us' }
-    ];
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title="Contact Us | Daluyang Dunong" />
@@ -18,7 +20,17 @@ export default function ContactUs({ auth }: PageProps) {
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Contact Us</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Contact Information */}

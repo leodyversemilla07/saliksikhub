@@ -78,6 +78,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{user}', [EditorController::class, 'update'])->name('editor.users.update');
             Route::delete('/{user}', [EditorController::class, 'destroy'])->name('editor.users.destroy');
         });
+
+        // Issue routes
+        Route::resource('issues', IssueController::class);
+        Route::post('issues/{issue}/comments', [IssueController::class, 'storeComment'])->name('issues.comments.store');
+        Route::get('issues/{issue}/assign-manuscripts', [IssueController::class, 'showAssignManuscriptsForm'])->name('issues.assign-manuscripts.form');
+        Route::post('issues/{issue}/assign-manuscripts', [IssueController::class, 'assignManuscripts'])->name('issues.assign-manuscripts');
+        Route::delete('issues/{issue}/manuscripts/{manuscript}', [IssueController::class, 'unassignManuscript'])->name('issues.manuscripts.unassign');
     });
 });
 
@@ -86,13 +93,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('api.notifications');
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
     Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('api.notifications.readAll');
-
-    // Issue routes
-    Route::resource('issues', IssueController::class);
-    Route::post('issues/{issue}/comments', [IssueController::class, 'storeComment'])->name('issues.comments.store');
-    Route::get('issues/{issue}/assign-manuscripts', [IssueController::class, 'showAssignManuscriptsForm'])->name('issues.assign-manuscripts.form');
-    Route::post('issues/{issue}/assign-manuscripts', [IssueController::class, 'assignManuscripts'])->name('issues.assign-manuscripts');
-    Route::delete('issues/{issue}/manuscripts/{manuscript}', [IssueController::class, 'unassignManuscript'])->name('issues.manuscripts.unassign');
 });
 
 Route::get('/unauthorized', function () {
@@ -105,4 +105,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

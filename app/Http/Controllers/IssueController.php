@@ -67,7 +67,7 @@ class IssueController extends Controller
             return $issue;
         });
 
-        return Inertia::render('Issues/Index', [
+        return Inertia::render('issues/index', [
             'issues' => $issues,
             'filters' => [
                 'status' => $request->status,
@@ -141,7 +141,6 @@ class IssueController extends Controller
 
             return redirect()->route('issues.show', $issue)
                 ->with('success', 'Journal issue created successfully!');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -180,7 +179,7 @@ class IssueController extends Controller
             }
         }
 
-        return Inertia::render('Issues/Show', [
+        return Inertia::render('issues/show', [
             'issue' => $issue,
             'manuscripts' => $issue->manuscripts,
             'coverImageUrl' => $coverImageUrl,
@@ -192,7 +191,7 @@ class IssueController extends Controller
      */
     public function edit(Issue $issue)
     {
-        return Inertia::render('Issues/Edit', [
+        return Inertia::render('issues/edit', [
             'issue' => $issue,
         ]);
     }
@@ -211,7 +210,7 @@ class IssueController extends Controller
             'status' => 'required|in:draft,in_review,published,archived',
             'theme' => 'nullable|string|max:255',
             'editorial_note' => 'nullable|string',
-            'doi' => 'nullable|string|max:255|unique:issues,doi,'.$issue->id,
+            'doi' => 'nullable|string|max:255|unique:issues,doi,' . $issue->id,
             'cover_image' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120', // 5MB max
         ]);
 
@@ -259,7 +258,6 @@ class IssueController extends Controller
 
             return redirect()->route('issues.show', $issue)
                 ->with('success', 'Journal issue updated successfully!');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -322,7 +320,6 @@ class IssueController extends Controller
 
             return redirect()->route('issues.index')
                 ->with('success', 'Journal issue deleted successfully!');
-
         } catch (Exception $e) {
             Log::error('Error deleting journal issue', [
                 'error' => $e->getMessage(),
@@ -382,7 +379,6 @@ class IssueController extends Controller
 
             return redirect()->route('issues.show', $issue)
                 ->with('success', 'Manuscripts assigned to issue successfully!');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -417,7 +413,7 @@ class IssueController extends Controller
             })
             ->get();
 
-        return Inertia::render('Issues/AssignManuscripts', [
+        return Inertia::render('issues/assign-manuscripts', [
             'issue' => $issue,
             'availableManuscripts' => $availableManuscripts,
         ]);
@@ -488,7 +484,6 @@ class IssueController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Journal issues updated successfully!');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -525,7 +520,6 @@ class IssueController extends Controller
 
             return redirect()->route('issues.show', $issue)
                 ->with('success', "Manuscript '{$manuscript->title}' unassigned from issue successfully.");
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -612,7 +606,7 @@ class IssueController extends Controller
             'volume' => $currentIssue->volume_number,
             'number' => $currentIssue->issue_number,
             'year' => $currentIssue->publication_date->year,
-            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.'): DDMRJ - Current Issue',
+            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (" . $currentIssue->publication_date->year . '): DDMRJ - Current Issue',
             'specialIssueTitle' => $currentIssue->issue_title,
             'publicationDate' => $currentIssue->publication_date->toDateString(),
             'coverImageUrl' => $coverImageUrl,

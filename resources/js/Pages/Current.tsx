@@ -3,7 +3,14 @@ import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { FileText, Eye } from 'lucide-react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 interface Article {
     id: number;
@@ -62,12 +69,6 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
         );
     }
 
-    const breadcrumbItems = [
-        { href: '/', label: 'Home' },
-        { href: '/archives', label: 'Archives' },
-        { href: '/current', label: currentIssue.fullTitle }
-    ];
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`} />
@@ -75,7 +76,21 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/archives">Archives</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">{currentIssue.fullTitle}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
                     {/* Page Title */}
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">

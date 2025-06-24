@@ -1,6 +1,13 @@
 import { useEffect, FormEventHandler, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';
@@ -13,10 +20,10 @@ import { Eye, EyeOff } from 'lucide-react';
 export default function Login({ canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
     const [showPassword, setShowPassword] = useState(false);
 
-    const breadcrumbItems = [
-        { label: 'Home', href: route('home') },
-        { label: 'Login' }
-    ];
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post(route('login'));
+    };
 
     const { data, setData, post, processing, errors, reset } = useForm<{
         email: string;
@@ -34,11 +41,6 @@ export default function Login({ canResetPassword, auth }: PageProps<{ status?: s
         };
     }, [reset]);
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post(route('login'));
-    };
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title="Login | Daluyang Dunong" />
@@ -46,7 +48,17 @@ export default function Login({ canResetPassword, auth }: PageProps<{ status?: s
 
             <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={route('home')}>Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Login</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                     <div className="mb-8 text-left">
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                             Login

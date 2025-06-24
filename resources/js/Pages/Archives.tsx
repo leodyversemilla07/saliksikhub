@@ -4,7 +4,14 @@ import { PageProps } from '@/types';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { Book, Calendar, ListChecks, Archive } from 'lucide-react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 interface JournalArticle {
     id: number;
@@ -151,18 +158,23 @@ export default function Archives({ auth }: PageProps) {
         }
     ];
 
-    const breadcrumbItems = [
-        { label: "Home", href: "/" },
-        { label: "Archives" }
-    ];
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title="Archives | Daluyang Dunong" />
             <Header auth={auth} />
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Archives</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
                     {/* Page Title */}
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
@@ -286,7 +298,7 @@ export default function Archives({ auth }: PageProps) {
                                 <div className="grid md:grid-cols-3 gap-6">
                                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 text-center transition-colors duration-300">
                                         <div className="text-3xl font-bold text-[#18652c] dark:text-[#3fb65e] mb-2 transition-colors duration-300">
-                                            {archiveData.reduce((total, year) => 
+                                            {archiveData.reduce((total, year) =>
                                                 total + year.volumes.reduce((volTotal, vol) => volTotal + vol.issues.length, 0), 0
                                             )}
                                         </div>

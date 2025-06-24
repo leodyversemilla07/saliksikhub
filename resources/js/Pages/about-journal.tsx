@@ -1,22 +1,34 @@
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import { BookOpen, Target, Eye, Star, Unlock, Users, BookCopy, Globe, ShieldCheck, LifeBuoy } from 'lucide-react';
 
 export default function AboutJournal({ auth }: PageProps) {
-    const breadcrumbItems = [
-        { href: '/', label: 'Home' },
-        { href: '', label: 'About the Journal' }
-    ];
-
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head title="About the Journal | Daluyang Dunong" />
             <Header auth={auth} />            <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">About the Journal</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                         About the Journal
@@ -66,12 +78,12 @@ export default function AboutJournal({ auth }: PageProps) {
                             Key Features
                         </h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {[                                { title: "Open Access", description: "Ensuring free and unrestricted access to all published articles, promoting wider readership and knowledge sharing.", icon: <Unlock className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
-                                { title: "Peer Review", description: "Employing a rigorous double-blind peer-review process to maintain high academic standards and integrity.", icon: <Users className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
-                                { title: "Multidisciplinary Scope", description: "Welcoming contributions from a broad range of disciplines, encouraging cross-pollination of ideas.", icon: <BookCopy className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
-                                { title: "Global Reach", description: "Disseminating research to a worldwide audience, fostering international collaboration and impact.", icon: <Globe className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
-                                { title: "Ethical Standards", description: "Adhering to the highest ethical guidelines in publishing, ensuring transparency and accountability.", icon: <ShieldCheck className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
-                                { title: "Author Support", description: "Providing comprehensive support to authors throughout the submission and publication process.", icon: <LifeBuoy className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> }
+                            {[{ title: "Open Access", description: "Ensuring free and unrestricted access to all published articles, promoting wider readership and knowledge sharing.", icon: <Unlock className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
+                            { title: "Peer Review", description: "Employing a rigorous double-blind peer-review process to maintain high academic standards and integrity.", icon: <Users className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
+                            { title: "Multidisciplinary Scope", description: "Welcoming contributions from a broad range of disciplines, encouraging cross-pollination of ideas.", icon: <BookCopy className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
+                            { title: "Global Reach", description: "Disseminating research to a worldwide audience, fostering international collaboration and impact.", icon: <Globe className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
+                            { title: "Ethical Standards", description: "Adhering to the highest ethical guidelines in publishing, ensuring transparency and accountability.", icon: <ShieldCheck className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> },
+                            { title: "Author Support", description: "Providing comprehensive support to authors throughout the submission and publication process.", icon: <LifeBuoy className="h-10 w-10 text-[#18652c] dark:text-[#3fb65e] mb-3 transition-colors duration-300" /> }
                             ].map((feature, index) => (
                                 <div key={index} className="flex flex-col items-center text-center p-6 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
                                     {feature.icon}

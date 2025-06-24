@@ -23,7 +23,6 @@ import {
 
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -302,7 +301,6 @@ const ActionButtons = ({ manuscript, userRole, onDelete }: { manuscript: Manuscr
                         variant="ghost"
                         size="sm"
                         onClick={handleViewClick}
-                        className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
                     >
                         <FileText className="h-4 w-4" />
                     </Button>
@@ -317,7 +315,6 @@ const ActionButtons = ({ manuscript, userRole, onDelete }: { manuscript: Manuscr
                             variant="ghost"
                             size="sm"
                             onClick={() => router.visit(route('manuscripts.revision.form', manuscript.id))}
-                            className="h-8 w-8 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/30 dark:hover:text-amber-400 transition-colors"
                         >
                             <RefreshCw className="h-4 w-4" />
                         </Button>
@@ -337,7 +334,6 @@ const ActionButtons = ({ manuscript, userRole, onDelete }: { manuscript: Manuscr
                             variant="ghost"
                             size="sm"
                             onClick={() => router.visit(route('manuscripts.approve', manuscript.id))}
-                            className="h-8 w-8 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
                         >
                             <CheckCircle className="h-4 w-4" />
                         </Button>
@@ -356,7 +352,6 @@ const ActionButtons = ({ manuscript, userRole, onDelete }: { manuscript: Manuscr
                                 e.stopPropagation();
                                 onDelete();
                             }}
-                            className="h-8 w-8 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors"
                         >
                             <Trash2 className="h-4 w-4" />
                         </Button>
@@ -369,13 +364,17 @@ const ActionButtons = ({ manuscript, userRole, onDelete }: { manuscript: Manuscr
 };
 
 const CreateNewButton = () => (
-    <Link
-        href={route('manuscripts.create')}
-        className="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg py-2 px-4 shadow-md transition-all duration-200"
+    <Button
+        asChild
+        variant="default"
+        size="lg"
+        className="rounded-lg shadow-md"
     >
-        <Plus className="h-5 w-5 mr-1" />
-        <span>New Manuscript</span>
-    </Link>
+        <Link href={route('manuscripts.create')}>
+            <Plus className="h-5 w-5 mr-1" />
+            <span>New Manuscript</span>
+        </Link>
+    </Button>
 );
 
 export default function Index({ manuscripts }: IndexProps) {
@@ -557,9 +556,9 @@ export default function Index({ manuscripts }: IndexProps) {
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Manuscripts" />
 
-            <div className="space-y-6">
+            <div className="space-y-6 bg-background text-foreground">
                 {/* Search and Controls Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60">
+                <div className="bg-card dark:bg-card rounded-lg shadow-sm border border-border">
                     <div className="px-6 py-5">
                         <div className="flex flex-col gap-4">
                             {/* Controls Row */}
@@ -582,7 +581,6 @@ export default function Index({ manuscripts }: IndexProps) {
                                         size="sm"
                                         disabled={selectedManuscripts.length === 0}
                                         onClick={() => handleBulkAction('export')}
-                                        className="border-gray-300 dark:border-gray-600 hover:border-green-400 hover:text-green-600 dark:hover:border-green-500 dark:hover:text-green-400 transition-all"
                                     >
                                         <Download className="h-4 w-4 mr-2" />
                                         Export ({selectedManuscripts.length})
@@ -594,12 +592,12 @@ export default function Index({ manuscripts }: IndexProps) {
                             {/* Search and Filter Row */}
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <div className="relative flex-1 group">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                     <Input
                                         placeholder="Search by title, author, or ID..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 border-gray-300 dark:border-gray-600 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-900"
+                                        className="pl-10 border border-input bg-input text-foreground focus:ring-primary focus:border-primary placeholder:text-muted-foreground"
                                     />
                                 </div>
 
@@ -607,31 +605,31 @@ export default function Index({ manuscripts }: IndexProps) {
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-[200px] justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
+                                            className="w-[200px] justify-between border border-input bg-input text-foreground"
                                         >
                                             <div className="flex items-center">
-                                                <Filter className="h-4 w-4 mr-2" />
+                                                <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
                                                 {statusFilter === 'all' ? 'All Status' : STATUS_CONFIG[statusFilter.toUpperCase() as keyof typeof STATUS_CONFIG]?.display || statusFilter}
                                             </div>
-                                            <ChevronDown className="h-4 w-4 opacity-50" />
+                                            <ChevronDown className="h-4 w-4 opacity-50 text-muted-foreground" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-[200px]">
+                                    <DropdownMenuContent align="end" className="w-[200px] bg-card text-foreground border border-border">
                                         <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            className={statusFilter === 'all' ? "bg-gray-100 dark:bg-gray-800" : ""}
+                                            className={statusFilter === 'all' ? "bg-muted text-foreground" : ""}
                                             onClick={() => setStatusFilter('all')}
                                         >
                                             <div className="flex items-center">
-                                                <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
+                                                <div className="w-2 h-2 rounded-full bg-muted-foreground mr-3"></div>
                                                 All Manuscripts
                                             </div>
                                         </DropdownMenuItem>
                                         {Object.entries(STATUS_CONFIG).map(([key, config]) => (
                                             <DropdownMenuItem
                                                 key={key}
-                                                className={statusFilter === key ? "bg-gray-100 dark:bg-gray-800" : ""}
+                                                className={statusFilter === key ? "bg-muted text-foreground" : ""}
                                                 onClick={() => setStatusFilter(key.toLowerCase() as Manuscript['status'] | 'all')}
                                             >
                                                 <div className="flex items-center">
@@ -648,7 +646,7 @@ export default function Index({ manuscripts }: IndexProps) {
                 </div>
 
                 {/* Results Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 overflow-hidden">
+                <div className="bg-card dark:bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                     {paginatedManuscripts.length > 0 ? (
                         <>
                             {/* Desktop Table View */}
@@ -859,7 +857,7 @@ export default function Index({ manuscripts }: IndexProps) {
 
                 {/* Pagination */}
                 {filteredManuscripts.length > 0 && totalPages > 1 && (
-                    <div className="bg-white dark:bg-gray-800 border-t border-gray-200/60 dark:border-gray-700/60 px-6 py-4 rounded-b-lg">
+                    <div className="bg-card dark:bg-card rounded-lg shadow-sm border border-border px-4 py-3">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -931,7 +929,7 @@ export default function Index({ manuscripts }: IndexProps) {
 
             {selectedManuscript && (
                 <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="bg-card text-foreground border-border">
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-xl font-semibold">Delete Manuscript</AlertDialogTitle>
                             <AlertDialogDescription className="mt-2">
@@ -947,10 +945,10 @@ export default function Index({ manuscripts }: IndexProps) {
                                 variant="destructive"
                                 onClick={() => {
                                     if (selectedManuscript) handleDelete(selectedManuscript.id);
-                                }}
-                            >
-                                Delete
-                            </Button>
+                            }}
+                        >
+                            Delete
+                        </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

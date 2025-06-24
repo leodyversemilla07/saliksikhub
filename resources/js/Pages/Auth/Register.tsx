@@ -1,6 +1,13 @@
 import { FormEventHandler, useCallback, memo } from 'react';
 import { Head, useForm } from '@inertiajs/react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { PageProps } from '@/types';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
@@ -87,11 +94,6 @@ const CheckboxInput = ({ id, label, checked, onChange }: {
 );
 
 export default function Register({ auth }: PageProps) {
-    const breadcrumbItems = [
-        { label: 'Home', href: route('home') },
-        { label: 'Register' }
-    ];
-
     const { data, setData, post, processing, errors, reset } = useForm<{
         firstname: string;
         lastname: string;
@@ -335,7 +337,17 @@ export default function Register({ auth }: PageProps) {
 
             <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <Breadcrumb items={breadcrumbItems} />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href={route('home')}>Home</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Register</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                     <div className="mb-8 text-left">
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                             Register

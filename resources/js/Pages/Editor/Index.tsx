@@ -46,6 +46,10 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
+import { Checkbox } from '@/components/ui/checkbox'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 interface ManuscriptTableProps {
     manuscripts: Manuscript[]
@@ -226,18 +230,18 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({ searchActive, message }: EmptyStateProps) => (
-    <div className="flex flex-col items-center justify-center py-12">
-        <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4 animate-pulse">
+    <Alert variant="default" className="flex flex-col items-center justify-center py-12">
+        <div className="rounded-full bg-muted p-4 mb-4 animate-pulse">
             {searchActive ?
-                <Search className="h-8 w-8 text-gray-400 dark:text-gray-500" /> :
-                <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                <Search className="h-8 w-8 text-muted-foreground" /> :
+                <FileText className="h-8 w-8 text-muted-foreground" />
             }
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No manuscripts found</h3>
-        <p className="text-sm text-center text-gray-500 dark:text-gray-400 max-w-md">
+        <AlertTitle>No manuscripts found</AlertTitle>
+        <AlertDescription>
             {searchActive ? "Try adjusting your filters or search term" : message}
-        </p>
-    </div>
+        </AlertDescription>
+    </Alert>
 );
 
 export default function Index({ manuscripts }: ManuscriptTableProps) {
@@ -492,506 +496,497 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Submitted Manuscripts" />
-            <div className="space-y-6 max-w-full">
-                {/* Page Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            Submitted Manuscripts
-                        </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            Review and manage manuscript submissions
-                        </p>
-                    </div>
-                </div>
+            <Card className="max-w-full">
+                <CardHeader>
+                    <CardTitle>Submitted Manuscripts</CardTitle>
+                    <CardDescription>Review and manage manuscript submissions</CardDescription>
+                </CardHeader>
+                <Separator />
+                <CardContent className="space-y-6">
+                    {/* Search and Controls Section */}
+                    <div className="bg-card dark:bg-[color:var(--color-bg-dark)] rounded-lg shadow-sm border border-border">
+                        <div className="px-4 sm:px-6 py-5">
+                            <div className="flex flex-col gap-4">
+                                {/* Controls Row */}
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            {filteredResults.length} {filteredResults.length === 1 ? 'manuscript' : 'manuscripts'} found
+                                        </p>
+                                        {selectedManuscripts.length > 0 && (
+                                            <div className="flex items-center gap-2 text-sm text-primary">
+                                                <span className="hidden sm:inline">•</span>
+                                                <span>{selectedManuscripts.length} selected</span>
+                                            </div>
+                                        )}
+                                    </div>
 
-                {/* Search and Controls Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60">
-                    <div className="px-4 sm:px-6 py-5">
-                        <div className="flex flex-col gap-4">
-                            {/* Controls Row */}
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {filteredResults.length} {filteredResults.length === 1 ? 'manuscript' : 'manuscripts'} found
-                                    </p>
-                                    {selectedManuscripts.length > 0 && (
-                                        <div className="flex items-center gap-2 text-sm text-primary">
-                                            <span className="hidden sm:inline">•</span>
-                                            <span>{selectedManuscripts.length} selected</span>
-                                        </div>
-                                    )}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={selectedManuscripts.length === 0}
+                                        className="w-full sm:w-auto border-[color:var(--color-border)] dark:border-[color:var(--color-border-dark)] hover:border-primary hover:text-primary transition-all"
+                                    >
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Export ({selectedManuscripts.length})
+                                    </Button>
                                 </div>
 
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={selectedManuscripts.length === 0}
-                                    className="w-full sm:w-auto border-gray-300 dark:border-gray-600 hover:border-primary hover:text-primary transition-all"
-                                >
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Export ({selectedManuscripts.length})
-                                </Button>
-                            </div>
+                                {/* Search and Filter Row */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <div className="relative flex-1 group min-w-0">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
+                                        <Input
+                                            placeholder="Search by title, author, or ID..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-10 border-border bg-background text-foreground focus:ring-primary focus:border-primary"
+                                        />
+                                    </div>
 
-                            {/* Search and Filter Row */}
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <div className="relative flex-1 group min-w-0">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
-                                    <Input
-                                        placeholder="Search by title, author, or ID..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10 border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary bg-white dark:bg-gray-900"
-                                    />
-                                </div>
-
-                                <DropdownMenu open={isFilterMenuOpen} onOpenChange={setIsFilterMenuOpen}>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="w-full sm:w-[200px] justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"
-                                        >
-                                            <div className="flex items-center">
-                                                <Filter className="h-4 w-4 mr-2" />
-                                                {statusFilter === 'All' ? 'All Status' : STATUS_CONFIG[statusFilter.toUpperCase() as keyof typeof STATUS_CONFIG]?.display || statusFilter}
-                                            </div>
-                                            <ChevronDown className="h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-full sm:w-[200px]">
-                                        <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                            className={statusFilter === 'All' ? "bg-gray-100 dark:bg-gray-800" : ""}
-                                            onClick={() => {
-                                                setStatusFilter('All');
-                                                setIsFilterMenuOpen(false);
-                                            }}
-                                        >
-                                            <div className="flex items-center">
-                                                <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                                                All Manuscripts
-                                            </div>
-                                        </DropdownMenuItem>
-                                        {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                                    <DropdownMenu open={isFilterMenuOpen} onOpenChange={setIsFilterMenuOpen}>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="border-border bg-background text-foreground w-full sm:w-[200px] justify-between"
+                                            >
+                                                <div className="flex items-center">
+                                                    <Filter className="h-4 w-4 mr-2" />
+                                                    {statusFilter === 'All' ? 'All Status' : STATUS_CONFIG[statusFilter.toUpperCase() as keyof typeof STATUS_CONFIG]?.display || statusFilter}
+                                                </div>
+                                                <ChevronDown className="h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-full sm:w-[200px]">
+                                            <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
                                             <DropdownMenuItem
-                                                key={key}
-                                                className={statusFilter === key ? "bg-gray-100 dark:bg-gray-800" : ""}
+                                                className={statusFilter === 'All' ? "bg-muted dark:bg-background" : ""}
                                                 onClick={() => {
-                                                    setStatusFilter(key as Manuscript['status']);
+                                                    setStatusFilter('All');
                                                     setIsFilterMenuOpen(false);
                                                 }}
                                             >
                                                 <div className="flex items-center">
-                                                    <config.icon className={`h-3.5 w-3.5 mr-3 ${config.dropdownIconClass}`} />
-                                                    {config.display}
+                                                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
+                                                    All Manuscripts
                                                 </div>
                                             </DropdownMenuItem>
-                                        ))}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                            {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                                                <DropdownMenuItem
+                                                    key={key}
+                                                    className={statusFilter === key ? "bg-muted dark:bg-background" : ""}
+                                                    onClick={() => {
+                                                        setStatusFilter(key as Manuscript['status']);
+                                                        setIsFilterMenuOpen(false);
+                                                    }}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <config.icon className={`h-3.5 w-3.5 mr-3 ${config.dropdownIconClass}`} />
+                                                        {config.display}
+                                                    </div>
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Results Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 overflow-hidden">
-                    {paginatedManuscripts.length > 0 ? (
-                        <>
-                            {/* Desktop Table View */}
-                            <div className="hidden xl:block">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="hover:bg-transparent bg-gray-50/80 dark:bg-gray-800/80 border-b border-gray-200/60 dark:border-gray-700/60">
-                                                <TableHead className="w-12 text-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="rounded border-gray-300 text-primary focus:ring-primary"
-                                                        checked={
-                                                            paginatedManuscripts.length > 0 &&
-                                                            paginatedManuscripts.every(manuscript => selectedManuscripts.includes(manuscript.id))
-                                                        }
-                                                        onChange={toggleSelectAll}
-                                                    />
-                                                </TableHead>
-                                                <TableHead
-                                                    className="cursor-pointer hover:text-primary"
-                                                    onClick={() => setSortConfig({
-                                                        key: 'id',
-                                                        direction: sortConfig.key === 'id' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                                                    })}
-                                                >
-                                                    <div className="flex items-center font-semibold">
-                                                        ID
-                                                        {sortConfig.key === 'id' && (
-                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                                                        )}
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead
-                                                    className="cursor-pointer hover:text-primary"
-                                                    onClick={() => setSortConfig({
-                                                        key: 'title',
-                                                        direction: sortConfig.key === 'title' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                                                    })}
-                                                >
-                                                    <div className="flex items-center font-semibold">
-                                                        Manuscript Details
-                                                        {sortConfig.key === 'title' && (
-                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                                                        )}
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead
-                                                    className="cursor-pointer hover:text-primary"
-                                                    onClick={() => setSortConfig({
-                                                        key: 'status',
-                                                        direction: sortConfig.key === 'status' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                                                    })}
-                                                >
-                                                    <div className="flex items-center font-semibold">
-                                                        Status
-                                                        {sortConfig.key === 'status' && (
-                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                                                        )}
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead
-                                                    className="cursor-pointer hover:text-primary"
-                                                    onClick={() => setSortConfig({
-                                                        key: 'created_at',
-                                                        direction: sortConfig.key === 'created_at' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
-                                                    })}
-                                                >
-                                                    <div className="flex items-center font-semibold">
-                                                        Timeline
-                                                        {sortConfig.key === 'created_at' && (
-                                                            <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                                                        )}
-                                                    </div>
-                                                </TableHead>
-                                                <TableHead className="text-right font-semibold">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {paginatedManuscripts.map((manuscript) => (
-                                                <TableRow
-                                                    key={manuscript.id}
-                                                    className={cn(
-                                                        "group cursor-pointer transition-all hover:bg-gray-50/80 dark:hover:bg-gray-800/50 border-b border-gray-200/40 dark:border-gray-700/40",
-                                                        selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
-                                                    )}
-                                                    onClick={() => handleViewManuscript(manuscript.id)}
-                                                >
-                                                    <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="rounded border-gray-300 text-primary focus:ring-ring"
-                                                            checked={selectedManuscripts.includes(manuscript.id)}
-                                                            onChange={() => toggleSelectManuscript(manuscript.id)}
+                    {/* Results Section */}
+                    <div className="bg-card dark:bg-[color:var(--color-bg-dark)] rounded-lg shadow-sm border border-border overflow-hidden">
+                        {paginatedManuscripts.length > 0 ? (
+                            <>
+                                {/* Desktop Table View */}
+                                <div className="hidden xl:block">
+                                    <div className="overflow-x-auto">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow className="hover:bg-transparent bg-card dark:bg-card border-b border-border">
+                                                    <TableHead className="w-12 text-center">
+                                                        <Checkbox
+                                                            checked={
+                                                                paginatedManuscripts.length > 0 &&
+                                                                paginatedManuscripts.every(manuscript => selectedManuscripts.includes(manuscript.id))
+                                                            }
+                                                            onCheckedChange={toggleSelectAll}
+                                                            aria-label="Select all manuscripts"
                                                         />
-                                                    </TableCell>
-                                                    <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
-                                                        #{manuscript.id}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="max-w-md">
-                                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors line-clamp-2">
-                                                                {manuscript.title}
-                                                            </h3>
-                                                            <div className="mt-1">
-                                                                <AuthorBadges authors={manuscript.authors} />
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <StatusBadge status={manuscript.status} />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                                                <Clock className="h-3 w-3 mr-1" />
-                                                                Submitted
-                                                            </div>
-                                                            <DateDisplay date={manuscript.created_at} showTime={false} />
-                                                            {manuscript.updated_at !== manuscript.created_at && (
-                                                                <>
-                                                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                                        <RefreshCw className="h-3 w-3 mr-1" />
-                                                                        Updated
-                                                                    </div>
-                                                                    <DateDisplay date={manuscript.updated_at} showTime={false} />
-                                                                </>
+                                                    </TableHead>
+                                                    <TableHead
+                                                        className="cursor-pointer hover:text-primary"
+                                                        onClick={() => setSortConfig({
+                                                            key: 'id',
+                                                            direction: sortConfig.key === 'id' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                                        })}
+                                                    >
+                                                        <div className="flex items-center font-semibold">
+                                                            ID
+                                                            {sortConfig.key === 'id' && (
+                                                                <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                             )}
                                                         </div>
-                                                    </TableCell>
-                                                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                                                        <div className="flex justify-end gap-1">
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        onClick={() => handleViewManuscript(manuscript.id)}
-                                                                        className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
-                                                                    >
-                                                                        <FileText className="h-4 w-4" />
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>View Details</TooltipContent>
-                                                            </Tooltip>
-
-                                                            {manuscript.status === ManuscriptStatus.SUBMITTED && (
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={(e) => handleSetUnderReviewClick(manuscript.id, e)}
-                                                                            className="h-8 w-8 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
-                                                                        >
-                                                                            <Eye className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Start Review</TooltipContent>
-                                                                </Tooltip>
+                                                    </TableHead>
+                                                    <TableHead
+                                                        className="cursor-pointer hover:text-primary"
+                                                        onClick={() => setSortConfig({
+                                                            key: 'title',
+                                                            direction: sortConfig.key === 'title' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                                        })}
+                                                    >
+                                                        <div className="flex items-center font-semibold">
+                                                            Manuscript Details
+                                                            {sortConfig.key === 'title' && (
+                                                                <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                             )}
-
-                                                            {manuscript.status === ManuscriptStatus.UNDER_REVIEW && (
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={() => handleEditorialDecision(manuscript.id)}
-                                                                            className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
-                                                                        >
-                                                                            <AlertCircle className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Editorial Decision</TooltipContent>
-                                                                </Tooltip>
+                                                        </div>
+                                                    </TableHead>
+                                                    <TableHead
+                                                        className="cursor-pointer hover:text-primary"
+                                                        onClick={() => setSortConfig({
+                                                            key: 'status',
+                                                            direction: sortConfig.key === 'status' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                                        })}
+                                                    >
+                                                        <div className="flex items-center font-semibold">
+                                                            Status
+                                                            {sortConfig.key === 'status' && (
+                                                                <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                             )}
-
-                                                            {manuscript.status === ManuscriptStatus.ACCEPTED && (
+                                                        </div>
+                                                    </TableHead>
+                                                    <TableHead
+                                                        className="cursor-pointer hover:text-primary"
+                                                        onClick={() => setSortConfig({
+                                                            key: 'created_at',
+                                                            direction: sortConfig.key === 'created_at' && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+                                                        })}
+                                                    >
+                                                        <div className="flex items-center font-semibold">
+                                                            Timeline
+                                                            {sortConfig.key === 'created_at' && (
+                                                                <span className="ml-1 text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                            )}
+                                                        </div>
+                                                    </TableHead>
+                                                    <TableHead className="text-right font-semibold">Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody className="bg-card divide-y divide-border">
+                                                {paginatedManuscripts.map((manuscript) => (
+                                                    <TableRow
+                                                        key={manuscript.id}
+                                                        className={cn(
+                                                            "group cursor-pointer transition-all hover:bg-gray-50/80 dark:hover:bg-gray-800/50 border-b border-gray-200/40 dark:border-gray-700/40",
+                                                            selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
+                                                        )}
+                                                        onClick={() => handleViewManuscript(manuscript.id)}
+                                                    >
+                                                        <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                                                            <Checkbox
+                                                                checked={selectedManuscripts.includes(manuscript.id)}
+                                                                onCheckedChange={() => toggleSelectManuscript(manuscript.id)}
+                                                                aria-label={`Select manuscript #${manuscript.id}`}
+                                                                onClick={e => e.stopPropagation()}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
+                                                            #{manuscript.id}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="max-w-md">
+                                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors line-clamp-2">
+                                                                    {manuscript.title}
+                                                                </h3>
+                                                                <div className="mt-1">
+                                                                    <AuthorBadges authors={manuscript.authors} />
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <StatusBadge status={manuscript.status} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="space-y-1">
+                                                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                                    <Clock className="h-3 w-3 mr-1" />
+                                                                    Submitted
+                                                                </div>
+                                                                <DateDisplay date={manuscript.created_at} showTime={false} />
+                                                                {manuscript.updated_at !== manuscript.created_at && (
+                                                                    <>
+                                                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                                            <RefreshCw className="h-3 w-3 mr-1" />
+                                                                            Updated
+                                                                        </div>
+                                                                        <DateDisplay date={manuscript.updated_at} showTime={false} />
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                                                            <div className="flex justify-end gap-1">
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <Button
                                                                             variant="ghost"
                                                                             size="sm"
-                                                                            onClick={(e) => handleStartCopyEditingClick(manuscript.id, e)}
+                                                                            onClick={() => handleViewManuscript(manuscript.id)}
                                                                             className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
                                                                         >
-                                                                            <Edit className="h-4 w-4" />
+                                                                            <FileText className="h-4 w-4" />
                                                                         </Button>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent>Start Copy Editing</TooltipContent>
+                                                                    <TooltipContent>View Details</TooltipContent>
                                                                 </Tooltip>
-                                                            )}
 
-                                                            {manuscript.status === ManuscriptStatus.IN_COPYEDITING && (
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setManuscriptToCopyEdit(manuscript.id);
-                                                                                setShowUploadDialog(true);
-                                                                            }}
-                                                                            className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
-                                                                        >
-                                                                            <Upload className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Upload Finalized</TooltipContent>
-                                                                </Tooltip>
-                                                            )}
+                                                                {manuscript.status === ManuscriptStatus.SUBMITTED && (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={(e) => handleSetUnderReviewClick(manuscript.id, e)}
+                                                                                className="h-8 w-8 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+                                                                            >
+                                                                                <Eye className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Start Review</TooltipContent>
+                                                                    </Tooltip>
+                                                                )}
 
-                                                            {manuscript.status === ManuscriptStatus.READY_FOR_PUBLICATION && (
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            size="sm"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setIsLoading(true);
-                                                                                router.visit(route('editor.manuscripts.prepare_publication_form', manuscript.id), {
-                                                                                    onFinish: () => setIsLoading(false)
-                                                                                });
-                                                                            }}
-                                                                            className="h-8 w-8 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
-                                                                        >
-                                                                            <CalendarDays className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent>Prepare Publication</TooltipContent>
-                                                                </Tooltip>
-                                                            )}
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                                                {manuscript.status === ManuscriptStatus.UNDER_REVIEW && (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={() => handleEditorialDecision(manuscript.id)}
+                                                                                className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                                            >
+                                                                                <AlertCircle className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Editorial Decision</TooltipContent>
+                                                                    </Tooltip>
+                                                                )}
+
+                                                                {manuscript.status === ManuscriptStatus.ACCEPTED && (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={(e) => handleStartCopyEditingClick(manuscript.id, e)}
+                                                                                className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
+                                                                            >
+                                                                                <Edit className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Start Copy Editing</TooltipContent>
+                                                                    </Tooltip>
+                                                                )}
+
+                                                                {manuscript.status === ManuscriptStatus.IN_COPYEDITING && (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setManuscriptToCopyEdit(manuscript.id);
+                                                                                    setShowUploadDialog(true);
+                                                                                }}
+                                                                                className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                                            >
+                                                                                <Upload className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Upload Finalized</TooltipContent>
+                                                                    </Tooltip>
+                                                                )}
+
+                                                                {manuscript.status === ManuscriptStatus.READY_FOR_PUBLICATION && (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setIsLoading(true);
+                                                                                    router.visit(route('editor.manuscripts.prepare_publication_form', manuscript.id), {
+                                                                                        onFinish: () => setIsLoading(false)
+                                                                                    });
+                                                                                }}
+                                                                                className="h-8 w-8 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
+                                                                            >
+                                                                                <CalendarDays className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>Prepare Publication</TooltipContent>
+                                                                    </Tooltip>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Mobile Card View */}
-                            <div className="xl:hidden divide-y divide-gray-200 dark:divide-gray-700">
-                                {paginatedManuscripts.map((manuscript) => (
-                                    <div
-                                        key={manuscript.id}
-                                        className={cn(
-                                            "p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer",
-                                            selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
-                                        )}
-                                        onClick={() => handleViewManuscript(manuscript.id)}
-                                    >
-                                        <div className="flex items-start space-x-3">
-                                            <input
-                                                type="checkbox"
-                                                className="mt-1 rounded border-gray-300 text-primary focus:ring-ring"
-                                                checked={selectedManuscripts.includes(manuscript.id)}
-                                                onChange={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleSelectManuscript(manuscript.id);
-                                                }}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">#{manuscript.id}</span>
-                                                    <StatusBadge status={manuscript.status} />
-                                                </div>
-                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2">
-                                                    {manuscript.title}
-                                                </h3>
-                                                <AuthorBadges authors={manuscript.authors} />
-                                                <div className="flex items-center justify-between mt-3">
-                                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                                        <Clock className="h-3 w-3 mr-1" />
-                                                        {new Date(manuscript.created_at).toLocaleDateString()}
+                                {/* Mobile Card View */}
+                                <div className="xl:hidden divide-y divide-gray-200 dark:divide-gray-700">
+                                    {paginatedManuscripts.map((manuscript) => (
+                                        <div
+                                            key={manuscript.id}
+                                            className={cn(
+                                                "p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer",
+                                                selectedManuscripts.includes(manuscript.id) && "bg-primary/10"
+                                            )}
+                                            onClick={() => handleViewManuscript(manuscript.id)}
+                                        >
+                                            <div className="flex items-start space-x-3">
+                                                <Checkbox
+                                                    checked={selectedManuscripts.includes(manuscript.id)}
+                                                    onCheckedChange={() => toggleSelectManuscript(manuscript.id)}
+                                                    aria-label={`Select manuscript #${manuscript.id}`}
+                                                    onClick={e => e.stopPropagation()}
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400">#{manuscript.id}</span>
+                                                        <StatusBadge status={manuscript.status} />
                                                     </div>
-                                                    <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleViewManuscript(manuscript.id)}
-                                                            className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
-                                                        >
-                                                            <FileText className="h-3.5 w-3.5" />
-                                                        </Button>
-                                                        {manuscript.status === ManuscriptStatus.SUBMITTED && (
+                                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2">
+                                                        {manuscript.title}
+                                                    </h3>
+                                                    <AuthorBadges authors={manuscript.authors} />
+                                                    <div className="flex items-center justify-between mt-3">
+                                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                            <Clock className="h-3 w-3 mr-1" />
+                                                            {new Date(manuscript.created_at).toLocaleDateString()}
+                                                        </div>
+                                                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                onClick={(e) => handleSetUnderReviewClick(manuscript.id, e)}
-                                                                className="h-7 w-7 p-0 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+                                                                onClick={() => handleViewManuscript(manuscript.id)}
+                                                                className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors"
                                                             >
-                                                                <Eye className="h-3.5 w-3.5" />
+                                                                <FileText className="h-3.5 w-3.5" />
                                                             </Button>
-                                                        )}
-                                                        {/* Add other action buttons for mobile as needed */}
+                                                            {manuscript.status === ManuscriptStatus.SUBMITTED && (
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={(e) => handleSetUnderReviewClick(manuscript.id, e)}
+                                                                    className="h-7 w-7 p-0 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+                                                                >
+                                                                    <Eye className="h-3.5 w-3.5" />
+                                                                </Button>
+                                                            )}
+                                                            {/* Add other action buttons for mobile as needed */}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="py-12">
+                                <EmptyState
+                                    searchActive={searchActive}
+                                    message={searchActive ? "No manuscripts match your search criteria" : "No manuscripts have been submitted yet"}
+                                />
                             </div>
-                        </>
-                    ) : (
-                        <div className="py-12">
-                            <EmptyState
-                                searchActive={searchActive}
-                                message={searchActive ? "No manuscripts match your search criteria" : "No manuscripts have been submitted yet"}
-                            />
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
 
-                {/* Pagination */}
-                {filteredResults.length > 0 && totalPages > 1 && (
-                    <div className="bg-white dark:bg-gray-800 border-t border-gray-200/60 dark:border-gray-700/60 px-4 sm:px-6 py-4 rounded-b-lg">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-4 order-2 sm:order-1">
-                                <p className="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
-                                    <span className="block sm:inline">
-                                        Showing <span className="font-medium text-gray-900 dark:text-gray-100">
-                                            {(currentPage - 1) * pageSize + 1}
-                                        </span> to <span className="font-medium text-gray-900 dark:text-gray-100">
-                                            {Math.min(currentPage * pageSize, filteredResults.length)}
+                    {/* Pagination */}
+                    {filteredResults.length > 0 && totalPages > 1 && (
+                        <div className="bg-card dark:bg-[color:var(--color-bg-dark)] border-t border-border px-4 sm:px-6 py-4 rounded-b-lg">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="flex items-center gap-4 order-2 sm:order-1">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
+                                        <span className="block sm:inline">
+                                            Showing <span className="font-medium text-gray-900 dark:text-gray-100">
+                                                {(currentPage - 1) * pageSize + 1}
+                                            </span> to <span className="font-medium text-gray-900 dark:text-gray-100">
+                                                {Math.min(currentPage * pageSize, filteredResults.length)}
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span className="block sm:inline sm:ml-1">
-                                        of <span className="font-medium text-gray-900 dark:text-gray-100">
-                                            {filteredResults.length}
-                                        </span> manuscripts
-                                    </span>
-                                </p>
-                            </div>
+                                        <span className="block sm:inline sm:ml-1">
+                                            of <span className="font-medium text-gray-900 dark:text-gray-100">
+                                                {filteredResults.length}
+                                            </span> manuscripts
+                                        </span>
+                                    </p>
+                                </div>
 
-                            <div className="order-1 sm:order-2">
-                                <Pagination>
-                                    <PaginationContent>
-                                        <PaginationItem>
-                                            <PaginationPrevious
-                                                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                                                className={cn(
-                                                    "cursor-pointer hover:text-primary",
-                                                    currentPage <= 1 && "opacity-50 cursor-not-allowed"
-                                                )}
-                                            />
-                                        </PaginationItem>
+                                <div className="order-1 sm:order-2">
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                                                    className={cn(
+                                                        "cursor-pointer hover:text-primary",
+                                                        currentPage <= 1 && "opacity-50 cursor-not-allowed"
+                                                    )}
+                                                />
+                                            </PaginationItem>
 
-                                        {generatePagination(currentPage, totalPages).map((item, index) => {
-                                            if (item === 'ellipsis-start' || item === 'ellipsis-end') {
+                                            {generatePagination(currentPage, totalPages).map((item, index) => {
+                                                if (item === 'ellipsis-start' || item === 'ellipsis-end') {
+                                                    return (
+                                                        <PaginationItem key={`${item}-${index}`}>
+                                                            <PaginationEllipsis />
+                                                        </PaginationItem>
+                                                    );
+                                                }
+
+                                                const page = item as number;
+                                                const isActive = page === currentPage;
+
                                                 return (
-                                                    <PaginationItem key={`${item}-${index}`}>
-                                                        <PaginationEllipsis />
+                                                    <PaginationItem key={`page-${page}`}>
+                                                        <PaginationLink
+                                                            onClick={() => handlePageChange(page)}
+                                                            isActive={isActive}
+                                                            className={cn(
+                                                                "cursor-pointer",
+                                                                isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
+                                                            )}
+                                                        >
+                                                            {page}
+                                                        </PaginationLink>
                                                     </PaginationItem>
                                                 );
-                                            }
+                                            })}
 
-                                            const page = item as number;
-                                            const isActive = page === currentPage;
-
-                                            return (
-                                                <PaginationItem key={`page-${page}`}>
-                                                    <PaginationLink
-                                                        onClick={() => handlePageChange(page)}
-                                                        isActive={isActive}
-                                                        className={cn(
-                                                            "cursor-pointer",
-                                                            isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
-                                                        )}
-                                                    >
-                                                        {page}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            );
-                                        })}
-
-                                        <PaginationItem>                                            <PaginationNext
-                                            onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                                            className={cn(
-                                                "cursor-pointer hover:text-primary",
-                                                currentPage >= totalPages && "opacity-50 cursor-not-allowed"
-                                            )}
-                                        />
-                                        </PaginationItem>
-                                    </PaginationContent>
-                                </Pagination>
+                                            <PaginationItem>                                            <PaginationNext
+                                                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                                                className={cn(
+                                                    "cursor-pointer hover:text-primary",
+                                                    currentPage >= totalPages && "opacity-50 cursor-not-allowed"
+                                                )}
+                                            />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </CardContent>
+            </Card>
 
             {/* Set under review dialog - existing code */}
             <Dialog open={showReviewDialog} onOpenChange={(open) => {
@@ -1217,12 +1212,10 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                             )}
 
                             {uploadError && (
-                                <div className="mt-3 p-2.5 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
-                                    <p className="flex items-center text-sm text-red-700 dark:text-red-300">
-                                        <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
-                                        <span>{uploadError}</span>
-                                    </p>
-                                </div>
+                                <Alert variant="destructive" className="mt-3">
+                                    <AlertTitle>Error</AlertTitle>
+                                    <AlertDescription>{uploadError}</AlertDescription>
+                                </Alert>
                             )}
                         </div>
                     </div>
