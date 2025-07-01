@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ManuscriptStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,19 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Manuscript extends Model
 {
     use HasFactory;
-
-    public const STATUSES = [
-        'SUBMITTED' => 'Submitted',
-        'UNDER_REVIEW' => 'Under Review',
-        'MINOR_REVISION' => 'Minor Revision',
-        'MAJOR_REVISION' => 'Major Revision',
-        'ACCEPTED' => 'Accepted',
-        'IN_COPYEDITING' => 'Copyediting',
-        'AWAITING_APPROVAL' => 'Awaiting Approval',
-        'READY_TO_PUBLISH' => 'Ready to Publish',
-        'REJECTED' => 'Rejected',
-        'PUBLISHED' => 'Published',
-    ];
 
     protected $fillable = [
         'user_id',
@@ -56,6 +44,7 @@ class Manuscript extends Model
         'author_approval_date' => 'date',
         'final_manuscript_uploaded_at' => 'datetime',
         'published_at' => 'datetime',
+        'status' => ManuscriptStatus::class,
     ];
 
     /**
@@ -96,9 +85,9 @@ class Manuscript extends Model
     public function needsRevision(): bool
     {
         return in_array($this->status, [
-            self::STATUSES['MINOR_REVISION'],
-            self::STATUSES['MAJOR_REVISION'],
-        ]);
+            ManuscriptStatus::MINOR_REVISION,
+            ManuscriptStatus::MAJOR_REVISION,
+        ], true);
     }
 
     /**
@@ -149,7 +138,7 @@ class Manuscript extends Model
      */
     public function isReadyForAuthorApproval(): bool
     {
-        return $this->status === self::STATUSES['AWAITING_APPROVAL'];
+        return $this->status === ManuscriptStatus::AWAITING_APPROVAL;
     }
 
     /**
@@ -157,7 +146,7 @@ class Manuscript extends Model
      */
     public function isReadyForPublication(): bool
     {
-        return $this->status === self::STATUSES['READY_TO_PUBLISH'];
+        return $this->status === ManuscriptStatus::READY_TO_PUBLISH;
     }
 
     /**
@@ -165,14 +154,6 @@ class Manuscript extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === self::STATUSES['PUBLISHED'];
-    }
-
-    /**
-     * Get the user (author) of the manuscript (alias for author relationship).
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->status === ManuscriptStatus::PUBLISHED;
     }
 }

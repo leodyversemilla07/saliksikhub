@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ManuscriptStatus;
 use App\Models\Issue;
 use App\Models\Manuscript;
 use Exception;
@@ -82,7 +83,7 @@ class IssueController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Issues/Create');
+        return Inertia::render('issues/create');
     }
 
     /**
@@ -210,7 +211,7 @@ class IssueController extends Controller
             'status' => 'required|in:draft,in_review,published,archived',
             'theme' => 'nullable|string|max:255',
             'editorial_note' => 'nullable|string',
-            'doi' => 'nullable|string|max:255|unique:issues,doi,' . $issue->id,
+            'doi' => 'nullable|string|max:255|unique:issues,doi,'.$issue->id,
             'cover_image' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120', // 5MB max
         ]);
 
@@ -553,7 +554,7 @@ class IssueController extends Controller
         }
 
         // Get published manuscripts for this issue
-        $articles = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+        $articles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
             ->where('issue_id', $currentIssue->id)
             ->with('user')
             ->get()
@@ -606,7 +607,7 @@ class IssueController extends Controller
             'volume' => $currentIssue->volume_number,
             'number' => $currentIssue->issue_number,
             'year' => $currentIssue->publication_date->year,
-            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (" . $currentIssue->publication_date->year . '): DDMRJ - Current Issue',
+            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.'): DDMRJ - Current Issue',
             'specialIssueTitle' => $currentIssue->issue_title,
             'publicationDate' => $currentIssue->publication_date->toDateString(),
             'coverImageUrl' => $coverImageUrl,

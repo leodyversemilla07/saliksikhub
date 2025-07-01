@@ -133,8 +133,8 @@ export default function Login({ canResetPassword, auth }: PageProps<{ status?: s
                             </Label>
                         </div>
 
-                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white">
-                            {processing ? 'Processing...' : 'Login'}
+                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white" disabled={processing}>
+                            {processing ? 'Logging in...' : 'Login'}
                         </Button>
                     </form>
                 </div>

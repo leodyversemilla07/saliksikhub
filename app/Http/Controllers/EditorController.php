@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ManuscriptStatus;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
 use App\Models\User;
@@ -97,7 +98,6 @@ class EditorController extends Controller
                 ],
                 'user_role' => Auth::user()->role,
             ]);
-
         } catch (Exception $e) {
             logger()->error('Manuscript Show Error', [
                 'error_message' => $e->getMessage(),
@@ -189,7 +189,6 @@ class EditorController extends Controller
 
             return redirect()->route('editor.indexManuscripts')
                 ->with('success', 'Editorial decision has been recorded.');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -257,14 +256,18 @@ class EditorController extends Controller
             $manuscript = Manuscript::findOrFail($id);
 
             $previousStatus = $manuscript->status;
-            $newStatus = Manuscript::STATUSES['UNDER_REVIEW'];
+            $newStatus = ManuscriptStatus::UNDER_REVIEW;
 
             if ($previousStatus !== $newStatus) {
                 $manuscript->status = $newStatus;
                 $manuscript->save();
 
                 $author = $manuscript->author;
-                $author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $newStatus));
+                $author->notify(new ManuscriptStatusChanged(
+                    $manuscript,
+                    (string) $previousStatus,
+                    (string) $newStatus
+                ));
 
                 Log::info('Manuscript status changed to Under Review', [
                     'manuscript_id' => $manuscript->id,
@@ -282,15 +285,6 @@ class EditorController extends Controller
 
             return redirect()->back()->with('error', 'Failed to update manuscript status.');
         }
-    }
-
-    private function getDashboardStats()
-    {
-        return [
-            'total_manuscripts' => Manuscript::count(),
-            'pending_reviews' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
-            'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
-        ];
     }
 
     private function getComprehensiveDashboardData()
@@ -311,11 +305,11 @@ class EditorController extends Controller
             ->whereYear('created_at', $lastMonth->year)
             ->count();
 
-        $publishedArticles = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+        $publishedArticles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
             ->whereMonth('created_at', $currentMonth->month)
             ->whereYear('created_at', $currentMonth->year)
             ->count();
-        $publishedLastMonth = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+        $publishedLastMonth = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
             ->whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
             ->count();
@@ -342,12 +336,12 @@ class EditorController extends Controller
                 ->whereYear('created_at', $date->year)
                 ->count();
 
-            $published = Manuscript::where('status', Manuscript::STATUSES['PUBLISHED'])
+            $published = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
                 ->count();
 
-            $rejected = Manuscript::where('status', Manuscript::STATUSES['REJECTED'])
+            $rejected = Manuscript::where('status', ManuscriptStatus::REJECTED)
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
                 ->count();
@@ -364,29 +358,29 @@ class EditorController extends Controller
         $statusDistribution = [
             [
                 'name' => 'Under Review',
-                'value' => Manuscript::where('status', Manuscript::STATUSES['UNDER_REVIEW'])->count(),
+                'value' => Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)->count(),
                 'color' => '#3B82F6',
             ],
             [
                 'name' => 'Needs Revision',
                 'value' => Manuscript::whereIn('status', [
-                    Manuscript::STATUSES['MINOR_REVISION'],
-                    Manuscript::STATUSES['MAJOR_REVISION'],
+                    ManuscriptStatus::MINOR_REVISION,
+                    ManuscriptStatus::MAJOR_REVISION,
                 ])->count(),
                 'color' => '#8B5CF6',
             ],
             [
                 'name' => 'Ready for Decision',
-                'value' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
+                'value' => Manuscript::where('status', ManuscriptStatus::SUBMITTED)->count(),
                 'color' => '#10B981',
             ],
             [
                 'name' => 'In Production',
                 'value' => Manuscript::whereIn('status', [
-                    Manuscript::STATUSES['ACCEPTED'],
-                    Manuscript::STATUSES['IN_COPYEDITING'],
-                    Manuscript::STATUSES['AWAITING_APPROVAL'],
-                    Manuscript::STATUSES['READY_TO_PUBLISH'],
+                    ManuscriptStatus::ACCEPTED,
+                    ManuscriptStatus::IN_COPYEDITING,
+                    ManuscriptStatus::AWAITING_APPROVAL,
+                    ManuscriptStatus::READY_TO_PUBLISH,
                 ])->count(),
                 'color' => '#F59E0B',
             ],
@@ -396,8 +390,8 @@ class EditorController extends Controller
         $revisionRounds = [
             [
                 'name' => 'No Revision',
-                'value' => Manuscript::where('status', Manuscript::STATUSES['ACCEPTED'])
-                    ->orWhere('status', Manuscript::STATUSES['PUBLISHED'])
+                'value' => Manuscript::where('status', ManuscriptStatus::ACCEPTED)
+                    ->orWhere('status', ManuscriptStatus::PUBLISHED)
                     ->whereNull('revision_history')
                     ->count(),
                 'color' => '#10B981',
@@ -442,7 +436,7 @@ class EditorController extends Controller
             });
 
         // Overdue reviews
-        $overdueReviews = Manuscript::where('status', Manuscript::STATUSES['UNDER_REVIEW'])
+        $overdueReviews = Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)
             ->where('created_at', '<', now()->subDays(30))
             ->count();
 
@@ -458,8 +452,8 @@ class EditorController extends Controller
 
         // Pending decisions
         $pendingDecisions = Manuscript::whereIn('status', [
-            Manuscript::STATUSES['SUBMITTED'],
-            Manuscript::STATUSES['UNDER_REVIEW'],
+            ManuscriptStatus::SUBMITTED,
+            ManuscriptStatus::UNDER_REVIEW,
         ])->count();
 
         if ($pendingDecisions > 0) {
@@ -505,23 +499,10 @@ class EditorController extends Controller
             'recentSubmissions' => $recentSubmissions,
             'stats' => [
                 'total_manuscripts' => $totalManuscripts,
-                'pending_reviews' => Manuscript::where('status', Manuscript::STATUSES['SUBMITTED'])->count(),
+                'pending_reviews' => Manuscript::where('status', ManuscriptStatus::SUBMITTED)->count(),
                 'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
             ],
         ];
-    }
-
-    public function showEditorialDecisions(Manuscript $manuscript)
-    {
-        $decisions = $manuscript->editorialDecisions()
-            ->with('editor')
-            ->latest('decision_date')
-            ->get();
-
-        return Inertia::render('editor/manuscript-decisions', [
-            'manuscript' => $manuscript,
-            'decisions' => $decisions,
-        ]);
     }
 
     public function createEditorialDecision(Manuscript $manuscript)
@@ -648,19 +629,19 @@ class EditorController extends Controller
                 'manuscript_id' => $manuscript->id,
                 'raw_status' => $manuscript->status,
                 'status_type' => gettype($manuscript->status),
-                'expected_status' => Manuscript::STATUSES['ACCEPTED'],
-                'status_match' => $manuscript->status === Manuscript::STATUSES['ACCEPTED'],
+                'expected_status' => ManuscriptStatus::ACCEPTED,
+                'status_match' => $manuscript->status === ManuscriptStatus::ACCEPTED,
             ]);
 
             $normalizedCurrentStatus = trim(strtoupper($manuscript->status));
-            $normalizedExpectedStatus = trim(strtoupper(Manuscript::STATUSES['ACCEPTED']));
+            $normalizedExpectedStatus = trim(strtoupper((string) ManuscriptStatus::ACCEPTED));
 
             if ($normalizedCurrentStatus !== $normalizedExpectedStatus) {
                 Log::warning('Cannot start copy editing - status mismatch', [
                     'manuscript_id' => $manuscript->id,
                     'current_status' => $manuscript->status,
                     'normalized_current' => $normalizedCurrentStatus,
-                    'expected_status' => Manuscript::STATUSES['ACCEPTED'],
+                    'expected_status' => ManuscriptStatus::ACCEPTED,
                     'normalized_expected' => $normalizedExpectedStatus,
                 ]);
 
@@ -670,7 +651,7 @@ class EditorController extends Controller
                         'message' => 'Only accepted manuscripts can be sent for copy editing.',
                         'debug' => [
                             'current' => $manuscript->status,
-                            'expected' => Manuscript::STATUSES['ACCEPTED'],
+                            'expected' => ManuscriptStatus::ACCEPTED,
                         ],
                     ], 422);
                 }
@@ -680,7 +661,7 @@ class EditorController extends Controller
 
             $previousStatus = $manuscript->status;
 
-            $manuscript->status = 'Copyediting';
+            $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
 
             $manuscript->save();
 
@@ -689,14 +670,14 @@ class EditorController extends Controller
                 'manuscript_id' => $manuscript->id,
                 'previous_status' => $previousStatus,
                 'new_status' => $manuscript->status,
-                'verification' => $manuscript->status === Manuscript::STATUSES['IN_COPYEDITING'],
+                'verification' => $manuscript->status === ManuscriptStatus::IN_COPYEDITING,
             ]);
 
             try {
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
                     $previousStatus,
-                    $manuscript->status
+                    (string) $manuscript->status
                 ));
 
                 Log::info('Manuscript status changed to In Copyediting', [
@@ -720,7 +701,6 @@ class EditorController extends Controller
 
             return redirect()->route('editor.indexManuscripts', $manuscript)
                 ->with('success', 'Manuscript is now in the copy editing phase.');
-
         } catch (Exception $e) {
             Log::error('Exception in startCopyEditing', [
                 'error_message' => $e->getMessage(),
@@ -749,11 +729,11 @@ class EditorController extends Controller
                 'manuscript_file' => 'required|file|mimes:pdf|max:20480',
             ]);
 
-            if ($manuscript->status !== Manuscript::STATUSES['IN_COPYEDITING']) {
+            if ($manuscript->status !== ManuscriptStatus::IN_COPYEDITING) {
                 Log::warning('Attempted to upload finalized manuscript for manuscript not in copyediting', [
                     'manuscript_id' => $manuscript->id,
                     'current_status' => $manuscript->status,
-                    'expected_status' => Manuscript::STATUSES['IN_COPYEDITING'],
+                    'expected_status' => ManuscriptStatus::IN_COPYEDITING,
                 ]);
 
                 return response()->json([
@@ -781,7 +761,7 @@ class EditorController extends Controller
 
                 $manuscript->final_pdf_path = $storagePath;
                 $manuscript->final_manuscript_uploaded_at = now();
-                $manuscript->status = Manuscript::STATUSES['AWAITING_APPROVAL'];
+                $manuscript->status = ManuscriptStatus::AWAITING_APPROVAL;
                 $manuscript->save();
 
                 $manuscript->refresh();
@@ -802,7 +782,7 @@ class EditorController extends Controller
                     $manuscript->author->notify(new ManuscriptStatusChanged(
                         $manuscript,
                         $previousStatus,
-                        $manuscript->status
+                        (string) $manuscript->status
                     ));
                 } catch (Exception $e) {
                     Log::error('Failed to send notification for finalized manuscript', [
@@ -846,7 +826,6 @@ class EditorController extends Controller
             }
 
             return redirect()->back()->with('error', 'No file was uploaded or the file was invalid.');
-
         } catch (Exception $e) {
             Log::error('Error uploading finalized manuscript to DO Spaces', [
                 'error_message' => $e->getMessage(),
@@ -870,7 +849,7 @@ class EditorController extends Controller
 
     public function showPublicationForm(Manuscript $manuscript)
     {
-        if ($manuscript->status !== Manuscript::STATUSES['READY_TO_PUBLISH']) {
+        if ($manuscript->status !== ManuscriptStatus::READY_TO_PUBLISH) {
             return redirect()->route('editor.indexManuscripts')
                 ->with('error', 'Only approved manuscripts can be prepared for publication.');
         }
@@ -905,7 +884,7 @@ class EditorController extends Controller
             $manuscript->issue = $validated['issue'];
             $manuscript->page_range = $validated['page_range'];
             $manuscript->publication_date = $validated['publication_date'];
-            $manuscript->status = Manuscript::STATUSES['PUBLISHED'];
+            $manuscript->status = ManuscriptStatus::PUBLISHED;
             $manuscript->published_at = now();
             $manuscript->save();
 
@@ -923,7 +902,7 @@ class EditorController extends Controller
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
                     $previousStatus,
-                    $manuscript->status
+                    (string) $manuscript->status
                 ));
             } catch (Exception $e) {
                 Log::error('Failed to send publication notification', [
@@ -944,7 +923,6 @@ class EditorController extends Controller
 
             return redirect()->route('editor.indexManuscripts')
                 ->with('success', 'Manuscript has been published successfully.');
-
         } catch (Exception $e) {
             DB::rollBack();
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use Carbon\Carbon; // Import Request
 use Illuminate\Http\Request;
@@ -54,8 +55,8 @@ class AuthorController extends Controller
             $monthlySubmissionData[] = [
                 'month' => $monthName,
                 'submissions' => $submissionsInMonth->count(),
-                'accepted' => $submissionsInMonth->whereIn('status', [Manuscript::STATUSES['ACCEPTED'], Manuscript::STATUSES['PUBLISHED']])->count(),
-                'rejected' => $submissionsInMonth->where('status', Manuscript::STATUSES['REJECTED'])->count(),
+                'accepted' => $submissionsInMonth->whereIn('status', [ManuscriptStatus::ACCEPTED, ManuscriptStatus::PUBLISHED])->count(),
+                'rejected' => $submissionsInMonth->where('status', ManuscriptStatus::REJECTED)->count(),
             ];
             $currentMonth->addMonth();
         }

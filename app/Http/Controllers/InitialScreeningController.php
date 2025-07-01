@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\ManuscriptStatusChanged;
@@ -39,7 +40,7 @@ class InitialScreeningController extends Controller
 
             // Automatically determine next status based on screening results
             if ($manuscript->passesInitialScreening()) {
-                $manuscript->status = Manuscript::STATUSES['UNDER_REVIEW'];
+                $manuscript->status = ManuscriptStatus::UNDER_REVIEW;
 
                 // Notify editors that manuscript is ready for review
                 $editors = User::where('role', 'editor')->get();
@@ -48,7 +49,7 @@ class InitialScreeningController extends Controller
                     // $editor->notify(new ManuscriptReadyForReview($manuscript));
                 }
             } else {
-                $manuscript->status = Manuscript::STATUSES['REJECTED'];
+                $manuscript->status = ManuscriptStatus::REJECTED;
             }
 
             $manuscript->save();
@@ -58,13 +59,12 @@ class InitialScreeningController extends Controller
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
                     $previousStatus,
-                    $manuscript->status
+                    (string) $manuscript->status
                 ));
             }
 
             return redirect()->route('editor.manuscripts.show', $manuscript)
                 ->with('success', 'Initial screening completed successfully.');
-
         } catch (Exception $e) {
             Log::error('Error during initial screening', [
                 'error' => $e->getMessage(),

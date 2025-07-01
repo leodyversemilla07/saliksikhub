@@ -103,22 +103,11 @@ export function FileUploadStep({ data, setData, errors, progress }: FileUploadSt
     return (
         <div className="space-y-8 animate-fadeIn">
             {/* File Upload Section */}
-            <Card className={cn(
-                "transition-all duration-300 border-2",
-                hasError ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
-                    isFileValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
-                        isDragOver ? "border-primary bg-primary/5" :
-                            "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            )}>
+            <Card className="transition-all duration-300 border-2 bg-card text-card-foreground border">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                                "p-2 rounded-full transition-colors",
-                                hasError ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                                    isFileValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
-                                        "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                            )}>
+                            <div className="p-2 rounded-full transition-colors border">
                                 {hasError ? (
                                     <AlertCircle className="w-5 h-5" />
                                 ) : isFileValid ? (
@@ -163,13 +152,7 @@ export function FileUploadStep({ data, setData, errors, progress }: FileUploadSt
 
                     <div className="space-y-4">
                         <div
-                            className={cn(
-                                "border-2 border-dashed rounded-lg p-8 transition-all duration-300 cursor-pointer text-center",
-                                isDragOver ? "border-primary bg-primary/10 scale-[1.02]" :
-                                    hasError ? "border-red-300 bg-red-50/50" :
-                                        isFileValid ? "border-green-300 bg-green-50/50" :
-                                            "border-gray-300 hover:border-gray-400 hover:bg-gray-50 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-800/50"
-                            )}
+                            className="border-2 border-dashed rounded-lg p-8 transition-all duration-300 cursor-pointer text-center border"
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
@@ -263,21 +246,19 @@ export function FileUploadStep({ data, setData, errors, progress }: FileUploadSt
 
                         {/* Validation Messages */}
                         {validationMessage && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
                                 <p className="text-sm font-medium">{validationMessage}</p>
                             </div>
                         )}
-
                         {errors.manuscript && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
                                 <p className="text-sm font-medium">{errors.manuscript}</p>
                             </div>
                         )}
-
                         {!hasError && isFileValid && (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-2 text-success">
                                 <CheckCircle2 className="w-4 h-4" />
                                 <p className="text-sm font-medium">File uploaded successfully and ready for submission!</p>
                             </div>

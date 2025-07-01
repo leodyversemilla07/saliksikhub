@@ -1,9 +1,8 @@
+import { FileText, Tag, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { FileText, Tag, Info, CheckCircle2, AlertCircle, Hash } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface ContentStepProps {
@@ -33,25 +32,15 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
     return (
         <div className="space-y-8 animate-fadeIn">
             {/* Abstract Section */}
-            <Card className={cn(
-                "transition-all duration-300 border-2",
-                errors.abstract ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
-                    isAbstractValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
-                        "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            )}>
+            <Card className="transition-all duration-300 border bg-card text-card-foreground">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                                "p-2 rounded-full transition-colors",
-                                errors.abstract ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                                    isAbstractValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
-                                        "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                            )}>
+                            <div className="p-2 rounded-full transition-colors border">
                                 {errors.abstract ? (
-                                    <AlertCircle className="w-5 h-5" />
+                                    <AlertCircle className="w-5 h-5 text-destructive" />
                                 ) : isAbstractValid ? (
-                                    <CheckCircle2 className="w-5 h-5" />
+                                    <CheckCircle2 className="w-5 h-5 text-success" />
                                 ) : (
                                     <FileText className="w-5 h-5" />
                                 )}
@@ -65,7 +54,6 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                                 </p>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2">
                             <Badge variant={abstractWordCount >= 50 ? "default" : "secondary"} className="text-xs">
                                 {abstractWordCount} words
@@ -73,28 +61,17 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                             <Badge variant={abstractLength >= 100 ? "default" : "secondary"} className="text-xs">
                                 {abstractLength}/100+ chars
                             </Badge>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                    <p>Your abstract should include: research objectives, methodology, key findings, and conclusions. Aim for 100-300 words.</p>
-                                </TooltipContent>
-                            </Tooltip>
                         </div>
                     </div>
-
                     <div className="space-y-4">
                         <Textarea
                             id="abstract"
                             placeholder="Provide a comprehensive summary of your research including objectives, methodology, key findings, and conclusions..."
                             className={cn(
-                                "min-h-[180px] text-base resize-none transition-all duration-300 focus:ring-2",
-                                errors.abstract ? "border-red-300 focus:border-red-400 focus:ring-red-200" :
-                                    isAbstractValid ? "border-green-300 focus:border-green-400 focus:ring-green-200" :
-                                        "border-gray-300 focus:border-primary focus:ring-primary/20"
+                                "min-h-[180px] text-base resize-none transition-all duration-300 focus:ring-2 border",
+                                errors.abstract ? "border-destructive focus:border-destructive focus:ring-destructive/20" :
+                                    isAbstractValid ? "border-success focus:border-success focus:ring-success/20" :
+                                        "border focus:border-primary focus:ring-primary/20"
                             )}
                             value={data.abstract}
                             onChange={(e) => setData('abstract', e.target.value)}
@@ -122,20 +99,20 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                         </div>
 
                         {errors.abstract && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
                                 <p id="abstract-error" className="text-sm font-medium">{errors.abstract}</p>
                             </div>
                         )}
 
                         {!errors.abstract && isAbstractValid && (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-2 text-success">
                                 <CheckCircle2 className="w-4 h-4" />
                                 <p className="text-sm font-medium">Excellent! Your abstract meets all requirements.</p>
                             </div>
                         )}
 
-                        <div className="text-xs text-muted-foreground bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
+                        <div className="text-xs text-muted-foreground bg-background p-3 rounded-lg">
                             <strong>Abstract Guidelines:</strong> Include your research objective, methodology, key findings, and conclusions. Avoid citations and focus on your contribution.
                         </div>
                     </div>
@@ -143,25 +120,15 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
             </Card>
 
             {/* Keywords Section */}
-            <Card className={cn(
-                "transition-all duration-300 border-2",
-                errors.keywords ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
-                    isKeywordsValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
-                        "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            )}>
+            <Card className="transition-all duration-300 border bg-card text-card-foreground">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                                "p-2 rounded-full transition-colors",
-                                errors.keywords ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                                    isKeywordsValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
-                                        "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                            )}>
+                            <div className="p-2 rounded-full transition-colors border">
                                 {errors.keywords ? (
-                                    <AlertCircle className="w-5 h-5" />
+                                    <AlertCircle className="w-5 h-5 text-destructive" />
                                 ) : isKeywordsValid ? (
-                                    <CheckCircle2 className="w-5 h-5" />
+                                    <CheckCircle2 className="w-5 h-5 text-success" />
                                 ) : (
                                     <Tag className="w-5 h-5" />
                                 )}
@@ -175,33 +142,21 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                                 </p>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2">
                             <Badge variant={keywordsArray.length >= 3 ? "default" : "secondary"} className="text-xs">
                                 {keywordsArray.length} keyword{keywordsArray.length !== 1 ? 's' : ''}
                             </Badge>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                    <p>Choose 3-6 specific keywords that accurately represent your research. Include both broad and specific terms.</p>
-                                </TooltipContent>
-                            </Tooltip>
                         </div>
                     </div>
-
                     <div className="space-y-4">
                         <Input
                             id="keywords"
                             placeholder="e.g. Machine Learning, Natural Language Processing, Deep Learning, Computer Vision..."
                             className={cn(
-                                "h-12 text-base transition-all duration-300 focus:ring-2",
-                                errors.keywords ? "border-red-300 focus:border-red-400 focus:ring-red-200" :
-                                    isKeywordsValid ? "border-green-300 focus:border-green-400 focus:ring-green-200" :
-                                        "border-gray-300 focus:border-primary focus:ring-primary/20"
+                                "h-12 text-base transition-all duration-300 focus:ring-2 border",
+                                errors.keywords ? "border-destructive focus:border-destructive focus:ring-destructive/20" :
+                                    isKeywordsValid ? "border-success focus:border-success focus:ring-success/20" :
+                                        "border focus:border-primary focus:ring-primary/20"
                             )}
                             value={data.keywords}
                             onChange={(e) => setData('keywords', e.target.value)}
@@ -213,7 +168,7 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                         {keywordsArray.length > 0 && (
                             <div className="space-y-3">
                                 <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    <Hash className="w-4 h-4" />
+                                    <Tag className="w-4 h-4" />
                                     Keywords Preview:
                                 </div>
                                 <div className="flex flex-wrap gap-2">
@@ -246,20 +201,20 @@ export function ContentStep({ data, setData, errors }: ContentStepProps) {
                         )}
 
                         {errors.keywords && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
                                 <p id="keywords-error" className="text-sm font-medium">{errors.keywords}</p>
                             </div>
                         )}
 
                         {!errors.keywords && isKeywordsValid && (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-2 text-success">
                                 <CheckCircle2 className="w-4 h-4" />
                                 <p className="text-sm font-medium">Perfect! Your keywords will help readers find your research.</p>
                             </div>
                         )}
 
-                        <div className="text-xs text-muted-foreground bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
+                        <div className="text-xs text-muted-foreground bg-background p-3 rounded-lg">
                             <strong>Keyword Tips:</strong> Use specific terms from your field, include both technical and general terms, and separate each keyword with a comma.
                         </div>
                     </div>

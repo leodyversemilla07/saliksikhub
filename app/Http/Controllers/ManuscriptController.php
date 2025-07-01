@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\ManuscriptApproved;
@@ -66,7 +67,7 @@ class ManuscriptController extends Controller
             }
 
             $validated['user_id'] = Auth::id();
-            $validated['status'] = Manuscript::STATUSES['SUBMITTED'];
+            $validated['status'] = ManuscriptStatus::SUBMITTED;
 
             $manuscript = Manuscript::create($validated);
 
@@ -76,7 +77,6 @@ class ManuscriptController extends Controller
             }
 
             return redirect()->route('manuscripts.index')->with('success', 'Manuscript submitted successfully!');
-
         } catch (Exception $e) {
             logger()->error('Submission Error', [
                 'error_message' => $e->getMessage(),
@@ -160,7 +160,6 @@ class ManuscriptController extends Controller
                     'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
                 ],
             ]);
-
         } catch (Exception $e) {
             logger()->error('Manuscript Show Error', [
                 'error_message' => $e->getMessage(),
@@ -181,7 +180,7 @@ class ManuscriptController extends Controller
             $manuscript = Manuscript::findOrFail($id);
 
             // Only allow viewing of published manuscripts
-            if ($manuscript->status !== Manuscript::STATUSES['PUBLISHED']) {
+            if ($manuscript->status !== ManuscriptStatus::PUBLISHED) {
                 abort(404, 'Manuscript not found or not publicly available');
             }
 
@@ -201,7 +200,6 @@ class ManuscriptController extends Controller
                     'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
                 ],
             ]);
-
         } catch (Exception $e) {
             Log::error('Public Manuscript Show Error', [
                 'error_message' => $e->getMessage(),
@@ -253,8 +251,8 @@ class ManuscriptController extends Controller
             }
 
             if (
-                $manuscript->status !== Manuscript::STATUSES['MINOR_REVISION'] &&
-                $manuscript->status !== Manuscript::STATUSES['MAJOR_REVISION']
+                $manuscript->status !== ManuscriptStatus::MINOR_REVISION &&
+                $manuscript->status !== ManuscriptStatus::MAJOR_REVISION
             ) {
                 return redirect()->route('manuscripts.show', $id)
                     ->with('error', 'This manuscript does not require a revision at this time.');
@@ -300,7 +298,6 @@ class ManuscriptController extends Controller
                         $latestDecision->revision_deadline->format('Y-m-d') : null,
                 ] : null,
             ]);
-
         } catch (Exception $e) {
             logger()->error('Revision Form Error', [
                 'error_message' => $e->getMessage(),
@@ -356,7 +353,7 @@ class ManuscriptController extends Controller
 
             $previousStatus = $manuscript->status;
 
-            $manuscript->status = Manuscript::STATUSES['SUBMITTED'];
+            $manuscript->status = ManuscriptStatus::SUBMITTED;
             $manuscript->revision_history = $revisionHistory;
             $manuscript->revision_comments = $validated['revision_comments'];
             $manuscript->revised_at = now();
@@ -385,18 +382,18 @@ class ManuscriptController extends Controller
                 }
             }
 
-            if ($previousStatus !== Manuscript::STATUSES['SUBMITTED']) {
+            if ($previousStatus !== ManuscriptStatus::SUBMITTED) {
                 try {
                     $manuscript->author->notify(new ManuscriptStatusChanged(
                         $manuscript,
                         $previousStatus,
-                        Manuscript::STATUSES['SUBMITTED']
+                        (string) ManuscriptStatus::SUBMITTED
                     ));
 
                     logger()->info('Status change notification sent to author', [
                         'manuscript_id' => $manuscript->id,
                         'previous_status' => $previousStatus,
-                        'new_status' => Manuscript::STATUSES['SUBMITTED'],
+                        'new_status' => ManuscriptStatus::SUBMITTED,
                     ]);
                 } catch (Exception $e) {
                     logger()->error('Failed to send status change notification to author', [
@@ -408,7 +405,6 @@ class ManuscriptController extends Controller
 
             return redirect()->route('manuscripts.index')
                 ->with('success', 'Revision submitted successfully. Your manuscript has been sent back for review.');
-
         } catch (Exception $e) {
             logger()->error('Revision Submission Error', [
                 'error_message' => $e->getMessage(),
@@ -466,7 +462,7 @@ class ManuscriptController extends Controller
             $previousStatus = $manuscript->status;
 
             $manuscript->author_approval_date = now();
-            $manuscript->status = Manuscript::STATUSES['READY_TO_PUBLISH'];
+            $manuscript->status = (string) ManuscriptStatus::READY_TO_PUBLISH;
             $manuscript->save();
 
             try {
@@ -496,7 +492,6 @@ class ManuscriptController extends Controller
 
             return redirect()->route('manuscripts.index')
                 ->with('success', 'Manuscript has been marked as ready to publish.');
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -530,7 +525,7 @@ class ManuscriptController extends Controller
                 abort(404, 'PDF not found');
             }
 
-            if ($manuscript->status !== Manuscript::STATUSES['PUBLISHED']) {
+            if ($manuscript->status !== ManuscriptStatus::PUBLISHED) {
                 abort(403, 'PDF not publicly available - manuscript not yet published');
             }
 
@@ -557,7 +552,6 @@ class ManuscriptController extends Controller
                 ->header('Content-Disposition', 'inline; filename="'.$filename.'"')
                 ->header('Cache-Control', 'public, max-age=3600')
                 ->header('X-Content-Type-Options', 'nosniff');
-
         } catch (ModelNotFoundException $e) {
             Log::warning('Manuscript not found for PDF serving', [
                 'manuscript_id' => $id,

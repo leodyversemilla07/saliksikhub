@@ -190,13 +190,13 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
         <div
             onClick={() => markNotificationAsRead(notification.id)}
             className={cn(
-                "px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-colors duration-150 cursor-pointer",
-                !notification.read && "bg-green-50/40 dark:bg-green-900/10"
+                "px-4 py-3 hover:bg-popover transition-colors duration-150 cursor-pointer",
+                !notification.read && "bg-accent/40"
             )}
         >
             <div className="flex gap-3">
                 <div className="flex-shrink-0 mt-1">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-card">
                         {getNotificationIcon(notification.type)}
                     </div>
                 </div>
@@ -205,16 +205,16 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                     <div className="flex items-center justify-between">
                         <h4 className={cn(
                             "text-sm",
-                            !notification.read ? "font-semibold text-gray-900 dark:text-gray-100" : "font-medium text-gray-700 dark:text-gray-300"
+                            !notification.read ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
                         )}>
                             {notification.title}
                         </h4>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                        <span className="text-xs text-muted-foreground ml-2">
                             {notification.time}
                         </span>
                     </div>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
                         {notification.message}
                     </p>
 
@@ -222,7 +222,7 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                         <Link
                             href={notification.actionUrl}
                             onClick={(e) => e.stopPropagation()}
-                            className="mt-1.5 inline-flex items-center text-xs font-medium text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                            className="mt-1.5 inline-flex items-center text-xs font-medium text-primary hover:text-primary-foreground"
                         >
                             {notification.actionLabel || 'View details'}
                             <ChevronRight className="ml-1 h-3 w-3" />
@@ -232,7 +232,7 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
 
                 {!notification.read && (
                     <div className="flex-shrink-0 self-start mt-0.5">
-                        <div className="h-2 w-2 rounded-full bg-green-600 dark:bg-green-400"></div>
+                        <div className="h-2 w-2 rounded-full bg-primary"></div>
                     </div>
                 )}
             </div>
@@ -241,16 +241,16 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
 
     const EmptyState = ({ message }: { message: string }) => (
         <div className="py-8 flex flex-col items-center justify-center px-4 text-center">
-            <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+            <div className="h-12 w-12 rounded-full bg-card flex items-center justify-center mb-3">
                 {activeTab === "unread" ?
-                    <CheckCircle className="h-6 w-6 text-green-500" /> :
-                    <BellOff className="h-6 w-6 text-gray-400" />
+                    <CheckCircle className="h-6 w-6 text-primary" /> :
+                    <BellOff className="h-6 w-6 text-muted-foreground" />
                 }
             </div>
-            <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+            <h4 className="text-base font-medium text-foreground mb-1">
                 {activeTab === "unread" ? "You're all caught up!" : "No notifications"}
             </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
                 {message}
             </p>
         </div>
@@ -258,18 +258,18 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
 
     const LoadingState = () => (
         <div className="py-12 flex flex-col items-center justify-center px-4 text-center">
-            <Loader2 className="h-8 w-8 text-green-500 animate-spin mb-3" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">Loading notifications...</p>
+            <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+            <p className="text-sm text-muted-foreground">Loading notifications...</p>
         </div>
     );
 
     const ErrorState = () => (
         <div className="py-8 flex flex-col items-center justify-center px-4 text-center">
-            <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-3">
-                <AlertCircle className="h-6 w-6 text-red-500" />
+            <div className="h-12 w-12 rounded-full bg-destructive flex items-center justify-center mb-3">
+                <AlertCircle className="h-6 w-6 text-destructive-foreground" />
             </div>
-            <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">Something went wrong</h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{errorMessage}</p>
+            <h4 className="text-base font-medium text-foreground mb-1">Something went wrong</h4>
+            <p className="text-sm text-muted-foreground mb-4">{errorMessage}</p>
             <Button size="sm" onClick={() => fetchNotifications()} variant="outline">Try again</Button>
         </div>
     );
@@ -296,10 +296,10 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                 {NOTIFICATION_GROUPS.map(group => (
                     groupedNotifications[group] && (
                         <div key={group} className="mb-2">
-                            <div className="px-4 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60">
+                            <div className="px-4 py-1.5 text-xs font-medium text-muted-foreground bg-popover">
                                 {group}
                             </div>
-                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                            <div className="divide-y divide-border">
                                 {groupedNotifications[group].map((notification) => (
                                     <NotificationItem key={notification.id} notification={notification} />
                                 ))}
@@ -323,12 +323,12 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                     size="icon"
                     className={cn(
                         "relative rounded-full",
-                        unreadCount > 0 && "after:absolute after:top-1 after:right-1 after:w-2 after:h-2 after:bg-green-500 after:rounded-full after:ring-2 after:ring-white dark:after:ring-gray-800"
+                        unreadCount > 0 && "after:absolute after:top-1 after:right-1 after:w-2 after:h-2 after:bg-primary after:rounded-full after:ring-2 after:ring-card"
                     )}
                 >
                     <Bell className={cn(
                         "h-5 w-5 transition-colors duration-300",
-                        unreadCount > 0 ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"
+                        unreadCount > 0 ? "text-foreground" : "text-muted-foreground"
                     )} />
 
                     {unreadCount > 0 && (
@@ -337,9 +337,9 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                 </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-[380px] p-0" align="end" sideOffset={8}>
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold text-lg">Notifications</h3>
+            <DropdownMenuContent className="w-[380px] p-0 bg-popover border-border" align="end" sideOffset={8}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="font-semibold text-lg text-foreground">Notifications</h3>
                     {unreadCount > 0 && (
                         <Button
                             variant="ghost"
@@ -348,7 +348,7 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                                 e.preventDefault();
                                 markAllNotificationsAsRead();
                             }}
-                            className="h-8 text-xs gap-1.5 text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/30"
+                            className="h-8 text-xs gap-1.5 text-primary hover:text-primary-foreground hover:bg-accent"
                         >
                             <Check className="h-3.5 w-3.5" />
                             Mark all as read
@@ -357,21 +357,21 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                 </div>
 
                 <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col h-[400px]">
-                    <div className="border-b border-gray-200 dark:border-gray-700 px-4">
-                        <TabsList className="h-12 bg-transparent gap-6 justify-start">
+                    <div className="border-b border-border px-4">
+                        <TabsList className="h-12 bg-transparent gap-6 justify-start border-none shadow-none p-0">
                             <TabsTrigger
                                 value="all"
-                                className="py-3 data-[state=active]:text-green-600 data-[state=active]:border-green-600 dark:data-[state=active]:text-green-400 dark:data-[state=active]:border-green-400 border-b-2 border-transparent px-2 rounded-none"
+                                className="py-3 px-2 rounded-none border-b-2 border-transparent data-[state=active]:text-primary data-[state=active]:border-primary text-foreground font-medium transition-colors hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 All
                             </TabsTrigger>
                             <TabsTrigger
                                 value="unread"
-                                className="py-3 data-[state=active]:text-green-600 data-[state=active]:border-green-600 dark:data-[state=active]:text-green-400 dark:data-[state=active]:border-green-400 border-b-2 border-transparent px-2 rounded-none flex gap-2 items-center"
+                                className="py-3 px-2 rounded-none border-b-2 border-transparent data-[state=active]:text-primary data-[state=active]:border-primary text-foreground font-medium transition-colors hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring flex gap-2 items-center"
                             >
                                 Unread
                                 {unreadCount > 0 && (
-                                    <Badge className="h-5 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 border-0">
+                                    <Badge className="h-5 bg-accent text-primary border-0">
                                         {unreadCount}
                                     </Badge>
                                 )}
@@ -393,13 +393,16 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
                         </TabsContent>
                     </div>
 
-                    <div className="border-t border-gray-200 dark:border-gray-700 p-2 mt-auto">
+                    <div className="border-t border-border p-2 mt-auto bg-popover">
                         <Button
                             variant="ghost"
-                            className="w-full justify-center text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/30"
+                            className="w-full justify-center text-primary focus-visible:ring-2 focus-visible:ring-ring bg-popover hover:bg-accent/60"
                             asChild
                         >
-                            <Link href="/notifications">
+                            <Link
+                                href="/notifications"
+                                className="hover:text-primary-foreground w-full flex justify-center items-center py-2 rounded"
+                            >
                                 View all notifications
                             </Link>
                         </Button>

@@ -1,8 +1,7 @@
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { FileText, Users, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Users, Info, CheckCircle2, AlertCircle, User } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 interface DetailsStepProps {
@@ -31,31 +30,21 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
     return (
         <div className="space-y-8 animate-fadeIn">
             {/* Title Section */}
-            <Card className={cn(
-                "transition-all duration-300 border-2",
-                errors.title ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
-                isTitleValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
-                "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            )}>
+            <Card className="transition-all duration-300 border bg-card text-card-foreground">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                                "p-2 rounded-full transition-colors",
-                                errors.title ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                                isTitleValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
-                                "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                            )}>
+                            <div className="p-2 rounded-full transition-colors border">
                                 {errors.title ? (
-                                    <AlertCircle className="w-5 h-5" />
+                                    <AlertCircle className="w-5 h-5 text-destructive" />
                                 ) : isTitleValid ? (
-                                    <CheckCircle2 className="w-5 h-5" />
+                                    <CheckCircle2 className="w-5 h-5 text-success" />
                                 ) : (
                                     <FileText className="w-5 h-5" />
                                 )}
                             </div>
                             <div>
-                                <label htmlFor="title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                <label htmlFor="title" className="text-lg font-semibold">
                                     Manuscript Title
                                 </label>
                                 <p className="text-sm text-muted-foreground">
@@ -68,16 +57,6 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                             <Badge variant={isTitleValid ? "default" : "secondary"} className="text-xs">
                                 {titleLength}/10+ chars
                             </Badge>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                    <p>The title should be concise yet descriptive, accurately reflecting your research content and scope.</p>
-                                </TooltipContent>
-                            </Tooltip>
                         </div>
                     </div>
 
@@ -86,10 +65,10 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                             id="title"
                             placeholder="Enter a descriptive and compelling title for your manuscript..."
                             className={cn(
-                                "h-12 text-base transition-all duration-300 focus:ring-2",
-                                errors.title ? "border-red-300 focus:border-red-400 focus:ring-red-200" :
-                                isTitleValid ? "border-green-300 focus:border-green-400 focus:ring-green-200" :
-                                "border-gray-300 focus:border-primary focus:ring-primary/20"
+                                "h-12 text-base transition-all duration-300 focus:ring-2 border",
+                                errors.title ? "border-destructive focus:border-destructive focus:ring-destructive/20" :
+                                isTitleValid ? "border-success focus:border-success focus:ring-success/20" :
+                                "border focus:border-primary focus:ring-primary/20"
                             )}
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
@@ -98,14 +77,14 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                         />
 
                         {errors.title && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
-                                <p id="title-error" className="text-sm font-medium">{errors.title}</p>
+                                <p id="title-error" className="text-sm font-medium"></p>
                             </div>
                         )}
 
                         {!errors.title && isTitleValid && (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-2 text-success">
                                 <CheckCircle2 className="w-4 h-4" />
                                 <p className="text-sm font-medium">Great! Your title meets the requirements.</p>
                             </div>
@@ -115,31 +94,21 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
             </Card>
 
             {/* Authors Section */}
-            <Card className={cn(
-                "transition-all duration-300 border-2",
-                errors.authors ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20" :
-                isAuthorsValid ? "border-green-200 bg-green-50/50 dark:border-green-800 dark:bg-green-950/20" :
-                "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            )}>
+            <Card className="transition-all duration-300 border bg-card text-card-foreground">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={cn(
-                                "p-2 rounded-full transition-colors",
-                                errors.authors ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                                isAuthorsValid ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" :
-                                "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                            )}>
+                            <div className="p-2 rounded-full transition-colors border">
                                 {errors.authors ? (
-                                    <AlertCircle className="w-5 h-5" />
+                                    <AlertCircle className="w-5 h-5 text-destructive" />
                                 ) : isAuthorsValid ? (
-                                    <CheckCircle2 className="w-5 h-5" />
+                                    <CheckCircle2 className="w-5 h-5 text-success" />
                                 ) : (
                                     <Users className="w-5 h-5" />
                                 )}
                             </div>
                             <div>
-                                <label htmlFor="authors" className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                <label htmlFor="authors" className="text-lg font-semibold">
                                     Authors
                                 </label>
                                 <p className="text-sm text-muted-foreground">
@@ -152,16 +121,6 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                             <Badge variant={authorsArray.length > 0 ? "default" : "secondary"} className="text-xs">
                                 {authorsArray.length} author{authorsArray.length !== 1 ? 's' : ''}
                             </Badge>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="text-muted-foreground cursor-help hover:text-foreground transition-colors">
-                                        <Info className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                    <p>List all authors who made significant contributions to this work. Separate names with commas.</p>
-                                </TooltipContent>
-                            </Tooltip>
                         </div>
                     </div>
 
@@ -170,10 +129,10 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                             id="authors"
                             placeholder="e.g. Dr. Jane Smith, Prof. John Doe, Dr. Alice Johnson..."
                             className={cn(
-                                "h-12 text-base transition-all duration-300 focus:ring-2",
-                                errors.authors ? "border-red-300 focus:border-red-400 focus:ring-red-200" :
-                                isAuthorsValid ? "border-green-300 focus:border-green-400 focus:ring-green-200" :
-                                "border-gray-300 focus:border-primary focus:ring-primary/20"
+                                "h-12 text-base transition-all duration-300 focus:ring-2 border",
+                                errors.authors ? "border-destructive focus:border-destructive focus:ring-destructive/20" :
+                                isAuthorsValid ? "border-success focus:border-success focus:ring-success/20" :
+                                "border focus:border-primary focus:ring-primary/20"
                             )}
                             value={data.authors}
                             onChange={(e) => setData('authors', e.target.value)}
@@ -184,8 +143,8 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                         {/* Author Chips Preview */}
                         {authorsArray.length > 0 && (
                             <div className="space-y-3">
-                                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    <User className="w-4 h-4" />
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                    <Users className="w-4 h-4" />
                                     Author Preview:
                                 </div>
                                 <div className="flex flex-wrap gap-2">
@@ -193,9 +152,9 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                                         <Badge 
                                             key={index} 
                                             variant="outline" 
-                                            className="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            className="px-3 py-1.5 text-sm"
                                         >
-                                            <User className="w-3 h-3 mr-1.5" />
+                                            <Users className="w-3 h-3 mr-1.5" />
                                             {author.trim()}
                                         </Badge>
                                     ))}
@@ -204,20 +163,18 @@ export function DetailsStep({ data, setData, errors }: DetailsStepProps) {
                         )}
 
                         {errors.authors && (
-                            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <div className="flex items-center gap-2 text-destructive">
                                 <AlertCircle className="w-4 h-4" />
-                                <p id="authors-error" className="text-sm font-medium">{errors.authors}</p>
                             </div>
                         )}
 
                         {!errors.authors && isAuthorsValid && (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <div className="flex items-center gap-2 text-success">
                                 <CheckCircle2 className="w-4 h-4" />
-                                <p className="text-sm font-medium">Perfect! All authors have been listed.</p>
                             </div>
                         )}
 
-                        <div className="text-xs text-muted-foreground bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
+                        <div className="text-xs text-muted-foreground bg-background p-3 rounded-lg">
                             <strong>Tip:</strong> List authors in the order they should appear in the publication. Include full names and separate each author with a comma.
                         </div>
                     </div>

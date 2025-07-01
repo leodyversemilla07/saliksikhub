@@ -40,15 +40,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:author'])->group(function () {
         Route::get('/author', [AuthorController::class, 'index'])->name('author.dashboard');
 
-        Route::prefix('author/manuscripts')->group(function () {
-            Route::get('/index', [ManuscriptController::class, 'index'])->name('manuscripts.index');
-            Route::get('/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
-            Route::post('/', [ManuscriptController::class, 'store'])->name('manuscripts.store');
-            Route::get('/{id}', [ManuscriptController::class, 'show'])->name('manuscripts.show');
-            Route::delete('/{id}', [ManuscriptController::class, 'destroy'])->name('manuscripts.destroy');
-            Route::get('/{id}/revision', [ManuscriptController::class, 'showRevisionForm'])->name('manuscripts.revision.form');
-            Route::post('/{id}/revision', [ManuscriptController::class, 'submitRevision'])->name('manuscripts.revision.submit');
-        });
+        Route::get('/author/manuscripts/index', [ManuscriptController::class, 'index'])->name('manuscripts.index');
+        Route::get('/author/manuscripts/create', [ManuscriptController::class, 'create'])->name('manuscripts.create');
+        Route::post('/author/manuscripts', [ManuscriptController::class, 'store'])->name('manuscripts.store');
+        Route::get('/author/manuscripts/{id}', [ManuscriptController::class, 'show'])->name('manuscripts.show');
+        Route::delete('/author/manuscripts/{id}', [ManuscriptController::class, 'destroy'])->name('manuscripts.destroy');
+        Route::get('/author/manuscripts/{id}/revision', [ManuscriptController::class, 'showRevisionForm'])->name('manuscripts.revision.form');
+        Route::post('/author/manuscripts/{id}/revision', [ManuscriptController::class, 'submitRevision'])->name('manuscripts.revision.submit');
 
         Route::get('/author/notifications', [ManuscriptController::class, 'notification'])->name('author.notifications');
         Route::get('/author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'showApproveForm'])->name('manuscripts.approve');
@@ -71,13 +69,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])->name('editor.manuscripts.prepare_publication_form');
         Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
-        Route::prefix('users')->group(function () {
-            Route::post('/bulk-delete', [EditorController::class, 'bulkDestroy'])->name('editor.users.bulk-destroy');
-            Route::get('/', [EditorController::class, 'manageUsers'])->name('editor.users.index');
-            Route::post('/', [EditorController::class, 'store'])->name('editor.users.store');
-            Route::put('/{user}', [EditorController::class, 'update'])->name('editor.users.update');
-            Route::delete('/{user}', [EditorController::class, 'destroy'])->name('editor.users.destroy');
-        });
+        Route::post('/users/bulk-delete', [EditorController::class, 'bulkDestroy'])->name('editor.users.bulk-destroy');
+        Route::get('/users', [EditorController::class, 'manageUsers'])->name('editor.users.index');
+        Route::post('/users', [EditorController::class, 'store'])->name('editor.users.store');
+        Route::put('/users/{user}', [EditorController::class, 'update'])->name('editor.users.update');
+        Route::delete('/users/{user}', [EditorController::class, 'destroy'])->name('editor.users.destroy');
 
         // Issue routes
         Route::resource('issues', IssueController::class);
@@ -105,4 +101,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
