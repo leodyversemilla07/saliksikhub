@@ -2,9 +2,8 @@ import { useState } from 'react';
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
-import DeleteUserForm from './partials/delete-user';
-import UpdatePasswordForm from './partials/password-update';
-import UpdateProfileInformationForm from './partials/profile-update';
+import UpdatePasswordForm from './partials/password';
+import UpdateProfileInformationForm from './partials/profile';
 import { cn } from '@/lib/utils';
 
 export default function Edit({
@@ -12,7 +11,7 @@ export default function Edit({
     status,
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
     const [activeSection, setActiveSection] = useState('profile');
-    
+
     const breadcrumbItems = [
         {
             label: 'Profile Settings',
@@ -27,23 +26,16 @@ export default function Edit({
             current: activeSection === 'profile'
         },
         {
-            name: 'Security',
-            section: 'security',
-            current: activeSection === 'security'
+            name: 'Password',
+            section: 'password',
+            current: activeSection === 'password'
         },
-        {
-            name: 'Delete Account',
-            section: 'danger',
-            current: activeSection === 'danger'
-        }
     ];
 
     // Determine which component to render based on active section
     const renderContent = () => {
-        if (activeSection === 'security') {
+        if (activeSection === 'password') {
             return <UpdatePasswordForm />;
-        } else if (activeSection === 'danger') {
-            return <DeleteUserForm />;
         } else {
             return (
                 <UpdateProfileInformationForm
@@ -62,7 +54,7 @@ export default function Edit({
                 {/* Header */}
                 <div>
                     <h1 className="text-2xl font-semibold text-foreground">
-                        Profile Settings
+                        Settings
                     </h1>
                     <p className="text-muted-foreground">
                         Manage your account settings and preferences

@@ -10,13 +10,13 @@ use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\ManuscriptDecision as ManuscriptDecisionNotification;
 use App\Notifications\ManuscriptPublished;
 use App\Notifications\ManuscriptStatusChanged;
+use App\Services\StorageService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
@@ -38,7 +38,7 @@ class EditorController extends Controller
         ]);
     }
 
-    public function showManuscript($id)
+    public function showManuscript($id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
@@ -48,9 +48,9 @@ class EditorController extends Controller
 
             if ($manuscript->manuscript_path) {
                 try {
-                    $manuscriptUrl = Storage::disk('spaces')->temporaryUrl(
+                    $manuscriptUrl = $storageService->generateTemporaryUrl(
                         $manuscript->manuscript_path,
-                        now()->addMinutes(5)
+                        5
                     );
                 } catch (Exception $e) {
                     logger()->error('Temporary URL Generation Error', [
@@ -63,9 +63,9 @@ class EditorController extends Controller
 
             if ($manuscript->final_pdf_path) {
                 try {
-                    $finalPdfUrl = Storage::disk('spaces')->temporaryUrl(
+                    $finalPdfUrl = $storageService->generateTemporaryUrl(
                         $manuscript->final_pdf_path,
-                        now()->addMinutes(5)
+                        5
                     );
                 } catch (Exception $e) {
                     logger()->error('Temporary URL Generation Error', [
@@ -167,7 +167,7 @@ class EditorController extends Controller
                     $author->notify(new ManuscriptDecisionNotification($manuscript, $decision));
 
                     if ($previousStatus !== $manuscript->status) {
-                        $author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $manuscript->status));
+                        $author->notify(new ManuscriptStatusChanged($manuscript, (string) $previousStatus, (string) $manuscript->status));
                     }
                 } catch (Exception $e) {
                     Log::error('Failed to send notification', [
@@ -204,12 +204,12 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to record editorial decision: '.$e->getMessage(),
+                    'message' => 'Failed to record editorial decision: ' . $e->getMessage(),
                     'errors' => ['general' => 'Failed to record editorial decision.'],
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to record editorial decision: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to record editorial decision: ' . $e->getMessage());
         }
     }
 
@@ -428,7 +428,7 @@ class EditorController extends Controller
                 return [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
-                    'author' => $manuscript->author->firstname.' '.$manuscript->author->lastname,
+                    'author' => $manuscript->author->firstname . ' ' . $manuscript->author->lastname,
                     'status' => $manuscript->status,
                     'submitted_date' => $manuscript->created_at->format('M j, Y'),
                     'days_since_submission' => $manuscript->created_at->diffInDays(now()),
@@ -472,7 +472,7 @@ class EditorController extends Controller
                     'title' => 'New Submissions',
                     'value' => (string) $newSubmissions,
                     'trend' => $submissionsTrend >= 0 ? 'up' : 'down',
-                    'percentage' => abs($submissionsTrend).'%',
+                    'percentage' => abs($submissionsTrend) . '%',
                     'description' => 'Last 30 days',
                     'color' => 'from-blue-500 to-indigo-600',
                 ],
@@ -480,7 +480,7 @@ class EditorController extends Controller
                     'title' => 'Published Articles',
                     'value' => (string) $publishedArticles,
                     'trend' => $publishedTrend >= 0 ? 'up' : 'down',
-                    'percentage' => abs($publishedTrend).'%',
+                    'percentage' => abs($publishedTrend) . '%',
                     'description' => 'Last 30 days',
                     'color' => 'from-green-500 to-emerald-600',
                 ],
@@ -561,7 +561,7 @@ class EditorController extends Controller
         $rules = [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|string|in:author,editor',
             'affiliation' => 'nullable|string|max:255',
         ];
@@ -619,7 +619,7 @@ class EditorController extends Controller
 
         User::whereIn('id', $userIds)->delete();
 
-        return redirect()->back()->with('success', count($userIds).' users deleted successfully');
+        return redirect()->back()->with('success', count($userIds) . ' users deleted successfully');
     }
 
     public function startCopyEditing(Manuscript $manuscript)
@@ -633,7 +633,7 @@ class EditorController extends Controller
                 'status_match' => $manuscript->status === ManuscriptStatus::ACCEPTED,
             ]);
 
-            $normalizedCurrentStatus = trim(strtoupper($manuscript->status));
+            $normalizedCurrentStatus = trim(strtoupper((string) $manuscript->status));
             $normalizedExpectedStatus = trim(strtoupper((string) ManuscriptStatus::ACCEPTED));
 
             if ($normalizedCurrentStatus !== $normalizedExpectedStatus) {
@@ -676,7 +676,7 @@ class EditorController extends Controller
             try {
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
-                    $previousStatus,
+                    (string) $previousStatus,
                     (string) $manuscript->status
                 ));
 
@@ -714,15 +714,15 @@ class EditorController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to start the copy editing process: '.$e->getMessage(),
+                    'message' => 'Failed to start the copy editing process: ' . $e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to start the copy editing process: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to start the copy editing process: ' . $e->getMessage());
         }
     }
 
-    public function uploadFinalizedManuscript(Request $request, Manuscript $manuscript)
+    public function uploadFinalizedManuscript(Request $request, Manuscript $manuscript, StorageService $storageService)
     {
         try {
             $request->validate([
@@ -751,13 +751,11 @@ class EditorController extends Controller
                 $timestamp = now()->format('YmdHis');
                 $filename = "final_{$manuscript->id}_{$timestamp}.pdf";
 
-                $storagePath = "manuscripts/finalized/{$manuscript->id}/{$filename}";
-
-                Storage::disk('spaces')->put($storagePath, file_get_contents($file), [
-                    'visibility' => 'private',
-                    'ContentType' => 'application/pdf',
-                    'ContentDisposition' => 'inline; filename="'.$filename.'"',
-                ]);
+                $storagePath = $storageService->storeFile(
+                    $file,
+                    "manuscripts/finalized/{$manuscript->id}",
+                    $filename
+                );
 
                 $manuscript->final_pdf_path = $storagePath;
                 $manuscript->final_manuscript_uploaded_at = now();
@@ -781,7 +779,7 @@ class EditorController extends Controller
 
                     $manuscript->author->notify(new ManuscriptStatusChanged(
                         $manuscript,
-                        $previousStatus,
+                        (string) $previousStatus,
                         (string) $manuscript->status
                     ));
                 } catch (Exception $e) {
@@ -793,9 +791,9 @@ class EditorController extends Controller
 
                 $temporaryUrl = null;
                 try {
-                    $temporaryUrl = Storage::disk('spaces')->temporaryUrl(
+                    $temporaryUrl = $storageService->generateTemporaryUrl(
                         $storagePath,
-                        now()->addMinutes(5)
+                        5
                     );
                 } catch (Exception $e) {
                     Log::warning('Could not generate temporary URL', [
@@ -839,11 +837,11 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to upload finalized manuscript: '.$e->getMessage(),
+                    'message' => 'Failed to upload finalized manuscript: ' . $e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to upload finalized manuscript: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to upload finalized manuscript: ' . $e->getMessage());
         }
     }
 
@@ -868,7 +866,7 @@ class EditorController extends Controller
     {
         try {
             $validated = $request->validate([
-                'doi' => 'required|string|max:255|unique:manuscripts,doi,'.$manuscript->id,
+                'doi' => 'required|string|max:255|unique:manuscripts,doi,' . $manuscript->id,
                 'volume' => 'required|string|max:50',
                 'issue' => 'required|string|max:50',
                 'page_range' => 'required|string|max:50',
@@ -901,7 +899,7 @@ class EditorController extends Controller
 
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
-                    $previousStatus,
+                    (string) $previousStatus,
                     (string) $manuscript->status
                 ));
             } catch (Exception $e) {
@@ -938,11 +936,11 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to publish manuscript: '.$e->getMessage(),
+                    'message' => 'Failed to publish manuscript: ' . $e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to publish manuscript: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to publish manuscript: ' . $e->getMessage());
         }
     }
 }

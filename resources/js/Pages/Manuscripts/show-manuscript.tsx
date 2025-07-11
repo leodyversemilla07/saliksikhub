@@ -5,6 +5,7 @@ import { Manuscript, ManuscriptStatus } from '@/types/manuscript';
 import { PageProps } from '@/types';
 import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
+import DocumentViewer from '@/components/document-viewer';
 
 interface ShowProps {
     manuscript: Manuscript;
@@ -109,110 +110,131 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
     return (
         <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Manuscript: ${manuscript.title}`} />
-            <div className="bg-background text-foreground min-h-screen w-full">
-                <div className="w-full max-w-none grid grid-cols-1 lg:grid-cols-3 gap-8 py-8 px-0">
-                    {/* Left: Info Panel */}
-                    <div className="col-span-1 flex flex-col gap-4 px-6 lg:px-12 xl:px-20">
-                        <h1 className="text-3xl font-bold" style={{ color: 'var(--color-foreground)' }}>{manuscript.title}</h1>
-                        <div className="text-sm flex items-center gap-2" style={{ color: 'var(--color-muted-foreground)' }}>
-                            <span>Last updated</span>
-                            <span className="font-semibold text-foreground" style={{ color: 'var(--color-foreground)' }}>
-                                {new Date(manuscript.updated_at).toLocaleDateString(undefined, {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })}
-                            </span>
-                        </div>
-                        <StatusBadge status={manuscript.status} className="mb-2" />
-                        <div>
-                            <strong style={{ color: 'var(--color-foreground)' }}>Authors:</strong>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {manuscript.authors.map((author) => (
-                                    <Badge key={author} variant="outline">{author}</Badge>
-                                ))}
+            <div className="manuscript-viewer bg-background text-foreground min-h-screen">
+                <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 lg:gap-8">
+                        {/* Left: Info Panel */}
+                        <div className="xl:col-span-2 space-y-6">
+                            {/* Header Section */}
+                            <div className="space-y-4">
+                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
+                                    {manuscript.title}
+                                </h1>
+                                
+                                <div className="flex items-center justify-between">
+                                    <div className="text-sm text-muted-foreground">
+                                        <span>Last updated </span>
+                                        <time className="font-medium text-foreground">
+                                            {new Date(manuscript.updated_at).toLocaleDateString(undefined, {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: true
+                                            })}
+                                        </time>
+                                    </div>
+                                    <StatusBadge status={manuscript.status} />
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <strong style={{ color: 'var(--color-foreground)' }}>Abstract:</strong>
-                            <p className="text-sm mt-1" style={{ color: 'var(--color-muted-foreground)' }}>{manuscript.abstract}</p>
-                        </div>
-                        <div>
-                            <strong style={{ color: 'var(--color-foreground)' }}>Keywords:</strong>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {manuscript.keywords.map((keyword) => (
-                                    <Badge key={keyword} variant="secondary">{keyword}</Badge>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <strong style={{ color: 'var(--color-foreground)' }}>Timeline:</strong>
-                            <ul className="ml-4 mt-2 list-disc text-sm">
-                                {timelineItems.map((item, idx) => (
-                                    <li key={idx} className="mb-1" style={{ color: 'var(--color-muted-foreground)' }}>
-                                        <span className="font-medium" style={{ color: 'var(--color-foreground)' }}>{item.label}:</span> {new Date(item.date).toLocaleDateString()} <span>{item.description}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                    {/* Right: Document Viewer */}
-                    <div className="col-span-1 lg:col-span-2 flex items-center justify-center min-h-[60vh] px-0">
-                        <div className="w-full h-full flex flex-col items-center justify-center">
-                            {(() => {
-                                const pdfPath = manuscript.final_pdf_path && manuscript.final_pdf_path.toLowerCase().endsWith('.pdf')
-                                    ? manuscript.final_pdf_path
-                                    : manuscript.manuscript_path && manuscript.manuscript_path.toLowerCase().endsWith('.pdf')
-                                        ? manuscript.manuscript_path
-                                        : null;
-                                const docxPath = manuscript.final_pdf_path && manuscript.final_pdf_path.toLowerCase().endsWith('.docx')
-                                    ? manuscript.final_pdf_path
-                                    : manuscript.manuscript_path && manuscript.manuscript_path.toLowerCase().endsWith('.docx')
-                                        ? manuscript.manuscript_path
-                                        : null;
-                                if (pdfPath) {
-                                    return (
-                                        <object data={pdfPath} type="application/pdf" className="w-full h-[80vh] rounded-lg shadow border" style={{ background: 'var(--color-card)', borderColor: 'var(--color-border)' }}>
-                                            <div className="mb-4 text-center text-base" style={{ color: 'var(--color-muted-foreground)' }}>
-                                                PDF preview is not available in-browser.<br />
-                                                <a href={pdfPath} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)' }} className="underline text-sm">Open PDF in New Tab</a>
-                                                <span className="mx-2">|</span>
-                                                <a href={pdfPath} download style={{ color: 'var(--color-accent)' }} className="underline text-xs">Download PDF</a>
-                                            </div>
-                                        </object>
-                                    );
-                                } else if (docxPath) {
-                                    return (
-                                        <iframe
-                                            src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(window.location.origin + docxPath)}`}
-                                            title="Word Document Viewer"
-                                            className="w-full h-[80vh] rounded-lg shadow border"
-                                            style={{ border: 'none', background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
-                                            allowFullScreen
-                                        />
-                                    );
-                                } else {
-                                    return (
-                                        <div className="text-center p-8 w-full" style={{ color: 'var(--color-muted-foreground)' }}>
-                                            {manuscript.final_pdf_path || manuscript.manuscript_path ? (
-                                                <>
-                                                    <div className="mb-2">No PDF or DOCX document available for preview.</div>
-                                                    <div className="mt-4">
-                                                        <a href={manuscript.final_pdf_path || manuscript.manuscript_path} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)' }} className="underline text-sm">View Document</a>
-                                                        <span className="mx-2">|</span>
-                                                        <a href={manuscript.final_pdf_path || manuscript.manuscript_path} download style={{ color: 'var(--color-accent)' }} className="underline text-xs">Download</a>
+
+                            {/* Metadata Section */}
+                            <div className="space-y-6">
+                                {/* Authors */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                        Authors
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {manuscript.authors.map((author) => (
+                                            <Badge key={author} variant="outline" className="text-sm">
+                                                {author}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Abstract */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                        Abstract
+                                    </h3>
+                                    <p className="text-sm leading-relaxed text-muted-foreground">
+                                        {manuscript.abstract}
+                                    </p>
+                                </div>
+
+                                {/* Keywords */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                        Keywords
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {manuscript.keywords.map((keyword) => (
+                                            <Badge key={keyword} variant="secondary" className="text-xs">
+                                                {keyword}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Timeline */}
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                        Timeline
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {timelineItems.map((item, idx) => (
+                                            <div key={idx} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
+                                                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <span className="text-sm font-medium text-foreground">
+                                                            {item.label}
+                                                        </span>
+                                                        <time className="text-xs text-muted-foreground">
+                                                            {new Date(item.date).toLocaleDateString()}
+                                                        </time>
                                                     </div>
-                                                </>
-                                            ) : (
-                                                <div>No document available.</div>
-                                            )}
-                                        </div>
-                                    );
-                                }
-                            })()}
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {item.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right: Document Viewer */}
+                        <div className="xl:col-span-3">
+                            <div className="sticky top-6">
+                                <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+                                    <div className="p-4 border-b border-border">
+                                        <h3 className="text-lg font-semibold text-foreground">
+                                            Document Preview
+                                        </h3>
+                                    </div>
+                                    <div className="p-4">
+                                        <DocumentViewer
+                                            pdfPath={manuscript.final_pdf_path?.toLowerCase().includes('.pdf')
+                                                ? manuscript.final_pdf_path
+                                                : manuscript.manuscript_path?.toLowerCase().includes('.pdf')
+                                                    ? manuscript.manuscript_path
+                                                    : null
+                                            }
+                                            docxPath={manuscript.final_pdf_path?.toLowerCase().includes('.docx')
+                                                ? manuscript.final_pdf_path
+                                                : manuscript.manuscript_path?.toLowerCase().includes('.docx')
+                                                    ? manuscript.manuscript_path
+                                                    : null
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

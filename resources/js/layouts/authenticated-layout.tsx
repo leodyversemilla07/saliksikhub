@@ -97,7 +97,7 @@ export default function AuthenticatedLayout({
                 />
 
                 <main className="flex-1 bg-background transition-colors duration-300 min-h-0">
-                    <div className="p-4 sm:p-6 lg:p-8 h-full">
+                    <div className="p-4 sm:p-6 lg:p-8 h-full [&:has(.manuscript-viewer)]:p-0">
                         {children}
                     </div>
                 </main>

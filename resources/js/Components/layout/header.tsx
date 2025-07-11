@@ -1,13 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Link } from '@inertiajs/react';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import BreadcrumbComponent from '@/components/breadcrumb';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -78,44 +70,7 @@ export function Header({ toggleDarkMode, isDarkMode, breadcrumbItems }: HeaderPr
             <div className="flex items-center space-x-4 flex-1">
                 <div className="flex flex-col space-y-1 flex-1">
                     {breadcrumbItems && breadcrumbItems.length > 0 && (
-                        <Breadcrumb className="mb-0">
-                            <BreadcrumbList>
-                                {breadcrumbItems.map((item, index) => {
-                                    const isLast = index === breadcrumbItems.length - 1;
-                                    const maxLength = 30;
-                                    const label =
-                                        item.label.length > maxLength
-                                            ? `${item.label.substring(0, maxLength)}...`
-                                            : item.label;
-
-                                    return (
-                                        <React.Fragment key={index}>
-                                            <BreadcrumbItem>
-                                                {item.href && !isLast ? (
-                                                    <BreadcrumbLink
-                                                        asChild
-                                                        className="text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                                                        title={item.label}
-                                                    >
-                                                        <Link href={item.href}>{label}</Link>
-                                                    </BreadcrumbLink>
-                                                ) : (
-                                                    <BreadcrumbPage
-                                                        className="text-sidebar-foreground font-medium"
-                                                        title={item.label}
-                                                    >
-                                                        {label}
-                                                    </BreadcrumbPage>
-                                                )}
-                                            </BreadcrumbItem>
-                                            {!isLast && (
-                                                <BreadcrumbSeparator className="text-sidebar-foreground/50" />
-                                            )}
-                                        </React.Fragment>
-                                    );
-                                })}
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <BreadcrumbComponent items={breadcrumbItems} />
                     )}
                 </div>
             </div>

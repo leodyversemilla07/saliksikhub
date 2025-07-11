@@ -47,7 +47,7 @@ export default function PasswordUpdate() {
     };
 
     return (
-        <div className="max-w-xl bg-card border rounded-lg p-4 space-y-4">
+        <div className="max-w-xl bg-card p-4 space-y-4">
             {/* Header */}
             <div>
                 <h2 className="text-lg font-semibold text-foreground">
@@ -155,7 +155,7 @@ export default function PasswordUpdate() {
                 </div>
 
                 {/* Action Button */}
-                <div className="flex items-center justify-between pt-3 border-t">
+                <div className="flex items-center justify-between">
                     <Button
                         type="submit"
                         disabled={processing}

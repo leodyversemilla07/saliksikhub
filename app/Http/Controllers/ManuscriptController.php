@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreFileAction;
 use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
@@ -9,13 +10,13 @@ use App\Notifications\ManuscriptApproved;
 use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptStatusChanged;
 use App\Notifications\ManuscriptSubmitted;
+use App\Services\StorageService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -37,7 +38,7 @@ class ManuscriptController extends Controller
         return Inertia::render('manuscripts/manuscript-submission');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, StoreFileAction $storeFileAction)
     {
         $validated = $request->validate([
             'title' => 'required|string|min:10',
@@ -49,21 +50,7 @@ class ManuscriptController extends Controller
 
         try {
             if ($request->hasFile('manuscript')) {
-                $userId = Auth::id();
-                $yearMonth = date('Y/m');
-                $safeTitle = str_replace([' ', '/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.'], '-', $request->title);
-                $safeTitle = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $safeTitle));
-
-                $file = $request->file('manuscript');
-                $extension = $file->getClientOriginalExtension();
-
-                $path = Storage::disk('spaces')->putFileAs(
-                    "manuscripts/{$userId}/{$yearMonth}",
-                    $file,
-                    "{$safeTitle}.{$extension}"
-                );
-
-                $validated['manuscript_path'] = $path;
+                $validated['manuscript_path'] = $storeFileAction->execute($request->file('manuscript'), 'manuscripts');
             }
 
             $validated['user_id'] = Auth::id();
@@ -87,58 +74,19 @@ class ManuscriptController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
             $userId = Auth::id();
 
-            $manuscriptUrl = null;
-            $finalPdfUrl = null;
+            $manuscriptUrl = $manuscript->manuscript_path
+                ? $storageService->generateTemporaryUrl($manuscript->manuscript_path, 5)
+                : null;
 
-            if ($manuscript->manuscript_path) {
-                try {
-                    $manuscriptUrl = Storage::disk('spaces')->temporaryUrl(
-                        $manuscript->manuscript_path,
-                        now()->addMinutes(5)
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Temporary URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
-
-            if ($manuscript->final_pdf_path) {
-                try {
-                    $finalPdfUrl = Storage::disk('spaces')->temporaryUrl(
-                        $manuscript->final_pdf_path,
-                        now()->addMinutes(5)
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Temporary URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
-
-            if ($manuscript->status === 'Published' && $manuscript->final_pdf_path) {
-                try {
-                    $finalPdfUrl = Storage::disk('spaces')->temporaryUrl(
-                        $manuscript->final_pdf_path,
-                        now()->addMinutes(30)
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Final PDF URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                    ]);
-                }
-            }
+            $finalPdfUrl = $manuscript->final_pdf_path
+                ? $storageService->generateTemporaryUrl($manuscript->final_pdf_path, $manuscript->status === 'Published' ? 30 : 5)
+                : null;
 
             return Inertia::render('manuscripts/show-manuscript', [
                 'manuscript' => [
@@ -240,7 +188,7 @@ class ManuscriptController extends Controller
         ]);
     }
 
-    public function showRevisionForm($id)
+    public function showRevisionForm($id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
@@ -262,20 +210,9 @@ class ManuscriptController extends Controller
                 ->latest('decision_date')
                 ->first();
 
-            $manuscriptUrl = null;
-            if ($manuscript->manuscript_path) {
-                try {
-                    $manuscriptUrl = Storage::disk('spaces')->temporaryUrl(
-                        $manuscript->manuscript_path,
-                        now()->addMinutes(5)
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Temporary URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                    ]);
-                }
-            }
+            $manuscriptUrl = $manuscript->manuscript_path
+                ? $storageService->generateTemporaryUrl($manuscript->manuscript_path, 5)
+                : null;
 
             return Inertia::render('manuscripts/revision', [
                 'manuscript' => [
@@ -309,7 +246,7 @@ class ManuscriptController extends Controller
         }
     }
 
-    public function submitRevision(Request $request, $id)
+    public function submitRevision(Request $request, $id, StoreFileAction $storeFileAction)
     {
         $manuscript = Manuscript::findOrFail($id);
         $userId = Auth::id();
@@ -340,13 +277,9 @@ class ManuscriptController extends Controller
                 $version = count($revisionHistory);
 
                 $file = $request->file('revised_manuscript');
-                $extension = $file->getClientOriginalExtension();
+                $fileName = "{$safeTitle}_v{$version}.pdf";
 
-                $path = Storage::disk('spaces')->putFileAs(
-                    "manuscripts/{$userId}/{$yearMonth}",
-                    $file,
-                    "{$safeTitle}_v{$version}.{$extension}"
-                );
+                $path = $storeFileAction->execute($file, "manuscripts");
 
                 $manuscript->manuscript_path = $path;
             }
@@ -386,7 +319,7 @@ class ManuscriptController extends Controller
                 try {
                     $manuscript->author->notify(new ManuscriptStatusChanged(
                         $manuscript,
-                        $previousStatus,
+                        (string) $previousStatus,
                         (string) ManuscriptStatus::SUBMITTED
                     ));
 
@@ -416,24 +349,12 @@ class ManuscriptController extends Controller
         }
     }
 
-    public function showApproveForm(Manuscript $manuscript)
+    public function showApproveForm(Manuscript $manuscript, StorageService $storageService)
     {
         try {
-            $finalPdfUrl = null;
-            if ($manuscript->final_pdf_path) {
-                try {
-                    $finalPdfUrl = Storage::disk('spaces')->temporaryUrl(
-                        $manuscript->final_pdf_path,
-                        now()->addMinutes(30)
-                    );
-                } catch (Exception $e) {
-                    Log::error('Failed to generate temporary URL', [
-                        'error' => $e->getMessage(),
-                        'manuscript_id' => $manuscript->id,
-                        'path' => $manuscript->final_pdf_path,
-                    ]);
-                }
-            }
+            $finalPdfUrl = $manuscript->final_pdf_path
+                ? $storageService->generateTemporaryUrl($manuscript->final_pdf_path, 30)
+                : null;
 
             return Inertia::render('manuscripts/approve-manuscript', [
                 'manuscript' => [
@@ -450,7 +371,7 @@ class ManuscriptController extends Controller
                 'manuscript_id' => $manuscript->id,
             ]);
 
-            return redirect()->back()->with('error', 'Failed to load approval form: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load approval form: ' . $e->getMessage());
         }
     }
 
@@ -470,8 +391,8 @@ class ManuscriptController extends Controller
 
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
-                    $previousStatus,
-                    $manuscript->status
+                    (string) $previousStatus,
+                    (string) $manuscript->status
                 ));
             } catch (Exception $e) {
                 Log::error('Failed to send publication notification', [
@@ -504,24 +425,23 @@ class ManuscriptController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to approve manuscript: '.$e->getMessage(),
+                    'message' => 'Failed to approve manuscript: ' . $e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to approve manuscript: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to approve manuscript: ' . $e->getMessage());
         }
     }
 
     /**
      * Serve manuscript PDF file.
      */
-    public function servePdf($id)
+    public function servePdf($id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
 
-            // Check if the manuscript has a PDF and is published
-            if (! $manuscript->final_pdf_path) {
+            if (!$manuscript->final_pdf_path) {
                 abort(404, 'PDF not found');
             }
 
@@ -529,8 +449,7 @@ class ManuscriptController extends Controller
                 abort(403, 'PDF not publicly available - manuscript not yet published');
             }
 
-            // Get the file from storage
-            if (! Storage::disk('spaces')->exists($manuscript->final_pdf_path)) {
+            if (!$storageService->fileExists($manuscript->final_pdf_path)) {
                 Log::error('PDF file not found in storage', [
                     'manuscript_id' => $id,
                     'pdf_path' => $manuscript->final_pdf_path,
@@ -538,9 +457,8 @@ class ManuscriptController extends Controller
                 abort(404, 'PDF file not found in storage');
             }
 
-            $fileContent = Storage::disk('spaces')->get($manuscript->final_pdf_path);
+            $fileContent = $storageService->getFileContent($manuscript->final_pdf_path);
 
-            // Generate a filename for download
             $filename = sprintf(
                 '%s_manuscript_%d.pdf',
                 Str::slug($manuscript->title, '_'),
@@ -549,7 +467,7 @@ class ManuscriptController extends Controller
 
             return response($fileContent)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="'.$filename.'"')
+                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
                 ->header('Cache-Control', 'public, max-age=3600')
                 ->header('X-Content-Type-Options', 'nosniff');
         } catch (ModelNotFoundException $e) {
