@@ -22,6 +22,9 @@ use Inertia\Inertia;
 
 class ManuscriptController extends Controller
 {
+    /**
+     * Display a listing of the user's manuscripts.
+     */
     public function index()
     {
         $userId = Auth::id();
@@ -33,12 +36,18 @@ class ManuscriptController extends Controller
         return Inertia::render('manuscripts/manuscripts-index', compact('manuscripts'));
     }
 
+    /**
+     * Show the form for submitting a new manuscript.
+     */
     public function create()
     {
         return Inertia::render('manuscripts/manuscript-submission');
     }
 
-    public function store(Request $request, StoreFileAction $storeFileAction)
+    /**
+     * Store a newly submitted manuscript in storage.
+     */
+    public function store(Request $request, StorageService $storageService)
     {
         $validated = $request->validate([
             'title' => 'required|string|min:10',
@@ -50,7 +59,7 @@ class ManuscriptController extends Controller
 
         try {
             if ($request->hasFile('manuscript')) {
-                $validated['manuscript_path'] = $storeFileAction->execute($request->file('manuscript'), 'manuscripts');
+                $validated['manuscript_path'] = $storageService->storeUserFile($request->file('manuscript'), 'manuscripts');
             }
 
             $validated['user_id'] = Auth::id();
@@ -74,11 +83,19 @@ class ManuscriptController extends Controller
         }
     }
 
+    /**
+     * Display the specified manuscript to its owner.
+     */
     public function show($id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
             $userId = Auth::id();
+
+            // Authorization check: only owner can view
+            if ($manuscript->user_id !== $userId) {
+                return redirect()->route('manuscripts.index')->with('error', 'You do not have permission to view this manuscript.');
+            }
 
             $manuscriptUrl = $manuscript->manuscript_path
                 ? $storageService->generateTemporaryUrl($manuscript->manuscript_path, 5)
@@ -159,6 +176,9 @@ class ManuscriptController extends Controller
         }
     }
 
+    /**
+     * Remove the specified manuscript from storage.
+     */
     public function destroy($id)
     {
         $manuscript = Manuscript::findOrFail($id);
@@ -167,6 +187,9 @@ class ManuscriptController extends Controller
         return redirect()->route('manuscripts.index')->with('success', 'Manuscript deleted successfully');
     }
 
+    /**
+     * Display the author's notifications.
+     */
     public function notification()
     {
         $user = Auth::user();
@@ -188,6 +211,9 @@ class ManuscriptController extends Controller
         ]);
     }
 
+    /**
+     * Show the form for submitting a revision for a manuscript.
+     */
     public function showRevisionForm($id, StorageService $storageService)
     {
         try {
@@ -246,7 +272,10 @@ class ManuscriptController extends Controller
         }
     }
 
-    public function submitRevision(Request $request, $id, StoreFileAction $storeFileAction)
+    /**
+     * Store a submitted revision for a manuscript.
+     */
+    public function submitRevision(Request $request, $id, StorageService $storageService)
     {
         $manuscript = Manuscript::findOrFail($id);
         $userId = Auth::id();
@@ -271,17 +300,9 @@ class ManuscriptController extends Controller
             ];
 
             if ($request->hasFile('revised_manuscript')) {
-                $yearMonth = date('Y/m');
-                $safeTitle = str_replace([' ', '/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.'], '-', $manuscript->title);
-                $safeTitle = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $safeTitle));
-                $version = count($revisionHistory);
-
-                $file = $request->file('revised_manuscript');
-                $fileName = "{$safeTitle}_v{$version}.pdf";
-
-                $path = $storeFileAction->execute($file, "manuscripts");
-
-                $manuscript->manuscript_path = $path;
+                // Use StorageService for storing revised manuscript
+                $manuscript->manuscript_path = $storageService
+                    ->storeUserFile($request->file('revised_manuscript'), 'manuscripts');
             }
 
             $previousStatus = $manuscript->status;
@@ -349,6 +370,9 @@ class ManuscriptController extends Controller
         }
     }
 
+    /**
+     * Show the form for approving a manuscript for publication.
+     */
     public function showApproveForm(Manuscript $manuscript, StorageService $storageService)
     {
         try {
@@ -375,6 +399,9 @@ class ManuscriptController extends Controller
         }
     }
 
+    /**
+     * Mark a manuscript as ready to publish and notify the author.
+     */
     public function approveManuscript(Request $request, Manuscript $manuscript)
     {
         try {
@@ -434,7 +461,7 @@ class ManuscriptController extends Controller
     }
 
     /**
-     * Serve manuscript PDF file.
+     * Serve the PDF file for a published manuscript.
      */
     public function servePdf($id, StorageService $storageService)
     {

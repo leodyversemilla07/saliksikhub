@@ -14,7 +14,6 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_EDITOR = 'editor';
-
     public const ROLE_AUTHOR = 'author';
 
     /**
@@ -29,12 +28,12 @@ class User extends Authenticatable
         'password',
         'role',
         'affiliation',
-        'country', // Added country
-        'username', // Added username
+        'country',
+        'username',
         'avatar',
-        'data_collection', // Added data_collection
-        'notifications', // Added notifications
-        'review_requests', // Added review_requests
+        'data_collection',
+        'notifications',
+        'review_requests',
     ];
 
     /**
@@ -55,9 +54,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'data_collection' => 'boolean', // Added cast for data_collection
-        'notifications' => 'boolean', // Added cast for notifications
-        'review_requests' => 'boolean', // Added cast for review_requests
+        'data_collection' => 'boolean',
+        'notifications' => 'boolean',
+        'review_requests' => 'boolean',
     ];
 
     /**

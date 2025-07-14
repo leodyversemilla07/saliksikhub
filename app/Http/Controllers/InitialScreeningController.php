@@ -58,7 +58,7 @@ class InitialScreeningController extends Controller
             if ($previousStatus !== $manuscript->status) {
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
-                    $previousStatus,
+                    (string) $previousStatus,
                     (string) $manuscript->status
                 ));
             }

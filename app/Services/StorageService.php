@@ -5,15 +5,32 @@ namespace App\Services;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class StorageService
 {
     /**
+     * Store a file with user and date-based directory structure, similar to StoreFileAction.
+     */
+    public function storeUserFile(UploadedFile $file, string $directory = 'uploads'): string
+    {
+        try {
+            $userId = Auth::id();
+            $yearMonth = date('Y/m');
+            $originalName = $file->getClientOriginalName();
+            $safeName = str_replace([' ', '/', '\\', '?', '%', '*', ':', '|', '"', '<', '>', '.'], '-', pathinfo($originalName, PATHINFO_FILENAME));
+            $extension = $file->getClientOriginalExtension();
+
+            $fileName = "{$safeName}.{$extension}";
+            $path = $this->storeFile($file, "{$directory}/{$userId}/{$yearMonth}", $fileName);
+
+            return $path;
+        } catch (Exception $e) {
+            throw new Exception('Failed to store file: ' . $e->getMessage(), 0, $e);
+        }
+    }
+    /**
      * Generate a temporary URL for a file.
-     *
-     * @param string $filePath
-     * @param int $expirationMinutes
-     * @return string|null
      */
     public function generateTemporaryUrl(string $filePath, int $expirationMinutes = 5): ?string
     {
@@ -30,13 +47,7 @@ class StorageService
     }
 
     /**
-     * Store a file in the specified storage.
-     *
-     * @param UploadedFile $file
-     * @param string $directory
-     * @param string|null $fileName
-     * @return string The file path
-     * @throws Exception If the file cannot be stored
+     * Store a file in storage.
      */
     public function storeFile(UploadedFile $file, string $directory, ?string $fileName = null): string
     {
@@ -50,10 +61,7 @@ class StorageService
     }
 
     /**
-     * Check if a file exists in the storage.
-     *
-     * @param string $filePath
-     * @return bool
+     * Check if a file exists in storage.
      */
     public function fileExists(string $filePath): bool
     {
@@ -61,11 +69,7 @@ class StorageService
     }
 
     /**
-     * Retrieve the content of a file from storage.
-     *
-     * @param string $filePath
-     * @return string
-     * @throws Exception If the file cannot be retrieved
+     * Get the content of a file from storage.
      */
     public function getFileContent(string $filePath): string
     {

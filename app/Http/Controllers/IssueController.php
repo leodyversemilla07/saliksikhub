@@ -46,25 +46,15 @@ class IssueController extends Controller
         $issues = $query->paginate(15);
 
         // Generate temporary URLs for cover images
-        $issues->transform(function ($issue) {
+        // Use StorageService to generate temporary URLs for cover images
+        $storageService = app(\App\Services\StorageService::class);
+
+        $issues->transform(function ($issue) use ($storageService) {
             if ($issue->cover_image) {
-                try {
-                    $issue->cover_image_url = Storage::disk('spaces')->temporaryUrl(
-                        $issue->cover_image,
-                        now()->addMinutes(5)
-                    );
-                } catch (Exception $e) {
-                    Log::error('Error generating cover image temporary URL', [
-                        'error' => $e->getMessage(),
-                        'issue_id' => $issue->id,
-                        'cover_image_path' => $issue->cover_image,
-                    ]);
-                    $issue->cover_image_url = null;
-                }
+                $issue->cover_image_url = $storageService->generateTemporaryUrl($issue->cover_image, 5);
             } else {
                 $issue->cover_image_url = null;
             }
-
             return $issue;
         });
 
@@ -166,18 +156,8 @@ class IssueController extends Controller
         // Generate temporary URL for cover image if it exists
         $coverImageUrl = null;
         if ($issue->cover_image) {
-            try {
-                $coverImageUrl = Storage::disk('spaces')->temporaryUrl(
-                    $issue->cover_image,
-                    now()->addMinutes(5)
-                );
-            } catch (Exception $e) {
-                Log::error('Error generating cover image temporary URL', [
-                    'error' => $e->getMessage(),
-                    'issue_id' => $issue->id,
-                    'cover_image_path' => $issue->cover_image,
-                ]);
-            }
+            $storageService = app(\App\Services\StorageService::class);
+            $coverImageUrl = $storageService->generateTemporaryUrl($issue->cover_image, 5);
         }
 
         return Inertia::render('issues/show', [
@@ -211,7 +191,7 @@ class IssueController extends Controller
             'status' => 'required|in:draft,in_review,published,archived',
             'theme' => 'nullable|string|max:255',
             'editorial_note' => 'nullable|string',
-            'doi' => 'nullable|string|max:255|unique:issues,doi,'.$issue->id,
+            'doi' => 'nullable|string|max:255|unique:issues,doi,' . $issue->id,
             'cover_image' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120', // 5MB max
         ]);
 
@@ -597,17 +577,17 @@ class IssueController extends Controller
             });
 
         // Generate cover image URL
-        $coverImageUrl = $currentIssue->cover_image ? Storage::disk('spaces')->temporaryUrl(
-            $currentIssue->cover_image,
-            now()->addMinutes(5)
-        ) : 'images/journal-cover.webp';
+        $storageService = app(\App\Services\StorageService::class);
+        $coverImageUrl = $currentIssue->cover_image
+            ? $storageService->generateTemporaryUrl($currentIssue->cover_image, 5)
+            : 'images/journal-cover.webp';
 
         // Format data for the frontend
         $issueData = [
             'volume' => $currentIssue->volume_number,
             'number' => $currentIssue->issue_number,
             'year' => $currentIssue->publication_date->year,
-            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.'): DDMRJ - Current Issue',
+            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (" . $currentIssue->publication_date->year . '): DDMRJ - Current Issue',
             'specialIssueTitle' => $currentIssue->issue_title,
             'publicationDate' => $currentIssue->publication_date->toDateString(),
             'coverImageUrl' => $coverImageUrl,

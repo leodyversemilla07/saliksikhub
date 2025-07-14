@@ -22,281 +22,17 @@ use Inertia\Inertia;
 
 class EditorController extends Controller
 {
+    /**
+     * Display the editor dashboard with metrics and trends.
+     */
     public function index()
-    {
-        return Inertia::render('editor/dashboard', [
-            'dashboardData' => $this->getComprehensiveDashboardData(),
-        ]);
-    }
-
-    public function indexManuscripts()
-    {
-        return Inertia::render('editor/index', [
-            'manuscripts' => Manuscript::with('author')
-                ->latest()
-                ->get(),
-        ]);
-    }
-
-    public function showManuscript($id, StorageService $storageService)
-    {
-        try {
-            $manuscript = Manuscript::findOrFail($id);
-
-            $manuscriptUrl = null;
-            $finalPdfUrl = null;
-
-            if ($manuscript->manuscript_path) {
-                try {
-                    $manuscriptUrl = $storageService->generateTemporaryUrl(
-                        $manuscript->manuscript_path,
-                        5
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Temporary URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
-
-            if ($manuscript->final_pdf_path) {
-                try {
-                    $finalPdfUrl = $storageService->generateTemporaryUrl(
-                        $manuscript->final_pdf_path,
-                        5
-                    );
-                } catch (Exception $e) {
-                    logger()->error('Temporary URL Generation Error', [
-                        'error_message' => $e->getMessage(),
-                        'manuscript_id' => $id,
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
-
-            return Inertia::render('manuscripts/show-manuscript', [
-                'manuscript' => [
-                    'id' => $manuscript->id,
-                    'title' => $manuscript->title,
-                    'authors' => explode(', ', $manuscript->authors),
-                    'abstract' => $manuscript->abstract,
-                    'keywords' => explode(', ', $manuscript->keywords),
-                    'manuscript_path' => $manuscriptUrl,
-                    'final_pdf_path' => $finalPdfUrl,
-                    'status' => $manuscript->status,
-                    'user_id' => $manuscript->user_id,
-                    'created_at' => $manuscript->created_at->toDateTimeString(),
-                    'updated_at' => $manuscript->updated_at->toDateTimeString(),
-                    'doi' => $manuscript->doi,
-                    'volume' => $manuscript->volume,
-                    'issue' => $manuscript->issue,
-                    'page_range' => $manuscript->page_range,
-                    'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
-                    'author_approval_date' => $manuscript->author_approval_date ? $manuscript->author_approval_date->toDateString() : null,
-                ],
-                'user_role' => Auth::user()->role,
-            ]);
-        } catch (Exception $e) {
-            logger()->error('Manuscript Show Error', [
-                'error_message' => $e->getMessage(),
-                'manuscript_id' => $id,
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return redirect()->back()->with('error', 'An error occurred while loading the manuscript.');
-        }
-    }
-
-    public function makeDecision(Request $request, Manuscript $manuscript)
-    {
-        try {
-            Log::info('Decision submission received', [
-                'manuscript_id' => $manuscript->id,
-                'decision_type' => $request->input('decision'),
-                'has_deadline' => $request->has('revision_deadline'),
-                'all_request_data' => $request->all(),
-            ]);
-
-            DB::beginTransaction();
-
-            $validated = $this->validateDecision($request);
-
-            $decisionType = $this->normalizeDecisionType($request->input('decision'));
-
-            $decision = new EditorialDecision;
-            $decision->manuscript_id = $manuscript->id;
-            $decision->editor_id = Auth::id();
-            $decision->decision_type = $decisionType;
-            $decision->comments_to_author = $request->input('comments');
-            $decision->decision_date = now();
-            $decision->status = 'Finalized';
-
-            if ($request->has('revision_deadline')) {
-                $decision->revision_deadline = $request->input('revision_deadline');
-            }
-
-            $decision->save();
-
-            $previousStatus = $manuscript->status;
-
-            $newStatus = $this->mapDecisionTypeToManuscriptStatus($decisionType);
-
-            Log::info('Status mapping', [
-                'decision_type' => $decisionType,
-                'mapped_status' => $newStatus,
-                'previous_status' => $previousStatus,
-            ]);
-
-            $manuscript->status = $newStatus;
-            $manuscript->decision_date = now();
-            $manuscript->decision_comments = $request->input('comments');
-            $manuscript->save();
-
-            $manuscript->refresh();
-            Log::info('Manuscript after update', [
-                'id' => $manuscript->id,
-                'new_status' => $manuscript->status,
-                'status_updated' => $previousStatus !== $manuscript->status,
-            ]);
-
-            $author = User::find($manuscript->user_id);
-            if ($author) {
-                try {
-                    $author->notify(new ManuscriptDecisionNotification($manuscript, $decision));
-
-                    if ($previousStatus !== $manuscript->status) {
-                        $author->notify(new ManuscriptStatusChanged($manuscript, (string) $previousStatus, (string) $manuscript->status));
-                    }
-                } catch (Exception $e) {
-                    Log::error('Failed to send notification', [
-                        'error' => $e->getMessage(),
-                        'manuscript_id' => $manuscript->id,
-                    ]);
-                }
-            }
-
-            DB::commit();
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Editorial decision has been recorded.',
-                    'redirect' => route('editor.indexManuscripts'),
-                ]);
-            }
-
-            return redirect()->route('editor.indexManuscripts')
-                ->with('success', 'Editorial decision has been recorded.');
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            Log::error('Error recording editorial decision', [
-                'error' => $e->getMessage(),
-                'error_code' => $e->getCode(),
-                'error_file' => $e->getFile(),
-                'error_line' => $e->getLine(),
-                'manuscript_id' => $manuscript->id,
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to record editorial decision: ' . $e->getMessage(),
-                    'errors' => ['general' => 'Failed to record editorial decision.'],
-                ], 500);
-            }
-
-            return redirect()->back()->with('error', 'Failed to record editorial decision: ' . $e->getMessage());
-        }
-    }
-
-    private function normalizeDecisionType(string $decisionType): string
-    {
-        $mapping = [
-            'accept' => 'Accept',
-            'minor_revision' => 'Minor Revision',
-            'major_revision' => 'Major Revision',
-            'reject' => 'Reject',
-        ];
-
-        return $mapping[$decisionType] ?? 'Minor Revision';
-    }
-
-    private function mapDecisionTypeToManuscriptStatus(string $decisionType): string
-    {
-        switch ($decisionType) {
-            case 'Accept':
-                return 'Accepted';
-            case 'Reject':
-                return 'Rejected';
-            case 'Minor Revision':
-                return 'Minor Revision';
-            case 'Major Revision':
-                return 'Major Revision';
-            default:
-                return 'Submitted';
-        }
-    }
-
-    private function validateDecision(Request $request)
-    {
-        return $request->validate([
-            'decision' => 'required|in:accept,reject,minor_revision,major_revision',
-            'comments' => 'required|string|min:10',
-            'revision_deadline' => 'nullable|date|after:today',
-        ]);
-    }
-
-    public function setUnderReview($id)
-    {
-        try {
-            $manuscript = Manuscript::findOrFail($id);
-
-            $previousStatus = $manuscript->status;
-            $newStatus = ManuscriptStatus::UNDER_REVIEW;
-
-            if ($previousStatus !== $newStatus) {
-                $manuscript->status = $newStatus;
-                $manuscript->save();
-
-                $author = $manuscript->author;
-                $author->notify(new ManuscriptStatusChanged(
-                    $manuscript,
-                    (string) $previousStatus,
-                    (string) $newStatus
-                ));
-
-                Log::info('Manuscript status changed to Under Review', [
-                    'manuscript_id' => $manuscript->id,
-                    'previous_status' => $previousStatus,
-                    'new_status' => $newStatus,
-                ]);
-            }
-
-            return redirect()->back()->with('success', 'Manuscript is now under review.');
-        } catch (Exception $e) {
-            Log::error('Error setting manuscript under review', [
-                'error' => $e->getMessage(),
-                'manuscript_id' => $id,
-            ]);
-
-            return redirect()->back()->with('error', 'Failed to update manuscript status.');
-        }
-    }
-
-    private function getComprehensiveDashboardData()
     {
         // Get date ranges
         $currentMonth = now();
         $lastMonth = now()->subMonth();
-        $startOfYear = now()->startOfYear();
 
         // Basic metrics with trends
         $totalManuscripts = Manuscript::count();
-        $totalLastMonth = Manuscript::where('created_at', '<', $currentMonth->startOfMonth())->count();
 
         $newSubmissions = Manuscript::whereMonth('created_at', $currentMonth->month)
             ->whereYear('created_at', $currentMonth->year)
@@ -466,7 +202,7 @@ class EditorController extends Controller
             ];
         }
 
-        return [
+        $dashboardData = [
             'metrics' => [
                 [
                     'title' => 'New Submissions',
@@ -503,8 +239,269 @@ class EditorController extends Controller
                 'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
             ],
         ];
+
+        return Inertia::render('editor/dashboard', [
+            'dashboardData' => $dashboardData,
+        ]);
     }
 
+    /**
+     * Display a listing of all manuscripts for editors.
+     */
+    public function indexManuscripts()
+    {
+        return Inertia::render('editor/index', [
+            'manuscripts' => Manuscript::with('author')
+                ->latest()
+                ->get(),
+        ]);
+    }
+
+    /**
+     * Display the details of a manuscript for editors.
+     */
+    public function showManuscript($id, StorageService $storageService)
+    {
+        try {
+            $manuscript = Manuscript::findOrFail($id);
+
+            $manuscriptUrl = null;
+            $finalPdfUrl = null;
+
+            if ($manuscript->manuscript_path) {
+                try {
+                    $manuscriptUrl = $storageService->generateTemporaryUrl(
+                        $manuscript->manuscript_path,
+                        5
+                    );
+                } catch (Exception $e) {
+                    logger()->error('Temporary URL Generation Error', [
+                        'error_message' => $e->getMessage(),
+                        'manuscript_id' => $id,
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                }
+            }
+
+            if ($manuscript->final_pdf_path) {
+                try {
+                    $finalPdfUrl = $storageService->generateTemporaryUrl(
+                        $manuscript->final_pdf_path,
+                        5
+                    );
+                } catch (Exception $e) {
+                    logger()->error('Temporary URL Generation Error', [
+                        'error_message' => $e->getMessage(),
+                        'manuscript_id' => $id,
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                }
+            }
+
+            return Inertia::render('manuscripts/show-manuscript', [
+                'manuscript' => [
+                    'id' => $manuscript->id,
+                    'title' => $manuscript->title,
+                    'authors' => explode(', ', $manuscript->authors),
+                    'abstract' => $manuscript->abstract,
+                    'keywords' => explode(', ', $manuscript->keywords),
+                    'manuscript_path' => $manuscriptUrl,
+                    'final_pdf_path' => $finalPdfUrl,
+                    'status' => $manuscript->status,
+                    'user_id' => $manuscript->user_id,
+                    'created_at' => $manuscript->created_at->toDateTimeString(),
+                    'updated_at' => $manuscript->updated_at->toDateTimeString(),
+                    'doi' => $manuscript->doi,
+                    'volume' => $manuscript->volume,
+                    'issue' => $manuscript->issue,
+                    'page_range' => $manuscript->page_range,
+                    'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
+                    'author_approval_date' => $manuscript->author_approval_date ? $manuscript->author_approval_date->toDateString() : null,
+                ],
+                'user_role' => Auth::user()->role,
+            ]);
+        } catch (Exception $e) {
+            logger()->error('Manuscript Show Error', [
+                'error_message' => $e->getMessage(),
+                'manuscript_id' => $id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()->with('error', 'An error occurred while loading the manuscript.');
+        }
+    }
+
+    /**
+     * Record an editorial decision for a manuscript.
+     */
+    public function makeDecision(Request $request, Manuscript $manuscript)
+    {
+        try {
+            Log::info('Decision submission received', [
+                'manuscript_id' => $manuscript->id,
+                'decision_type' => $request->input('decision'),
+                'has_deadline' => $request->has('revision_deadline'),
+                'all_request_data' => $request->all(),
+            ]);
+
+            $request->validate([
+                'decision' => 'required|in:accept,reject,minor_revision,major_revision',
+                'comments' => 'required|string|min:10',
+                'revision_deadline' => 'nullable|date|after:today',
+            ]);
+
+            DB::beginTransaction();
+
+            $decisionType = $request->input('decision');
+
+            $decision = new EditorialDecision;
+            $decision->manuscript_id = $manuscript->id;
+            $decision->editor_id = Auth::id();
+            $decision->decision_type = $decisionType;
+            $decision->comments_to_author = $request->input('comments');
+            $decision->decision_date = now();
+            $decision->status = 'Finalized';
+
+            if ($request->has('revision_deadline')) {
+                $decision->revision_deadline = $request->input('revision_deadline');
+            }
+
+            $decision->save();
+
+            $previousStatus = $manuscript->status;
+
+            // Local function to map decision type to manuscript status
+            $mapDecisionTypeToManuscriptStatus = function ($decisionType) {
+                switch ($decisionType) {
+                    case 'accept':
+                        return ManuscriptStatus::ACCEPTED;
+                    case 'reject':
+                        return ManuscriptStatus::REJECTED;
+                    case 'minor_revision':
+                        return ManuscriptStatus::MINOR_REVISION;
+                    case 'major_revision':
+                        return ManuscriptStatus::MAJOR_REVISION;
+                    default:
+                        return ManuscriptStatus::SUBMITTED;
+                }
+            };
+
+            $newStatus = $mapDecisionTypeToManuscriptStatus($decisionType);
+
+            Log::info('Status mapping', [
+                'decision_type' => $decisionType,
+                'mapped_status' => $newStatus,
+                'previous_status' => $previousStatus,
+            ]);
+
+            $manuscript->status = $newStatus;
+            $manuscript->decision_date = now();
+            $manuscript->decision_comments = $request->input('comments');
+            $manuscript->save();
+
+            $manuscript->refresh();
+            Log::info('Manuscript after update', [
+                'id' => $manuscript->id,
+                'new_status' => $manuscript->status,
+                'status_updated' => $previousStatus !== $manuscript->status,
+            ]);
+
+            $author = User::find($manuscript->user_id);
+            if ($author) {
+                try {
+                    $author->notify(new ManuscriptDecisionNotification($manuscript, $decision));
+
+                    if ($previousStatus !== $manuscript->status) {
+                        $author->notify(new ManuscriptStatusChanged($manuscript, (string) $previousStatus, (string) $manuscript->status));
+                    }
+                } catch (Exception $e) {
+                    Log::error('Failed to send notification', [
+                        'error' => $e->getMessage(),
+                        'manuscript_id' => $manuscript->id,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Editorial decision has been recorded.',
+                    'redirect' => route('editor.indexManuscripts'),
+                ]);
+            }
+
+            return redirect()->route('editor.indexManuscripts')
+                ->with('success', 'Editorial decision has been recorded.');
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error('Error recording editorial decision', [
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'manuscript_id' => $manuscript->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to record editorial decision: ' . $e->getMessage(),
+                    'errors' => ['general' => 'Failed to record editorial decision.'],
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to record editorial decision: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Set the status of a manuscript to Under Review.
+     */
+    public function setUnderReview($id)
+    {
+        try {
+            $manuscript = Manuscript::findOrFail($id);
+
+            $previousStatus = $manuscript->status;
+            $newStatus = ManuscriptStatus::UNDER_REVIEW;
+
+            if ($previousStatus !== $newStatus) {
+                $manuscript->status = $newStatus;
+                $manuscript->save();
+
+                $author = $manuscript->author;
+                $author->notify(new ManuscriptStatusChanged(
+                    $manuscript,
+                    (string) $previousStatus,
+                    (string) $newStatus
+                ));
+
+                Log::info('Manuscript status changed to Under Review', [
+                    'manuscript_id' => $manuscript->id,
+                    'previous_status' => $previousStatus,
+                    'new_status' => $newStatus,
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Manuscript is now under review.');
+        } catch (Exception $e) {
+            Log::error('Error setting manuscript under review', [
+                'error' => $e->getMessage(),
+                'manuscript_id' => $id,
+            ]);
+
+            return redirect()->back()->with('error', 'Failed to update manuscript status.');
+        }
+    }
+
+
+    /**
+     * Show the form for creating an editorial decision.
+     */
     public function createEditorialDecision(Manuscript $manuscript)
     {
         return Inertia::render('editor/create-decision', [
@@ -513,6 +510,9 @@ class EditorController extends Controller
         ]);
     }
 
+    /**
+     * Display the user management page for admins.
+     */
     public function manageUsers(Request $request)
     {
         $perPage = $request->input('per_page', 10);
@@ -527,6 +527,9 @@ class EditorController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created user in the database.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -556,6 +559,9 @@ class EditorController extends Controller
         return redirect()->back()->with('success', 'User created successfully');
     }
 
+    /**
+     * Update the specified user's information.
+     */
     public function update(Request $request, User $user)
     {
         $rules = [
@@ -590,6 +596,9 @@ class EditorController extends Controller
         return redirect()->back()->with('success', 'User updated successfully');
     }
 
+    /**
+     * Delete the specified user from the database.
+     */
     public function destroy(User $user)
     {
         if ($user->id === Auth::id()) {
@@ -601,6 +610,9 @@ class EditorController extends Controller
         return redirect()->back()->with('success', 'User deleted successfully');
     }
 
+    /**
+     * Delete multiple users from the database.
+     */
     public function bulkDestroy(Request $request)
     {
         $request->validate([
@@ -622,6 +634,9 @@ class EditorController extends Controller
         return redirect()->back()->with('success', count($userIds) . ' users deleted successfully');
     }
 
+    /**
+     * Start the copy editing process for a manuscript.
+     */
     public function startCopyEditing(Manuscript $manuscript)
     {
         try {
@@ -722,6 +737,9 @@ class EditorController extends Controller
         }
     }
 
+    /**
+     * Upload the finalized manuscript PDF after copy editing.
+     */
     public function uploadFinalizedManuscript(Request $request, Manuscript $manuscript, StorageService $storageService)
     {
         try {
@@ -845,6 +863,9 @@ class EditorController extends Controller
         }
     }
 
+    /**
+     * Show the form for preparing a manuscript for publication.
+     */
     public function showPublicationForm(Manuscript $manuscript)
     {
         if ($manuscript->status !== ManuscriptStatus::READY_TO_PUBLISH) {
@@ -862,6 +883,9 @@ class EditorController extends Controller
         ]);
     }
 
+    /**
+     * Finalize and publish a manuscript, updating its metadata.
+     */
     public function prepareForPublication(Request $request, Manuscript $manuscript)
     {
         try {
