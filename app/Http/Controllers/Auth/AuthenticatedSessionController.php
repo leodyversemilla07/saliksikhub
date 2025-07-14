@@ -33,16 +33,19 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $userRole = $user->role;
-
         $roleRoutes = [
-            'editor' => 'editor.dashboard',
-            'reviewer' => 'reviewer.dashboard',
+            'managing_editor' => 'admin.dashboard',
+            'editor_in_chief' => 'admin.dashboard',
+            'associate_editor' => 'admin.dashboard',
+            'language_editor' => 'admin.dashboard',
             'author' => 'author.dashboard',
+            'reviewer' => 'reviewer.dashboard',
         ];
 
-        if (isset($roleRoutes[$userRole])) {
-            return redirect()->intended(route($roleRoutes[$userRole], absolute: false));
+        foreach ($roleRoutes as $role => $route) {
+            if ($user->hasRole($role)) {
+                return redirect()->intended(route($route, absolute: false));
+            }
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

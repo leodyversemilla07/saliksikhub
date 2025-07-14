@@ -34,40 +34,46 @@ class RegisteredUserController extends Controller
         $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'affiliation' => 'required|string|max:255',
-            'country' => 'required|string|max:255', // Added country validation
-            'username' => 'required|string|max:255|unique:'.User::class, // Added username validation
+            'country' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'data_collection' => 'required|boolean', // Added data_collection validation
-            'notifications' => 'required|boolean', // Added notifications validation
-            'review_requests' => 'required|boolean', // Added review_requests validation
+            'data_collection' => 'required|boolean',
+            'notifications' => 'required|boolean',
+            'review_requests' => 'required|boolean',
+            'role' => 'nullable|string|in:author,managing_editor,editor_in_chief,associate_editor,language_editor,reviewer',
         ]);
+
+        $role = $request->role ?? 'author';
 
         $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
+            'role' => $role,
             'email' => $request->email,
             'affiliation' => $request->affiliation,
-            'country' => $request->country, // Added country
-            'username' => $request->username, // Added username
+            'country' => $request->country,
+            'username' => $request->username,
             'password' => Hash::make($request->password),
-            'data_collection' => $request->data_collection, // Added data_collection
-            'notifications' => $request->notifications, // Added notifications
-            'review_requests' => $request->review_requests, // Added review_requests
+            'data_collection' => $request->data_collection,
+            'notifications' => $request->notifications,
+            'review_requests' => $request->review_requests,
         ]);
 
-        $user->assignRole('author');
+        $user->assignRole($role);
 
         event(new Registered($user));
 
         Auth::login($user);
 
         $roleRoutes = [
-            'admin' => 'admin.dashboard',
-            'editor' => 'editor.dashboard',
-            'reviewer' => 'reviewer.dashboard',
+            'managing_editor' => 'admin.dashboard',
+            'editor_in_chief' => 'admin.dashboard',
+            'associate_editor' => 'admin.dashboard',
+            'language_editor' => 'admin.dashboard',
             'author' => 'author.dashboard',
+            'reviewer' => 'reviewer.dashboard',
         ];
 
         foreach ($roleRoutes as $role => $route) {

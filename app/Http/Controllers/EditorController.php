@@ -50,8 +50,8 @@ class EditorController extends Controller
             ->whereYear('created_at', $lastMonth->year)
             ->count();
 
-        // Active reviewers (users with editor role)
-        $activeReviewers = User::where('role', 'editor')->count();
+        // Active reviewers (users with any editor role)
+        $activeReviewers = User::role(['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor'])->count();
 
         // Calculate trends
         $submissionsTrend = $newSubmissionsLastMonth > 0
@@ -318,7 +318,7 @@ class EditorController extends Controller
                     'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
                     'author_approval_date' => $manuscript->author_approval_date ? $manuscript->author_approval_date->toDateString() : null,
                 ],
-                'user_role' => Auth::user()->role,
+                'user_roles' => Auth::user()->getRoleNames(),
             ]);
         } catch (Exception $e) {
             logger()->error('Manuscript Show Error', [
@@ -532,12 +532,15 @@ class EditorController extends Controller
      */
     public function store(Request $request)
     {
+        // Get all code-friendly roles from Spatie
+        $allRoles = \Spatie\Permission\Models\Role::pluck('name')->toArray();
+
         $validated = $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => 'required|string|in:author,editor',
+            'role' => 'required|string|in:' . implode(',', $allRoles),
             'affiliation' => 'nullable|string|max:255',
         ]);
 
@@ -546,14 +549,14 @@ class EditorController extends Controller
             'lastname' => $validated['lastname'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
             'affiliation' => $validated['affiliation'] ?? null,
         ]);
+        $user->assignRole($validated['role']);
 
         Log::info('User created by admin', [
             'user_id' => $user->id,
             'admin_id' => Auth::id(),
-            'role' => $user->role,
+            'role' => $validated['role'],
         ]);
 
         return redirect()->back()->with('success', 'User created successfully');
@@ -564,11 +567,14 @@ class EditorController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        // Get all code-friendly roles from Spatie
+        $allRoles = \Spatie\Permission\Models\Role::pluck('name')->toArray();
+
         $rules = [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|string|in:author,editor',
+            'role' => 'required|string|in:' . implode(',', $allRoles),
             'affiliation' => 'nullable|string|max:255',
         ];
 
@@ -581,17 +587,13 @@ class EditorController extends Controller
         $user->firstname = $validated['firstname'];
         $user->lastname = $validated['lastname'];
         $user->email = $validated['email'];
-        $user->role = $validated['role'];
-
-        if (isset($validated['affiliation'])) {
-            $user->affiliation = $validated['affiliation'];
-        }
-
+        $user->affiliation = $validated['affiliation'] ?? null;
         if (isset($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
-
         $user->save();
+        // Sync role using Spatie
+        $user->syncRoles([$validated['role']]);
 
         return redirect()->back()->with('success', 'User updated successfully');
     }

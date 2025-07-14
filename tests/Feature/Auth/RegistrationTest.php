@@ -16,6 +16,7 @@ test('new users can register', function () {
         'username' => 'testuser123',
         'password' => 'password',
         'password_confirmation' => 'password',
+        'role' => 'author',
         'data_collection' => true,
         'notifications' => true,
         'review_requests' => true,

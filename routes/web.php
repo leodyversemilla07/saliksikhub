@@ -30,11 +30,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
-        return match ($user->role) {
-            'author' => redirect()->route('author.dashboard'),
-            'editor' => redirect()->route('editor.dashboard'),
-            default => redirect()->route('login'),
-        };
+        // Use Spatie roles for dashboard redirection
+        if ($user->hasRole('author')) {
+            return redirect()->route('author.dashboard');
+        }
+        if ($user->hasRole('managing_editor') || $user->hasRole('editor_in_chief') || $user->hasRole('associate_editor') || $user->hasRole('language_editor')) {
+            return redirect()->route('editor.dashboard');
+        }
+        return redirect()->route('login');
     })->name('dashboard');
 
     Route::middleware(['role:author'])->group(function () {
@@ -53,7 +56,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/author/manuscripts/{manuscript}/approve', [ManuscriptController::class, 'approveManuscript'])->name('manuscripts.approve.submit');
     });
 
-    Route::middleware(['role:editor'])->group(function () {
+    // Editors group: managing_editor, editor_in_chief, associate_editor, language_editor
+    Route::middleware(['role:managing_editor|editor_in_chief|associate_editor|language_editor'])->group(function () {
         Route::get('/editor', [EditorController::class, 'index'])->name('editor.dashboard');
         Route::get('/editor/edit-articles', [EditorController::class, 'editArticles'])->name('editor.editArticles');
         Route::post('/editor/articles/{article}/update', [EditorController::class, 'updateArticle'])->name('editor.updateArticle');

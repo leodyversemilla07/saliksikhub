@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Auth;
 
 class StorageService
 {
+
+    /**
+     * The storage disk instance.
+     */
+    private $storageDisk;
+
+    /**
+     * Constructor to set the disk name.
+     */
+    public function __construct(string $disk = 'spaces')
+    {
+        $this->storageDisk = Storage::disk($disk);
+    }
     /**
      * Store a file with user and date-based directory structure, similar to StoreFileAction.
      */
@@ -35,7 +48,7 @@ class StorageService
     public function generateTemporaryUrl(string $filePath, int $expirationMinutes = 5): ?string
     {
         try {
-            return Storage::disk('spaces')->temporaryUrl($filePath, now()->addMinutes($expirationMinutes));
+            return $this->storageDisk->temporaryUrl($filePath, now()->addMinutes($expirationMinutes));
         } catch (Exception $e) {
             logger()->error('Temporary URL Generation Error', [
                 'error_message' => $e->getMessage(),
@@ -54,7 +67,7 @@ class StorageService
         try {
             $fileName = $fileName ?? $file->getClientOriginalName();
 
-            return Storage::disk('spaces')->putFileAs($directory, $file, $fileName);
+            return $this->storageDisk->putFileAs($directory, $file, $fileName);
         } catch (Exception $e) {
             throw new Exception('Failed to store file: ' . $e->getMessage(), 0, $e);
         }
@@ -65,7 +78,7 @@ class StorageService
      */
     public function fileExists(string $filePath): bool
     {
-        return Storage::disk('spaces')->exists($filePath);
+        return $this->storageDisk->exists($filePath);
     }
 
     /**
@@ -74,7 +87,7 @@ class StorageService
     public function getFileContent(string $filePath): string
     {
         try {
-            return Storage::disk('spaces')->get($filePath);
+            return $this->storageDisk->get($filePath);
         } catch (Exception $e) {
             throw new Exception('Failed to retrieve file content: ' . $e->getMessage(), 0, $e);
         }

@@ -1,6 +1,11 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
+
+beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+});
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -9,9 +14,8 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create([
-        'role' => 'editor',
-    ]);
+    $user = User::factory()->create();
+    $user->assignRole('editor_in_chief');
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -35,6 +39,7 @@ test('users can not authenticate with invalid password', function () {
 
 test('users can logout', function () {
     $user = User::factory()->create();
+    $user->assignRole('editor_in_chief');
 
     $response = $this->actingAs($user)->post('/logout');
 

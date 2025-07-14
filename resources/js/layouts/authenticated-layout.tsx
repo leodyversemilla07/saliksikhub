@@ -18,7 +18,25 @@ interface BreadcrumbItem {
 }
 
 const navigationMap = {
-    editor: [
+    managing_editor: [
+        { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
+        { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
+        { href: 'editor.users.index', label: 'User Management', icon: UserCheck },
+    ],
+    editor_in_chief: [
+        { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
+        { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
+        { href: 'editor.users.index', label: 'User Management', icon: UserCheck },
+    ],
+    associate_editor: [
+        { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
+        { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
+        { href: 'editor.users.index', label: 'User Management', icon: UserCheck },
+    ],
+    language_editor: [
         { href: 'editor.dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: 'editor.indexManuscripts', label: 'Submitted Manuscripts', icon: FileText },
         { href: 'issues.index', label: 'Journal Issues', icon: AlertCircle },
@@ -28,6 +46,10 @@ const navigationMap = {
         { href: 'author.dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: 'manuscripts.index', label: 'Manuscript Tracking', icon: FileText },
         { href: 'manuscripts.create', label: 'New Submission', icon: FilePlus },
+    ],
+    reviewer: [
+        { href: 'reviewer.dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        // Add more reviewer links here as needed
     ]
 };
 

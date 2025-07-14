@@ -10,6 +10,7 @@
 | need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
+use Database\Seeders\RolesAndPermissionsSeeder;
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
@@ -41,6 +42,9 @@ expect()->extend('toBeOne', function () {
 |
 */
 
+beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+});
 function something()
 {
     // ..

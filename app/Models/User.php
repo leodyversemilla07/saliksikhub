@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
-    public const ROLE_EDITOR = 'editor';
-    public const ROLE_AUTHOR = 'author';
+    // Legacy role constants removed; use Spatie roles instead
 
     /**
      * The attributes that are mass assignable.
@@ -69,32 +69,7 @@ class User extends Authenticatable
         'name',
     ];
 
-    /**
-     * Check if user has the given role.
-     *
-     * @param  string|array  $roles
-     */
-    public function hasRole($roles): bool
-    {
-        if (is_array($roles)) {
-            return in_array($this->role, $roles);
-        }
-
-        return $this->role === $roles;
-    }
-
-    /**
-     * Set the user's role.
-     *
-     * @return $this
-     */
-    public function assignRole(string $role)
-    {
-        $this->role = $role;
-        $this->save();
-
-        return $this;
-    }
+    // Use Spatie's assignRole and hasRole methods
 
     /**
      * Get the user's full name.
@@ -151,15 +126,7 @@ class User extends Authenticatable
         return $deleted;
     }
 
-    public function isEditor(): bool
-    {
-        return $this->role === self::ROLE_EDITOR;
-    }
-
-    public function isAuthor(): bool
-    {
-        return $this->role === self::ROLE_AUTHOR;
-    }
+    // Use $user->hasRole('Managing Editor'), $user->hasRole('Author'), etc.
 
     public function assignedManuscripts(): HasMany
     {

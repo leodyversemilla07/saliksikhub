@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
-            $table->enum('role', ['author', 'editor', 'admin', 'reviewer']);
+            $table->string('role', 32);
             $table->string('email')->unique();
             $table->string('affiliation')->nullable();
             $table->string('country')->nullable(); // Added country field
