@@ -32,7 +32,7 @@ class ManuscriptController extends Controller
             ->latest()
             ->get();
 
-        return Inertia::render('manuscripts/manuscripts-index', compact('manuscripts'));
+        return Inertia::render('manuscripts/index/page', compact('manuscripts'));
     }
 
     /**

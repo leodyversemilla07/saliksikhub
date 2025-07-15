@@ -36,6 +36,8 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore(Auth::id()),
             ],
             'affiliation' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:255'],
             'avatar' => [
                 'nullable',
                 'image',
@@ -43,6 +45,9 @@ class ProfileUpdateRequest extends FormRequest
                 'max:2048', // 2MB max file size
                 'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
             ],
+            'data_collection' => ['nullable', 'boolean'],
+            'notifications' => ['nullable', 'boolean'],
+            'review_requests' => ['nullable', 'boolean'],
         ];
     }
 

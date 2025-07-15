@@ -17,16 +17,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { User } from '@/types';
+import { getData } from 'country-list';
 
-interface User {
-    id: number;
-    firstname: string;
-    lastname: string;
-    email: string;
-    affiliation: string;
-    avatar_url?: string;
-    email_verified_at?: string;
-    role: string;
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface CountryOption {
+    code: string;
+    name: string;
 }
 
 interface PageProps extends Record<string, unknown> {
@@ -47,13 +45,20 @@ export default function ProfileUpdate({
         user.avatar_url || null
     );
 
+    const countries = getData().map(({ code, name }) => ({ code, name }));
+
     const { data, setData, post, errors, processing } =
         useForm({
             firstname: user.firstname || '',
             lastname: user.lastname || '',
             email: user.email || '',
             affiliation: user.affiliation || '',
+            country: user.country || '',
+            username: user.username || '',
             avatar: null as File | null,
+            data_collection: user.data_collection ?? false,
+            notifications: user.notifications ?? false,
+            review_requests: user.review_requests ?? false,
             _method: 'patch',
         });
 
@@ -128,10 +133,12 @@ export default function ProfileUpdate({
                     Update your basic account information and profile settings.
                 </p>
 
-                {/* User Role Badge */}
+                {/* User Role Badge (formatted) and Email Verified Badge */}
                 <div className="flex items-center gap-2 mt-2">
                     <Badge variant="secondary">
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        {user.role
+                            ? user.role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                            : 'Unknown'}
                     </Badge>
                     {user.email_verified_at && (
                         <Badge variant="outline" className="text-green-600 border-green-600">
@@ -238,9 +245,7 @@ export default function ProfileUpdate({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="affiliation" className="text-sm font-medium">
-                            Affiliation
-                        </Label>
+                        <Label htmlFor="affiliation" className="text-sm font-medium">Affiliation</Label>
                         <Input
                             id="affiliation"
                             type="text"
@@ -251,6 +256,71 @@ export default function ProfileUpdate({
                         {errors.affiliation && (
                             <p className="text-sm text-destructive">{errors.affiliation}</p>
                         )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="username" className="text-sm font-medium">Username</Label>
+                        <Input
+                            id="username"
+                            type="text"
+                            value={data.username as string}
+                            onChange={(e) => setData('username', e.target.value)}
+                            placeholder="Enter your username"
+                        />
+                        {errors.username && (
+                            <p className="text-sm text-destructive">{errors.username}</p>
+                        )}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="privacy_options" className="text-sm font-medium">Privacy Options</Label>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="data_collection"
+                                    type="checkbox"
+                                    checked={!!data.data_collection}
+                                    onChange={e => setData('data_collection', e.target.checked)}
+                                    className="h-4 w-4 border-gray-300 rounded"
+                                />
+                                <Label htmlFor="data_collection" className="text-sm">I agree to data collection</Label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="notifications"
+                                    type="checkbox"
+                                    checked={!!data.notifications}
+                                    onChange={e => setData('notifications', e.target.checked)}
+                                    className="h-4 w-4 border-gray-300 rounded"
+                                />
+                                <Label htmlFor="notifications" className="text-sm">I want to receive notifications</Label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="review_requests"
+                                    type="checkbox"
+                                    checked={!!data.review_requests}
+                                    onChange={e => setData('review_requests', e.target.checked)}
+                                    className="h-4 w-4 border-gray-300 rounded"
+                                />
+                                <Label htmlFor="review_requests" className="text-sm">I am open to review requests</Label>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="country" className="text-sm font-medium">Country</Label>
+                        <Select
+                            value={data.country as string}
+                            onValueChange={(value: string) => setData('country', value)}
+                        >
+                            <SelectTrigger className={`w-full border border-gray-300 focus:border-[#18652c] focus:ring-[#18652c] rounded-md bg-muted text-foreground ${errors.country ? 'border-red-500' : ''}`}>
+                                <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {countries.map((option: CountryOption) => (
+                                    <SelectItem key={option.code} value={option.name}>{option.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
                     </div>
                 </div>
 

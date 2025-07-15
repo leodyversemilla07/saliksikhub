@@ -14,8 +14,6 @@ class User extends Authenticatable
 {
     use HasFactory, HasRoles, Notifiable;
 
-    // Legacy role constants removed; use Spatie roles instead
-
     /**
      * The attributes that are mass assignable.
      *
@@ -66,26 +64,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'avatar_url',
-        'name',
     ];
-
-    // Use Spatie's assignRole and hasRole methods
-
-    /**
-     * Get the user's full name.
-     */
-    public function getFullNameAttribute(): string
-    {
-        return "{$this->firstname} {$this->lastname}";
-    }
-
-    /**
-     * Get the user's name (alias for full_name for frontend compatibility).
-     */
-    public function getNameAttribute(): string
-    {
-        return $this->getFullNameAttribute();
-    }
 
     /**
      * Get the user's avatar URL.
@@ -97,7 +76,7 @@ class User extends Authenticatable
         }
 
         // Use Storage::url() to generate the proper URL for the public disk
-        $url = Storage::disk('public')->url('avatars/'.$this->avatar);
+        $url = Storage::url('avatars/' . $this->avatar);
 
         // For development environment, ensure we use HTTP instead of HTTPS to avoid certificate errors
         if (app()->environment('local') && str_starts_with($url, 'https://localhost')) {
@@ -106,27 +85,6 @@ class User extends Authenticatable
 
         return $url;
     }
-
-    /**
-     * Delete the user's avatar file from storage.
-     */
-    public function deleteAvatar(): bool
-    {
-        if (! $this->avatar) {
-            return true;
-        }
-
-        $deleted = Storage::disk('public')->delete('avatars/'.$this->avatar);
-
-        if ($deleted) {
-            $this->avatar = null;
-            $this->save();
-        }
-
-        return $deleted;
-    }
-
-    // Use $user->hasRole('Managing Editor'), $user->hasRole('Author'), etc.
 
     public function assignedManuscripts(): HasMany
     {

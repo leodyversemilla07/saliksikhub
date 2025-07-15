@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,12 +34,14 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
 
-        // Handle avatar upload
+        $user = Auth::user();
+        if (!($user instanceof User)) {
+            throw new \Exception('Authenticated user is not a valid User model.');
+        }
+
+        // Handle avatar upload and deletion in controller
         if ($request->hasFile('avatar')) {
-            /** @var \Illuminate\Http\UploadedFile $avatarFile */
             $avatarFile = $request->file('avatar');
 
             // Ensure the avatars directory exists
@@ -48,11 +51,12 @@ class ProfileController extends Controller
 
             // Delete old avatar if exists
             if ($user->avatar) {
-                Storage::disk('public')->delete('avatars/'.$user->avatar);
+                Storage::disk('public')->delete('avatars/' . $user->avatar);
+                $user->avatar = null;
             }
 
             // Generate a unique filename using Laravel's hashName method
-            $avatarName = $user->id.'_'.time().'_'.$avatarFile->hashName();
+            $avatarName = $user->id . '_' . time() . '_' . $avatarFile->hashName();
 
             // Store new avatar using Laravel's Storage facade
             $avatarFile->storeAs('avatars', $avatarName, 'public');
@@ -88,7 +92,9 @@ class ProfileController extends Controller
 
         // Delete user's avatar before deleting the account
         if ($user->avatar) {
-            Storage::disk('public')->delete('avatars/'.$user->avatar);
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
+            $user->avatar = null;
+            $user->save();
         }
 
         Auth::logout();

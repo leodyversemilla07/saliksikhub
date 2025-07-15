@@ -17,7 +17,7 @@ class StorageService
     /**
      * Constructor to set the disk name.
      */
-    public function __construct(string $disk = 'spaces')
+    public function __construct(string $disk = 'public')
     {
         $this->storageDisk = Storage::disk($disk);
     }

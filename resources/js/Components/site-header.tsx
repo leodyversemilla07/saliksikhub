@@ -142,7 +142,7 @@ export default function Header({ auth }: HeaderProps) {
                                 </button>
                                 {userDropdownOpen && (
                                     <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-black dark:ring-opacity-20 py-1 z-50 transition-colors duration-300`}>
-                                        <DropdownLink href={getDashboardRoute(auth.user.role)} icon={<LayoutDashboard className="w-4 h-4 mr-2" />}>Dashboard</DropdownLink>
+                                        <DropdownLink href={getDashboardRoute(auth.user.role ?? '')} icon={<LayoutDashboard className="w-4 h-4 mr-2" />}>Dashboard</DropdownLink>
                                         <DropdownLink href={route('profile.edit')} icon={<UserIcon className="w-4 h-4 mr-2" />}>Profile</DropdownLink>
                                         <Link
                                             href={route('logout')}
