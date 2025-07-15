@@ -24,20 +24,20 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'firstname'        => fake()->firstName(),
-            'lastname'         => fake()->lastName(),
-            'email'            => fake()->unique()->safeEmail(),
-            'password'         => static::$password ??= Hash::make('password'),
-            'role'             => fake()->randomElement(['author', 'editor']),
-            'affiliation'      => fake()->company(),
-            'country'          => fake()->country(),
-            'username'         => fake()->unique()->userName(),
-            'avatar'           => null, // or generate a fake filename if needed
-            'data_collection'  => fake()->boolean(),
-            'notifications'    => fake()->boolean(),
-            'review_requests'  => fake()->boolean(),
+            'firstname' => fake()->firstName(),
+            'lastname' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'password' => static::$password ??= Hash::make('password'),
+            'role' => fake()->randomElement(['author', 'editor']),
+            'affiliation' => fake()->company(),
+            'country' => fake()->country(),
+            'username' => fake()->unique()->userName(),
+            'avatar' => null, // or generate a fake filename if needed
+            'data_collection' => fake()->boolean(),
+            'notifications' => fake()->boolean(),
+            'review_requests' => fake()->boolean(),
             'email_verified_at' => now(),
-            'remember_token'   => Str::random(10),
+            'remember_token' => Str::random(10),
         ];
     }
 
@@ -46,7 +46,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

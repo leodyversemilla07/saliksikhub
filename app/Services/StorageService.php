@@ -4,12 +4,11 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StorageService
 {
-
     /**
      * The storage disk instance.
      */
@@ -22,6 +21,7 @@ class StorageService
     {
         $this->storageDisk = Storage::disk($disk);
     }
+
     /**
      * Store a file with user and date-based directory structure, similar to StoreFileAction.
      */
@@ -39,9 +39,10 @@ class StorageService
 
             return $path;
         } catch (Exception $e) {
-            throw new Exception('Failed to store file: ' . $e->getMessage(), 0, $e);
+            throw new Exception('Failed to store file: '.$e->getMessage(), 0, $e);
         }
     }
+
     /**
      * Generate a temporary URL for a file.
      */
@@ -69,7 +70,7 @@ class StorageService
 
             return $this->storageDisk->putFileAs($directory, $file, $fileName);
         } catch (Exception $e) {
-            throw new Exception('Failed to store file: ' . $e->getMessage(), 0, $e);
+            throw new Exception('Failed to store file: '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -89,7 +90,7 @@ class StorageService
         try {
             return $this->storageDisk->get($filePath);
         } catch (Exception $e) {
-            throw new Exception('Failed to retrieve file content: ' . $e->getMessage(), 0, $e);
+            throw new Exception('Failed to retrieve file content: '.$e->getMessage(), 0, $e);
         }
     }
 }

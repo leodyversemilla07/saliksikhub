@@ -27,13 +27,14 @@ class StoreRequest extends FormRequest
         // Get all roles from the database
         $allRoles = Role::pluck('name')->toArray();
         $roleList = implode(',', $allRoles);
+
         return [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => 'required|string|in:' . $roleList,
+            'role' => 'required|string|in:'.$roleList,
             'affiliation' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
         ];

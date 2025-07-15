@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($user->hasRole('managing_editor') || $user->hasRole('editor_in_chief') || $user->hasRole('associate_editor') || $user->hasRole('language_editor')) {
             return redirect()->route('editor.dashboard');
         }
+
         return redirect()->route('login');
     })->name('dashboard');
 

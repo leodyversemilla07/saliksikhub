@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\StoreFileAction;
 use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
@@ -395,7 +394,7 @@ class ManuscriptController extends Controller
                 'manuscript_id' => $manuscript->id,
             ]);
 
-            return redirect()->back()->with('error', 'Failed to load approval form: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load approval form: '.$e->getMessage());
         }
     }
 
@@ -452,11 +451,11 @@ class ManuscriptController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to approve manuscript: ' . $e->getMessage(),
+                    'message' => 'Failed to approve manuscript: '.$e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to approve manuscript: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to approve manuscript: '.$e->getMessage());
         }
     }
 
@@ -468,7 +467,7 @@ class ManuscriptController extends Controller
         try {
             $manuscript = Manuscript::findOrFail($id);
 
-            if (!$manuscript->final_pdf_path) {
+            if (! $manuscript->final_pdf_path) {
                 abort(404, 'PDF not found');
             }
 
@@ -476,7 +475,7 @@ class ManuscriptController extends Controller
                 abort(403, 'PDF not publicly available - manuscript not yet published');
             }
 
-            if (!$storageService->fileExists($manuscript->final_pdf_path)) {
+            if (! $storageService->fileExists($manuscript->final_pdf_path)) {
                 Log::error('PDF file not found in storage', [
                     'manuscript_id' => $id,
                     'pdf_path' => $manuscript->final_pdf_path,
@@ -494,7 +493,7 @@ class ManuscriptController extends Controller
 
             return response($fileContent)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="' . $filename . '"')
+                ->header('Content-Disposition', 'inline; filename="'.$filename.'"')
                 ->header('Cache-Control', 'public, max-age=3600')
                 ->header('X-Content-Type-Options', 'nosniff');
         } catch (ModelNotFoundException $e) {

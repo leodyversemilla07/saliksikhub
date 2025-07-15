@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserManagement\StoreRequest;
+use App\Http\Requests\UserManagement\UpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -9,8 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
-use App\Http\Requests\UserManagement\StoreRequest;
-use App\Http\Requests\UserManagement\UpdateRequest;
 
 class UserController extends Controller
 {
@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $perPageRaw = $request->input('per_page', 10);
 
-        $perPage = is_numeric($perPageRaw) ? (int)$perPageRaw : $perPageRaw;
+        $perPage = is_numeric($perPageRaw) ? (int) $perPageRaw : $perPageRaw;
 
         $query = User::where('id', '!=', Auth::id())
             ->orderBy('created_at', 'desc');
@@ -43,7 +43,7 @@ class UserController extends Controller
             );
         } else {
             // Validate perPage
-            if (!is_numeric($perPage) || $perPage < 1 || $perPage > 100) {
+            if (! is_numeric($perPage) || $perPage < 1 || $perPage > 100) {
                 $perPage = 10;
             }
             $paginator = $query->paginate($perPage)->withQueryString();
@@ -71,9 +71,10 @@ class UserController extends Controller
     public function create()
     {
         $allRoles = Role::pluck('name')->toArray();
+
         return Inertia::render('user-management/create', [
             'roles' => $allRoles,
-            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : []
+            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : [],
         ]);
     }
 
@@ -94,6 +95,7 @@ class UserController extends Controller
             'role' => $validated['role'],
         ]);
         $user->assignRole($validated['role']);
+
         return redirect()->back()->with('success', 'User created successfully');
     }
 
@@ -103,6 +105,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
+
         return Inertia::render('user-management/show', [
             'user' => $user,
         ]);
@@ -115,10 +118,11 @@ class UserController extends Controller
     {
         $allRoles = Role::pluck('name')->toArray();
         $user = User::findOrFail($id);
+
         return Inertia::render('user-management/edit', [
             'user' => $user,
             'roles' => $allRoles,
-            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : []
+            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : [],
         ]);
     }
 
@@ -140,6 +144,7 @@ class UserController extends Controller
         }
         $user->save();
         $user->syncRoles([$validated['role']]);
+
         return redirect()->back()->with('success', 'User updated successfully');
     }
 
@@ -180,6 +185,6 @@ class UserController extends Controller
 
         User::whereIn('id', $userIds)->delete();
 
-        return redirect()->back()->with('success', count($userIds) . ' users deleted successfully');
+        return redirect()->back()->with('success', count($userIds).' users deleted successfully');
     }
 }

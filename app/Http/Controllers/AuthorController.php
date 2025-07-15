@@ -39,7 +39,6 @@ class AuthorController extends Controller
             ];
         });
 
-
         $monthlySubmissionData = [];
         $endDate = Carbon::now();
         $currentMonth = $startDate->copy()->startOfMonth();

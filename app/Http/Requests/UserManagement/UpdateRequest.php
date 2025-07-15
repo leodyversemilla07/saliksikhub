@@ -33,15 +33,16 @@ class UpdateRequest extends FormRequest
         $rules = [
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $userId,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
-            'role' => 'required|string|in:' . $roleList,
+            'username' => 'required|string|max:255|unique:users,username,'.$userId,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$userId,
+            'role' => 'required|string|in:'.$roleList,
             'affiliation' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
         ];
         if (request()->filled('password')) {
             $rules['password'] = ['required', 'confirmed', Password::defaults()];
         }
+
         return $rules;
     }
 }
