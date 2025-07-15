@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
-import { User, UserRole } from "@/types";
+import { User } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
     AlertDialog,
     AlertDialogTrigger,
@@ -21,7 +20,7 @@ const DeleteUserDialog: React.FC<{ user: User }> = ({ user }) => {
     const [open, setOpen] = useState(false);
     const { delete: destroy, processing, reset } = useForm({});
 
-    const handleDelete = () => {
+    const onSubmit = () => {
         destroy(route('users.destroy', user.id), {
             onSuccess: () => {
                 setOpen(false);
@@ -51,33 +50,14 @@ const DeleteUserDialog: React.FC<{ user: User }> = ({ user }) => {
                 <div className="flex flex-col items-center gap-2 mb-4">
                     <div className="font-medium text-lg text-center text-foreground">{user.firstname} {user.lastname}</div>
                     <div className="text-sm text-muted-foreground">{user.email}</div>
-                    <div className="flex items-center gap-2 mt-1.5">
-                        {(() => {
-                            const roleLabels: Record<UserRole, string> = {
-                                managing_editor: 'Managing Editor',
-                                editor_in_chief: 'Editor in Chief',
-                                associate_editor: 'Associate Editor',
-                                language_editor: 'Language Editor',
-                                author: 'Author',
-                                reviewer: 'Reviewer',
-                            };
-                            return (
-                                <Badge variant="destructive">
-                                    {roleLabels[user.role]}
-                                </Badge>
-                            );
-                        })()}
-                        {user.affiliation && (
-                            <span className="text-xs text-muted-foreground">{user.affiliation}</span>
-                        )}
-                    </div>
+                    {/* Role and affiliation removed as requested */}
                 </div>
-                <AlertDialogFooter className="flex justify-center gap-4 mt-6">
+                <AlertDialogFooter className="flex flex-row gap-4 mt-6">
                     <AlertDialogCancel asChild>
                         <Button
                             type="button"
                             variant="outline"
-                            className="px-6 py-2 rounded-md bg-background text-foreground border"
+                            className="flex-1 py-2 rounded-md bg-background text-foreground border"
                         >
                             Cancel
                         </Button>
@@ -86,9 +66,9 @@ const DeleteUserDialog: React.FC<{ user: User }> = ({ user }) => {
                         <Button
                             type="button"
                             variant="destructive"
-                            onClick={handleDelete}
+                            onClick={onSubmit}
                             disabled={processing}
-                            className="px-6 py-2 rounded-md bg-destructive text-white hover:bg-destructive/90"
+                            className="flex-1 py-2 rounded-md bg-destructive text-white hover:bg-destructive/90"
                         >
                             {processing ? 'Deleting...' : 'Delete User'}
                         </Button>

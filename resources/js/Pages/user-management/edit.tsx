@@ -86,7 +86,7 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
         setData('country', value);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         put(route('users.update', user.id), {
             onSuccess: () => {
@@ -105,7 +105,7 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
             <div className="max-w-lg mx-auto p-8 rounded-xl shadow-lg bg-background text-foreground">
                 <h1 className="text-3xl font-bold text-center mb-2">Edit User Account</h1>
                 <p className="text-center text-muted-foreground mb-6">Update user profile information, role, and optionally change password</p>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-5">
                         <div className="grid w-full items-center gap-2">
                             <Label htmlFor="edit-firstname" className="font-medium text-foreground">First Name</Label>

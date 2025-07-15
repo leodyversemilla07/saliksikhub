@@ -10,8 +10,8 @@ import {
     AlertDialogAction
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
-import BulkDeleteWarning from "@/components/bulk-delete-warning";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { useForm } from "@inertiajs/react";
 
 export interface BulkDeleteUserDialogProps {
@@ -36,7 +36,7 @@ const BulkDeleteUserDialog: React.FC<BulkDeleteUserDialogProps> = ({
         setData("userIds", selectedUsers);
     }, [selectedUsers, setData]);
 
-    const handleBulkDelete = () => {
+    const onSubmit = () => {
         setError(null);
         post(route('users.bulk-destroy'), {
             preserveScroll: true,
@@ -55,51 +55,46 @@ const BulkDeleteUserDialog: React.FC<BulkDeleteUserDialogProps> = ({
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="max-w-md bg-card text-card-foreground border border-border">
-                <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-bold text-destructive">
-                        Delete Multiple Users
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="text-muted-foreground">
-                        You are about to delete {selectedUsers.length} user account{selectedUsers.length > 1 ? 's' : ''}.
+            <AlertDialogContent className="mx-auto max-w-md p-6 rounded-xl shadow-lg bg-background text-foreground">
+                <AlertDialogHeader className="mb-4">
+                    <AlertDialogTitle className="text-2xl font-bold text-center mb-1 text-destructive">Delete User Accounts</AlertDialogTitle>
+                    <AlertDialogDescription className="text-center text-muted-foreground">
+                        Are you sure you want to delete these users? This action cannot be undone.
                     </AlertDialogDescription>
-                    <div className="text-sm text-muted-foreground">
-                        This action cannot be undone.
-                    </div>
-                    <BulkDeleteWarning selectedCount={selectedUsers.length} />
-                    {error && <div className="text-sm text-red-600 mt-2">{error}</div>}
                 </AlertDialogHeader>
-
-                <AlertDialogFooter className="gap-3">
-                    <AlertDialogCancel
-                        className="hover:bg-muted/80 transition-colors"
-                        id="cancel-bulk-delete"
-                        name="cancel-bulk-delete"
-                        disabled={processing}
-                    >
-                        Cancel
+                <div className="flex flex-col items-center gap-2 mb-4">
+                    <div className="font-medium text-lg text-center text-foreground">
+                        {selectedUsers.length} user account{selectedUsers.length > 1 ? 's' : ''} selected for deletion.
+                    </div>
+                    <div className="text-sm text-muted-foreground">All selected user accounts will be permanently deleted.</div>
+                    {error && <div className="text-sm text-destructive mt-2 text-center font-semibold">{error}</div>}
+                </div>
+                <AlertDialogFooter className="flex flex-row gap-4 mt-6">
+                    <AlertDialogCancel asChild>
+                        <Button
+                            type="button"
+                            className="flex-1 py-2 rounded-md bg-background text-foreground border border-border hover:bg-muted"
+                            disabled={processing}
+                        >
+                            Cancel
+                        </Button>
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                        onClick={handleBulkDelete}
-                        disabled={processing}
-                        className="bg-destructive hover:bg-destructive/90 transition-colors flex items-center gap-2"
-                        id="confirm-bulk-delete"
-                        name="confirm-bulk-delete"
-                    >
-                        {processing ? (
-                            <span className="flex items-center gap-2">
-                                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                </svg>
-                                Deleting...
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-2">
-                                <Trash2 className="w-4 h-4 text-white" />
-                                Delete {selectedUsers.length} User{selectedUsers.length > 1 ? 's' : ''}
-                            </span>
-                        )}
+                    <AlertDialogAction asChild>
+                        <Button
+                            type="button"
+                            onClick={onSubmit}
+                            disabled={processing}
+                            className="flex-1 py-2 rounded-md bg-destructive text-foreground hover:bg-destructive/90"
+                        >
+                            {processing ? (
+                                'Deleting...'
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    <Trash2 className="w-4 h-4 text-foreground" />
+                                    Delete {selectedUsers.length} User{selectedUsers.length > 1 ? 's' : ''}
+                                </span>
+                            )}
+                        </Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

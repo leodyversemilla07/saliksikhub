@@ -66,7 +66,7 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
         setData('country', value);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('users.store'), {
             onSuccess: () => {
@@ -88,7 +88,7 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
             <div className="max-w-lg mx-auto p-8 rounded-xl shadow-lg bg-background text-foreground">
                 <h1 className="text-3xl font-bold text-center mb-2">Add New User</h1>
                 <p className="text-center text-muted-foreground mb-6">Create a new user account and assign roles</p>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-5">
                         <div className="grid w-full items-center gap-2">
                             <Label htmlFor="firstname" className="font-medium text-foreground">First Name</Label>
