@@ -6,6 +6,7 @@ use App\Http\Controllers\IssueController;
 use App\Http\Controllers\ManuscriptController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -73,11 +74,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])->name('editor.manuscripts.prepare_publication_form');
         Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
-        Route::post('/users/bulk-delete', [EditorController::class, 'bulkDestroy'])->name('editor.users.bulk-destroy');
-        Route::get('/users', [EditorController::class, 'manageUsers'])->name('editor.users.index');
-        Route::post('/users', [EditorController::class, 'store'])->name('editor.users.store');
-        Route::put('/users/{user}', [EditorController::class, 'update'])->name('editor.users.update');
-        Route::delete('/users/{user}', [EditorController::class, 'destroy'])->name('editor.users.destroy');
+        // User management CRUD resource route
+        Route::resource('users', UserController::class);
 
         // Issue routes
         Route::resource('issues', IssueController::class);

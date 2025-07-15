@@ -34,10 +34,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
         $roleRoutes = [
-            'managing_editor' => 'admin.dashboard',
-            'editor_in_chief' => 'admin.dashboard',
-            'associate_editor' => 'admin.dashboard',
-            'language_editor' => 'admin.dashboard',
+            'managing_editor' => 'editor.dashboard',
+            'editor_in_chief' => 'editor.dashboard',
+            'associate_editor' => 'editor.dashboard',
+            'language_editor' => 'editor.dashboard',
             'author' => 'author.dashboard',
             'reviewer' => 'reviewer.dashboard',
         ];

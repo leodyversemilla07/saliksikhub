@@ -16,56 +16,77 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
+// Generic pagination meta type for any paginated data
+export interface PaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from?: number | null;
+  to?: number | null;
+}
+
+export interface PaginationProps {
+  meta: PaginationMeta;
   onPageChange: (page: number) => void;
   pageSize: number;
   onPageSizeChange: (size: number) => void;
+  pageSizeOptions?: Array<number | 'all'>;
+  itemsLabel?: string; // Label for page size dropdown
+  pageLabel?: (meta: PaginationMeta) => string; // Function to render page info
   className?: string;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
-  currentPage,
-  totalPages,
+  meta,
   onPageChange,
   pageSize,
   onPageSizeChange,
+  pageSizeOptions = [6, 12, 24, 48, 96, 'all'],
+  itemsLabel = 'Items per page',
+  pageLabel = (meta) => `Displaying page ${meta.current_page} of ${meta.last_page}`,
   className,
 }) => {
-  // Helper to generate page numbers
+  // Ensure default pageSize is 6 if not set or invalid
+  const effectivePageSize = typeof pageSize === 'number' && pageSize > 0 ? pageSize : 6;
+  // Helper to generate page numbers for pagination bar
   const getPages = () => {
+    const { current_page, last_page } = meta;
     const pages: (number | "ellipsis")[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
+
+    if (last_page <= 7) {
+      for (let i = 1; i <= last_page; i++) pages.push(i);
     } else {
-      if (currentPage <= 4) {
-        pages.push(1, 2, 3, 4, 5, "ellipsis", totalPages);
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1, "ellipsis", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      if (current_page <= 4) {
+        pages.push(1, 2, 3, 4, 5, "ellipsis", last_page);
+      } else if (current_page >= last_page - 3) {
+        pages.push(1, "ellipsis", last_page - 4, last_page - 3, last_page - 2, last_page - 1, last_page);
       } else {
-        pages.push(1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages);
+        pages.push(1, "ellipsis", current_page - 1, current_page, current_page + 1, "ellipsis", last_page);
       }
     }
+
     return pages;
   };
+
   return (
     <div className={`flex items-center justify-between w-full ${className ?? ''}`}>
+      {/* Page size selector and label */}
       <div className="flex items-center gap-4 min-w-[220px]">
         <Select
-          value={pageSize === -1 ? "all" : String(pageSize)}
+          value={effectivePageSize === -1 ? "all" : String(effectivePageSize)}
           onValueChange={val => onPageSizeChange(val === "all" ? -1 : Number(val))}
         >
           <SelectTrigger id="page-size-select" className="w-[70px]">
-            <SelectValue placeholder="Items per page" />
+            <SelectValue placeholder={itemsLabel} />
           </SelectTrigger>
           <SelectContent className="w-[130px]">
-            {['6', '12', '24', '48', '96', 'all'].map(val => (
+            {pageSizeOptions.map(val => (
               <SelectItem
                 key={val}
-                value={val}
+                value={val === 'all' ? 'all' : String(val)}
                 className={
-                  (pageSize === -1 && val === 'all') || String(pageSize) === val
+                  (effectivePageSize === -1 && val === 'all') || String(effectivePageSize) === String(val)
                     ? 'bg-primary/10 font-bold text-primary'
                     : ''
                 }
@@ -75,17 +96,18 @@ export const Pagination: React.FC<PaginationProps> = ({
             ))}
           </SelectContent>
         </Select>
-        <span className="text-muted-foreground text-sm">Displaying page {currentPage} of {totalPages}</span>
+        <span className="text-muted-foreground text-sm">{pageLabel(meta)}</span>
       </div>
+      {/* Pagination bar */}
       <div className="flex items-center gap-4">
         <PaginationUI className="justify-end">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => onPageChange(currentPage - 1)}
-                aria-disabled={currentPage === 1}
-                tabIndex={currentPage === 1 ? -1 : 0}
-                style={{ pointerEvents: currentPage === 1 ? "none" : "auto" }}
+                onClick={() => onPageChange(meta.current_page - 1)}
+                aria-disabled={meta.current_page === 1}
+                tabIndex={meta.current_page === 1 ? -1 : 0}
+                style={{ pointerEvents: meta.current_page === 1 ? "none" : "auto" }}
               />
             </PaginationItem>
             {getPages().map((page, idx) => (
@@ -94,11 +116,11 @@ export const Pagination: React.FC<PaginationProps> = ({
                   <PaginationEllipsis />
                 ) : (
                   <PaginationLink
-                    isActive={page === currentPage}
+                    isActive={page === meta.current_page}
                     onClick={() => onPageChange(page as number)}
-                    aria-disabled={page === currentPage}
-                    tabIndex={page === currentPage ? -1 : 0}
-                    style={{ pointerEvents: page === currentPage ? "none" : "auto" }}
+                    aria-disabled={page === meta.current_page}
+                    tabIndex={page === meta.current_page ? -1 : 0}
+                    style={{ pointerEvents: page === meta.current_page ? "none" : "auto" }}
                   >
                     {page}
                   </PaginationLink>
@@ -107,10 +129,10 @@ export const Pagination: React.FC<PaginationProps> = ({
             ))}
             <PaginationItem>
               <PaginationNext
-                onClick={() => onPageChange(currentPage + 1)}
-                aria-disabled={currentPage === totalPages}
-                tabIndex={currentPage === totalPages ? -1 : 0}
-                style={{ pointerEvents: currentPage === totalPages ? "none" : "auto" }}
+                onClick={() => onPageChange(meta.current_page + 1)}
+                aria-disabled={meta.current_page === meta.last_page}
+                tabIndex={meta.current_page === meta.last_page ? -1 : 0}
+                style={{ pointerEvents: meta.current_page === meta.last_page ? "none" : "auto" }}
               />
             </PaginationItem>
           </PaginationContent>

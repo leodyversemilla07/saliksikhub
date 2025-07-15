@@ -1,14 +1,30 @@
+export type UserRole =
+    | 'managing_editor'
+    | 'editor_in_chief'
+    | 'associate_editor'
+    | 'language_editor'
+    | 'author'
+    | 'reviewer';
+
 export interface User {
     id: number;
     firstname: string;
     lastname: string;
-    role: string;
-    affiliation?: string;
     email: string;
-    email_verified_at?: string;
-    created_at?: Date;
-    updated_at?: Date;
+    password?: string;
+    role?: UserRole;
+    affiliation?: string;
+    country?: string;
+    username?: string;
     avatar?: string;
+    avatar_url?: string | null;
+    data_collection?: boolean;
+    notifications?: boolean;
+    review_requests?: boolean;
+    email_verified_at?: string;
+    created_at?: string;
+    updated_at?: string;
+    name?: string;
 }
 
 export type PageProps<

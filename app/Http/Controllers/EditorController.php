@@ -15,9 +15,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 class EditorController extends Controller
@@ -510,131 +508,6 @@ class EditorController extends Controller
         ]);
     }
 
-    /**
-     * Display the user management page for admins.
-     */
-    public function manageUsers(Request $request)
-    {
-        $perPage = $request->input('per_page', 10);
-
-        $users = User::where('id', '!=', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage)
-            ->withQueryString();
-
-        return Inertia::render('admin/user-management', [
-            'users' => $users,
-        ]);
-    }
-
-    /**
-     * Store a newly created user in the database.
-     */
-    public function store(Request $request)
-    {
-        // Get all code-friendly roles from Spatie
-        $allRoles = \Spatie\Permission\Models\Role::pluck('name')->toArray();
-
-        $validated = $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => 'required|string|in:' . implode(',', $allRoles),
-            'affiliation' => 'nullable|string|max:255',
-        ]);
-
-        $user = User::create([
-            'firstname' => $validated['firstname'],
-            'lastname' => $validated['lastname'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'affiliation' => $validated['affiliation'] ?? null,
-        ]);
-        $user->assignRole($validated['role']);
-
-        Log::info('User created by admin', [
-            'user_id' => $user->id,
-            'admin_id' => Auth::id(),
-            'role' => $validated['role'],
-        ]);
-
-        return redirect()->back()->with('success', 'User created successfully');
-    }
-
-    /**
-     * Update the specified user's information.
-     */
-    public function update(Request $request, User $user)
-    {
-        // Get all code-friendly roles from Spatie
-        $allRoles = \Spatie\Permission\Models\Role::pluck('name')->toArray();
-
-        $rules = [
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|string|in:' . implode(',', $allRoles),
-            'affiliation' => 'nullable|string|max:255',
-        ];
-
-        if ($request->filled('password')) {
-            $rules['password'] = ['required', 'confirmed', Password::defaults()];
-        }
-
-        $validated = $request->validate($rules);
-
-        $user->firstname = $validated['firstname'];
-        $user->lastname = $validated['lastname'];
-        $user->email = $validated['email'];
-        $user->affiliation = $validated['affiliation'] ?? null;
-        if (isset($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-        $user->save();
-        // Sync role using Spatie
-        $user->syncRoles([$validated['role']]);
-
-        return redirect()->back()->with('success', 'User updated successfully');
-    }
-
-    /**
-     * Delete the specified user from the database.
-     */
-    public function destroy(User $user)
-    {
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'You cannot delete your own account');
-        }
-
-        $user->delete();
-
-        return redirect()->back()->with('success', 'User deleted successfully');
-    }
-
-    /**
-     * Delete multiple users from the database.
-     */
-    public function bulkDestroy(Request $request)
-    {
-        $request->validate([
-            'userIds' => 'required|array',
-            'userIds.*' => 'exists:users,id',
-        ]);
-
-        $userIds = $request->userIds;
-
-        if (in_array(Auth::id(), $userIds)) {
-            return response()->json([
-                'message' => 'You cannot delete your own account.',
-                'errors' => ['userIds' => 'Your account was included in the selection and cannot be deleted.'],
-            ], 422);
-        }
-
-        User::whereIn('id', $userIds)->delete();
-
-        return redirect()->back()->with('success', count($userIds) . ' users deleted successfully');
-    }
 
     /**
      * Start the copy editing process for a manuscript.
