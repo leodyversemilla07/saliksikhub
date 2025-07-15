@@ -17,7 +17,7 @@ class StorageService
     /**
      * Constructor to set the disk name.
      */
-    public function __construct(string $disk = 'public')
+    public function __construct(string $disk = 'local')
     {
         $this->storageDisk = Storage::disk($disk);
     }
@@ -48,6 +48,14 @@ class StorageService
      */
     public function generateTemporaryUrl(string $filePath, int $expirationMinutes = 5): ?string
     {
+        // Local disk does not support temporary URLs
+        if (config('filesystems.default') === 'local') {
+            logger()->warning('Temporary URL requested for local disk, which is not supported.', [
+                'file_path' => $filePath,
+            ]);
+
+            return null;
+        }
         try {
             return $this->storageDisk->temporaryUrl($filePath, now()->addMinutes($expirationMinutes));
         } catch (Exception $e) {

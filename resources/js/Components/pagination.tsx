@@ -16,7 +16,6 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 
-// Generic pagination meta type for any paginated data
 export interface PaginationMeta {
   current_page: number;
   last_page: number;
@@ -32,8 +31,8 @@ export interface PaginationProps {
   pageSize: number;
   onPageSizeChange: (size: number) => void;
   pageSizeOptions?: Array<number | 'all'>;
-  itemsLabel?: string; // Label for page size dropdown
-  pageLabel?: (meta: PaginationMeta) => string; // Function to render page info
+  itemsLabel?: string;
+  pageLabel?: (meta: PaginationMeta) => string;
   className?: string;
 }
 
@@ -47,9 +46,10 @@ export const Pagination: React.FC<PaginationProps> = ({
   pageLabel = (meta) => `Displaying page ${meta.current_page} of ${meta.last_page}`,
   className,
 }) => {
-  // Ensure default pageSize is 6 if not set or invalid
-  const effectivePageSize = typeof pageSize === 'number' && pageSize > 0 ? pageSize : 6;
-  // Helper to generate page numbers for pagination bar
+  const pageSizeSelectValue =
+    pageSize === -1 || (meta && pageSize === meta.total)
+      ? 'all'
+      : (typeof pageSize === 'number' && pageSize > 0 ? String(pageSize) : '6');
   const getPages = () => {
     const { current_page, last_page } = meta;
     const pages: (number | "ellipsis")[] = [];
@@ -71,10 +71,9 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className={`flex items-center justify-between w-full ${className ?? ''}`}>
-      {/* Page size selector and label */}
       <div className="flex items-center gap-4 min-w-[220px]">
         <Select
-          value={effectivePageSize === -1 ? "all" : String(effectivePageSize)}
+          value={pageSizeSelectValue}
           onValueChange={val => onPageSizeChange(val === "all" ? -1 : Number(val))}
         >
           <SelectTrigger id="page-size-select" className="w-[70px]">
@@ -86,7 +85,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 key={val}
                 value={val === 'all' ? 'all' : String(val)}
                 className={
-                  (effectivePageSize === -1 && val === 'all') || String(effectivePageSize) === String(val)
+                  pageSizeSelectValue === 'all' && val === 'all' || pageSizeSelectValue === String(val)
                     ? 'bg-primary/10 font-bold text-primary'
                     : ''
                 }
@@ -98,7 +97,6 @@ export const Pagination: React.FC<PaginationProps> = ({
         </Select>
         <span className="text-muted-foreground text-sm">{pageLabel(meta)}</span>
       </div>
-      {/* Pagination bar */}
       <div className="flex items-center gap-4">
         <PaginationUI className="justify-end">
           <PaginationContent>

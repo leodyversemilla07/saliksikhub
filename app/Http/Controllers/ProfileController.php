@@ -36,7 +36,7 @@ class ProfileController extends Controller
         $validated = $request->validated();
 
         $user = Auth::user();
-        if (!($user instanceof User)) {
+        if (! ($user instanceof User)) {
             throw new \Exception('Authenticated user is not a valid User model.');
         }
 
@@ -51,12 +51,12 @@ class ProfileController extends Controller
 
             // Delete old avatar if exists
             if ($user->avatar) {
-                Storage::disk('public')->delete('avatars/' . $user->avatar);
+                Storage::disk('public')->delete('avatars/'.$user->avatar);
                 $user->avatar = null;
             }
 
             // Generate a unique filename using Laravel's hashName method
-            $avatarName = $user->id . '_' . time() . '_' . $avatarFile->hashName();
+            $avatarName = $user->id.'_'.time().'_'.$avatarFile->hashName();
 
             // Store new avatar using Laravel's Storage facade
             $avatarFile->storeAs('avatars', $avatarName, 'public');
@@ -92,7 +92,7 @@ class ProfileController extends Controller
 
         // Delete user's avatar before deleting the account
         if ($user->avatar) {
-            Storage::disk('public')->delete('avatars/' . $user->avatar);
+            Storage::disk('public')->delete('avatars/'.$user->avatar);
             $user->avatar = null;
             $user->save();
         }

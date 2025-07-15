@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -36,6 +35,20 @@ class UserSeeder extends Seeder
                 'email' => 'leodyversemilla07@gmail.com',
                 'password' => Hash::make('password123'),
                 'role' => 'author',
+                'affiliation' => 'Mindoro State University - Bongabong Campus',
+                'country' => 'Philippines',
+                'email_verified_at' => now(),
+                'data_collection' => true,
+                'notifications' => true,
+                'review_requests' => true,
+            ],
+            [
+                'firstname' => 'LeodyBriel',
+                'lastname' => 'Zilvrak',
+                'username' => 'leobrielzilvrak',
+                'email' => 'leobrielzilvrak@gmail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'managing_editor',
                 'affiliation' => 'Mindoro State University - Bongabong Campus',
                 'country' => 'Philippines',
                 'email_verified_at' => now(),
@@ -116,6 +129,8 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
+            // Remove avatar_url if present
+            unset($userData['avatar_url']);
             $roleName = $userData['role'];
             $user = User::firstOrCreate(
                 ['email' => $userData['email']], // Check by email to avoid duplicates
@@ -129,9 +144,14 @@ class UserSeeder extends Seeder
         // Create additional users using UserFactory
         $factoryUsers = User::factory()->count(50)->make();
         foreach ($factoryUsers as $factoryUser) {
+            $userData = $factoryUser->toArray();
+            unset($userData['avatar_url']);
+            if (empty($userData['password'])) {
+                $userData['password'] = \Illuminate\Support\Facades\Hash::make('password');
+            }
             $user = User::firstOrCreate(
                 ['email' => $factoryUser->email],
-                $factoryUser->toArray()
+                $userData
             );
             if ($user->role) {
                 $user->assignRole($user->role);

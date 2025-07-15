@@ -29,6 +29,7 @@ import { Pagination } from '@/components/pagination'; // Reusable Pagination com
 import { Eye, UserPlus, Trash2, Filter, Users, UserCog, Search, X, MoreHorizontal } from 'lucide-react';
 import DeleteUserDialog from '@/components/delete-user-dialog';
 import BulkDeleteUserDialog from "@/components/bulk-delete-user-dialog";
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PaginationMeta {
     current_page: number;
@@ -56,41 +57,79 @@ const breadcrumbItems = [
 ];
 
 export default function IndexUser({ users, pagination }: { users: User[]; pagination: PaginationData }) {
-    // Always default to 6 if per_page is not set, null, -1, or non-positive
-    const pageSize = (typeof pagination?.meta?.per_page === 'number' && pagination.meta.per_page > 0)
+    const pageSizeValue = (typeof pagination?.meta?.per_page === 'number' && pagination.meta.per_page > 0)
         ? pagination.meta.per_page
         : 6;
     const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const initialSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('search') || '' : '';
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedRole, setSelectedRole] = useState<string>('');
     const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [deleteDialogUserId, setDeleteDialogUserId] = useState<number | null>(null);
 
-    let filteredUsers: User[] = users;
-    if (searchTerm) {
-        const term = searchTerm.toLowerCase();
-        filteredUsers = filteredUsers.filter(user =>
-            user.firstname.toLowerCase().includes(term) ||
-            user.lastname.toLowerCase().includes(term) ||
-            user.email.toLowerCase().includes(term) ||
-            (user.username && user.username.toLowerCase().includes(term)) ||
-            (user.country && user.country.toLowerCase().includes(term))
-        );
-    }
-    if (selectedRole && selectedRole !== 'all') {
-        filteredUsers = filteredUsers.filter(user => user.role === selectedRole);
-    }
+    const filteredUsers: User[] = users;
 
-    // Handlers
     const handlePageChange = (page: number) => {
-        // Always use current pageSize, defaulting to 6 if not set
-        const perPageValue = pageSize === -1 ? 'all' : pageSize;
-        router.visit(`?page=${page}&per_page=${perPageValue}`);
+        setIsLoading(true);
+        const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
+        const roleValue = selectedRole || 'all';
+        router.visit(`?page=${page}&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
+            onFinish: () => setIsLoading(false)
+        });
     };
 
     const handlePageSizeChange = (size: number) => {
-        // If 'all' is selected, use 'all', otherwise use the selected size
+        setIsLoading(true);
         const perPageValue = size === -1 ? 'all' : size;
-        router.visit(`?page=1&per_page=${perPageValue}`);
+        const roleValue = selectedRole || 'all';
+        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
+            onFinish: () => setIsLoading(false)
+        });
+    };
+
+    const handleRoleChange = (role: string) => {
+        setSelectedRole(role);
+        setIsLoading(true);
+        const perPageValue = role === 'all' ? 6 : 'all';
+        router.visit(`?page=1&per_page=${perPageValue}&role=${role}&search=${encodeURIComponent(searchTerm)}`, {
+            onFinish: () => setIsLoading(false)
+        });
+    };
+
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+        const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
+        const roleValue = selectedRole || 'all';
+        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
+            preserveState: true,
+            replace: true,
+            onFinish: () => setIsLoading(false)
+        });
+    };
+
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setIsLoading(true);
+        const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
+        const roleValue = selectedRole || 'all';
+        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=`, {
+            preserveState: true,
+            replace: true,
+            onFinish: () => setIsLoading(false)
+        });
+    };
+
+    const handleClearFilter = () => {
+        setSelectedRole('all');
+        setSearchTerm('');
+        setIsLoading(true);
+        router.visit(`?page=1&per_page=6&role=all&search=`, {
+            preserveState: true,
+            replace: true,
+            onFinish: () => setIsLoading(false)
+        });
     };
 
     const toggleSelectAll = () => {
@@ -109,12 +148,10 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         }
     };
 
-    // Bulk delete success handler
     const handleBulkDeleteSuccess = () => {
         setSelectedUsers([]);
     };
 
-    // Role label mapping and order for filter dropdown
     const roleOptions = [
         { value: "all", label: "All Roles" },
         { value: "editor_in_chief", label: "Editor-in-Chief" },
@@ -153,15 +190,15 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
 
     const formatDate = (date?: Date | string) => {
         if (!date) {
-            return { 
-                full: '-', 
-                short: '-', 
-                relative: '-' 
+            return {
+                full: '-',
+                short: '-',
+                relative: '-'
             };
         }
-        
+
         const dateObj = typeof date === 'string' ? parseISO(date) : date;
-        
+
         let relative = '';
         if (isToday(dateObj)) {
             relative = 'Today';
@@ -170,7 +207,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         } else {
             relative = formatDistanceToNow(dateObj, { addSuffix: true });
         }
-        
+
         return {
             full: format(dateObj, 'EEEE, MMMM do, yyyy'),
             short: format(dateObj, 'MMM dd, yyyy'),
@@ -183,7 +220,6 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
             <Head title="User Management" />
 
             <div className="space-y-6">
-                {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">User Management</h1>
@@ -191,7 +227,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                             Manage system users, permissions, and access control
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                         onClick={() => router.visit(route('users.create'))}
                     >
@@ -200,12 +236,11 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     </Button>
                 </div>
 
-                {/* Search and Filter Bar */}
-                <div className="flex flex-col lg:flex-row gap-4">
+                <form className="flex flex-row items-center justify-between gap-4" onSubmit={handleSearch}>
                     <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                         <Input
-                            placeholder="Search users by name, username, email, or country..."
+                            placeholder="Search users by name, username, email, country, or affiliation..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-10"
@@ -215,15 +250,16 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                 variant="ghost"
                                 size="sm"
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                                onClick={() => setSearchTerm("")}
+                                type="button"
+                                onClick={handleClearSearch}
+                                disabled={isLoading}
                             >
                                 <X className="h-3 w-3" />
                             </Button>
                         )}
                     </div>
-
-                    <div className="flex gap-2">
-                        <Select value={selectedRole} onValueChange={setSelectedRole}>
+                    <div className="flex gap-2 items-center">
+                        <Select value={selectedRole} onValueChange={handleRoleChange}>
                             <SelectTrigger className="w-48">
                                 <Filter className="h-4 w-4 mr-2" />
                                 <SelectValue placeholder="Filter by role" />
@@ -236,10 +272,18 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                 ))}
                             </SelectContent>
                         </Select>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            onClick={handleClearFilter}
+                            disabled={isLoading || (selectedRole === 'all' && !searchTerm)}
+                        >
+                            Clear Filter
+                        </Button>
                     </div>
-                </div>
+                </form>
 
-                {/* Bulk Actions Bar */}
                 {selectedUsers.length > 0 && (
                     <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                         <div className="flex items-center justify-between">
@@ -275,7 +319,6 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     </div>
                 )}
 
-                {/* Main Content Table */}
                 <div className="overflow-hidden border rounded-lg">
                     <div className="overflow-x-auto">
                         <Table>
@@ -301,7 +344,23 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="bg-card divide-y divide-border">
-                                {filteredUsers.length > 0 ? (
+                                {isLoading ? (
+                                    Array.from({ length: pageSizeValue === -1 ? 6 : pageSizeValue }).map((_, idx) => (
+                                        <TableRow key={"skeleton-" + idx}>
+                                            <TableCell><Skeleton className="h-5 w-5 rounded" /></TableCell>
+                                            <TableCell><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                            <TableCell><Skeleton className="h-8 w-8 rounded" /></TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : filteredUsers.length > 0 ? (
                                     filteredUsers.map((user) => {
                                         const isSelected = selectedUsers.includes(user.id);
                                         const createdDate = formatDate(user.created_at);
@@ -401,14 +460,14 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                         <DropdownMenuContent align="end" className="w-48">
                                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                             <DropdownMenuSeparator />
-                                                            <DropdownMenuItem 
+                                                            <DropdownMenuItem
                                                                 className="cursor-pointer"
                                                                 onClick={() => router.visit(route('users.show', user.id))}
                                                             >
                                                                 <Eye className="w-4 h-4 mr-2 text-primary" />
                                                                 View Details
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem 
+                                                            <DropdownMenuItem
                                                                 className="cursor-pointer"
                                                                 onClick={() => router.visit(route('users.edit', user.id))}
                                                             >
@@ -416,11 +475,25 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                                 Edit User
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator />
-                                                            <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
-                                                                <DeleteUserDialog user={user} />
+                                                            <DropdownMenuItem
+                                                                className="cursor-pointer text-destructive focus:text-destructive"
+                                                                onClick={() => setDeleteDialogUserId(user.id)}
+                                                            >
+                                                                <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                                                Delete User
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
+                                                    {deleteDialogUserId === user.id && (
+                                                        <DeleteUserDialog
+                                                            open={true}
+                                                            onOpenChange={(open) => {
+                                                                if (!open) setDeleteDialogUserId(null);
+                                                            }}
+                                                            user={user}
+                                                            onSuccess={() => setDeleteDialogUserId(null)}
+                                                        />
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -441,7 +514,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                     </p>
                                                 </div>
                                                 {!searchTerm && !selectedRole && (
-                                                    <Button 
+                                                    <Button
                                                         className="mt-4"
                                                         onClick={() => router.visit(route('users.create'))}
                                                     >
@@ -458,23 +531,19 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     </div>
                 </div>
 
-                {/* Pagination */}
                 {filteredUsers.length > 0 && (
-                    <div className="bg-muted/10 p-4">
-                        <Pagination
-                            meta={pagination.meta}
-                            onPageChange={handlePageChange}
-                            pageSize={pageSize}
-                            onPageSizeChange={handlePageSizeChange}
-                            pageSizeOptions={[6, 12, 24, 48, 96, 'all']}
-                            itemsLabel="Users per page"
-                            pageLabel={meta => `Page ${meta.current_page} of ${meta.last_page}`}
-                            className="w-full"
-                        />
-                    </div>
+                    <Pagination
+                        meta={pagination.meta}
+                        onPageChange={handlePageChange}
+                        pageSize={pageSizeValue}
+                        onPageSizeChange={handlePageSizeChange}
+                        pageSizeOptions={[6, 12, 24, 48, 96, 'all']}
+                        itemsLabel="Users per page"
+                        pageLabel={meta => `Page ${meta.current_page} of ${meta.last_page}`}
+                        className="w-full"
+                    />
                 )}
 
-                {/* Bulk Delete Dialog */}
                 <BulkDeleteUserDialog
                     open={bulkDeleteDialogOpen}
                     onOpenChange={setBulkDeleteDialogOpen}

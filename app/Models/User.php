@@ -58,15 +58,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
-    protected $appends = [
-        'avatar_url',
-    ];
-
-    /**
      * Get the user's avatar URL.
      */
     public function getAvatarUrlAttribute(): ?string
@@ -76,7 +67,7 @@ class User extends Authenticatable
         }
 
         // Use Storage::url() to generate the proper URL for the public disk
-        $url = Storage::url('avatars/' . $this->avatar);
+        $url = Storage::url('avatars/'.$this->avatar);
 
         // For development environment, ensure we use HTTP instead of HTTPS to avoid certificate errors
         if (app()->environment('local') && str_starts_with($url, 'https://localhost')) {

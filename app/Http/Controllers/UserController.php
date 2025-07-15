@@ -15,19 +15,35 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the users (excluding the current user).
+     * Returns a paginated list of users, excluding the current user, with optional role and search filters.
      */
     public function index(Request $request)
     {
-        $perPageRaw = $request->input('per_page', 10);
+        $pageSizeRaw = $request->input('per_page', 6);
+        $role = $request->input('role');
+        $search = $request->input('search');
 
-        $perPage = is_numeric($perPageRaw) ? (int) $perPageRaw : $perPageRaw;
+        $pageSize = ($pageSizeRaw === 'all') ? -1 : (is_numeric($pageSizeRaw) ? (int) $pageSizeRaw : $pageSizeRaw);
 
         $query = User::where('id', '!=', Auth::id())
             ->orderBy('created_at', 'desc');
 
-        // If perPage is -1 or 'all', return all users in one page
-        if ($perPage === -1 || $perPage === 'all') {
+        if ($role && $role !== 'all') {
+            $query->where('role', $role);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('firstname', 'like', "%{$search}%")
+                    ->orWhere('lastname', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('country', 'like', "%{$search}%")
+                    ->orWhere('affiliation', 'like', "%{$search}%");
+            });
+        }
+
+        if ($pageSize === -1 || $pageSize === 'all') {
             $allUsers = $query->get();
             $total = $allUsers->count();
             $currentPage = 1;
@@ -42,11 +58,10 @@ class UserController extends Controller
                 ]
             );
         } else {
-            // Validate perPage
-            if (! is_numeric($perPage) || $perPage < 1 || $perPage > 100) {
-                $perPage = 10;
+            if (! is_numeric($pageSize) || $pageSize < 1 || $pageSize > 100) {
+                $pageSize = 10;
             }
-            $paginator = $query->paginate($perPage)->withQueryString();
+            $paginator = $query->paginate($pageSize)->withQueryString();
         }
 
         return Inertia::render('user-management/index', [
@@ -56,7 +71,7 @@ class UserController extends Controller
                 'meta' => [
                     'current_page' => $paginator->currentPage(),
                     'last_page' => $paginator->lastPage(),
-                    'per_page' => $paginator->perPage(),
+                    'per_page' => ($pageSize === -1 ? $paginator->total() : $paginator->perPage()),
                     'total' => $paginator->total(),
                     'from' => $paginator->firstItem(),
                     'to' => $paginator->lastItem(),
@@ -66,7 +81,7 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Displays the form to create a new user and select a role.
      */
     public function create()
     {
@@ -79,7 +94,7 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created user in the database.
+     * Creates a new user in the database and assigns the selected role.
      */
     public function store(StoreRequest $request)
     {
@@ -100,7 +115,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Displays details of the specified user.
      */
     public function show(string $id)
     {
@@ -112,7 +127,7 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Displays the form to edit an existing user's information and role.
      */
     public function edit(string $id)
     {
@@ -127,7 +142,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified user's information.
+     * Updates the information and role of the specified user.
      */
     public function update(UpdateRequest $request, $id)
     {
@@ -149,7 +164,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete the specified user from the database.
+     * Deletes the specified user from the database, preventing self-deletion.
      */
     public function destroy($id)
     {
@@ -165,7 +180,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete multiple users from the database (custom route).
+     * Deletes multiple users from the database, preventing self-deletion.
      */
     public function bulkDestroy(Request $request)
     {
