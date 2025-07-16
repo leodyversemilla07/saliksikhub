@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, AlertCircle } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 
 export default function Create() {
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
@@ -81,7 +81,7 @@ export default function Create() {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Create Journal Issue" />
 
             <div className="py-12">
@@ -325,6 +325,6 @@ export default function Create() {
                     </Card>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

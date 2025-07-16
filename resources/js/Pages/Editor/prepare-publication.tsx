@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm, Link, Head } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -102,7 +102,7 @@ export default function PreparePublication({ manuscript, currentVolumes, current
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Prepare for Publication" />
 
             <div className="max-w-2xl mx-auto">
@@ -284,6 +284,6 @@ export default function PreparePublication({ manuscript, currentVolumes, current
                     </div>
                 </form>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

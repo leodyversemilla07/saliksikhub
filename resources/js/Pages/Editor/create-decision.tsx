@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -152,7 +152,7 @@ export default function CreateDecision({ manuscript }: Props) {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Editorial Decision" />
 
             <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -635,6 +635,6 @@ export default function CreateDecision({ manuscript }: Props) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

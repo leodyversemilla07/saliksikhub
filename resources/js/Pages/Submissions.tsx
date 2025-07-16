@@ -9,14 +9,7 @@ import {
     AlertCircle, FileQuestion, Award, Edit3, Search, Mail,
     ListChecks
 } from "lucide-react";
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 
 // Declare the global route function
 declare function route(name: string, params?: Record<string, unknown>): string;
@@ -370,19 +363,12 @@ export default function Submissions({ auth }: PageProps) {
             <Header auth={auth} />
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href={route('home')}>Home</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Submissions</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-
-                    {/* Page Title */}
+                    <Breadcrumb
+                        items={[
+                            { label: 'Home', href: route('home') },
+                            { label: 'Submissions', isCurrent: true }
+                        ]}
+                    />
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                         Submissions
                     </h1>

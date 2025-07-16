@@ -19,6 +19,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+
         $pageSizeRaw = $request->input('per_page', 6);
         $role = $request->input('role');
         $search = $request->input('search');
@@ -27,6 +28,42 @@ class UserController extends Controller
 
         $query = User::where('id', '!=', Auth::id())
             ->orderBy('created_at', 'desc');
+
+        if ($role && $role !== 'all') {
+            $query->where('role', $role);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('firstname', 'like', "%{$search}%")
+                    ->orWhere('lastname', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('country', 'like', "%{$search}%")
+                    ->orWhere('affiliation', 'like', "%{$search}%");
+            });
+        }
+
+        if ($pageSize === -1 || $pageSize === 'all') {
+            $allUsers = $query->get();
+            $total = $allUsers->count();
+            $currentPage = 1;
+            $paginator = new LengthAwarePaginator(
+                $allUsers,
+                $total,
+                $total > 0 ? $total : 1,
+                $currentPage,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query(),
+                ]
+            );
+        } else {
+            if (! is_numeric($pageSize) || $pageSize < 1 || $pageSize > 100) {
+                $pageSize = 10;
+            }
+            $paginator = $query->paginate($pageSize)->withQueryString();
+        }
 
         if ($role && $role !== 'all') {
             $query->where('role', $role);

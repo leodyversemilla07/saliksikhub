@@ -77,6 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // User management CRUD resource route
         Route::resource('users', UserController::class);
+        Route::post('users/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
 
         // Issue routes
         Route::resource('issues', IssueController::class);

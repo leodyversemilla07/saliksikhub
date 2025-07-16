@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { User } from '@/types';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'date-fns';
@@ -216,7 +216,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="User Management" />
 
             <div className="space-y-6">
@@ -551,6 +551,6 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     onSuccess={handleBulkDeleteSuccess}
                 />
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

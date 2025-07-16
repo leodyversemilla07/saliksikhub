@@ -29,7 +29,7 @@ import {
     Plus,
     Trash2
 } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 
 interface JournalIssue {
     id: number;
@@ -159,7 +159,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
     ];    
     
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
 
             <div className="py-12">
@@ -445,6 +445,6 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

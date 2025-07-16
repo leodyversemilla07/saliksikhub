@@ -2,14 +2,7 @@ import { Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { ClipboardCheck, Search } from "lucide-react";
 
 export default function AboutAimsScope({ auth }: PageProps) {
@@ -19,21 +12,13 @@ export default function AboutAimsScope({ auth }: PageProps) {
             <Header auth={auth} />
             <main className="flex-grow"> {/* Styles moved to outer div, main is just flex-grow */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/about-journal">About the Journal</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Aims & Scope</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                    <Breadcrumb
+                        items={[
+                            { label: 'Home', href: '/' },
+                            { label: 'About the Journal', href: '/about-journal' },
+                            { label: 'Aims & Scope', isCurrent: true }
+                        ]}
+                    />
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                         Aims & Scope

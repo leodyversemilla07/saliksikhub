@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, AlertCircle, FileText, Eye, BookOpen, Archive } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 
 interface JournalIssue {
     id: number;
@@ -116,7 +116,7 @@ export default function Edit({ issue }: EditProps) {
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Edit Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
             <div className="py-12">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -394,6 +394,6 @@ export default function Edit({ issue }: EditProps) {
                     </Card>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

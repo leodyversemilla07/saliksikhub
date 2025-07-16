@@ -25,13 +25,29 @@ interface NavUserProps {
     user: UserType;
 }
 
+type UserRole =
+    | 'managing_editor'
+    | 'editor_in_chief'
+    | 'associate_editor'
+    | 'language_editor'
+    | 'author'
+    | 'reviewer';
+
+const ROLE_LABELS: Record<UserRole, string> = {
+    managing_editor: 'Managing Editor',
+    editor_in_chief: 'Editor-in-Chief',
+    associate_editor: 'Associate Editor',
+    language_editor: 'Language Editor',
+    author: 'Author',
+    reviewer: 'Reviewer',
+};
+
 export function NavUser({ user }: NavUserProps) {
     const { isMobile } = useSidebar();
 
     // Memoize computed values for performance
     const initials = `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`.toUpperCase();
     const fullName = `${user.firstname} ${user.lastname}`;
-    const roleDisplay = user.role.charAt(0).toUpperCase() + user.role.slice(1);
 
     return (
         <SidebarMenu>
@@ -50,7 +66,7 @@ export function NavUser({ user }: NavUserProps) {
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-medium" title={fullName}>{fullName}</span>
-                                <span className="truncate text-xs text-muted-foreground" title={roleDisplay}>{roleDisplay} • SaliksikHub</span>
+                                <span className="truncate text-xs text-muted-foreground" title={user.role && ROLE_LABELS[user.role as UserRole] ? ROLE_LABELS[user.role as UserRole] : user.role}>{user.role && ROLE_LABELS[user.role as UserRole] ? ROLE_LABELS[user.role as UserRole] : user.role}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>

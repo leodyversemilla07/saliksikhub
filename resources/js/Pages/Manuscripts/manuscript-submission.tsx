@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from "sonner";
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { DetailsStep } from '@/components/manuscript-submission/details-step';
 import { ContentStep } from '@/components/manuscript-submission/content-step';
 import { FileUploadStep } from '@/components/manuscript-submission/file-upload-step';
@@ -257,7 +257,7 @@ export default function ManuscriptSubmissionForm() {
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title='Submit Manuscript' />
             <div className="w-full max-w-2xl mx-auto py-8 px-2">
                 <h1 className="text-2xl font-bold mb-2 text-center">Submit New Manuscript</h1>
@@ -348,6 +348,6 @@ export default function ManuscriptSubmissionForm() {
                     </CardContent>
                 </Card>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

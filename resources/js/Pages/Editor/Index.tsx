@@ -25,7 +25,7 @@ import {
     CalendarDays, AlertCircle, RefreshCw, XCircle, Hourglass, Info, Upload,
     Loader2
 } from 'lucide-react'
-import AuthenticatedLayout from '@/layouts/authenticated-layout'
+import AppLayout from '@/layouts/app-layout'
 import { Head, router } from '@inertiajs/react'
 import { cn } from "@/lib/utils"
 import { Manuscript, ManuscriptStatus } from '@/types/manuscript'
@@ -494,7 +494,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Submitted Manuscripts" />
             <Card className="max-w-full">
                 <CardHeader>
@@ -1258,6 +1258,6 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                 </DialogContent>
             </Dialog>
 
-        </AuthenticatedLayout>
+        </AppLayout>
     )
 }

@@ -1,7 +1,7 @@
 import { FormEventHandler } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { CheckCircle, LogOut, RefreshCw } from 'lucide-react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';

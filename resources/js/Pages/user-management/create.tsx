@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import { toast } from 'sonner';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -83,7 +83,7 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Add User" />
             <div className="max-w-lg mx-auto p-8 rounded-xl shadow-lg bg-background text-foreground">
                 <h1 className="text-3xl font-bold text-center mb-2">Add New User</h1>
@@ -226,6 +226,6 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
                     </div>
                 </form>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

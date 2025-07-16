@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Breadcrumb,
+  Breadcrumb as BreadcrumbUI,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -14,13 +14,13 @@ type BreadcrumbItemType = {
   isCurrent?: boolean;
 };
 
-interface BreadcrumbComponentProps {
+interface BreadcrumbProps {
   items: BreadcrumbItemType[];
 }
 
-const BreadcrumbComponent: React.FC<BreadcrumbComponentProps> = ({ items }) => {
+const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
-    <Breadcrumb>
+    <BreadcrumbUI>
       <BreadcrumbList>
         {items.map((item, idx) => (
           <React.Fragment key={item.label + idx}>
@@ -35,8 +35,8 @@ const BreadcrumbComponent: React.FC<BreadcrumbComponentProps> = ({ items }) => {
           </React.Fragment>
         ))}
       </BreadcrumbList>
-    </Breadcrumb>
+    </BreadcrumbUI>
   );
 };
 
-export default BreadcrumbComponent;
+export default Breadcrumb;

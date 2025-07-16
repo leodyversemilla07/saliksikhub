@@ -3,7 +3,7 @@ import {
     FileText, Download, FileEdit, ChevronLeft, Upload, Calendar
 } from 'lucide-react';
 import { useState, FormEvent } from 'react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 // import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -111,7 +111,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Revise: ${manuscript.title}`} />
 
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
@@ -364,6 +364,6 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

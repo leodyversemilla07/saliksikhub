@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "./data-table";
@@ -7,7 +7,7 @@ import { Manuscript } from "@/types/manuscript";
 
 export default function Index({ manuscripts }: { manuscripts: Manuscript[] }) {
     return (
-        <AuthenticatedLayout breadcrumbItems={[{ label: 'Dashboard', href: route('dashboard') }, { label: 'Manuscripts', href: route('manuscripts.index') }]}>
+        <AppLayout breadcrumbItems={[{ label: 'Dashboard', href: route('dashboard') }, { label: 'Manuscripts', href: route('manuscripts.index') }]}>
             <Head title="Manuscripts" />
             <div className="space-y-6">
                 {/* Header Section */}
@@ -35,6 +35,6 @@ export default function Index({ manuscripts }: { manuscripts: Manuscript[] }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

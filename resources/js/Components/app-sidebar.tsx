@@ -12,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { User as UserType } from '@/types';
+import { User, UserRole } from '@/types';
 
 interface SidebarLinkType {
     href: string;
@@ -20,19 +20,17 @@ interface SidebarLinkType {
     icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
-interface NavigationMap {
-    [key: string]: SidebarLinkType[];
-}
+type NavigationMap = Record<UserRole, SidebarLinkType[]>;
 
-interface AuthenticatedSidebarProps {
-    user: UserType;
+interface AppSidebarProps {
+    user: User & { role: UserRole };
     navigationMap: NavigationMap;
 }
 
-export function AuthenticatedSidebar({
+export function AppSidebar({
     user,
     navigationMap
-}: AuthenticatedSidebarProps) {
+}: AppSidebarProps) {
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -57,7 +55,7 @@ export function AuthenticatedSidebar({
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {navigationMap[user.role] && navigationMap[user.role].map((link) => {
+                            {navigationMap[user.role]?.map((link: SidebarLinkType) => {
                                 const isActive = route().current(link.href);
                                 return (
                                     <SidebarMenuItem key={link.href}>

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { User, UserRole } from '@/types';
 import InputError from '@/components/input-error';
 import { getData } from 'country-list';
@@ -100,7 +100,7 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Edit User" />
             <div className="max-w-lg mx-auto p-8 rounded-xl shadow-lg bg-background text-foreground">
                 <h1 className="text-3xl font-bold text-center mb-2">Edit User Account</h1>
@@ -240,6 +240,6 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
                     </div>
                 </form>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

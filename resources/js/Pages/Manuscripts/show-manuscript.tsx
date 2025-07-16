@@ -1,6 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import React, { useMemo } from 'react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Manuscript, ManuscriptStatus } from '@/types/manuscript';
 import { PageProps } from '@/types';
 import { StatusBadge } from '@/components/status-badge';
@@ -108,7 +108,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Manuscript: ${manuscript.title}`} />
             <div className="manuscript-viewer bg-background text-foreground min-h-screen">
                 <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
@@ -239,6 +239,6 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

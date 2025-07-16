@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, FileText, User, Calendar } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 
 interface JournalIssue {
     id: number;
@@ -95,7 +95,7 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Assign Manuscripts - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
 
             <div className="py-12">
@@ -213,6 +213,6 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
                     </Card>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

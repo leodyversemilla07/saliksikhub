@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import UpdatePasswordForm from './partials/password';
@@ -47,7 +47,7 @@ export default function Edit({
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Profile Settings" />
 
             <div className="space-y-6">
@@ -95,6 +95,6 @@ export default function Edit({
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

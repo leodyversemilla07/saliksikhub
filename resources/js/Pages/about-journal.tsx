@@ -1,13 +1,6 @@
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import { BookOpen, Target, Eye, Star, Unlock, Users, BookCopy, Globe, ShieldCheck, LifeBuoy } from 'lucide-react';
@@ -18,17 +11,12 @@ export default function AboutJournal({ auth }: PageProps) {
             <Head title="About the Journal | Daluyang Dunong" />
             <Header auth={auth} />            <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">About the Journal</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                    <Breadcrumb
+                        items={[
+                            { label: 'Home', href: '/' },
+                            { label: 'About the Journal', isCurrent: true }
+                        ]}
+                    />
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
                         About the Journal

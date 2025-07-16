@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -53,7 +53,7 @@ export default function UserShow({ user }: { user: User }) {
     const roleVariant = roleVariants[user.role] || "default";
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`User: ${user.firstname} ${user.lastname}`} />
             <div className="w-full h-[calc(100vh-64px)] min-h-screen flex flex-col justify-center items-stretch p-0 m-0 bg-background">
                 {/* Profile Header */}
@@ -120,6 +120,6 @@ export default function UserShow({ user }: { user: User }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

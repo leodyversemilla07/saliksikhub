@@ -1,14 +1,7 @@
 import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import Footer from '@/components/site-footer';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { Head } from '@inertiajs/react';
 
 export default function ContactUs({ auth }: PageProps) {
@@ -20,17 +13,12 @@ export default function ContactUs({ auth }: PageProps) {
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage className="text-[#18652c] dark:text-[#3fb65e]">Contact Us</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                    <Breadcrumb
+                        items={[
+                            { label: 'Home', href: '/' },
+                            { label: 'Contact Us', isCurrent: true }
+                        ]}
+                    />
 
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Contact Information */}

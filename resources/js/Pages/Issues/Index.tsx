@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Search, BookOpen, Calendar, Eye, Edit, Archive, FileText, X } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 
 interface JournalIssue {
     id: number;
@@ -157,7 +157,7 @@ export default function Index({ issues, filters }: IndexProps) {
     };
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Journal Issues" />
 
             <div className="py-12">
@@ -443,6 +443,6 @@ export default function Index({ issues, filters }: IndexProps) {
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

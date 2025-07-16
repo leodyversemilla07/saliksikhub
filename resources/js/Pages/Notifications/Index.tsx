@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { PageProps } from '@/types';
 import { CheckCircle, MessageSquare, FileText, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -148,7 +148,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
     ];
 
     return (
-        <AuthenticatedLayout breadcrumbItems={breadcrumbItems}>
+        <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Notifications" />
 
             <Card>
@@ -295,6 +295,6 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                     </Tabs>
                 </CardContent>
             </Card>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }
