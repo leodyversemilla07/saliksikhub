@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
                 'review_requests' => true,
             ],
             [
-                'firstname' => 'LeodyBriel',
+                'firstname' => 'LeoBriel',
                 'lastname' => 'Zilvrak',
                 'username' => 'leobrielzilvrak',
                 'email' => 'leobrielzilvrak@gmail.com',

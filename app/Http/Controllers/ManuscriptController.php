@@ -138,11 +138,9 @@ class ManuscriptController extends Controller
     /**
      * Show a published manuscript publicly (no authentication required).
      */
-    public function showPublic($id)
+    public function showPublic(Manuscript $manuscript)
     {
         try {
-            $manuscript = Manuscript::findOrFail($id);
-
             // Only allow viewing of published manuscripts
             if ($manuscript->status !== ManuscriptStatus::PUBLISHED) {
                 abort(404, 'Manuscript not found or not publicly available');
@@ -152,10 +150,11 @@ class ManuscriptController extends Controller
                 'manuscript' => [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
+                    'slug' => $manuscript->slug,
                     'authors' => explode(', ', $manuscript->authors),
                     'abstract' => $manuscript->abstract,
                     'keywords' => explode(', ', $manuscript->keywords),
-                    'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->id) : null,
+                    'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : null,
                     'doi' => $manuscript->doi,
                     'volume' => $manuscript->volume,
                     'issue' => $manuscript->issue,
@@ -167,7 +166,7 @@ class ManuscriptController extends Controller
         } catch (Exception $e) {
             Log::error('Public Manuscript Show Error', [
                 'error_message' => $e->getMessage(),
-                'manuscript_id' => $id,
+                'manuscript_slug' => $manuscript->slug,
                 'trace' => $e->getTraceAsString(),
             ]);
 
@@ -462,11 +461,9 @@ class ManuscriptController extends Controller
     /**
      * Serve the PDF file for a published manuscript.
      */
-    public function servePdf($id, StorageService $storageService)
+    public function servePdf(Manuscript $manuscript, StorageService $storageService)
     {
         try {
-            $manuscript = Manuscript::findOrFail($id);
-
             if (! $manuscript->final_pdf_path) {
                 abort(404, 'PDF not found');
             }
@@ -477,7 +474,7 @@ class ManuscriptController extends Controller
 
             if (! $storageService->fileExists($manuscript->final_pdf_path)) {
                 Log::error('PDF file not found in storage', [
-                    'manuscript_id' => $id,
+                    'manuscript_slug' => $manuscript->slug,
                     'pdf_path' => $manuscript->final_pdf_path,
                 ]);
                 abort(404, 'PDF file not found in storage');
@@ -498,13 +495,13 @@ class ManuscriptController extends Controller
                 ->header('X-Content-Type-Options', 'nosniff');
         } catch (ModelNotFoundException $e) {
             Log::warning('Manuscript not found for PDF serving', [
-                'manuscript_id' => $id,
+                'manuscript_slug' => $manuscript->slug,
             ]);
             abort(404, 'Manuscript not found');
         } catch (Exception $e) {
             Log::error('Error serving manuscript PDF', [
                 'error' => $e->getMessage(),
-                'manuscript_id' => $id,
+                'manuscript_slug' => $manuscript->slug,
                 'trace' => $e->getTraceAsString(),
             ]);
 

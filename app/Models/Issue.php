@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Issue extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable, SluggableScopeHelpers;
 
     // Journal Issue Status Constants
     const STATUS_DRAFT = 'draft';
@@ -31,6 +33,7 @@ class Issue extends Model
         'volume_number',
         'issue_number',
         'issue_title',
+        'slug',
         'description',
         'publication_date',
         'status',
@@ -46,6 +49,22 @@ class Issue extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Return the sluggable configuration array for this model.
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => ['volume_number', 'issue_number', 'issue_title'],
+                'separator' => '-',
+                'maxLength' => 100,
+                'maxLengthKeepWords' => true,
+                'onUpdate' => false, // Don't regenerate slug on update to preserve URLs
+            ]
+        ];
+    }
 
     /**
      * Get the user who created this journal issue (usually an editor).

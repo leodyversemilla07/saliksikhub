@@ -1,0 +1,12 @@
+# Sitemap for SaliksikHub
+# Generated on 2025-07-27 08:27:33
+
+http://localhost/saliksikhub/
+http://localhost/saliksikhub/current
+http://localhost/saliksikhub/submissions
+http://localhost/saliksikhub/archives
+http://localhost/saliksikhub/editorial-board
+http://localhost/saliksikhub/about/journal
+http://localhost/saliksikhub/about/aims-scope
+http://localhost/saliksikhub/issues/1-1-special-issue-on-artificial-intelligence-in-modern-society
+http://localhost/saliksikhub/contact

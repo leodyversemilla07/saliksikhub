@@ -22,10 +22,13 @@ Route::inertia('/about/journal', 'about-journal')->name('about-journal');
 Route::inertia('/contact', 'contact-us')->name('contact-us');
 
 // Public PDF access for published manuscripts
-Route::get('/manuscripts/{id}/pdf', [ManuscriptController::class, 'servePdf'])->name('manuscripts.pdf');
+Route::get('/manuscripts/{manuscript:slug}/pdf', [ManuscriptController::class, 'servePdf'])->name('manuscripts.pdf');
 
 // Public manuscript view for published manuscripts
-Route::get('/manuscripts/{id}', [ManuscriptController::class, 'showPublic'])->name('manuscripts.public.show');
+Route::get('/manuscripts/{manuscript:slug}', [ManuscriptController::class, 'showPublic'])->name('manuscripts.public.show');
+
+// Public issue view for published issues
+Route::get('/issues/{issue:slug}', [IssueController::class, 'showPublic'])->name('issues.public.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

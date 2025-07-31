@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('issue_id')->nullable();
             $table->string('title', 255);
+            $table->string('slug')->nullable()->unique();
             $table->text('authors');
             $table->text('abstract');
             $table->text('keywords');
@@ -64,6 +65,7 @@ return new class extends Migration
             // Add indexes for better query performance
             $table->index('status');
             $table->index('submission_date');
+            $table->index('slug');
         });
     }
 

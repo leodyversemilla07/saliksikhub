@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('volume_number');
             $table->integer('issue_number');
             $table->string('issue_title');
+            $table->string('slug')->nullable()->unique();
             $table->text('description');
             $table->date('publication_date')->nullable();
             $table->string('cover_image')->nullable();
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->index(['status']);
             $table->index(['publication_date']);
             $table->index(['volume_number', 'issue_number']);
+            $table->index('slug');
         });
     }
 

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\ManuscriptStatus;
+use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,12 +12,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Manuscript extends Model
 {
-    use HasFactory;
+    use HasFactory, Sluggable, SluggableScopeHelpers;
 
     protected $fillable = [
         'user_id',
         'issue_id',
         'title',
+        'slug',
         'authors',
         'abstract',
         'keywords',
@@ -46,6 +49,21 @@ class Manuscript extends Model
         'published_at' => 'datetime',
         'status' => ManuscriptStatus::class,
     ];
+
+    /**
+     * Return the sluggable configuration array for this model.
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'title',
+                'maxLength' => 100,
+                'maxLengthKeepWords' => true,
+                'onUpdate' => false, // Don't regenerate slug on update to preserve URLs
+            ]
+        ];
+    }
 
     /**
      * Get the author of the manuscript.

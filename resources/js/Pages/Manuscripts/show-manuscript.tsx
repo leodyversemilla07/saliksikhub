@@ -94,11 +94,25 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: user.role === 'editor' ? route('editor.dashboard') : route('dashboard'),
+            href: user && (
+                user.role === 'managing_editor' ||
+                user.role === 'editor_in_chief' ||
+                user.role === 'associate_editor' ||
+                user.role === 'language_editor'
+            )
+                ? route('editor.dashboard')
+                : route('dashboard'),
         },
         {
             label: 'Manuscripts',
-            href: user.role === 'editor' ? route('editor.indexManuscripts') : route('manuscripts.index'),
+            href: user && (
+                user.role === 'managing_editor' ||
+                user.role === 'editor_in_chief' ||
+                user.role === 'associate_editor' ||
+                user.role === 'language_editor'
+            )
+                ? route('editor.indexManuscripts')
+                : route('manuscripts.index'),
         },
         {
             label: manuscript.title,
@@ -120,7 +134,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
                                     {manuscript.title}
                                 </h1>
-                                
+
                                 <div className="flex items-center justify-between">
                                     <div className="text-sm text-muted-foreground">
                                         <span>Last updated </span>

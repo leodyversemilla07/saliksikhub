@@ -3,7 +3,7 @@ import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import { FileText, Calendar, Users, Hash, MapPin } from 'lucide-react';
-import { Breadcrumb } from '@/components/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { toast } from 'sonner';
 
 interface Manuscript {
@@ -39,8 +39,8 @@ export default function PublicView({ auth, manuscript }: PublicViewProps) {
                             { label: 'Current Issue', href: '/current' },
                             { label: manuscript.title, href: '#' },
                         ]}
-                        className="mb-6"
-                    />                    {/* Article Header */}
+                    />
+                    {/* Article Header */}
                     <header className="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
                         <div className="mb-3">
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">

@@ -331,16 +331,15 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                             aria-label="Select all users"
                                         />
                                     </TableHead>
-                                    <TableHead className="w-16">Avatar</TableHead>
-                                    <TableHead className="min-w-[150px]">Name</TableHead>
-                                    <TableHead className="min-w-[120px]">Username</TableHead>
-                                    <TableHead className="min-w-[200px]">Email</TableHead>
-                                    <TableHead className="min-w-[150px]">Affiliation</TableHead>
-                                    <TableHead className="min-w-[120px]">Country</TableHead>
-                                    <TableHead className="min-w-[120px]">Role</TableHead>
-                                    <TableHead className="min-w-[100px]">Created</TableHead>
-                                    <TableHead className="min-w-[100px]">Updated</TableHead>
-                                    <TableHead className="w-12">Actions</TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Username</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Affiliation</TableHead>
+                                    <TableHead>Country</TableHead>
+                                    <TableHead>Role</TableHead>
+                                    <TableHead>Created At</TableHead>
+                                    <TableHead>Updated At</TableHead>
+                                    <TableHead></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="bg-card divide-y divide-border">
@@ -348,7 +347,6 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                     Array.from({ length: pageSizeValue === -1 ? 6 : pageSizeValue }).map((_, idx) => (
                                         <TableRow key={"skeleton-" + idx}>
                                             <TableCell><Skeleton className="h-5 w-5 rounded" /></TableCell>
-                                            <TableCell><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
                                             <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                                             <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                             <TableCell><Skeleton className="h-4 w-40" /></TableCell>
@@ -382,47 +380,13 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                     />
                                                 </TableCell>
 
+                                                <TableCell>{user.firstname} {user.lastname}</TableCell>
+                                                <TableCell>{user.username || '-'}</TableCell>
+                                                <TableCell>{user.email || '-'}</TableCell>
+                                                <TableCell>{user.affiliation || "-"}</TableCell>
+                                                <TableCell>{user.country || "-"}</TableCell>
                                                 <TableCell>
-                                                    {user.avatar ? (
-                                                        <img
-                                                            src={user.avatar}
-                                                            alt={`${user.firstname} ${user.lastname}`}
-                                                            className="h-10 w-10 rounded-full object-cover border-2 border-background shadow-sm"
-                                                        />
-                                                    ) : (
-                                                        <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm shadow-sm">
-                                                            {user.firstname[0]}
-                                                            {user.lastname[0]}
-                                                        </div>
-                                                    )}
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <p className="font-semibold text-foreground">
-                                                        {user.firstname} {user.lastname}
-                                                    </p>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {user.username || '-'}
-                                                    </p>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <span className="text-muted-foreground">{user.affiliation || "-"}</span>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <span className="text-muted-foreground">{user.country || "-"}</span>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Badge variant={getRoleBadgeVariant(user.role)} className="font-medium">
+                                                    <Badge variant={getRoleBadgeVariant(user.role)}>
                                                         {getRoleLabel(user.role)}
                                                     </Badge>
                                                 </TableCell>

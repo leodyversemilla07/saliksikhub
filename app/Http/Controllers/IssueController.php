@@ -566,8 +566,8 @@ class IssueController extends Controller
                     'authors' => $authors ?: 'Unknown Author',
                     'abstract' => $manuscript->abstract ?: '',
                     'keywords' => $keywords,
-                    'url' => route('manuscripts.public.show', $manuscript->id),
-                    'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->id) : '',
+                    'url' => route('manuscripts.public.show', $manuscript->slug),
+                    'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : '',
                     'doi' => $manuscript->doi ?: '',
                     'pages' => $manuscript->page_range ?: '',
                     'citations' => 0, // TODO: Implement citation tracking
@@ -598,5 +598,98 @@ class IssueController extends Controller
         return Inertia::render('current', [
             'currentIssue' => $issueData,
         ]);
+    }
+
+    /**
+     * Display the public view of a published issue by slug.
+     */
+    public function showPublic(Issue $issue)
+    {
+        try {
+            // Only allow viewing of published issues
+            if ($issue->status !== Issue::STATUS_PUBLISHED) {
+                abort(404, 'Issue not found or not publicly available');
+            }
+
+            // Get published manuscripts for this issue
+            $articles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
+                ->where('issue_id', $issue->id)
+                ->with('user')
+                ->get()
+                ->map(function ($manuscript) {
+                    // Handle authors - could be JSON array or comma-separated string
+                    $authors = $manuscript->authors;
+                    if (is_string($authors)) {
+                        // If it's a JSON string, decode it
+                        $decodedAuthors = json_decode($authors, true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedAuthors)) {
+                            $authors = implode(', ', $decodedAuthors);
+                        }
+                    } elseif (is_array($authors)) {
+                        $authors = implode(', ', $authors);
+                    }
+
+                    // Handle keywords
+                    $keywords = $manuscript->keywords;
+                    if (is_string($keywords)) {
+                        $keywords = explode(', ', $keywords);
+                    } elseif (! is_array($keywords)) {
+                        $keywords = [];
+                    }
+
+                    return [
+                        'id' => $manuscript->id,
+                        'title' => $manuscript->title,
+                        'slug' => $manuscript->slug,
+                        'authors' => $authors ?: 'Unknown Author',
+                        'abstract' => $manuscript->abstract ?: '',
+                        'keywords' => $keywords,
+                        'url' => route('manuscripts.public.show', $manuscript->slug),
+                        'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : '',
+                        'doi' => $manuscript->doi ?: '',
+                        'pages' => $manuscript->page_range ?: '',
+                        'citations' => 0, // TODO: Implement citation tracking
+                        'downloads' => 0, // TODO: Implement download tracking
+                        'category' => 'Research Article', // TODO: Add categories to manuscripts
+                        'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
+                    ];
+                });
+
+            // Generate cover image URL
+            $storageService = app(\App\Services\StorageService::class);
+            $coverImageUrl = $issue->cover_image
+                ? $storageService->generateTemporaryUrl($issue->cover_image, 5)
+                : 'images/journal-cover.webp';
+
+            // Format data for the frontend
+            $issueData = [
+                'id' => $issue->id,
+                'slug' => $issue->slug,
+                'volume' => $issue->volume_number,
+                'number' => $issue->issue_number,
+                'title' => $issue->issue_title,
+                'description' => $issue->description,
+                'year' => $issue->publication_date->year,
+                'fullTitle' => "Vol. {$issue->volume_number} No. {$issue->issue_number} (".$issue->publication_date->year.'): '.$issue->issue_title,
+                'publicationDate' => $issue->publication_date->toDateString(),
+                'coverImageUrl' => $coverImageUrl,
+                'doi' => $issue->doi,
+                'theme' => $issue->theme,
+                'editorial_note' => $issue->editorial_note,
+                'articles' => $articles,
+            ];
+
+            return Inertia::render('issues/show', [
+                'issue' => $issueData,
+            ]);
+        } catch (Exception $e) {
+            Log::error('Public Issue Show Error', [
+                'error_message' => $e->getMessage(),
+                'issue_slug' => $issue->slug,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            abort(404, 'Issue not found');
+        }
     }
 }

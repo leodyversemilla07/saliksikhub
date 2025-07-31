@@ -91,10 +91,17 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
             // Use the user's role to determine the correct URL path
             const userRole = auth.user.role;
 
-            if (userRole === 'editor') {
+            if (
+                userRole === 'editor_in_chief' ||
+                userRole === 'managing_editor' ||
+                userRole === 'associate_editor' ||
+                userRole === 'language_editor'
+            ) {
                 return `/editor/manuscripts/${data.manuscript_id}`;
-            } else {
+            } else if (userRole === 'author') {
                 return `/author/manuscripts/${data.manuscript_id}`;
+            } else if (userRole === 'reviewer') {
+                return `/reviewer/manuscripts/${data.manuscript_id}`;
             }
         }
         return undefined;
