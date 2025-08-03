@@ -1,27 +1,62 @@
-import { useState, useCallback } from 'react';
+import * as React from "react";
 import { Head } from '@inertiajs/react';
-
 import AppLayout from '@/layouts/app-layout';
-
 import { cn } from "@/lib/utils";
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardFooter
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table';
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableCell,
+    TableHead
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-
 import {
-    CheckCircle, FileText, TrendingUp, TrendingDown,
-    Download, ArrowRight, UserCheck
+    CheckCircle,
+    FileText,
+    TrendingUp,
+    TrendingDown,
+    ArrowRight,
+    UserCheck
 } from 'lucide-react';
-
 import {
-    LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-    XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer
+    LineChart,
+    Line,
+    AreaChart,
+    Area,
+    BarChart,
+    Bar,
+    PieChart,
+    Pie,
+    Cell,
+    XAxis,
+    CartesianGrid,
+    LabelList
 } from 'recharts';
-
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectTrigger,
+    SelectContent,
+    SelectItem,
+    SelectValue
+} from '@/components/ui/select';
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart";
 
 // TypeScript interface definitions
 interface Metric {
@@ -81,47 +116,40 @@ interface EditorDashboardProps {
     dashboardData: DashboardData;
 }
 
+const chartConfig = {
+    submissions: {
+        label: "Submissions",
+        color: "var(--chart-1)",
+    },
+    published: {
+        label: "Published",
+        color: "var(--chart-2)",
+    },
+    rejected: {
+        label: "Rejected",
+        color: "var(--chart-3)",
+    },
+} satisfies ChartConfig
+
 export default function EditorDashboard({ dashboardData }: EditorDashboardProps) {
-    const [activeTab, setActiveTab] = useState("area");
+    // Separate state for area, bar, and line chart selection
+    const [areaChartRange, setAreaChartRange] = React.useState("12m");
+    const [barChartRange, setBarChartRange] = React.useState("submissions");
+    const [lineChartRange, setLineChartRange] = React.useState("submissions");
 
-    // Handle tab change
-    const handleTabChange = useCallback((value: string) => {
-        setActiveTab(value);
-    }, []);
-
-    // Custom tooltip for charts
-    const CustomTooltip = ({
-        active,
-        payload,
-        label
-    }: {
-        active?: boolean;
-        payload?: Array<{
-            name?: string;
-            value?: number;
-            color?: string;
-            dataKey?: string;
-            fill?: string;
-            stroke?: string;
-        }>;
-        label?: string;
-    }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-popover p-3 border rounded-lg shadow-lg">
-                    <p className="text-sm font-medium text-popover-foreground mb-1">{label}</p>
-                    {payload.map((entry, index: number) => (
-                        <div key={`tooltip-item-${index}`} className="flex items-center gap-2 text-xs">
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill || entry.stroke || '#888' }}></div>
-                            <span className="text-muted-foreground">{entry.name || entry.dataKey || 'Value'}:</span>
-                            <span className="font-medium text-popover-foreground">{entry.value}</span>
-                        </div>
-                    ))}
-                </div>
-            );
+    // Filter monthlySubmissions for AreaChart based on areaChartRange
+    const getFilteredMonthlySubmissions = () => {
+        const data = dashboardData.monthlySubmissions;
+        if (areaChartRange === "12m") {
+            return data.slice(-12);
+        } else if (areaChartRange === "6m") {
+            return data.slice(-6);
+        } else if (areaChartRange === "3m") {
+            return data.slice(-3);
         }
-        return null;
+        return data;
     };
+    const filteredMonthlySubmissions = getFilteredMonthlySubmissions();
 
     const breadcrumbItems = [
         {
@@ -187,300 +215,376 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                 </div>
 
                 {/* Submission Trends */}
-                <Card className="overflow-hidden">
-                    <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
-                        <CardTitle className="text-base font-medium">Submission Trends <span className="text-muted-foreground text-xs font-normal">({currentYear})</span></CardTitle>
-                        <Button variant="outline" className="w-full sm:w-auto text-xs h-8">
-                            <Download className="h-3 w-3 mr-1.5" />
-                            Export Data
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <div className="p-6 h-[350px]">
-                            <Tabs
-                                value={activeTab}
-                                onValueChange={handleTabChange}
-                                className="h-full"
-                            >
-                                <div className="flex justify-end mb-4">
-                                    <TabsList className="h-8 p-0.5">
-                                        <TabsTrigger value="area" className="text-xs px-2 h-7">Area</TabsTrigger>
-                                        <TabsTrigger value="bar" className="text-xs px-2 h-7">Bar</TabsTrigger>
-                                        <TabsTrigger value="line" className="text-xs px-2 h-7">Line</TabsTrigger>
-                                    </TabsList>
-                                </div>
-
-                                <TabsContent value="area" className="h-[90%] mt-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart
-                                            data={dashboardData.monthlySubmissions}
-                                            margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
-                                        >
-                                            <defs>
-                                                <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.6} />
-                                                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                                                </linearGradient>
-                                                <linearGradient id="colorPublished" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.6} />
-                                                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                            <XAxis
-                                                dataKey="month"
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={{ stroke: '#e5e7eb' }}
-                                                label={{ value: 'Month', position: 'insideBottom', offset: -10, fontSize: 13 }}
-                                            />
-                                            <YAxis
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tickFormatter={(value) => `${value}`}
-                                                label={{ value: 'Count', angle: -90, position: 'insideLeft', offset: 10, fontSize: 13 }}
-                                            />
-                                            <RechartsTooltip
-                                                cursor={{ stroke: '#d1d5db', strokeDasharray: '3 3' }}
-                                                content={<CustomTooltip />}
-                                            />
-                                            <Legend
-                                                verticalAlign="top"
-                                                height={36}
-                                                formatter={(value) => <span className="text-xs">{value}</span>}
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="submissions"
-                                                stroke="#3B82F6"
-                                                fill="url(#colorSubmissions)"
-                                                activeDot={{ r: 6 }}
-                                                name="Submissions"
-                                                color="#3B82F6"
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="published"
-                                                stroke="#10B981"
-                                                fill="url(#colorPublished)"
-                                                activeDot={{ r: 6 }}
-                                                name="Published"
-                                                color="#10B981"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                    {allZero && (
-                                        <div className="text-center text-muted-foreground text-xs mt-2">No submissions for this year.</div>
-                                    )}
-                                </TabsContent>
-
-                                <TabsContent value="bar" className="h-[90%] mt-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart
-                                            data={dashboardData.monthlySubmissions}
-                                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                            <XAxis
-                                                dataKey="month"
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={{ stroke: '#e5e7eb' }}
-                                            />
-                                            <YAxis
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tickFormatter={(value) => `${value}`}
-                                            />
-                                            <RechartsTooltip
-                                                cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
-                                                content={<CustomTooltip />}
-                                            />
-                                            <Legend
-                                                verticalAlign="top"
-                                                height={36}
-                                                formatter={(value) => <span className="text-xs">{value}</span>}
-                                            />
-                                            <Bar
-                                                dataKey="submissions"
-                                                fill="#3B82F6"
-                                                radius={[4, 4, 0, 0]}
-                                                name="Submissions"
-                                                color="#3B82F6"
-                                            />
-                                            <Bar
-                                                dataKey="published"
-                                                fill="#10B981"
-                                                radius={[4, 4, 0, 0]}
-                                                name="Published"
-                                                color="#10B981"
-                                            />
-                                            <Bar
-                                                dataKey="rejected"
-                                                fill="#EF4444"
-                                                radius={[4, 4, 0, 0]}
-                                                name="Rejected"
-                                                color="#EF4444"
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </TabsContent>
-
-                                <TabsContent value="line" className="h-[90%] mt-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart
-                                            data={dashboardData.monthlySubmissions}
-                                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                            <XAxis
-                                                dataKey="month"
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={{ stroke: '#e5e7eb' }}
-                                            />
-                                            <YAxis
-                                                tick={{ fontSize: 12 }}
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tickFormatter={(value) => `${value}`}
-                                            />
-                                            <RechartsTooltip
-                                                cursor={{ stroke: '#d1d5db', strokeDasharray: '3 3' }}
-                                                content={<CustomTooltip />}
-                                            />
-                                            <Legend
-                                                verticalAlign="top"
-                                                height={36}
-                                                formatter={(value) => <span className="text-xs">{value}</span>}
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="submissions"
-                                                stroke="#3B82F6"
-                                                strokeWidth={2}
-                                                dot={{ r: 4, strokeWidth: 1 }}
-                                                activeDot={{ r: 6 }}
-                                                name="Submissions"
-                                                color="#3B82F6"
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="published"
-                                                stroke="#10B981"
-                                                strokeWidth={2}
-                                                dot={{ r: 4, strokeWidth: 1 }}
-                                                activeDot={{ r: 6 }}
-                                                name="Published"
-                                                color="#10B981"
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="rejected"
-                                                stroke="#EF4444"
-                                                strokeWidth={2}
-                                                dot={{ r: 4, strokeWidth: 1 }}
-                                                activeDot={{ r: 6 }}
-                                                name="Rejected"
-                                                color="#EF4444"
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </TabsContent>
-                            </Tabs>
+                <Card className="pt-0">
+                    <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                        <div className="grid flex-1 gap-1">
+                            <CardTitle>Submission Trends - Interactive</CardTitle>
+                            <CardDescription>
+                                Showing manuscript submissions and publications for the year {currentYear}
+                            </CardDescription>
                         </div>
+                        <Select value={areaChartRange} onValueChange={setAreaChartRange}>
+                            <SelectTrigger
+                                className="w-[160px] rounded-lg sm:ml-auto"
+                                aria-label="Select a value"
+                            >
+                                <SelectValue placeholder="Last 12 months" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="12m" className="rounded-lg">
+                                    Last 12 months
+                                </SelectItem>
+                                <SelectItem value="6m" className="rounded-lg">
+                                    Last 6 months
+                                </SelectItem>
+                                <SelectItem value="3m" className="rounded-lg">
+                                    Last 3 months
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </CardHeader>
+                    <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                        <ChartContainer
+                            config={chartConfig}
+                            className="aspect-auto h-[250px] w-full"
+                        >
+                            <AreaChart data={filteredMonthlySubmissions}>
+                                <defs>
+                                    <linearGradient id="fillSubmissions" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                            offset="5%"
+                                            stopColor="var(--color-submissions)"
+                                            stopOpacity={0.8}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="var(--color-submissions)"
+                                            stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                    <linearGradient id="fillPublished" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                            offset="5%"
+                                            stopColor="var(--color-published)"
+                                            stopOpacity={0.8}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="var(--color-published)"
+                                            stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
+                                    tickFormatter={(value) => {
+                                        return value.substring(0, 3)
+                                    }}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={
+                                        <ChartTooltipContent
+                                            labelFormatter={(value) => {
+                                                return value
+                                            }}
+                                            indicator="dot"
+                                        />
+                                    }
+                                />
+                                <Area
+                                    dataKey="published"
+                                    type="natural"
+                                    fill="url(#fillPublished)"
+                                    stroke="var(--color-published)"
+                                    stackId="a"
+                                />
+                                <Area
+                                    dataKey="submissions"
+                                    type="natural"
+                                    fill="url(#fillSubmissions)"
+                                    stroke="var(--color-submissions)"
+                                    stackId="a"
+                                />
+                                <ChartLegend content={<ChartLegendContent />} />
+                            </AreaChart>
+                        </ChartContainer>
+                        {allZero && (
+                            <div className="text-center text-muted-foreground text-xs mt-2">No submissions for this year.</div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className="py-0">
+                    <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
+                        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
+                            <CardTitle>Bar Chart - Interactive</CardTitle>
+                            <CardDescription>
+                                Showing total submissions for the last 12 months
+                            </CardDescription>
+                        </div>
+                        <div className="flex">
+                            {["submissions", "published", "rejected"].map((key) => {
+                                const chart = key as keyof typeof chartConfig;
+                                const total = dashboardData.monthlySubmissions.reduce(
+                                    (acc, curr) => acc + (curr[chart] as number),
+                                    0
+                                );
+                                return (
+                                    <button
+                                        key={chart}
+                                        data-active={barChartRange === chart}
+                                        className="data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+                                        onClick={() => setBarChartRange(chart)}
+                                    >
+                                        <span className="text-muted-foreground text-xs">
+                                            {chartConfig[chart].label}
+                                        </span>
+                                        <span className="text-lg leading-none font-bold sm:text-3xl">
+                                            {total.toLocaleString()}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </CardHeader>
+                    <CardContent className="px-2 sm:p-6">
+                        <ChartContainer
+                            config={chartConfig}
+                            className="aspect-auto h-[250px] w-full"
+                        >
+                            <BarChart
+                                data={dashboardData.monthlySubmissions}
+                                margin={{
+                                    left: 12,
+                                    right: 12,
+                                }}
+                            >
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
+                                    tickFormatter={(value) => value.substring(0, 3)}
+                                />
+                                <ChartTooltip
+                                    content={
+                                        <ChartTooltipContent
+                                            className="w-[150px]"
+                                            nameKey={barChartRange}
+                                            labelFormatter={(value) => value}
+                                        />
+                                    }
+                                />
+                                <Bar
+                                    dataKey={barChartRange}
+                                    fill={`var(--color-${barChartRange})`}
+                                    radius={[4, 4, 0, 0]}
+                                />
+                            </BarChart>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
+
+                <Card className="py-4 sm:py-0">
+                    <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
+                        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
+                            <CardTitle>Line Chart - Interactive</CardTitle>
+                            <CardDescription>
+                                Showing total submissions for the last 12 months
+                            </CardDescription>
+                        </div>
+                        <div className="flex">
+                            {["submissions", "published", "rejected"].map((key) => {
+                                const chart = key as keyof typeof chartConfig;
+                                const total = dashboardData.monthlySubmissions.reduce(
+                                    (acc, curr) => acc + (curr[chart] as number),
+                                    0
+                                );
+                                return (
+                                    <button
+                                        key={chart}
+                                        data-active={lineChartRange === chart}
+                                        className="data-[active=true]:bg-muted/50 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+                                        onClick={() => setLineChartRange(chart)}
+                                    >
+                                        <span className="text-muted-foreground text-xs">
+                                            {chartConfig[chart].label}
+                                        </span>
+                                        <span className="text-lg leading-none font-bold sm:text-3xl">
+                                            {total.toLocaleString()}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </CardHeader>
+                    <CardContent className="px-2 sm:p-6">
+                        <ChartContainer
+                            config={chartConfig}
+                            className="aspect-auto h-[250px] w-full"
+                        >
+                            <LineChart
+                                data={dashboardData.monthlySubmissions}
+                                margin={{
+                                    left: 12,
+                                    right: 12,
+                                }}
+                            >
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
+                                    tickFormatter={(value) => value.substring(0, 3)}
+                                />
+                                <ChartTooltip
+                                    content={
+                                        <ChartTooltipContent
+                                            className="w-[150px]"
+                                            nameKey={lineChartRange}
+                                            labelFormatter={(value) => value}
+                                        />
+                                    }
+                                />
+                                <Line
+                                    dataKey={lineChartRange}
+                                    type="monotone"
+                                    stroke={`var(--color-${lineChartRange})`}
+                                    strokeWidth={2}
+                                    dot={false}
+                                />
+                            </LineChart>
+                        </ChartContainer>
                     </CardContent>
                 </Card>
 
                 {/* Review Status */}
-                <Card className="overflow-hidden">
-                    <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
-                        <CardTitle className="text-base font-medium">Manuscript Status</CardTitle>
-                        <div className="flex flex-row items-center gap-4">
-                            <Select>
-                                <SelectTrigger className="w-[150px] h-9 text-xs px-3 py-2 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all" size="sm">
-                                    <SelectValue placeholder="Current" />
-                                </SelectTrigger>
-                                <SelectContent align="end">
-                                    <SelectItem value="current">Current Status</SelectItem>
-                                    <SelectItem value="30days">Last 30 Days</SelectItem>
-                                    <SelectItem value="quarter">Last Quarter</SelectItem>
-                                    <SelectItem value="year">Last Year</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button variant="outline" className="text-xs h-9 px-4 py-2 ml-2">
-                                <Download className="h-3 w-3 mr-1.5" />
-                                Export Data
-                            </Button>
-                            <Button variant="ghost" className="h-9 text-xs ml-2">View All Analytics</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
-                            {/* Distribution Pie Charts */}
-                            <div className="p-6 h-[350px] border-r border-border">
-                                <h4 className="text-sm text-center font-medium mb-4">Submission Status</h4>
-                                <ResponsiveContainer width="100%" height="80%">
-                                    <PieChart>
-                                        <Pie
-                                            data={dashboardData.statusDistribution}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            innerRadius={60}
-                                            outerRadius={90}
-                                            paddingAngle={2}
-                                            dataKey="value"
-                                            nameKey="name"
-                                        >
-                                            {dashboardData.statusDistribution.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <RechartsTooltip content={<CustomTooltip />} />
-                                        <Legend
-                                            verticalAlign="bottom"
-                                            formatter={(value) => <span className="text-xs">{value}</span>}
-                                            iconType="circle"
-                                            iconSize={8}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Submission Status Pie Chart Card */}
+                    <Card className="flex flex-col overflow-hidden">
+                        <CardHeader className="items-center pb-0">
+                            <CardTitle>Submission Status</CardTitle>
+                            <CardDescription>Current Distribution</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 pb-0">
+                            <ChartContainer
+                                config={{
+                                    ...dashboardData.statusDistribution.reduce((acc, cur) => {
+                                        acc[cur.name] = { label: cur.name, color: cur.color };
+                                        return acc;
+                                    }, {} as ChartConfig),
+                                    value: { label: "Submissions" }
+                                }}
+                                className="[&_.recharts-text]:fill-background mx-auto aspect-square max-h-[250px]"
+                            >
+                                <PieChart>
+                                    <ChartTooltip
+                                        content={<ChartTooltipContent nameKey="value" hideLabel />}
+                                    />
+                                    <Pie
+                                        data={dashboardData.statusDistribution}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={90}
+                                        paddingAngle={2}
+                                        labelLine={false}
+                                    >
+                                        <LabelList
+                                            dataKey="name"
+                                            className="fill-background"
+                                            stroke="none"
+                                            fontSize={12}
+                                            formatter={(value: keyof ChartConfig) =>
+                                                value
+                                            }
                                         />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                                        {dashboardData.statusDistribution.map((entry, index) => (
+                                            <Cell key={`cell-status-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ChartContainer>
+                        </CardContent>
+                        <CardFooter className="flex-col gap-2 text-sm">
+                            <div className="flex items-center gap-2 leading-none font-medium">
+                                Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
                             </div>
-                            <div className="p-6 h-[350px]">
-                                <h4 className="text-sm text-center font-medium mb-4">Revision Rounds</h4>
-                                <ResponsiveContainer width="100%" height="80%">
-                                    <PieChart>
-                                        <Pie
-                                            data={dashboardData.revisionRounds}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            innerRadius={55}
-                                            outerRadius={90}
-                                            paddingAngle={2}
-                                            dataKey="value"
-                                            nameKey="name"
-                                        >
-                                            {dashboardData.revisionRounds.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <RechartsTooltip content={<CustomTooltip />} />
-                                        <Legend
-                                            verticalAlign="bottom"
-                                            formatter={(value) => <span className="text-xs">{value}</span>}
-                                            iconType="circle"
-                                            iconSize={8}
+                            <div className="text-muted-foreground leading-none">
+                                Showing submission status distribution
+                            </div>
+                        </CardFooter>
+                    </Card>
+                    {/* Revision Rounds Pie Chart Card */}
+                    <Card className="flex flex-col overflow-hidden">
+                        <CardHeader className="items-center pb-0">
+                            <CardTitle>Revision Rounds</CardTitle>
+                            <CardDescription>Current Distribution</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 pb-0">
+                            <ChartContainer
+                                config={{
+                                    ...dashboardData.revisionRounds.reduce((acc, cur) => {
+                                        acc[cur.name] = { label: cur.name, color: cur.color };
+                                        return acc;
+                                    }, {} as ChartConfig),
+                                    value: { label: "Revisions" }
+                                }}
+                                className="[&_.recharts-text]:fill-background mx-auto aspect-square max-h-[250px]"
+                            >
+                                <PieChart>
+                                    <ChartTooltip
+                                        content={<ChartTooltipContent nameKey="value" hideLabel />}
+                                    />
+                                    <Pie
+                                        data={dashboardData.revisionRounds}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={55}
+                                        outerRadius={90}
+                                        paddingAngle={2}
+                                        labelLine={false}
+                                    >
+                                        <LabelList
+                                            dataKey="name"
+                                            className="fill-background"
+                                            stroke="none"
+                                            fontSize={12}
+                                            formatter={(value: keyof ChartConfig) =>
+                                                value
+                                            }
                                         />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                                        {dashboardData.revisionRounds.map((entry, index) => (
+                                            <Cell key={`cell-revision-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ChartContainer>
+                        </CardContent>
+                        <CardFooter className="flex-col gap-2 text-sm">
+                            <div className="flex items-center gap-2 leading-none font-medium">
+                                Trending up by 2.8% this month <TrendingUp className="h-4 w-4" />
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            <div className="text-muted-foreground leading-none">
+                                Showing revision rounds distribution
+                            </div>
+                        </CardFooter>
+                    </Card>
+                </div>
             </div>
 
             {/* Add vertical space between Manuscript Status and Recent Submissions */}
