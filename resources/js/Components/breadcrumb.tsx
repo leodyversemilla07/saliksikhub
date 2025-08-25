@@ -3,10 +3,10 @@ import {
   Breadcrumb as BreadcrumbUI,
   BreadcrumbList,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "./ui/breadcrumb";
+import { Link } from '@inertiajs/react';
 
 type BreadcrumbItemType = {
   label: string;
@@ -26,7 +26,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
           <React.Fragment key={item.label + idx}>
             <BreadcrumbItem>
               {item.href && !item.isCurrent ? (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                <Link href={item.href} prefetch className="hover:text-foreground transition-colors">
+                  {item.label}
+                </Link>
               ) : (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
               )}
