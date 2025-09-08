@@ -1,9 +1,5 @@
 import { FormEventHandler, useCallback, memo } from 'react';
-import { Head, useForm } from '@inertiajs/react';
-import Breadcrumb from '@/components/breadcrumb';
-import { PageProps } from '@/types';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
+import { Head, useForm, Link } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,17 +23,17 @@ const TextInput = ({ id, label, type = 'text', value, onChange, placeholder, err
     required?: boolean;
 }) => (
     <div className="space-y-2">
-        <Label htmlFor={id} className="text-gray-700 dark:text-gray-300">{label} {required && '*'}</Label>
+        <Label htmlFor={id} className="text-card-foreground font-medium">{label} {required && '*'}</Label>
         <Input
             id={id}
             type={type}
             value={value}
-            className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${error ? 'border-red-500 dark:border-red-400' : ''}`}
+            className={`w-full bg-input border border-input focus:border-ring focus:ring-ring rounded-md transition-colors ${error ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
             placeholder={placeholder}
             onChange={onChange}
             required={required}
         />
-        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
 );
 
@@ -51,13 +47,13 @@ const SelectInput = memo(({ id, label, value, onChange, options, error, required
     required?: boolean;
 }) => (
     <div className="space-y-2">
-        <Label htmlFor={id} className="text-gray-700 dark:text-gray-300">{label} {required && '*'}</Label>
+        <Label htmlFor={id} className="text-card-foreground font-medium">{label} {required && '*'}</Label>
         <Select
             value={value}
             onValueChange={onChange}
             required={required}
         >
-            <SelectTrigger className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${error ? 'border-red-500 dark:border-red-400' : ''}`}>
+            <SelectTrigger className={`w-full bg-input border border-input focus:border-ring focus:ring-ring rounded-md transition-colors ${error ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}>
                 <SelectValue placeholder="Select a country" />
             </SelectTrigger>
             <SelectContent>
@@ -66,7 +62,7 @@ const SelectInput = memo(({ id, label, value, onChange, options, error, required
                 ))}
             </SelectContent>
         </Select>
-        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
 ));
 
@@ -81,13 +77,13 @@ const CheckboxInput = ({ id, label, checked, onChange }: {
             id={id}
             checked={checked}
             onCheckedChange={(checked) => onChange(checked as boolean)}
-            className="h-4 w-4 text-[#18652c] focus:ring-[#18652c] border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:focus:ring-[#3fb65e] dark:data-[state=checked]:bg-[#3fb65e] dark:data-[state=checked]:border-[#3fb65e]"
+            className="h-4 w-4 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary focus:ring-ring"
         />
-        <Label htmlFor={id} className="text-sm text-gray-600 dark:text-gray-400">{label}</Label>
+        <Label htmlFor={id} className="text-sm text-muted-foreground">{label}</Label>
     </div>
 );
 
-export default function Register({ auth }: PageProps) {
+export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<{
         firstname: string;
         lastname: string;
@@ -128,46 +124,44 @@ export default function Register({ auth }: PageProps) {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <Head title="Create Account | Daluyang Dunong" />
-            <Header auth={auth} />
 
-            <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
-                <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <Breadcrumb
-                        items={[
-                            { label: 'Home', href: route('home') },
-                            { label: 'Register', isCurrent: true },
-                        ]}
-                    />
-                    <div className="mb-8 text-left">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
-                            Register
-                        </h1>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Required fields are marked with an asterisk (*).
-                        </p>
-                    </div>
+            <div className="max-w-2xl w-full space-y-8">
+                <div className="text-center">
+                    <h1 className="text-4xl font-bold text-foreground mb-2">
+                        Create Account
+                    </h1>
+                    <p className="text-lg text-muted-foreground mb-8">
+                        Join our academic community
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Required fields are marked with an asterisk (*).
+                    </p>
+                </div>
 
-                    <form onSubmit={submit} className="space-y-6 text-left">
-                        <TextInput
-                            id="firstname"
-                            label="Given Name"
-                            value={data.firstname}
-                            onChange={(e) => setData('firstname', e.target.value)}
-                            placeholder="John"
-                            error={errors.firstname}
-                            required
-                        />
+                <div className="bg-card py-8 px-6 shadow-xl rounded-lg border border-border">
+                    <form onSubmit={submit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <TextInput
+                                id="firstname"
+                                label="Given Name"
+                                value={data.firstname}
+                                onChange={(e) => setData('firstname', e.target.value)}
+                                placeholder="John"
+                                error={errors.firstname}
+                                required
+                            />
 
-                        <TextInput
-                            id="lastname"
-                            label="Family Name"
-                            value={data.lastname}
-                            onChange={(e) => setData('lastname', e.target.value)}
-                            placeholder="Doe"
-                            error={errors.lastname}
-                        />
+                            <TextInput
+                                id="lastname"
+                                label="Family Name"
+                                value={data.lastname}
+                                onChange={(e) => setData('lastname', e.target.value)}
+                                placeholder="Doe"
+                                error={errors.lastname}
+                            />
+                        </div>
 
                         <TextInput
                             id="affiliation"
@@ -210,58 +204,76 @@ export default function Register({ auth }: PageProps) {
                             required
                         />
 
-                        <TextInput
-                            id="password"
-                            label="Password"
-                            type="password"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            placeholder="••••••••"
-                            error={errors.password}
-                            required
-                        />
-
-                        <TextInput
-                            id="password_confirmation"
-                            label="Repeat Password"
-                            type="password"
-                            value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                            placeholder="••••••••"
-                            error={errors.password_confirmation}
-                            required
-                        />
-
-                        <div className="space-y-2">
-                            <Label htmlFor="privacy_options" className="text-gray-700 dark:text-gray-300">Privacy Options</Label>
-                            <CheckboxInput
-                                id="data_collection"
-                                label="I agree to data collection"
-                                checked={data.data_collection}
-                                onChange={(checked) => setData('data_collection', checked)}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <TextInput
+                                id="password"
+                                label="Password"
+                                type="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                placeholder="••••••••"
+                                error={errors.password}
+                                required
                             />
-                            <CheckboxInput
-                                id="notifications"
-                                label="I want to receive notifications"
-                                checked={data.notifications}
-                                onChange={(checked) => setData('notifications', checked)}
-                            />
-                            <CheckboxInput
-                                id="review_requests"
-                                label="I am open to review requests"
-                                checked={data.review_requests}
-                                onChange={(checked) => setData('review_requests', checked)}
+
+                            <TextInput
+                                id="password_confirmation"
+                                label="Repeat Password"
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                placeholder="••••••••"
+                                error={errors.password_confirmation}
+                                required
                             />
                         </div>
 
-                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white" disabled={processing}>
-                            {processing ? 'Registering...' : 'Register'}
+                        <div className="space-y-4">
+                            <Label htmlFor="privacy_options" className="text-card-foreground font-medium">Privacy Options</Label>
+                            <div className="space-y-3">
+                                <CheckboxInput
+                                    id="data_collection"
+                                    label="I agree to data collection"
+                                    checked={data.data_collection}
+                                    onChange={(checked) => setData('data_collection', checked)}
+                                />
+                                <CheckboxInput
+                                    id="notifications"
+                                    label="I want to receive notifications"
+                                    checked={data.notifications}
+                                    onChange={(checked) => setData('notifications', checked)}
+                                />
+                                <CheckboxInput
+                                    id="review_requests"
+                                    label="I am open to review requests"
+                                    checked={data.review_requests}
+                                    onChange={(checked) => setData('review_requests', checked)}
+                                />
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-md transition-colors shadow-sm"
+                            disabled={processing}
+                        >
+                            {processing ? 'Creating Account...' : 'Create Account'}
                         </Button>
                     </form>
-                </div>
-            </main>
 
-            <Footer />
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-muted-foreground">
+                            Already have an account?{' '}
+                            <Link
+                                href={route('login')}
+                                className="font-medium text-primary hover:text-primary/80 transition-colors"
+                            >
+                                Sign in here
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

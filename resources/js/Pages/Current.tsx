@@ -2,8 +2,10 @@ import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { FileText, Eye } from 'lucide-react';
-import Breadcrumb from '@/components/breadcrumb';
+import { FileText, Eye, Calendar, BookOpen } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface Article {
     id: number;
@@ -40,19 +42,27 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
     // If no current issue is available, show a message
     if (!currentIssue) {
         return (
-            <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            <div className="flex flex-col min-h-screen bg-background">
                 <Head title="Current Issue - Daluyang Dunong MinSU Research Journal" />
                 <Header auth={auth} />
 
                 <main className="flex-grow">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="text-center py-16">
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                                Current Issue
-                            </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mb-8">
-                                No published issue is currently available. Please check back later.
-                            </p>
+                            <Card className="max-w-md mx-auto">
+                                <CardContent className="pt-6">
+                                    <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                    <h1 className="text-2xl font-bold text-foreground mb-2">
+                                        Current Issue
+                                    </h1>
+                                    <p className="text-muted-foreground mb-4">
+                                        No published issue is currently available. Please check back later.
+                                    </p>
+                                    <Button asChild variant="outline">
+                                        <Link href="/archives">View Archives</Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </main>
@@ -63,60 +73,96 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-background">
             <Head title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`} />
             <Header auth={auth} />
 
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb
-                        items={[
-                            { label: 'Home', href: '/' },
-                            { label: 'Archives', href: '/archives' },
-                            { label: currentIssue.fullTitle, isCurrent: true }
-                        ]}
-                    />
+                    {/* Page Header */}
+                    <div className="mb-8">
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                            {currentIssue.fullTitle}
+                        </h1>
+                        <p className="text-lg text-muted-foreground">
+                            Current Issue • Published {currentIssue.publicationDate}
+                        </p>
+                    </div>
 
-                    {/* Page Title */}
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
-                        {currentIssue.fullTitle}
-                    </h1>
-
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="w-full lg:w-2/3">
-
-                            <div className="flex flex-col md:flex-row gap-6 mb-6 items-start">
-                                <div className="w-full md:w-auto order-2 md:order-1">
-                                    <img
-                                        src={currentIssue.coverImageUrl}
-                                        alt={`Cover of ${currentIssue.fullTitle}`}
-                                        className="w-auto h-auto max-w-[150px] sm:max-w-xs object-cover rounded shadow-lg border border-gray-200 dark:border-gray-700"
-                                    />
-                                </div>
-                                <div className="order-1 md:order-2">
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                        Published: {currentIssue.publicationDate}
-                                    </p>
-                                    {currentIssue.specialIssueTitle && (
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            Special Issue: {currentIssue.specialIssueTitle}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <section className="mb-10">
-                                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 border-b pb-2">Articles</h2>
-                                {currentIssue.articles.length > 0 ? (
-                                    <div className="space-y-8">
-                                        {currentIssue.articles.map((article) => (
-                                            <ArticleCard key={article.id} article={article} />
-                                        ))}
+                    <div className="grid lg:grid-cols-4 gap-8">
+                        {/* Issue Information Sidebar */}
+                        <div className="lg:col-span-1">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <BookOpen className="h-5 w-5" />
+                                        Issue Details
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="text-center">
+                                        <img
+                                            src={currentIssue.coverImageUrl}
+                                            alt={`Cover of ${currentIssue.fullTitle}`}
+                                            className="w-full max-w-[200px] mx-auto object-cover rounded-md shadow-sm"
+                                        />
                                     </div>
-                                ) : (
-                                    <p className="text-gray-700 dark:text-gray-300">Articles for this issue will be listed here.</p>
-                                )}
-                            </section>
+                                    
+                                    <div className="space-y-3">
+                                        <div>
+                                            <div className="text-sm font-medium text-foreground mb-1">Volume & Issue</div>
+                                            <Badge variant="outline">{currentIssue.volume} • {currentIssue.number}</Badge>
+                                        </div>
+                                        
+                                        <div>
+                                            <div className="text-sm font-medium text-foreground mb-1">Publication Date</div>
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <Calendar className="h-4 w-4" />
+                                                {currentIssue.publicationDate}
+                                            </div>
+                                        </div>
+                                        
+                                        {currentIssue.specialIssueTitle && (
+                                            <div>
+                                                <div className="text-sm font-medium text-foreground mb-1">Special Issue</div>
+                                                <p className="text-sm text-muted-foreground">{currentIssue.specialIssueTitle}</p>
+                                            </div>
+                                        )}
+                                        
+                                        <div>
+                                            <div className="text-sm font-medium text-foreground mb-1">Articles</div>
+                                            <Badge variant="secondary">{currentIssue.articles.length} Articles</Badge>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Articles List */}
+                        <div className="lg:col-span-3">
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Articles in this Issue</CardTitle>
+                                    <CardDescription>
+                                        {currentIssue.articles.length} articles published in this issue
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {currentIssue.articles.length > 0 ? (
+                                        <div className="space-y-6">
+                                            {currentIssue.articles.map((article) => (
+                                                <ArticleCard key={article.id} article={article} />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                            <p className="text-muted-foreground">Articles for this issue will be listed here.</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>
@@ -129,83 +175,90 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
 
 function ArticleCard({ article }: { article: Article }) {
     return (
-        <article className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm transition-all duration-300 hover:shadow-lg">
-            <div className="p-5">
-                <div className="mb-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+        <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="pt-6">
+                <div className="space-y-4">
+                    {/* Article Category */}
+                    <Badge variant="secondary">
                         {article.category || 'Research Article'}
-                    </span>
-                </div>
+                    </Badge>
 
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                    <Link href={article.url} className="hover:text-[#18652c] dark:hover:text-[#3fb65e] transition-colors duration-300">
-                        {article.title}
-                    </Link>
-                </h3>
+                    {/* Article Title */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                            <Link href={article.url} className="hover:text-primary transition-colors">
+                                {article.title}
+                            </Link>
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                            <strong>Authors:</strong> {article.authors}
+                        </p>
+                    </div>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">By: {article.authors}</p>
+                    {/* Abstract */}
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                        {article.abstract}
+                    </p>
 
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3">
-                    {article.abstract}
-                </p>
-
-                {article.keywords && article.keywords.length > 0 && (
-                    <div className="mb-3">
-                        <div className="flex flex-wrap gap-1">
+                    {/* Keywords */}
+                    {article.keywords && article.keywords.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
                             {article.keywords.slice(0, 5).map((keyword, index) => (
-                                <span
-                                    key={index}
-                                    className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                                >
+                                <Badge key={index} variant="outline" className="text-xs">
                                     {keyword}
-                                </span>
+                                </Badge>
                             ))}
                             {article.keywords.length > 5 && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="text-xs text-muted-foreground self-center">
                                     +{article.keywords.length - 5} more
                                 </span>
                             )}
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {(article.pages || article.doi) && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                        {article.pages && <span>Pages: {article.pages}</span>}
-                        {article.pages && article.doi && <span> | </span>}
-                        {article.doi && <span>DOI: {article.doi}</span>}
-                    </div>
-                )}
+                    {/* Article Details */}
+                    {(article.pages || article.doi || article.institution) && (
+                        <div className="space-y-1 text-xs text-muted-foreground">
+                            {article.pages && <div>Pages: {article.pages}</div>}
+                            {article.doi && <div>DOI: {article.doi}</div>}
+                            {article.institution && <div>Institution: {article.institution}</div>}
+                        </div>
+                    )}
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                        {article.institution && (
-                            <span>{article.institution}</span>
-                        )}
-                    </div>
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            {article.citations !== undefined && (
+                                <span>{article.citations} citations</span>
+                            )}
+                            {article.downloads !== undefined && (
+                                <span>{article.downloads} downloads</span>
+                            )}
+                        </div>
 
-                    <div className="flex space-x-2">
-                        <Link
-                            href={article.url}
-                            className="text-xs flex items-center px-2.5 py-1 rounded-md text-[#18652c] dark:text-[#3fb65e] hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-300"
-                        >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View Details
-                        </Link>
-                        {article.pdfUrl && (
-                            <a
-                                href={article.pdfUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs flex items-center px-2.5 py-1 bg-[#18652c] hover:bg-[#145024] dark:bg-[#3fb65e] dark:hover:bg-[#35a051] text-white rounded-md transition-colors duration-300"
-                            >
-                                <FileText className="w-4 h-4 mr-1" />
-                                PDF
-                            </a>
-                        )}
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href={article.url}>
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    View Details
+                                </Link>
+                            </Button>
+                            {article.pdfUrl && (
+                                <Button size="sm" asChild>
+                                    <a
+                                        href={article.pdfUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <FileText className="w-4 h-4 mr-2" />
+                                        PDF
+                                    </a>
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </article>
+            </CardContent>
+        </Card>
     );
 }

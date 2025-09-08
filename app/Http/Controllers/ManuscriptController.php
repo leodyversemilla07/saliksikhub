@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreManuscriptRequest;
+use App\Http\Requests\SubmitRevisionRequest;
 use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\ManuscriptApproved;
-use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptStatusChanged;
-use App\Notifications\ManuscriptSubmitted;
 use App\Services\StorageService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -46,30 +46,22 @@ class ManuscriptController extends Controller
     /**
      * Store a newly submitted manuscript in storage.
      */
-    public function store(Request $request, StorageService $storageService)
+    public function store(StoreManuscriptRequest $request, StorageService $storageService)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|min:10',
-            'authors' => 'required|string|min:3',
-            'abstract' => 'required|string|min:100',
-            'keywords' => 'required|string|min:3',
-            'manuscript' => 'required|mimes:docx|max:10240',
-        ]);
-
+        $validated = $request->validated();
         try {
-            if ($request->hasFile('manuscript')) {
-                $validated['manuscript_path'] = $storageService->storeUserFile($request->file('manuscript'), 'manuscripts');
+            // Use a local Request typed variable for file helpers so static analyzers recognize methods
+            /** @var \Illuminate\Http\Request $fileRequest */
+            $fileRequest = $request;
+
+            if ($fileRequest->hasFile('manuscript')) {
+                $validated['manuscript_path'] = $storageService->storeUserFile($fileRequest->file('manuscript'), 'manuscripts');
             }
 
             $validated['user_id'] = Auth::id();
             $validated['status'] = ManuscriptStatus::SUBMITTED;
 
             $manuscript = Manuscript::create($validated);
-
-            $editors = User::where('role', 'editor')->get();
-            foreach ($editors as $editor) {
-                $editor->notify(new ManuscriptSubmitted($manuscript));
-            }
 
             return redirect()->route('manuscripts.index')->with('success', 'Manuscript submitted successfully!');
         } catch (Exception $e) {
@@ -273,7 +265,7 @@ class ManuscriptController extends Controller
     /**
      * Store a submitted revision for a manuscript.
      */
-    public function submitRevision(Request $request, $id, StorageService $storageService)
+    public function submitRevision(SubmitRevisionRequest $request, $id, StorageService $storageService)
     {
         $manuscript = Manuscript::findOrFail($id);
         $userId = Auth::id();
@@ -282,10 +274,7 @@ class ManuscriptController extends Controller
             return redirect()->route('manuscripts.index')->with('error', 'You do not have permission to revise this manuscript.');
         }
 
-        $validated = $request->validate([
-            'revised_manuscript' => 'required|mimes:pdf|max:10240',
-            'revision_comments' => 'required|string|min:10',
-        ]);
+        $validated = $request->validated();
 
         try {
             $revisionHistory = $manuscript->revision_history ?? [];
@@ -297,10 +286,13 @@ class ManuscriptController extends Controller
                 'comments' => $validated['revision_comments'],
             ];
 
-            if ($request->hasFile('revised_manuscript')) {
+            /** @var \Illuminate\Http\Request $fileRequest */
+            $fileRequest = $request;
+
+            if ($fileRequest->hasFile('revised_manuscript')) {
                 // Use StorageService for storing revised manuscript
                 $manuscript->manuscript_path = $storageService
-                    ->storeUserFile($request->file('revised_manuscript'), 'manuscripts');
+                    ->storeUserFile($fileRequest->file('revised_manuscript'), 'manuscripts');
             }
 
             $previousStatus = $manuscript->status;
@@ -311,49 +303,7 @@ class ManuscriptController extends Controller
             $manuscript->revised_at = now();
             $manuscript->save();
 
-            $editors = User::where('role', 'editor')->get();
-            logger()->info('Sending revision notifications to editors', [
-                'editor_count' => $editors->count(),
-                'manuscript_id' => $manuscript->id,
-            ]);
-
-            foreach ($editors as $editor) {
-                try {
-                    $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
-                    logger()->info('Revision notification sent successfully', [
-                        'editor_id' => $editor->id,
-                        'editor_email' => $editor->email,
-                        'manuscript_id' => $manuscript->id,
-                    ]);
-                } catch (Exception $e) {
-                    logger()->error('Failed to send revision notification', [
-                        'error' => $e->getMessage(),
-                        'editor_id' => $editor->id,
-                        'manuscript_id' => $manuscript->id,
-                    ]);
-                }
-            }
-
-            if ($previousStatus !== ManuscriptStatus::SUBMITTED) {
-                try {
-                    $manuscript->author->notify(new ManuscriptStatusChanged(
-                        $manuscript,
-                        (string) $previousStatus,
-                        (string) ManuscriptStatus::SUBMITTED
-                    ));
-
-                    logger()->info('Status change notification sent to author', [
-                        'manuscript_id' => $manuscript->id,
-                        'previous_status' => $previousStatus,
-                        'new_status' => ManuscriptStatus::SUBMITTED,
-                    ]);
-                } catch (Exception $e) {
-                    logger()->error('Failed to send status change notification to author', [
-                        'error' => $e->getMessage(),
-                        'manuscript_id' => $manuscript->id,
-                    ]);
-                }
-            }
+            // Notifications for revisions and status changes are handled by ManuscriptObserver
 
             return redirect()->route('manuscripts.index')
                 ->with('success', 'Revision submitted successfully. Your manuscript has been sent back for review.');

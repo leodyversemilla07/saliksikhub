@@ -1,8 +1,5 @@
 import { useEffect, FormEventHandler, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import Breadcrumb from '@/components/breadcrumb';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function Login({ canResetPassword, auth }: PageProps<{ status?: string, canResetPassword: boolean }>) {
+export default function Login({ canResetPassword }: PageProps<{ status?: string, canResetPassword: boolean }>) {
     const [showPassword, setShowPassword] = useState(false);
 
     const submit: FormEventHandler = (e) => {
@@ -35,100 +32,111 @@ export default function Login({ canResetPassword, auth }: PageProps<{ status?: s
     }, [reset]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <Head title="Login | Daluyang Dunong" />
-            <Header auth={auth} />
 
-            <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
-                <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <Breadcrumb
-                        items={[
-                            { label: 'Home', href: route('home') },
-                            { label: 'Login', isCurrent: true },
-                        ]}
-                    />
-                    <div className="mb-8 text-left">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
-                            Login
-                        </h1>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Required fields are marked with an asterisk (*).
-                        </p>
-                    </div>
-                    <form onSubmit={submit} className="space-y-6 text-left">
+            <div className="max-w-md w-full space-y-8">
+                <div className="text-center">
+                    <h1 className="text-4xl font-bold text-foreground mb-2">
+                        Welcome Back
+                    </h1>
+                    <p className="text-lg text-muted-foreground mb-8">
+                        Sign in to your account
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Required fields are marked with an asterisk (*).
+                    </p>
+                </div>
+
+                <div className="bg-card py-8 px-6 shadow-xl rounded-lg border border-border">
+                    <form onSubmit={submit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email *</Label>
+                            <Label htmlFor="email" className="text-card-foreground font-medium">Email *</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={data.email}
-                                className={`w-96 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.email ? 'border-red-500 dark:border-red-400' : ''}`}
+                                className={`w-full bg-input border border-input focus:border-ring focus:ring-ring rounded-md transition-colors ${errors.email ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
                                 placeholder="Enter your email"
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
                             />
-                            {errors.email && <p className="text-sm text-red-500 dark:text-red-400">{errors.email}</p>}
+                            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password *</Label>
-                            </div>
-                            {canResetPassword && (
-                                <div className="text-left">
+                                <Label htmlFor="password" className="text-card-foreground font-medium">Password *</Label>
+                                {canResetPassword && (
                                     <Link
                                         href={route('password.request')}
-                                        className="text-sm font-medium text-[#18652c] hover:text-[#145024] dark:text-[#3fb65e] dark:hover:text-[#52c773]"
+                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                                     >
-                                        Forgot your password?
+                                        Forgot password?
                                     </Link>
-                                </div>
-                            )}
-                            <div className="relative w-96">
+                                )}
+                            </div>
+                            <div className="relative">
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className={`w-full pr-10 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
+                                    className={`w-full pr-10 bg-input border border-input focus:border-ring focus:ring-ring rounded-md transition-colors ${errors.password ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
                                     placeholder="••••••••"
                                     onChange={(e) => setData('password', e.target.value)}
                                     required
                                 />
                                 <button
                                     type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <EyeOff className="h-4 w-4" />
                                     ) : (
-                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <Eye className="h-4 w-4" />
                                     )}
                                 </button>
                             </div>
-                            {errors.password && <p className="text-sm text-red-500 dark:text-red-400">{errors.password}</p>}
+                            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                         </div>
 
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="remember_me"
-                                checked={data.remember}
-                                onCheckedChange={(checked) => setData('remember', checked as boolean)}
-                                className="h-4 w-4 text-[#18652c] focus:ring-[#18652c] border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:focus:ring-[#3fb65e] dark:data-[state=checked]:bg-[#3fb65e] dark:data-[state=checked]:border-[#3fb65e]"
-                            />
-                            <Label htmlFor="remember_me" className="text-sm text-gray-600 dark:text-gray-400">
-                                Keep me logged in
-                            </Label>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="remember_me"
+                                    checked={data.remember}
+                                    onCheckedChange={(checked) => setData('remember', checked as boolean)}
+                                    className="h-4 w-4 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary focus:ring-ring"
+                                />
+                                <Label htmlFor="remember_me" className="text-sm text-muted-foreground">
+                                    Keep me logged in
+                                </Label>
+                            </div>
                         </div>
 
-                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white" disabled={processing}>
-                            {processing ? 'Logging in...' : 'Login'}
+                        <Button
+                            type="submit"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-md transition-colors shadow-sm"
+                            disabled={processing}
+                        >
+                            {processing ? 'Logging in...' : 'Sign In'}
                         </Button>
                     </form>
-                </div>
-            </main>
 
-            <Footer />
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-muted-foreground">
+                            Don't have an account?{' '}
+                            <Link
+                                href={route('register')}
+                                className="font-medium text-primary hover:text-primary/80 transition-colors"
+                            >
+                                Sign up here
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

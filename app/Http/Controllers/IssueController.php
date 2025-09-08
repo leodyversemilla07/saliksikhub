@@ -352,8 +352,8 @@ class IssueController extends Controller
                 ]);
 
                 // Notify author about assignment to journal issue
-                if ($manuscript->user) {
-                    $manuscript->user->notify(new \App\Notifications\IssueAssigned($issue, $manuscript));
+                if ($manuscript->author) {
+                    $manuscript->author->notify(new \App\Notifications\IssueAssigned($issue, $manuscript));
                 }
             }
 
@@ -537,7 +537,7 @@ class IssueController extends Controller
         // Get published manuscripts for this issue
         $articles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
             ->where('issue_id', $currentIssue->id)
-            ->with('user')
+            ->with('author')
             ->get()
             ->map(function ($manuscript) {
                 // Handle authors - could be JSON array or comma-separated string
@@ -573,7 +573,7 @@ class IssueController extends Controller
                     'citations' => 0, // TODO: Implement citation tracking
                     'downloads' => 0, // TODO: Implement download tracking
                     'category' => 'Research Article', // TODO: Add categories to manuscripts
-                    'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
+                    'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
                 ];
             });
 
@@ -614,7 +614,7 @@ class IssueController extends Controller
             // Get published manuscripts for this issue
             $articles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
                 ->where('issue_id', $issue->id)
-                ->with('user')
+                ->with('author')
                 ->get()
                 ->map(function ($manuscript) {
                     // Handle authors - could be JSON array or comma-separated string
@@ -651,7 +651,7 @@ class IssueController extends Controller
                         'citations' => 0, // TODO: Implement citation tracking
                         'downloads' => 0, // TODO: Implement download tracking
                         'category' => 'Research Article', // TODO: Add categories to manuscripts
-                        'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
+                        'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
                     ];
                 });
 

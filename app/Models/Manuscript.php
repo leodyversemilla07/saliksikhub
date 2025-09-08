@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 
 class Manuscript extends Model
 {
@@ -18,7 +19,6 @@ class Manuscript extends Model
         'user_id',
         'issue_id',
         'title',
-        'slug',
         'authors',
         'abstract',
         'keywords',
@@ -61,7 +61,7 @@ class Manuscript extends Model
                 'maxLength' => 100,
                 'maxLengthKeepWords' => true,
                 'onUpdate' => false, // Don't regenerate slug on update to preserve URLs
-            ]
+            ],
         ];
     }
 
@@ -111,7 +111,7 @@ class Manuscript extends Model
     /**
      * Get the latest editorial decision.
      */
-    public function getLatestDecision()
+    public function getLatestDecision(): ?EditorialDecision
     {
         return $this->editorialDecisions()->latest('decision_date')->first();
     }
@@ -127,7 +127,8 @@ class Manuscript extends Model
 
         $versions = $this->revision_history;
 
-        return end($versions);
+        // Use Arr::last to avoid mutating the array pointer
+        return Arr::last($versions);
     }
 
     /**
@@ -135,7 +136,7 @@ class Manuscript extends Model
      */
     public function getRevisionCount(): int
     {
-        return $this->revision_history ? count($this->revision_history) : 0;
+        return is_array($this->revision_history) ? count($this->revision_history) : 0;
     }
 
     /**
@@ -147,8 +148,40 @@ class Manuscript extends Model
             return $this->editor;
         }
 
-        // If no specific editor is assigned, return the first editor
-        return User::where('role', 'editor')->first();
+        // If no specific editor is assigned, return the first user with an editor role
+        // Use Spatie role scopes to find any editor-like user seeded by RolesAndPermissionsSeeder
+        return \App\Models\User::role([
+            'managing_editor',
+            'editor_in_chief',
+            'associate_editor',
+            'language_editor',
+        ])->first();
+    }
+
+    /*
+     * Common query scopes for manuscripts
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', \App\ManuscriptStatus::PUBLISHED);
+    }
+
+    public function scopeByAuthor($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeAssignedToEditor($query, $editorId)
+    {
+        return $query->where('editor_id', $editorId);
+    }
+
+    public function scopePendingReview($query)
+    {
+        return $query->whereIn('status', [
+            \App\ManuscriptStatus::SUBMITTED,
+            \App\ManuscriptStatus::UNDER_REVIEW,
+        ]);
     }
 
     /**

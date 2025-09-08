@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DecisionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,6 +24,7 @@ class EditorialDecision extends Model
     protected $casts = [
         'decision_date' => 'datetime',
         'revision_deadline' => 'date',
+        'decision_type' => DecisionType::class,
     ];
 
     // Define constants for decision types that match both the form and database
@@ -55,7 +57,7 @@ class EditorialDecision extends Model
      */
     public function isPending(): bool
     {
-        return $this->status === 'Pending';
+        return $this->status === self::STATUSES['PENDING'];
     }
 
     /**
@@ -63,7 +65,7 @@ class EditorialDecision extends Model
      */
     public function isFinalized(): bool
     {
-        return $this->status === 'Finalized';
+        return $this->status === self::STATUSES['FINALIZED'];
     }
 
     /**
@@ -71,26 +73,26 @@ class EditorialDecision extends Model
      */
     public function requiresRevision(): bool
     {
-        return in_array($this->decision_type, ['Minor Revision', 'Major Revision']);
+        return in_array($this->decision_type?->value, [DecisionType::MINOR_REVISION->value, DecisionType::MAJOR_REVISION->value], true);
     }
 
     public function isAccepted(): bool
     {
-        return $this->decision_type === 'Accept';
+        return $this->decision_type === DecisionType::ACCEPT;
     }
 
     public function isRejected(): bool
     {
-        return $this->decision_type === 'Reject';
+        return $this->decision_type === DecisionType::REJECT;
     }
 
     public function isMinorRevision(): bool
     {
-        return $this->decision_type === 'Minor Revision';
+        return $this->decision_type === DecisionType::MINOR_REVISION;
     }
 
     public function isMajorRevision(): bool
     {
-        return $this->decision_type === 'Major Revision';
+        return $this->decision_type === DecisionType::MAJOR_REVISION;
     }
 }

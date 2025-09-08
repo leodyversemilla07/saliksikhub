@@ -3,228 +3,358 @@ import { Head } from '@inertiajs/react';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { Link } from '@inertiajs/react';
-import { ArrowRight, Calendar, FilePlus2, Check } from 'lucide-react';
+import { ArrowRight, FilePlus2, BookOpen, Users, Award, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home({ auth }: PageProps) {
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-            <Head title="Daluyang Dunong - Channel of Knowledge" />
+        <div className="flex flex-col min-h-screen bg-background transition-colors duration-300">
+            <Head title="Research Journal Management System" />
             <Header auth={auth} />
+
             <main className="flex-grow">
-                <div className="relative isolate min-h-[calc(85vh-7.5rem)]"> {/* 7.5rem = h-20 (header) + h-10 (top bar) */}
-                    {/* Background with gradient overlay */}
+                {/* Hero Section */}
+                <section className="relative isolate overflow-hidden">
                     <div className="absolute inset-0 -z-10">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#18652c]/5 to-transparent dark:from-[#18652c]/2" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/50 to-background" />
+                        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-30">
+                            <div className="aspect-square w-72 bg-primary/20 rounded-full" />
+                        </div>
+                        <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 blur-3xl opacity-30">
+                            <div className="aspect-square w-72 bg-secondary/40 rounded-full" />
+                        </div>
                     </div>
 
-                    <div className="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:flex items-center lg:px-8 lg:py-32">
-                        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
-                            {/* Badge */}
-                            <div className="mb-8 inline-flex items-center gap-x-2 rounded-full bg-[#18652c]/10 dark:bg-[#18652c]/20 px-4 py-1.5 transition-colors duration-300">
-                                <span className="text-xs font-medium text-[#18652c] dark:text-[#3fb65e]">New Issue</span>
-                                <span className="h-1 w-1 rounded-full bg-[#18652c] dark:bg-[#3fb65e] transition-colors duration-300"></span>
-                                <span className="text-xs font-medium text-[#18652c] dark:text-[#3fb65e]">Vol. 15, Issue 2</span>
+                    <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:gap-x-10 lg:px-8 lg:py-40">
+                        <div className="mx-auto max-w-2xl lg:mx-0 lg:flex-auto">
+                            <div className="flex">
+                                <Badge variant="secondary" className="gap-x-2 px-4 py-1.5">
+                                    <span className="font-semibold text-primary">Announcing</span>
+                                    <Separator orientation="vertical" className="h-4" />
+                                    <span>Advanced peer review system</span>
+                                    <ArrowRight className="h-4 w-4" />
+                                </Badge>
                             </div>
 
-                            {/* Main Heading */}
-                            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl transition-colors duration-300">
-                                <span className="block">Daluyang Dunong</span>
-                                <span className="block mt-2 text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300 text-3xl sm:text-4xl">/daˈlujaŋ ˈdunoŋ/ - Channel of Knowledge</span>
+                            <h1 className="mt-10 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
+                                Modern Research
+                                <span className="text-primary">
+                                    {" "}Journal{" "}
+                                </span>
+                                Platform
                             </h1>
 
-                            {/* Description */}
-                            <p className="mt-6 text-lg leading-relaxed text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                                The internationally peer-reviewed, open-access, multidisciplinary journal of Mindoro State University,
-                                fostering vibrant academic dialogue across disciplines. We aim to advance knowledge addressing issues
-                                of local, national, and global significance through rigorous peer review and scholarly excellence.
+                            <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl">
+                                Streamline your scholarly publishing workflow with our comprehensive platform.
+                                From manuscript submission to publication, we've got you covered with
+                                cutting-edge tools and intuitive interfaces.
                             </p>
 
-                            {/* CTA Buttons */}
-                            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+                            <div className="mt-10 flex items-center gap-x-6">
                                 <Link
-                                    href={route('current')}
-                                    className="inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-[#18652c] to-[#3fb65e] px-6 py-3 text-base font-semibold text-white shadow-sm hover:from-[#145024] hover:to-[#35a051] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-105"
+                                    href={route('dashboard')}
+                                    className="group inline-flex items-center justify-center rounded-lg bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-200"
                                 >
-                                    Current Issue
-                                    <ArrowRight className="ml-2 h-5 w-5" />
+                                    Get Started
+                                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
+
                                 <Link
                                     href={route('submissions')}
-                                    className="inline-flex items-center justify-center rounded-xl border-2 border-[#18652c] dark:border-[#3fb65e] px-6 py-3 text-base font-medium text-[#18652c] dark:text-[#3fb65e] hover:bg-[#18652c]/5 dark:hover:bg-[#3fb65e]/10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-105"
+                                    className="inline-flex items-center text-sm font-semibold leading-6 text-foreground hover:text-primary transition-colors"
                                 >
-                                    Submit Research
-                                    <ArrowRight className="ml-2 h-5 w-5" />
+                                    Submit Manuscript
+                                    <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </div>
+
+                            <div className="mt-12 flex items-center gap-x-6">
+                                <div className="flex -space-x-2">
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <Avatar key={i} className="h-8 w-8 ring-2 ring-background">
+                                            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                                                {i}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    ))}
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-foreground">10,000+ researchers</p>
+                                    <p className="text-xs text-muted-foreground">trust our platform</p>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Journal Cover Image */}
-                        <div className="mt-16 sm:mt-24 lg:mt-0 lg:ml-auto">
-                            <div className="relative w-[320px] h-[440px] sm:w-[360px] sm:h-[495px] transform lg:translate-x-10">
-                                <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl dark:shadow-gray-800/30">
-                                    <img
-                                        src="/images/journal-cover.webp"
-                                        alt="Latest Journal Cover"
-                                        className="w-full h-full object-cover transform transition-transform duration-700 hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                                </div>
-                                {/* Volume Badge */}
-                                <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-transform duration-300 hover:scale-105">
-                                    <div className="text-center">
-                                        <p className="text-sm font-medium text-[#18652c] dark:text-[#3fb65e]">Current Volume</p>
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-white">Vol. 15</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Issue 2</p>
-                                    </div>
+                        <div className="mt-16 sm:mt-24 lg:mt-0 lg:flex-shrink-0 lg:flex-grow">
+                            <div className="mx-auto w-full max-w-lg">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-xl opacity-30 animate-pulse" />
+                                    <Card className="relative shadow-2xl backdrop-blur-sm">
+                                        <CardHeader className="flex flex-row items-center justify-between pb-6">
+                                            <CardTitle className="text-lg">Research Dashboard</CardTitle>
+                                            <div className="flex space-x-1">
+                                                <div className="w-3 h-3 bg-destructive rounded-full" />
+                                                <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+                                                <div className="w-3 h-3 bg-green-500 rounded-full" />
+                                            </div>
+                                        </CardHeader>
+
+                                        <CardContent className="space-y-6">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Card className="bg-muted/30">
+                                                    <CardContent className="p-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <p className="text-2xl font-bold text-primary">247</p>
+                                                                <p className="text-xs text-muted-foreground">Submissions</p>
+                                                            </div>
+                                                            <BookOpen className="h-8 w-8 text-primary opacity-60" />
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                <Card className="bg-muted/30">
+                                                    <CardContent className="p-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <p className="text-2xl font-bold text-primary">89</p>
+                                                                <p className="text-xs text-muted-foreground">Under Review</p>
+                                                            </div>
+                                                            <Users className="h-8 w-8 text-primary opacity-60" />
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                <Card className="bg-muted/30">
+                                                    <CardContent className="p-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <p className="text-2xl font-bold text-primary">156</p>
+                                                                <p className="text-xs text-muted-foreground">Published</p>
+                                                            </div>
+                                                            <Award className="h-8 w-8 text-primary opacity-60" />
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                <Card className="bg-muted/30">
+                                                    <CardContent className="p-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <p className="text-2xl font-bold text-primary">4.8</p>
+                                                                <p className="text-xs text-muted-foreground">Avg Rating</p>
+                                                            </div>
+                                                            <Zap className="h-8 w-8 text-primary opacity-60" />
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+
+                                            <Card className="bg-muted/50">
+                                                <CardContent className="p-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center space-x-3">
+                                                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                                            <span className="text-sm text-muted-foreground">Recent Activity</span>
+                                                        </div>
+                                                        <Badge variant="secondary" className="text-xs">Live</Badge>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        </CardContent>
+                                    </Card>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Indexing Section */}
-                    <div className="absolute bottom-0 left-0 right-0">
-                        <div className="mx-auto max-w-7xl px-6">
-                            <div className="border-t border-gray-200 dark:border-gray-800 py-6 transition-colors duration-300">
-                                <div className="flex flex-col items-center gap-4">
-                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Indexed in</p>
-                                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-                                        {[
-                                            { name: 'Scopus', src: 'https://images.seeklogo.com/logo-png/33/1/scopus-logo-png_seeklogo-335404.png' },
-                                            { name: 'Web of Science', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTSNQT4WbDCvutFbffjkankp9wTvkgNlF_TA&s' },
-                                            { name: 'PubMed', src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYqz4FG10Xc5Q6v7Q6NdA74wdS0ojkUzMKWw&s' },
-                                            { name: 'DOAJ', src: 'https://imgs.search.brave.com/TCamsE_7PgheFulyAgFTSoEtySFPNmUC-8XwQumQYlM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi85LzlkL0RP/QUpfbG9nby1ibGFj/ay13aGl0ZXNwYWNl/LnN2Zy81MTJweC1E/T0FKX2xvZ28tYmxh/Y2std2hpdGVzcGFj/ZS5zdmcucG5n' },
-                                            { name: 'Google Scholar', src: 'https://scholar.google.com/intl/en/scholar/images/1x/scholar_logo_64dp.png' }
-                                        ].map((index) => (
-                                            <img
-                                                key={index.name}
-                                                src={index.src}
-                                                alt={`${index.name} logo`}
-                                                className="h-8 w-auto grayscale hover:grayscale-0 transition-all duration-300"
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </section>
 
-                <section className="py-16 lg:py-20">
+                {/* Features Section */}
+                <section className="py-24 sm:py-32 bg-muted/50">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30 rounded-3xl overflow-hidden transition-colors duration-300">
-                            <div className="px-8 py-12 sm:px-12 lg:px-16 lg:py-16">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                                    <div className="space-y-8">
-                                        {/* Header Section */}
-                                        <div className="space-y-6">
-                                            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-[#3fb65e] text-white shadow-sm">
-                                                📢 Call for Papers
-                                            </span>
-                                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white transition-colors duration-300 leading-tight">
-                                                Special Issue: Indigenous Knowledge and Sustainable Development
-                                            </h2>
-                                            <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-300 transition-colors duration-300">
-                                                We invite submissions exploring Indigenous knowledge systems and sustainable development,
-                                                with particular focus on the Mangyan communities of Mindoro and their contributions to
-                                                environmental conservation, cultural preservation, and sustainable practices.
-                                            </p>
-                                        </div>
+                        <div className="mx-auto max-w-2xl text-center">
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                                Everything you need for
+                                <span className="text-primary">
+                                    {" "}scholarly publishing
+                                </span>
+                            </h2>
+                            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                                From submission to publication, our platform provides all the tools you need
+                                to manage your research journal efficiently and professionally.
+                            </p>
+                        </div>
 
-                                        {/* Timeline and Details */}
-                                        <div className="space-y-6">
-                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-300">
-                                                Important Dates & Requirements
-                                            </h3>
-                                            <div className="grid gap-4">
-                                                <div className="flex items-start space-x-4 p-4 bg-white/70 dark:bg-gray-800/70 rounded-xl transition-colors duration-300">
-                                                    <div className="flex-shrink-0 w-10 h-10 bg-[#18652c]/10 dark:bg-[#3fb65e]/20 rounded-lg flex items-center justify-center">
-                                                        <Calendar className="h-5 w-5 text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Submission Deadline</p>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400">September 30, 2025</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="flex items-start space-x-4 p-4 bg-white/70 dark:bg-gray-800/70 rounded-xl transition-colors duration-300">
-                                                    <div className="flex-shrink-0 w-10 h-10 bg-[#18652c]/10 dark:bg-[#3fb65e]/20 rounded-lg flex items-center justify-center">
-                                                        <Calendar className="h-5 w-5 text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Expected Publication</p>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400">December 2025</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="flex items-start space-x-4 p-4 bg-white/70 dark:bg-gray-800/70 rounded-xl transition-colors duration-300">
-                                                    <div className="flex-shrink-0 w-10 h-10 bg-[#18652c]/10 dark:bg-[#3fb65e]/20 rounded-lg flex items-center justify-center">
-                                                        <FilePlus2 className="h-5 w-5 text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Article Types</p>
-                                                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1 mt-1">
-                                                            <p>• Original Research (6,000-8,000 words)</p>
-                                                            <p>• Review Papers (up to 10,000 words)</p>
-                                                            <p>• Case Studies (4,000-6,000 words)</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                            <div className="grid max-w-xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
+                                <Card className="group hover:shadow-lg transition-all duration-200 border-border/50 hover:border-primary/50">
+                                    <CardContent className="p-6">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm mb-6">
+                                            <FilePlus2 className="h-6 w-6" />
                                         </div>
+                                        <h3 className="text-lg font-semibold leading-8 text-foreground group-hover:text-primary transition-colors mb-2">
+                                            Manuscript Management
+                                        </h3>
+                                        <p className="text-base leading-7 text-muted-foreground mb-4">
+                                            Streamlined submission process with file management, version control,
+                                            and automated workflows to handle manuscripts from intake to decision.
+                                        </p>
+                                        <div className="flex items-center text-sm text-primary font-medium">
+                                            Learn more <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
 
-                                        {/* CTA Button */}
-                                        <div className="pt-4">
-                                            <Link
-                                                href={route('submissions')}
-                                                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-[#18652c] to-[#3fb65e] rounded-xl shadow-lg hover:from-[#145024] hover:to-[#35a051] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#18652c] dark:focus:ring-offset-gray-900 transition-all duration-300 transform hover:scale-105"
-                                            >
-                                                Submit Your Manuscript
-                                                <ArrowRight className="ml-2 h-5 w-5" />
-                                            </Link>
+                                <Card className="group hover:shadow-lg transition-all duration-200 border-border/50 hover:border-primary/50">
+                                    <CardContent className="p-6">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm mb-6">
+                                            <Users className="h-6 w-6" />
                                         </div>
-                                    </div>
+                                        <h3 className="text-lg font-semibold leading-8 text-foreground group-hover:text-primary transition-colors mb-2">
+                                            Peer Review System
+                                        </h3>
+                                        <p className="text-base leading-7 text-muted-foreground mb-4">
+                                            Comprehensive peer review management with reviewer assignment,
+                                            blind review options, and automated reminders and notifications.
+                                        </p>
+                                        <div className="flex items-center text-sm text-primary font-medium">
+                                            Learn more <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
 
-                                    {/* Thematic Areas Card */}
-                                    <div className="lg:sticky lg:top-8">
-                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
-                                            <div className="flex items-center space-x-3 mb-8">
-                                                <div className="w-10 h-10 bg-[#18652c]/10 dark:bg-[#3fb65e]/20 rounded-lg flex items-center justify-center">
-                                                    <Check className="h-5 w-5 text-[#18652c] dark:text-[#3fb65e]" />
-                                                </div>
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-                                                    Key Thematic Areas
-                                                </h3>
-                                            </div>
-                                            <ul className="space-y-4">
-                                                {[
-                                                    'Indigenous knowledge systems and traditional practices',
-                                                    'Sustainable resource management and conservation',
-                                                    'Cultural heritage and preservation',
-                                                    'Community-based development initiatives',
-                                                    'Environmental protection strategies',
-                                                    'Local governance and leadership',
-                                                    'Sustainable agriculture and food security',
-                                                    'Indigenous education and knowledge transfer',
-                                                    'Biodiversity and ecosystem services',
-                                                    'Social enterprises and local economies'
-                                                ].map((topic, index) => (
-                                                    <li key={index} className="flex items-start space-x-3 group">
-                                                        <div className="flex-shrink-0 w-6 h-6 bg-[#18652c]/10 dark:bg-[#3fb65e]/20 rounded-full flex items-center justify-center mt-0.5 group-hover:bg-[#18652c]/20 dark:group-hover:bg-[#3fb65e]/30 transition-colors duration-200">
-                                                            <Check className="h-3 w-3 text-[#18652c] dark:text-[#3fb65e] transition-colors duration-300" />
-                                                        </div>
-                                                        <span className="text-gray-700 dark:text-gray-300 transition-colors duration-300 leading-relaxed">
-                                                            {topic}
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                <Card className="group hover:shadow-lg transition-all duration-200 border-border/50 hover:border-primary/50">
+                                    <CardContent className="p-6">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm mb-6">
+                                            <Award className="h-6 w-6" />
                                         </div>
-                                    </div>
-                                </div>
+                                        <h3 className="text-lg font-semibold leading-8 text-foreground group-hover:text-primary transition-colors mb-2">
+                                            Editorial Decisions
+                                        </h3>
+                                        <p className="text-base leading-7 text-muted-foreground mb-4">
+                                            Advanced editorial workflow with decision tracking, automated notifications,
+                                            and publishing pipelines to streamline your editorial process.
+                                        </p>
+                                        <div className="flex items-center text-sm text-primary font-medium">
+                                            Learn more <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                {/* Stats Section */}
+                <section className="py-24 sm:py-32">
+                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div className="mx-auto max-w-2xl text-center">
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                                Trusted by researchers worldwide
+                            </h2>
+                            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                                Join thousands of researchers, editors, and institutions who trust our platform
+                                for their scholarly publishing needs.
+                            </p>
+                        </div>
+
+                        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 sm:gap-x-6 sm:gap-y-0 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+                            <div className="text-center">
+                                <div className="text-4xl font-bold text-foreground">10,000+</div>
+                                <div className="mt-2 text-sm text-muted-foreground">Active Researchers</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl font-bold text-foreground">2,500+</div>
+                                <div className="mt-2 text-sm text-muted-foreground">Published Articles</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl font-bold text-foreground">150+</div>
+                                <div className="mt-2 text-sm text-muted-foreground">Partner Institutions</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl font-bold text-foreground">99.9%</div>
+                                <div className="mt-2 text-sm text-muted-foreground">Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Integration Section */}
+                <section className="py-24 sm:py-32 bg-muted/50">
+                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div className="mx-auto max-w-2xl text-center">
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                                Integrations & Standards
+                            </h2>
+                            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                                Seamlessly integrate with industry-standard tools and platforms
+                            </p>
+                        </div>
+
+                        <div className="mx-auto mt-16 grid max-w-lg grid-cols-2 gap-6 sm:max-w-xl sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+                            {[
+                                { name: 'DOI', description: 'Digital Object Identifier' },
+                                { name: 'ORCID', description: 'Researcher Identification' },
+                                { name: 'CrossRef', description: 'Citation Linking' },
+                                { name: 'OpenAIRE', description: 'Open Access Infrastructure' }
+                            ].map((integration) => (
+                                <Card key={integration.name} className="group text-center hover:shadow-md transition-all duration-200 border-border/50 hover:border-primary/50">
+                                    <CardContent className="p-6">
+                                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-muted mb-4 group-hover:bg-primary/10 transition-colors">
+                                            <div className="text-2xl font-bold text-primary">{integration.name.charAt(0)}</div>
+                                        </div>
+                                        <h3 className="text-sm font-semibold text-foreground mb-2">{integration.name}</h3>
+                                        <p className="text-xs text-muted-foreground">{integration.description}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="relative isolate overflow-hidden bg-primary">
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-primary/90" />
+                        <div className="absolute top-0 right-0 translate-x-12 -translate-y-12 blur-3xl opacity-20">
+                            <div className="aspect-square w-96 bg-primary-foreground/30 rounded-full" />
+                        </div>
+                    </div>
+
+                    <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+                        <div className="mx-auto max-w-2xl text-center">
+                            <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+                                Ready to transform your
+                                <br />
+                                research publishing?
+                            </h2>
+                            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/80">
+                                Join thousands of researchers and editors who have already streamlined
+                                their scholarly publishing workflow with our platform.
+                            </p>
+                            <div className="mt-10 flex items-center justify-center gap-x-6">
+                                <Link
+                                    href={route('register')}
+                                    className="rounded-lg bg-background px-8 py-4 text-sm font-semibold text-foreground shadow-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-primary transition-all duration-200"
+                                >
+                                    Get started for free
+                                </Link>
+                                <Link
+                                    href="#"
+                                    className="text-sm font-semibold leading-6 text-primary-foreground hover:text-primary-foreground/80 transition-colors"
+                                >
+                                    View demo <ArrowRight className="ml-2 h-4 w-4 inline" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
             </main>
             <Footer />
         </div>

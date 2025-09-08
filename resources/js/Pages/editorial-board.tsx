@@ -1,9 +1,12 @@
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import { Mail, ExternalLink } from "lucide-react";
+import { Mail, ExternalLink, Users, Award, BookOpen } from "lucide-react";
 import { Head } from '@inertiajs/react';
-import Breadcrumb from '@/components/breadcrumb';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 interface BoardMember {
     name: string
@@ -193,146 +196,208 @@ const boardCategories: EditorialCategory[] = [
 
 export default function EditorialBoard({ auth }: PageProps) {
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-background">
             <Head title="Editorial Board | Daluyang Dunong" />
             <Header auth={auth} />
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <Breadcrumb
-                        items={[
-                            { label: 'Home', href: '/' },
-                            { label: 'Editorial Board', isCurrent: true }
-                        ]}
-                    />
-
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
-                        Editorial Board
-                    </h1>
-
-                    {/* Introduction Section */}
-                    <div className="border-l-4 border-[#18652c] dark:border-[#3fb65e] pl-6 mb-12">
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                            Our editorial board comprises internationally recognized scholars and experts who bring diverse perspectives and profound expertise to advance the mission of Daluyang Dunong: Mindoro Research Journal.
-                        </p>
+                    {/* Page Header */}
+                    <div className="mb-12">
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                            Editorial Board
+                        </h1>
+                        <Card>
+                            <CardContent className="pt-6">
+                                <p className="text-lg text-muted-foreground leading-relaxed">
+                                    Our editorial board comprises internationally recognized scholars and experts who bring diverse perspectives and profound expertise to advance the mission of Daluyang Dunong: Mindoro Research Journal.
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     {/* Board Members Display */}
-                    {boardCategories.map((category, categoryIndex) => (
-                        <section key={categoryIndex} className="mb-16">
-                            {/* Category Header */}
-                            <div className="mb-8">
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{category.title}</h2>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm">{category.description}</p>
-                            </div>
+                    <div className="space-y-12">
+                        {boardCategories.map((category, categoryIndex) => (
+                            <Card key={categoryIndex}>
+                                <CardHeader>
+                                    <CardTitle className="text-2xl flex items-center gap-3">
+                                        {categoryIndex === 0 && <Users className="h-6 w-6 text-primary" />}
+                                        {categoryIndex === 1 && <BookOpen className="h-6 w-6 text-primary" />}
+                                        {categoryIndex === 2 && <Award className="h-6 w-6 text-primary" />}
+                                        {categoryIndex === 3 && <Users className="h-6 w-6 text-primary" />}
+                                        {category.title}
+                                    </CardTitle>
+                                    <CardDescription className="text-base">
+                                        {category.description}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-6">
+                                        {category.members.map((member, index) => (
+                                            <Card key={index} className="hover:shadow-md transition-shadow">
+                                                <CardContent className="p-6">
+                                                    <div className="flex flex-col sm:flex-row gap-6">
+                                                        {/* Profile Image */}
+                                                        <div className="flex-shrink-0">
+                                                            <Avatar className="w-24 h-24">
+                                                                <AvatarImage
+                                                                    src={member.imageUrl}
+                                                                    alt={member.name}
+                                                                    className="object-cover"
+                                                                />
+                                                                <AvatarFallback className="text-lg">
+                                                                    {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                        </div>
 
-                            {/* Members Grid */}
-                            <div className="space-y-6">
-                                {category.members.map((member, index) => (
-                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <div className="flex flex-col sm:flex-row gap-6">
-                                            {/* Profile Image */}
-                                            <div className="flex-shrink-0">
-                                                <img
-                                                    src={member.imageUrl}
-                                                    alt={member.name}
-                                                    className="w-24 h-24 rounded-lg object-cover"
-                                                />
-                                            </div>
+                                                        {/* Main Content */}
+                                                        <div className="flex-grow space-y-4">
+                                                            {/* Name and Basic Info */}
+                                                            <div>
+                                                                <h3 className="text-xl font-semibold text-foreground mb-1">
+                                                                    {member.name}
+                                                                </h3>
+                                                                <p className="text-sm text-primary font-medium mb-1">
+                                                                    {member.role}
+                                                                </p>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {member.affiliation}
+                                                                </p>
+                                                                {member.location && (
+                                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                                        📍 {member.location}
+                                                                    </p>
+                                                                )}
+                                                            </div>
 
-                                            {/* Main Content */}
-                                            <div className="flex-grow space-y-4">
-                                                {/* Name and Basic Info */}
-                                                <div>
-                                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                                        {member.name}
-                                                    </h3>
-                                                    <p className="text-sm text-[#18652c] dark:text-[#3fb65e] font-medium">
-                                                        {member.role}
-                                                    </p>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                                        {member.affiliation}
-                                                    </p>
-                                                </div>
+                                                            {/* Education */}
+                                                            {member.education && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-1">Education</h4>
+                                                                    <p className="text-sm text-muted-foreground">{member.education}</p>
+                                                                </div>
+                                                            )}
 
-                                                {/* Bio */}
-                                                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                                                    {member.bio}
-                                                </p>
+                                                            {/* Bio */}
+                                                            <div>
+                                                                <h4 className="text-sm font-medium text-foreground mb-1">Biography</h4>
+                                                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                                                    {member.bio}
+                                                                </p>
+                                                            </div>
 
-                                                {/* Academic Metrics */}
-                                                {(member.publications || member.citations || member.hIndex) && (
-                                                    <div className="flex gap-4 text-xs">
-                                                        {member.publications && (
-                                                            <span className="text-gray-600 dark:text-gray-400">
-                                                                <strong className="text-gray-900 dark:text-white">{member.publications}</strong> Publications
-                                                            </span>
-                                                        )}
-                                                        {member.citations && (
-                                                            <span className="text-gray-600 dark:text-gray-400">
-                                                                <strong className="text-gray-900 dark:text-white">{member.citations}</strong> Citations
-                                                            </span>
-                                                        )}
-                                                        {member.hIndex && (
-                                                            <span className="text-gray-600 dark:text-gray-400">
-                                                                <strong className="text-gray-900 dark:text-white">{member.hIndex}</strong> H-Index
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                            {/* Academic Metrics */}
+                                                            {(member.publications || member.citations || member.hIndex) && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-2">Academic Impact</h4>
+                                                                    <div className="flex gap-4">
+                                                                        {member.publications && (
+                                                                            <div className="text-center">
+                                                                                <div className="text-lg font-bold text-primary">{member.publications}</div>
+                                                                                <div className="text-xs text-muted-foreground">Publications</div>
+                                                                            </div>
+                                                                        )}
+                                                                        {member.citations && (
+                                                                            <div className="text-center">
+                                                                                <div className="text-lg font-bold text-primary">{member.citations}</div>
+                                                                                <div className="text-xs text-muted-foreground">Citations</div>
+                                                                            </div>
+                                                                        )}
+                                                                        {member.hIndex && (
+                                                                            <div className="text-center">
+                                                                                <div className="text-lg font-bold text-primary">{member.hIndex}</div>
+                                                                                <div className="text-xs text-muted-foreground">H-Index</div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
 
-                                                {/* Research Interests */}
-                                                {member.researchInterests && member.researchInterests.length > 0 && (
-                                                    <div>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {member.researchInterests.map((interest, idx) => (
-                                                                <span key={idx} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
-                                                                    {interest}
-                                                                </span>
-                                                            ))}
+                                                            {/* Research Interests */}
+                                                            {member.researchInterests && member.researchInterests.length > 0 && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-2">Research Interests</h4>
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {member.researchInterests.map((interest, idx) => (
+                                                                            <Badge key={idx} variant="secondary" className="text-xs">
+                                                                                {interest}
+                                                                            </Badge>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Expertise Areas */}
+                                                            {member.expertise && member.expertise.length > 0 && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-2">Areas of Expertise</h4>
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {member.expertise.map((area, idx) => (
+                                                                            <Badge key={idx} variant="outline" className="text-xs">
+                                                                                {area}
+                                                                            </Badge>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Contact and Social Links */}
+                                                            <Separator />
+                                                            <div className="flex flex-wrap gap-4">
+                                                                {member.email && (
+                                                                    <a
+                                                                        href={`mailto:${member.email}`}
+                                                                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                                                    >
+                                                                        <Mail className="h-4 w-4" />
+                                                                        Email
+                                                                    </a>
+                                                                )}
+                                                                {member.linkedin && (
+                                                                    <a
+                                                                        href={member.linkedin}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                                                    >
+                                                                        <ExternalLink className="h-4 w-4" />
+                                                                        LinkedIn
+                                                                    </a>
+                                                                )}
+                                                                {member.website && (
+                                                                    <a
+                                                                        href={member.website}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                                                    >
+                                                                        <ExternalLink className="h-4 w-4" />
+                                                                        Website
+                                                                    </a>
+                                                                )}
+                                                                {member.twitter && (
+                                                                    <a
+                                                                        href={member.twitter}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                                                    >
+                                                                        <ExternalLink className="h-4 w-4" />
+                                                                        Twitter
+                                                                    </a>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                )}
-
-                                                {/* Contact Links */}
-                                                <div className="flex gap-3">
-                                                    {member.email && (
-                                                        <a
-                                                            href={`mailto:${member.email}`}
-                                                            className="text-gray-600 dark:text-gray-400 hover:text-[#18652c] dark:hover:text-[#3fb65e] text-sm"
-                                                        >
-                                                            <Mail className="h-4 w-4 inline mr-1" />
-                                                            Email
-                                                        </a>
-                                                    )}
-                                                    {member.linkedin && (
-                                                        <a
-                                                            href={member.linkedin}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-gray-600 dark:text-gray-400 hover:text-[#18652c] dark:hover:text-[#3fb65e] text-sm"
-                                                        >
-                                                            LinkedIn
-                                                        </a>
-                                                    )}
-                                                    {member.website && (
-                                                        <a
-                                                            href={member.website}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-gray-600 dark:text-gray-400 hover:text-[#18652c] dark:hover:text-[#3fb65e] text-sm"
-                                                        >
-                                                            <ExternalLink className="h-4 w-4 inline mr-1" />
-                                                            Website
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </section>
-                    ))}
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
             </main>
             <Footer />
