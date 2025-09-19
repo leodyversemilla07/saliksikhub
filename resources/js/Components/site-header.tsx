@@ -1,32 +1,19 @@
 import { useState, useEffect } from 'react';
-import { PageProps, User } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { Link, usePage, useForm, router } from '@inertiajs/react';
 import {
     Menu,
-    ChevronDown,
-    LogOut,
-    User as UserIcon,
     LayoutDashboard,
     Search,
     Sun,
     Moon,
     BookOpen,
-    Globe,
-    Bell
+    Globe
 } from 'lucide-react';
 
 // Import shadcn/ui components
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -56,15 +43,18 @@ const navigationItems: NavigationItem[] = [
     { name: "Submissions", href: route('submissions') },
     { name: "Archives", href: route('archives') },
     { name: "Editorial Board", href: route('editorial-board') },
-    { name: "Announcements", href: route('announcements'), icon: <Bell className="w-4 h-4" /> },
     { name: "About", href: route('about-journal'), icon: <Globe className="w-4 h-4" /> },
 ];
 
 // Main site header component with modern responsive design
 export default function SiteHeader({ auth }: SiteHeaderProps) {
     const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
+
+    // Use Inertia's useForm for search functionality
+    const searchForm = useForm({
+        query: '',
+    });
 
     const { url: currentUrl } = usePage();
 
@@ -114,30 +104,22 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
 
     const handleSearchFormSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        console.log("Searching for:", searchQuery);
+        if (searchForm.data.query.trim()) {
+            // Navigate to search results page with the query
+            router.visit(route('search'), {
+                method: 'get',
+                data: { q: searchForm.data.query },
+                preserveState: true,
+            });
+        }
     };
-
-    // UserAvatar component using shadcn Avatar
-    const UserAvatar = ({ user }: { user: User }) => (
-        <div className="relative">
-            <Avatar className="h-9 w-9">
-                <AvatarImage src="#" alt={`${user.firstname} ${user.lastname}`} />
-                <AvatarFallback className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground">
-                    {`${(user.firstname?.[0] || '').toUpperCase()}${(user.lastname?.[0] || 'U').toUpperCase()}`}
-                </AvatarFallback>
-            </Avatar>
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>
-        </div>
-    );
 
     // Reusable UI components with improved naming
     const SearchForm = ({
-        searchQuery,
-        setSearchQuery,
+        searchForm,
         onSubmit
     }: {
-        searchQuery: string;
-        setSearchQuery: (query: string) => void;
+        searchForm: ReturnType<typeof useForm<{ query: string }>>;
         onSubmit: (event: React.FormEvent) => void;
     }) => (
         <form onSubmit={onSubmit} className="relative w-full max-w-md">
@@ -145,9 +127,10 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
             <Input
                 type="text"
                 placeholder="Search articles, authors, topics..."
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                value={searchForm.data.query}
+                onChange={(event) => searchForm.setData('query', event.target.value)}
                 className="pl-10"
+                disabled={searchForm.processing}
             />
         </form>
     );
@@ -156,18 +139,15 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" role="banner">
             {/* Single Simplified Header Bar - Full Width */}
             <div className="bg-background">
-                <div className="w-full px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Brand Section */}
-                        <Link href={route('home')} className="flex items-center gap-3 group flex-shrink-0">
+                        <Link href={route('home')} prefetch="hover" className="flex items-center gap-3 group shrink-0">
                             <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_du_journal_l%27Infomane.jpg"
+                                src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
                                 className="h-8 w-auto transition-transform group-hover:scale-105"
                                 alt="Research Journal Manager"
                             />
-                            <div className="hidden sm:block">
-                                <span className="text-lg font-bold text-foreground">Research Journal Manager</span>
-                            </div>
                         </Link>
 
                         {/* Desktop Navigation - Full Width Distribution */}
@@ -179,6 +159,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                                             <NavigationMenuLink asChild>
                                                 <Link
                                                     href={navigationItem.href!}
+                                                    prefetch="hover"
                                                     className={`px-3 py-2 text-sm font-medium transition-colors hover:text-accent-foreground ${isNavigationLinkActive(navigationItem.href!)
                                                         ? 'text-primary'
                                                         : 'text-muted-foreground hover:text-foreground'
@@ -195,8 +176,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                             {/* Search - Positioned on the right side with full width */}
                             <div className="hidden lg:flex items-center ml-8">
                                 <SearchForm
-                                    searchQuery={searchQuery}
-                                    setSearchQuery={setSearchQuery}
+                                    searchForm={searchForm}
                                     onSubmit={handleSearchFormSubmit}
                                 />
                             </div>
@@ -215,55 +195,21 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                             </Button>
 
                             {auth?.user ? (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="flex items-center gap-2">
-                                            <UserAvatar user={auth.user} />
-                                            <ChevronDown className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-48" align="end">
-                                        <DropdownMenuLabel>
-                                            <p className="text-sm font-medium truncate">
-                                                {`${auth.user.firstname} ${auth.user.lastname}`}
-                                            </p>
-                                        </DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <Link href={getDashboardRoute(auth.user.role ?? '')} className="flex items-center gap-2">
-                                                <LayoutDashboard className="h-4 w-4" />
-                                                Dashboard
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem asChild>
-                                            <Link href={route('profile.edit')} className="flex items-center gap-2">
-                                                <UserIcon className="h-4 w-4" />
-                                                Profile
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <Link
-                                                href={route('logout')}
-                                                method="post"
-                                                as="button"
-                                                className="flex items-center gap-2 text-destructive focus:text-destructive"
-                                            >
-                                                <LogOut className="h-4 w-4" />
-                                                Sign out
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                <Button asChild>
+                                    <Link href={getDashboardRoute(auth.user.role ?? '')} prefetch="hover">
+                                        <LayoutDashboard className="h-4 w-4 mr-2" />
+                                        Dashboard
+                                    </Link>
+                                </Button>
                             ) : (
                                 <div className="flex items-center gap-2">
                                     <Button variant="ghost" asChild>
-                                        <Link href={route('login')}>
+                                        <Link href={route('login')} prefetch="hover">
                                             Login
                                         </Link>
                                     </Button>
                                     <Button asChild>
-                                        <Link href={route('register')}>
+                                        <Link href={route('register')} prefetch="hover">
                                             Register
                                         </Link>
                                     </Button>
@@ -286,6 +232,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                                                     <Button key={navigationItem.name} variant="ghost" className="justify-start" asChild>
                                                         <Link
                                                             href={navigationItem.href!}
+                                                            prefetch="hover"
                                                             onClick={() => setIsMobileNavigationOpen(false)}
                                                             className={isNavigationLinkActive(navigationItem.href!) ? 'text-primary' : ''}
                                                         >
@@ -299,8 +246,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
 
                                             {/* Mobile Search Form */}
                                             <SearchForm
-                                                searchQuery={searchQuery}
-                                                setSearchQuery={setSearchQuery}
+                                                searchForm={searchForm}
                                                 onSubmit={handleSearchFormSubmit}
                                             />
                                         </div>
