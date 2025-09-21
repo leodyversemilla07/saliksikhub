@@ -3,7 +3,6 @@ import { PageProps } from '@/types';
 import { Link, usePage, useForm, router } from '@inertiajs/react';
 import {
     Menu,
-    LayoutDashboard,
     Search,
     Sun,
     Moon,
@@ -197,7 +196,6 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                             {auth?.user ? (
                                 <Button asChild>
                                     <Link href={getDashboardRoute(auth.user.role ?? '')} prefetch="hover">
-                                        <LayoutDashboard className="h-4 w-4 mr-2" />
                                         Dashboard
                                     </Link>
                                 </Button>

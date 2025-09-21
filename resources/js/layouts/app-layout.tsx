@@ -7,7 +7,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
 import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -49,7 +48,7 @@ const navigationMap = {
     ],
     reviewer: [
         { href: 'reviewer.dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        // Add more reviewer links here as needed
+        { href: 'reviewer.manuscripts.index', label: 'Manuscripts for Review', icon: FileText },
     ]
 };
 
@@ -57,16 +56,18 @@ function useDarkMode() {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        setIsDarkMode(isDark);
-        document.documentElement.classList.toggle('dark', isDark);
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setIsDarkMode(savedTheme === 'dark');
+            document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+        }
     }, []);
 
     const toggleDarkMode = () => {
-        const newDarkMode = !isDarkMode;
-        setIsDarkMode(newDarkMode);
-        localStorage.setItem('darkMode', newDarkMode.toString());
-        document.documentElement.classList.toggle('dark', newDarkMode);
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        setIsDarkMode(!isDarkMode);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
     };
 
     return { isDarkMode, toggleDarkMode };
@@ -116,7 +117,7 @@ export default function AppLayout({
 
             <SidebarInset className="flex flex-col min-h-screen">
                 {/* Inline Header logic */}
-                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b bg-sidebar px-4">
+                <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 px-4">
                     <SidebarTrigger className="-ml-1" />
                     <Separator
                         orientation="vertical"
@@ -145,19 +146,9 @@ export default function AppLayout({
                             variant="ghost"
                             size="icon"
                             onClick={toggleDarkMode}
-                            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sidebar-foreground/70 rounded-full"
+                            title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
                         >
-                            <div className="relative w-5 h-5 flex items-center justify-center">
-                                <Sun className={cn(
-                                    "absolute transition-transform duration-500 ease-in-out",
-                                    isDarkMode ? "scale-0 rotate-[-180deg]" : "scale-100 rotate-0"
-                                )} />
-                                <Moon className={cn(
-                                    "absolute transition-transform duration-500 ease-in-out",
-                                    isDarkMode ? "scale-100 rotate-0" : "scale-0 rotate-180"
-                                )} />
-                            </div>
-                            <span className="sr-only">Toggle theme</span>
+                            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                         </Button>
                     </div>
                 </header>

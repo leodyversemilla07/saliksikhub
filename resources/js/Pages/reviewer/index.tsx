@@ -24,7 +24,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
     DropdownMenuItem,
-    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Pagination as ShadcnPagination } from "@/components/pagination";
 import { Button } from "@/components/ui/button";
@@ -40,8 +39,8 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from '@/layouts/app-layout';
-import { Eye, MoreHorizontal, Search, Filter, Calendar, Users, FileText, Clock, RefreshCw, CheckCircle, Trash2, Plus } from "lucide-react";
-import { Manuscript, ManuscriptStatus } from "@/types/manuscript";
+import { Eye, MoreHorizontal, Search, Filter, Calendar, Users, FileText, Clock } from "lucide-react";
+import { Manuscript } from "@/types/manuscript";
 
 interface PaginatedManuscripts {
     data: Manuscript[];
@@ -66,23 +65,42 @@ interface Filters {
 
 const breadcrumbItems = [
     {
-        label: 'Dashboard',
-        href: route('dashboard'),
-    },
-    {
-        label: 'Manuscripts',
-        href: route('manuscripts.index'),
+        label: 'Manuscripts for Review',
+        href: "#",
     }
 ];
 
-export default function Index({ manuscripts, filters }: { manuscripts: PaginatedManuscripts; filters?: Filters }) {
-    const defaultFilters: Filters = {
-        status: 'all',
-        search: '',
-        per_page: '10'
-    };
+export default function Index({ manuscripts, filters }: { manuscripts: PaginatedManuscripts; filters: Filters }) {
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [rowSelection, setRowSelection] = React.useState({});
+    const [globalFilter, setGlobalFilter] = React.useState(filters.search || "");
+    const [statusFilter, setStatusFilter] = React.useState<string>(filters.status || "all");
 
-    const currentFilters = filters || defaultFilters;
+    // Debounced search to avoid too many requests
+    const [debouncedSearch, setDebouncedSearch] = React.useState(filters.search || "");
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(globalFilter);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [globalFilter]);
+
+    React.useEffect(() => {
+        if (debouncedSearch !== filters.search || statusFilter !== filters.status) {
+            router.visit(route('reviewer.manuscripts.index'), {
+                data: {
+                    search: debouncedSearch,
+                    status: statusFilter,
+                    per_page: filters.per_page,
+                },
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }
+    }, [debouncedSearch, statusFilter, filters.search, filters.status, filters.per_page]);
 
     const columns: ColumnDef<Manuscript>[] = [
         {
@@ -171,7 +189,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                     >
-                        Created
+                        Submitted
                         <Calendar className="ml-2 h-4 w-4" />
                     </Button>
                 );
@@ -185,33 +203,6 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                             month: 'short',
                             day: 'numeric'
                         })}
-                    </div>
-                );
-            },
-        },
-        {
-            accessorKey: "updated_at",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="h-auto p-0 font-semibold hover:bg-transparent"
-                    >
-                        Updated
-                        <Calendar className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const date = row.getValue("updated_at") ? new Date(row.getValue("updated_at")) : null;
-                return (
-                    <div className="text-sm text-muted-foreground">
-                        {date ? date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                        }) : '-'}
                     </div>
                 );
             },
@@ -255,38 +246,10 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={route('manuscripts.show', manuscript.id)} prefetch="hover">
+                                <Link href={route('reviewer.manuscripts.show', manuscript.id)} prefetch="hover">
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                 </Link>
-                            </DropdownMenuItem>
-                            {(manuscript.status === ManuscriptStatus.MINOR_REVISION || manuscript.status === ManuscriptStatus.MAJOR_REVISION) && (
-                                <DropdownMenuItem asChild>
-                                    <Link href={route('manuscripts.revision.form', manuscript.id)} prefetch="hover">
-                                        <RefreshCw className="mr-2 h-4 w-4" />
-                                        Submit Revision
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
-                            {manuscript.status === ManuscriptStatus.AWAITING_AUTHOR_APPROVAL && (
-                                <DropdownMenuItem asChild>
-                                    <Link href={route('manuscripts.approve', { manuscript: manuscript.id })} prefetch="hover">
-                                        <CheckCircle className="mr-2 h-4 w-4" />
-                                        Approve
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="cursor-pointer text-destructive focus:text-destructive"
-                                onClick={() => {
-                                    if (confirm(`Are you sure you want to delete "${manuscript.title}"?`)) {
-                                        window.location.href = route('manuscripts.destroy', manuscript.id);
-                                    }
-                                }}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -294,37 +257,6 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             },
         },
     ];
-
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [rowSelection, setRowSelection] = React.useState({});
-    const [globalFilter, setGlobalFilter] = React.useState(currentFilters.search || "");
-    const [statusFilter, setStatusFilter] = React.useState<string>(currentFilters.status || "all");
-
-    // Debounced search to avoid too many requests
-    const [debouncedSearch, setDebouncedSearch] = React.useState(currentFilters.search || "");
-
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(globalFilter);
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [globalFilter]);
-
-    React.useEffect(() => {
-        if (debouncedSearch !== currentFilters.search || statusFilter !== currentFilters.status) {
-            router.visit(route('manuscripts.index'), {
-                data: {
-                    search: debouncedSearch,
-                    status: statusFilter,
-                    per_page: currentFilters.per_page,
-                },
-                preserveState: true,
-                preserveScroll: true,
-            });
-        }
-    }, [debouncedSearch, statusFilter, currentFilters.search, currentFilters.status, currentFilters.per_page]);
 
     const table = useReactTable({
         data: manuscripts.data,
@@ -346,12 +278,12 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     });
 
     const handlePageChange = (page: number) => {
-        router.visit(route('manuscripts.index'), {
+        router.visit(route('reviewer.manuscripts.index'), {
             data: {
                 page,
                 search: debouncedSearch,
                 status: statusFilter,
-                per_page: currentFilters.per_page,
+                per_page: filters.per_page,
             },
             preserveState: true,
             preserveScroll: true,
@@ -359,7 +291,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     };
 
     const handlePageSizeChange = (size: number) => {
-        router.visit(route('manuscripts.index'), {
+        router.visit(route('reviewer.manuscripts.index'), {
             data: {
                 search: debouncedSearch,
                 status: statusFilter,
@@ -381,24 +313,15 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
 
     return (
         <AppLayout breadcrumbItems={breadcrumbItems}>
-            <Head title="Manuscripts" />
+            <Head title="Manuscripts for Review" />
             <div className="flex flex-col space-y-4 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Manuscripts</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">Manuscripts for Review</h1>
                         <p className="text-muted-foreground">
-                            Browse and manage all submitted manuscripts ({manuscripts.total} total)
+                            Review manuscripts assigned to you ({manuscripts.total} total)
                         </p>
                     </div>
-                    <Button
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                        asChild
-                    >
-                        <Link href={route('manuscripts.create')}>
-                            <Plus className="w-4 h-4 mr-2" />
-                            New Manuscript
-                        </Link>
-                    </Button>
                 </div>
 
                 <Card>
@@ -432,12 +355,8 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                                     <SelectItem value="all">All Statuses</SelectItem>
                                     <SelectItem value="submitted">Submitted</SelectItem>
                                     <SelectItem value="under_review">Under Review</SelectItem>
-                                    <SelectItem value="minor_revision">Minor Revision</SelectItem>
-                                    <SelectItem value="major_revision">Major Revision</SelectItem>
+                                    <SelectItem value="needs_revision">Needs Revision</SelectItem>
                                     <SelectItem value="accepted">Accepted</SelectItem>
-                                    <SelectItem value="in_copyediting">Copyediting</SelectItem>
-                                    <SelectItem value="awaiting_author_approval">Awaiting Approval</SelectItem>
-                                    <SelectItem value="ready_for_publication">Ready to Publish</SelectItem>
                                     <SelectItem value="rejected">Rejected</SelectItem>
                                     <SelectItem value="published">Published</SelectItem>
                                 </SelectContent>
@@ -496,11 +415,8 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                                         <div className="flex flex-col items-center justify-center space-y-2">
                                             <FileText className="h-8 w-8 text-muted-foreground" />
                                             <div className="text-muted-foreground">
-                                                No manuscripts found.
+                                                No manuscripts found for review.
                                             </div>
-                                            <p className="text-sm text-muted-foreground">
-                                                {globalFilter ? "Try adjusting your search terms." : "Get started by creating your first manuscript."}
-                                            </p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -521,4 +437,4 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             </div>
         </AppLayout>
     );
-}
+};

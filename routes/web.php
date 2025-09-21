@@ -6,6 +6,7 @@ use App\Http\Controllers\IssueController;
 use App\Http\Controllers\ManuscriptController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewerController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Use Spatie roles for dashboard redirection
         if ($user->hasRole('author')) {
             return redirect()->route('author.dashboard');
+        }
+        if ($user->hasRole('reviewer')) {
+            return redirect()->route('reviewer.dashboard');
         }
         if ($user->hasRole('managing_editor') || $user->hasRole('editor_in_chief') || $user->hasRole('associate_editor') || $user->hasRole('language_editor')) {
             return redirect()->route('editor.dashboard');
@@ -88,6 +92,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('issues/{issue}/assign-manuscripts', [IssueController::class, 'showAssignManuscriptsForm'])->name('issues.assign-manuscripts.form');
         Route::post('issues/{issue}/assign-manuscripts', [IssueController::class, 'assignManuscripts'])->name('issues.assign-manuscripts');
         Route::delete('issues/{issue}/manuscripts/{manuscript}', [IssueController::class, 'unassignManuscript'])->name('issues.manuscripts.unassign');
+    });
+
+    // Reviewers group
+    Route::middleware(['role:reviewer'])->group(function () {
+        Route::get('/reviewer', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
+        Route::get('/reviewer/manuscripts', [ReviewerController::class, 'index'])->name('reviewer.manuscripts.index');
+        Route::get('/reviewer/manuscripts/{id}', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');
     });
 });
 

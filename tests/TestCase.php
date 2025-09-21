@@ -16,6 +16,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        // Disable Vite during testing to prevent asset resolution issues
+        $this->withoutVite();
+
         // Seed roles and permissions for tests and clear spatie cache
         $this->seed(RolesAndPermissionsSeeder::class);
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();

@@ -169,10 +169,7 @@ export default function Footer() {
                     <div className="md:flex md:items-center md:justify-between pb-4">
                         <div className="text-center md:text-left">
                             <p className="text-muted-foreground text-sm transition-colors duration-300">
-                                &copy; {currentYear} Research Journal Manager. All rights reserved.
-                            </p>
-                            <p className="text-muted-foreground text-xs mt-1 transition-colors duration-300">
-                                Powered by open publishing standards.
+                                &copy; {currentYear} Daluyang Dunong. All rights reserved.
                             </p>
                         </div>
                         <div className="mt-4 md:mt-0 flex justify-center md:justify-end space-x-8">

@@ -24,15 +24,23 @@ class ManuscriptController extends Controller
     /**
      * Display a listing of the user's manuscripts.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $userId = Auth::id();
+        $perPage = $request->input('per_page', 10);
+        $status = $request->input('status', 'all');
+        $search = $request->input('search');
 
-        $manuscripts = Manuscript::where('user_id', $userId)
-            ->latest()
-            ->get();
+        $query = $this->buildManuscriptQuery($status, $search);
+        $manuscripts = $this->paginateManuscripts($query, $perPage, $request);
 
-        return Inertia::render('manuscripts/index/page', compact('manuscripts'));
+        return Inertia::render('manuscripts/index', [
+            'manuscripts' => $manuscripts,
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
+        ]);
     }
 
     /**
@@ -457,5 +465,68 @@ class ManuscriptController extends Controller
 
             abort(500, 'Error serving PDF file');
         }
+    }
+
+    /**
+     * Build the manuscript query with filters applied.
+     */
+    private function buildManuscriptQuery(string $status, ?string $search): \Illuminate\Database\Eloquent\Builder
+    {
+        $userId = Auth::id();
+
+        $query = Manuscript::where('user_id', $userId)
+            ->latest();
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('authors', 'like', "%{$search}%")
+                    ->orWhere('keywords', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Paginate the manuscripts based on the per page parameter.
+     */
+    private function paginateManuscripts(\Illuminate\Database\Eloquent\Builder $query, $perPage, Request $request)
+    {
+        if ($perPage === 'all') {
+            $manuscripts = $query->get();
+            $total = $manuscripts->count();
+
+            return new \Illuminate\Pagination\LengthAwarePaginator(
+                $manuscripts,
+                $total,
+                $total > 0 ? $total : 1,
+                1,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query(),
+                ]
+            );
+        }
+
+        $perPage = $this->normalizePerPage($perPage);
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Normalize the per page parameter to a valid integer.
+     */
+    private function normalizePerPage($perPage): int
+    {
+        if (! is_numeric($perPage) || $perPage < 1 || $perPage > 100) {
+            return 10;
+        }
+
+        return (int) $perPage;
     }
 }
