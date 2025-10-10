@@ -38,8 +38,8 @@ class IssueFactory extends Factory
                 Issue::STATUS_PUBLISHED,
                 Issue::STATUS_ARCHIVED,
             ]),
-            'cover_image' => fake()->boolean(60) ? 'covers/' . fake()->uuid() . '.jpg' : null,
-            'doi' => fake()->boolean(30) ? '10.1234/journal.v' . fake()->numberBetween(1, 15) . '.i' . fake()->numberBetween(1, 4) : null,
+            'cover_image' => fake()->boolean(60) ? 'covers/'.fake()->uuid().'.jpg' : null,
+            'doi' => fake()->boolean(30) ? '10.1234/journal.v'.fake()->numberBetween(1, 15).'.i'.fake()->numberBetween(1, 4) : null,
             'theme' => fake()->boolean(80) ? $this->generateTheme() : null,
             'editorial_note' => fake()->boolean(40) ? fake()->paragraph() : null,
             'user_id' => User::factory(),
@@ -53,11 +53,11 @@ class IssueFactory extends Factory
     private function generateIssueTitle(): string
     {
         $titleTypes = [
-            'Special Issue: ' . fake()->words(fake()->numberBetween(2, 4), true),
-            'Volume ' . fake()->numberBetween(1, 15) . ', Issue ' . fake()->numberBetween(1, 4),
-            fake()->words(fake()->numberBetween(3, 6), true) . ' Edition',
-            fake()->monthName() . ' ' . fake()->year() . ' Issue',
-            'Research in ' . fake()->words(fake()->numberBetween(2, 3), true),
+            'Special Issue: '.fake()->words(fake()->numberBetween(2, 4), true),
+            'Volume '.fake()->numberBetween(1, 15).', Issue '.fake()->numberBetween(1, 4),
+            fake()->words(fake()->numberBetween(3, 6), true).' Edition',
+            fake()->monthName().' '.fake()->year().' Issue',
+            'Research in '.fake()->words(fake()->numberBetween(2, 3), true),
         ];
 
         return fake()->randomElement($titleTypes);
@@ -123,12 +123,12 @@ class IssueFactory extends Factory
     public function published(): static
     {
         $publicationDate = fake()->dateTimeBetween('-2 years', 'now');
-        
+
         return $this->state(fn (array $attributes) => [
             'status' => Issue::STATUS_PUBLISHED,
             'publication_date' => $publicationDate,
-            'doi' => '10.1234/journal.v' . fake()->numberBetween(1, 15) . '.i' . fake()->numberBetween(1, 4),
-            'cover_image' => 'covers/' . fake()->uuid() . '.jpg',
+            'doi' => '10.1234/journal.v'.fake()->numberBetween(1, 15).'.i'.fake()->numberBetween(1, 4),
+            'cover_image' => 'covers/'.fake()->uuid().'.jpg',
         ]);
     }
 
@@ -140,7 +140,7 @@ class IssueFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => Issue::STATUS_ARCHIVED,
             'publication_date' => fake()->dateTimeBetween('-5 years', '-1 year'),
-            'doi' => '10.1234/journal.v' . fake()->numberBetween(1, 15) . '.i' . fake()->numberBetween(1, 4),
+            'doi' => '10.1234/journal.v'.fake()->numberBetween(1, 15).'.i'.fake()->numberBetween(1, 4),
         ]);
     }
 
@@ -182,7 +182,7 @@ class IssueFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'theme' => $theme,
-            'issue_title' => 'Special Issue: ' . $theme,
+            'issue_title' => 'Special Issue: '.$theme,
         ]);
     }
 
@@ -212,7 +212,7 @@ class IssueFactory extends Factory
     public function withCover(): static
     {
         return $this->state(fn (array $attributes) => [
-            'cover_image' => 'covers/' . fake()->uuid() . '.jpg',
+            'cover_image' => 'covers/'.fake()->uuid().'.jpg',
         ]);
     }
 
@@ -222,8 +222,8 @@ class IssueFactory extends Factory
     public function withDoi(): static
     {
         return $this->state(fn (array $attributes) => [
-            'doi' => '10.1234/journal.v' . ($attributes['volume_number'] ?? fake()->numberBetween(1, 15)) . 
-                     '.i' . ($attributes['issue_number'] ?? fake()->numberBetween(1, 4)),
+            'doi' => '10.1234/journal.v'.($attributes['volume_number'] ?? fake()->numberBetween(1, 15)).
+                     '.i'.($attributes['issue_number'] ?? fake()->numberBetween(1, 4)),
         ]);
     }
 
@@ -234,7 +234,7 @@ class IssueFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'theme' => $this->generateTheme(),
-            'issue_title' => 'Special Issue: ' . $this->generateTheme(),
+            'issue_title' => 'Special Issue: '.$this->generateTheme(),
             'editorial_note' => fake()->paragraphs(fake()->numberBetween(2, 3), true),
         ]);
     }

@@ -28,22 +28,22 @@ class SeedManuscriptsAndIssues extends Command
     {
         if ($this->option('fresh')) {
             $this->info('Clearing existing manuscripts and issues...');
-            
+
             // Clear existing data
             \App\Models\Manuscript::query()->delete();
             \App\Models\Issue::query()->delete();
-            
+
             $this->info('Existing data cleared.');
         }
 
         $this->info('Seeding manuscripts and issues...');
-        
-        $seeder = new ManuscriptAndIssueSeeder();
+
+        $seeder = new ManuscriptAndIssueSeeder;
         $seeder->setCommand($this);
         $seeder->run();
 
         $this->info('✅ Manuscripts and issues seeded successfully!');
-        
+
         return Command::SUCCESS;
     }
 }

@@ -1,37 +1,16 @@
-import { useEffect, FormEventHandler, useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { Head, Link, Form } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Eye, EyeOff, Mail, Lock, Loader2, CheckCircle } from 'lucide-react';
 
 export default function Login({ status, canResetPassword }: PageProps<{ status?: string, canResetPassword: boolean }>) {
     const [showPassword, setShowPassword] = useState(false);
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post(route('login'));
-    };
-
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
-        email: string;
-        password: string;
-        remember: boolean;
-    }>({
-        email: '',
-        password: '',
-        remember: false,
-    });
-
-    useEffect(() => {
-        return () => {
-            reset('password');
-        };
-    }, [reset]);
 
     // Auto-focus email field on mount
     useEffect(() => {
@@ -78,126 +57,122 @@ export default function Login({ status, canResetPassword }: PageProps<{ status?:
                     )}
 
                     <CardContent className="space-y-6">
-                        <form onSubmit={submit} className="space-y-5">
-                            <div className="space-y-2">
-                                <Label htmlFor="email" className="font-medium text-sm">
-                                    Email Address *
-                                </Label>
-                                <div className="relative group">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={data.email}
-                                        className={`w-full pl-10 transition-all duration-200 ${errors.email
-                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                            : 'focus:border-primary focus:ring-primary/20'
-                                            }`}
-                                        placeholder="Enter your email address"
-                                        onChange={(e) => {
-                                            setData('email', e.target.value);
-                                            if (errors.email) {
-                                                clearErrors('email');
-                                            }
-                                        }}
-                                        required
-                                        autoComplete="email"
-                                    />
-                                </div>
-                                {errors.email && (
-                                    <div className="flex items-center gap-2 text-sm text-destructive animate-in slide-in-from-left-2 duration-200">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <span>{errors.email}</span>
-                                    </div>
-                                )}
-                            </div>
+                        <Form
+                            action={route('login')}
+                            method="post"
+                            resetOnSuccess
+                            resetOnError={false}
+                        >
+                            {({ errors, processing, clearErrors }) => (
+                                <div className="space-y-5">
+                                    <Field data-invalid={!!errors.email}>
+                                        <FieldLabel htmlFor="email">
+                                            Email Address *
+                                        </FieldLabel>
+                                        <div className="relative group">
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                            <Input
+                                                id="email"
+                                                name="email"
+                                                type="email"
+                                                className={`w-full pl-10 transition-all duration-200 ${errors.email
+                                                    ? 'border-destructive focus:border-destructive focus:ring-destructive'
+                                                    : 'focus:border-primary focus:ring-primary/20'
+                                                    }`}
+                                                placeholder="Enter your email address"
+                                                onChange={() => {
+                                                    if (errors.email) {
+                                                        clearErrors('email');
+                                                    }
+                                                }}
+                                                required
+                                                autoComplete="email"
+                                            />
+                                        </div>
+                                        <FieldError>{errors.email}</FieldError>
+                                    </Field>
 
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="password" className="font-medium">Password *</Label>
-                                    {canResetPassword && (
-                                        <Link
-                                            href={route('password.request')}
-                                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
-                                        >
-                                            Forgot password?
-                                        </Link>
-                                    )}
-                                </div>
-                                <div className="relative group">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                    <Input
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        value={data.password}
-                                        className={`w-full pl-10 pr-10 transition-all duration-200 ${errors.password
-                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                            : 'focus:border-primary focus:ring-primary/20'
-                                            }`}
-                                        placeholder="Enter your password"
-                                        onChange={(e) => {
-                                            setData('password', e.target.value);
-                                            if (errors.password) {
-                                                clearErrors('password');
-                                            }
-                                        }}
-                                        required
-                                        autoComplete="current-password"
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
-                                        ) : (
-                                            <Eye className="h-4 w-4" />
-                                        )}
-                                    </button>
-                                </div>
-                                {errors.password && (
-                                    <div className="flex items-center gap-2 text-sm text-destructive animate-in slide-in-from-left-2 duration-200">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <span>{errors.password}</span>
-                                    </div>
-                                )}
-                            </div>
+                                    <Field data-invalid={!!errors.password}>
+                                        <div className="flex items-center justify-between">
+                                            <FieldLabel htmlFor="password">Password *</FieldLabel>
+                                            {canResetPassword && (
+                                                <Link
+                                                    href={route('password.request')}
+                                                    className="text-sm font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
+                                                >
+                                                    Forgot password?
+                                                </Link>
+                                            )}
+                                        </div>
+                                        <div className="relative group">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                            <Input
+                                                id="password"
+                                                name="password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                className={`w-full pl-10 pr-10 transition-all duration-200 ${errors.password
+                                                    ? 'border-destructive focus:border-destructive focus:ring-destructive'
+                                                    : 'focus:border-primary focus:ring-primary/20'
+                                                    }`}
+                                                placeholder="Enter your password"
+                                                onChange={() => {
+                                                    if (errors.password) {
+                                                        clearErrors('password');
+                                                    }
+                                                }}
+                                                required
+                                                autoComplete="current-password"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            >
+                                                {showPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                            </button>
+                                        </div>
+                                        <FieldError>{errors.password}</FieldError>
+                                    </Field>
 
-                            <div className="flex items-center justify-between py-2">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="remember_me"
-                                        checked={data.remember}
-                                        onCheckedChange={(checked) => setData('remember', checked as boolean)}
-                                        className="h-4 w-4 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                    <div className="flex items-center justify-between py-2">
+                                        <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id="remember_me"
+                                                name="remember"
+                                                className="h-4 w-4 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                                disabled={processing}
+                                            />
+                                            <FieldLabel
+                                                htmlFor="remember_me"
+                                                className="text-sm text-muted-foreground cursor-pointer select-none font-normal"
+                                            >
+                                                Keep me logged in
+                                            </FieldLabel>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full font-semibold py-3 shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled={processing}
-                                    />
-                                    <Label
-                                        htmlFor="remember_me"
-                                        className="text-sm text-muted-foreground cursor-pointer select-none"
                                     >
-                                        Keep me logged in
-                                    </Label>
+                                        {processing ? (
+                                            <div className="flex items-center gap-2">
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                <span>Signing you in...</span>
+                                            </div>
+                                        ) : (
+                                            <span>Sign In</span>
+                                        )}
+                                    </Button>
                                 </div>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full font-semibold py-3 shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={processing}
-                            >
-                                {processing ? (
-                                    <div className="flex items-center gap-2">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        <span>Signing you in...</span>
-                                    </div>
-                                ) : (
-                                    <span>Sign In</span>
-                                )}
-                            </Button>
-                        </form>
+                            )}
+                        </Form>
                     </CardContent>
 
                     <CardFooter className="text-center pb-6 flex justify-center">

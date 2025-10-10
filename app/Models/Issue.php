@@ -62,7 +62,7 @@ class Issue extends Model
                 'maxLength' => 100,
                 'maxLengthKeepWords' => true,
                 'onUpdate' => false, // Don't regenerate slug on update to preserve URLs
-            ]
+            ],
         ];
     }
 

@@ -24,27 +24,27 @@ class SlugRedirectMiddleware
         }
 
         $path = $request->path();
-        
+
         // Handle manuscript ID redirects
         if (preg_match('/^manuscripts\/(\d+)(?:\/pdf)?$/', $path, $matches)) {
             $manuscriptId = $matches[1];
             $isPdf = str_ends_with($path, '/pdf');
-            
+
             try {
                 $manuscript = Manuscript::findOrFail($manuscriptId);
-                
+
                 if ($manuscript->slug) {
-                    $newRoute = $isPdf 
+                    $newRoute = $isPdf
                         ? route('manuscripts.pdf', $manuscript->slug)
                         : route('manuscripts.public.show', $manuscript->slug);
-                    
+
                     Log::info('Redirecting old manuscript URL', [
                         'old_url' => $request->fullUrl(),
                         'new_url' => $newRoute,
                         'manuscript_id' => $manuscriptId,
                         'manuscript_slug' => $manuscript->slug,
                     ]);
-                    
+
                     return redirect($newRoute, 301); // Permanent redirect
                 }
             } catch (\Exception $e) {
@@ -56,24 +56,24 @@ class SlugRedirectMiddleware
                 ]);
             }
         }
-        
+
         // Handle issue ID redirects
         if (preg_match('/^issues\/(\d+)$/', $path, $matches)) {
             $issueId = $matches[1];
-            
+
             try {
                 $issue = Issue::findOrFail($issueId);
-                
+
                 if ($issue->slug) {
                     $newRoute = url("/issues/{$issue->slug}");
-                    
+
                     Log::info('Redirecting old issue URL', [
                         'old_url' => $request->fullUrl(),
                         'new_url' => $newRoute,
                         'issue_id' => $issueId,
                         'issue_slug' => $issue->slug,
                     ]);
-                    
+
                     return redirect($newRoute, 301); // Permanent redirect
                 }
             } catch (\Exception $e) {

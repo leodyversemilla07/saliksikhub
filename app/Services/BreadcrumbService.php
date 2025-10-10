@@ -19,7 +19,7 @@ class BreadcrumbService
 
         // Add issue breadcrumb if manuscript is assigned to an issue
         $issue = $manuscript->issue;
-        if ($manuscript->issue_id && $issue instanceof Issue && !empty($issue->slug)) {
+        if ($manuscript->issue_id && $issue instanceof Issue && ! empty($issue->slug)) {
             $breadcrumbs->push([
                 'label' => "Vol. {$issue->volume_number} No. {$issue->issue_number}",
                 'url' => url("/issues/{$issue->slug}"),
@@ -61,7 +61,7 @@ class BreadcrumbService
     /**
      * Generate breadcrumbs for search results.
      */
-    public static function forSearch(string $query = null): Collection
+    public static function forSearch(?string $query = null): Collection
     {
         $breadcrumbs = collect([
             ['label' => 'Home', 'url' => route('home'), 'active' => false],
@@ -74,7 +74,7 @@ class BreadcrumbService
                 'active' => false,
             ]);
             $breadcrumbs->push([
-                'label' => "Results for: " . self::truncateTitle($query),
+                'label' => 'Results for: '.self::truncateTitle($query),
                 'url' => '#',
                 'active' => true,
             ]);
@@ -106,7 +106,7 @@ class BreadcrumbService
     public static function generateStructuredData(Collection $breadcrumbs): array
     {
         $items = [];
-        
+
         foreach ($breadcrumbs as $index => $crumb) {
             $items[] = [
                 '@type' => 'ListItem',
@@ -132,6 +132,6 @@ class BreadcrumbService
             return $title;
         }
 
-        return substr($title, 0, $maxLength) . '...';
+        return substr($title, 0, $maxLength).'...';
     }
 }

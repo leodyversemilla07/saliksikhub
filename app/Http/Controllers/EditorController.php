@@ -75,7 +75,7 @@ class EditorController extends Controller
             'Sep' => 9,
             'Oct' => 10,
             'Nov' => 11,
-            'Dec' => 12
+            'Dec' => 12,
         ];
         foreach ($months as $monthName => $monthNum) {
             $submissions = Manuscript::whereMonth('created_at', $monthNum)
@@ -174,7 +174,7 @@ class EditorController extends Controller
                 return [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
-                    'author' => $manuscript->author->firstname . ' ' . $manuscript->author->lastname,
+                    'author' => $manuscript->author->firstname.' '.$manuscript->author->lastname,
                     'status' => $manuscript->status,
                     'submitted_date' => $manuscript->created_at->format('M j, Y'),
                     'days_since_submission' => $manuscript->created_at->diffInDays(now()),
@@ -218,7 +218,7 @@ class EditorController extends Controller
                     'title' => 'New Submissions',
                     'value' => (string) $newSubmissions,
                     'trend' => $submissionsTrend >= 0 ? 'up' : 'down',
-                    'percentage' => abs($submissionsTrend) . '%',
+                    'percentage' => abs($submissionsTrend).'%',
                     'description' => 'Last 30 days',
                     'color' => 'from-blue-500 to-indigo-600',
                 ],
@@ -226,7 +226,7 @@ class EditorController extends Controller
                     'title' => 'Published Articles',
                     'value' => (string) $publishedArticles,
                     'trend' => $publishedTrend >= 0 ? 'up' : 'down',
-                    'percentage' => abs($publishedTrend) . '%',
+                    'percentage' => abs($publishedTrend).'%',
                     'description' => 'Last 30 days',
                     'color' => 'from-green-500 to-emerald-600',
                 ],
@@ -245,7 +245,7 @@ class EditorController extends Controller
                     'percentage' => '',
                     'description' => 'Total registered users',
                     'color' => 'from-purple-500 to-indigo-600',
-                ]
+                ],
             ],
             'monthlySubmissions' => $monthlySubmissions,
             'statusDistribution' => $statusDistribution,
@@ -467,12 +467,12 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to record editorial decision: ' . $e->getMessage(),
+                    'message' => 'Failed to record editorial decision: '.$e->getMessage(),
                     'errors' => ['general' => 'Failed to record editorial decision.'],
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to record editorial decision: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to record editorial decision: '.$e->getMessage());
         }
     }
 
@@ -622,11 +622,11 @@ class EditorController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to start the copy editing process: ' . $e->getMessage(),
+                    'message' => 'Failed to start the copy editing process: '.$e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to start the copy editing process: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to start the copy editing process: '.$e->getMessage());
         }
     }
 
@@ -748,11 +748,11 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to upload finalized manuscript: ' . $e->getMessage(),
+                    'message' => 'Failed to upload finalized manuscript: '.$e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to upload finalized manuscript: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to upload finalized manuscript: '.$e->getMessage());
         }
     }
 
@@ -783,7 +783,7 @@ class EditorController extends Controller
     {
         try {
             $validated = $request->validate([
-                'doi' => 'required|string|max:255|unique:manuscripts,doi,' . $manuscript->id,
+                'doi' => 'required|string|max:255|unique:manuscripts,doi,'.$manuscript->id,
                 'volume' => 'required|string|max:50',
                 'issue' => 'required|string|max:50',
                 'page_range' => 'required|string|max:50',
@@ -853,11 +853,11 @@ class EditorController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to publish manuscript: ' . $e->getMessage(),
+                    'message' => 'Failed to publish manuscript: '.$e->getMessage(),
                 ], 500);
             }
 
-            return redirect()->back()->with('error', 'Failed to publish manuscript: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to publish manuscript: '.$e->getMessage());
         }
     }
 }

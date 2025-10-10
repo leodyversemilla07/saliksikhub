@@ -30,7 +30,7 @@ class ManuscriptFactory extends Factory
         $submissionDate = fake()->dateTimeBetween('-2 years', 'now');
         $revisedDate = fake()->boolean(30) ? fake()->dateTimeBetween($submissionDate, 'now') : null;
         $decisionDate = fake()->boolean(60) ? fake()->dateTimeBetween($submissionDate, 'now') : null;
-        
+
         return [
             'user_id' => User::factory(),
             'issue_id' => null, // Don't auto-create issues - let seeder handle this
@@ -39,7 +39,7 @@ class ManuscriptFactory extends Factory
             'authors' => $this->generateAuthors(),
             'abstract' => fake()->paragraphs(fake()->numberBetween(3, 5), true),
             'keywords' => implode(', ', fake()->words(fake()->numberBetween(3, 8))),
-            'manuscript_path' => 'manuscripts/' . fake()->uuid() . '.pdf',
+            'manuscript_path' => 'manuscripts/'.fake()->uuid().'.pdf',
             'status' => fake()->randomElement(ManuscriptStatus::cases()),
             'screening_status' => fake()->randomElement(['Pending', 'Passed', 'Failed']),
             'screening_comments' => fake()->boolean(40) ? fake()->paragraph() : null,
@@ -53,11 +53,11 @@ class ManuscriptFactory extends Factory
             'decision_date' => $decisionDate,
             'decision_comments' => $decisionDate ? fake()->paragraph() : null,
             'publication_date' => fake()->boolean(20) ? fake()->dateTimeBetween($submissionDate, '+1 year') : null,
-            'doi' => fake()->boolean(20) ? '10.1234/journal.' . fake()->numberBetween(1000, 9999) : null,
+            'doi' => fake()->boolean(20) ? '10.1234/journal.'.fake()->numberBetween(1000, 9999) : null,
             'volume' => fake()->boolean(20) ? fake()->numberBetween(1, 10) : null,
             'issue' => fake()->boolean(20) ? fake()->numberBetween(1, 4) : null,
-            'page_range' => fake()->boolean(20) ? fake()->numberBetween(1, 200) . '-' . fake()->numberBetween(201, 250) : null,
-            'final_pdf_path' => fake()->boolean(20) ? 'final-manuscripts/' . fake()->uuid() . '.pdf' : null,
+            'page_range' => fake()->boolean(20) ? fake()->numberBetween(1, 200).'-'.fake()->numberBetween(201, 250) : null,
+            'final_pdf_path' => fake()->boolean(20) ? 'final-manuscripts/'.fake()->uuid().'.pdf' : null,
             'final_manuscript_uploaded_at' => fake()->boolean(20) ? fake()->dateTimeBetween($submissionDate, 'now') : null,
             'author_approval_date' => fake()->boolean(15) ? fake()->dateTimeBetween($submissionDate, 'now') : null,
             'published_at' => fake()->boolean(15) ? fake()->dateTimeBetween($submissionDate, 'now') : null,
@@ -71,11 +71,11 @@ class ManuscriptFactory extends Factory
     {
         $authorCount = fake()->numberBetween(1, 5);
         $authors = [];
-        
+
         for ($i = 0; $i < $authorCount; $i++) {
-            $authors[] = fake()->firstName() . ' ' . fake()->lastName();
+            $authors[] = fake()->firstName().' '.fake()->lastName();
         }
-        
+
         return implode(', ', $authors);
     }
 
@@ -86,16 +86,16 @@ class ManuscriptFactory extends Factory
     {
         $revisionCount = fake()->numberBetween(1, 3);
         $history = [];
-        
+
         for ($i = 0; $i < $revisionCount; $i++) {
             $history[] = [
                 'version' => $i + 1,
                 'submitted_at' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d H:i:s'),
                 'changes' => fake()->sentence(),
-                'file_path' => 'manuscripts/revisions/' . fake()->uuid() . '.pdf',
+                'file_path' => 'manuscripts/revisions/'.fake()->uuid().'.pdf',
             ];
         }
-        
+
         return $history;
     }
 
@@ -159,16 +159,16 @@ class ManuscriptFactory extends Factory
     {
         $publicationDate = fake()->dateTimeBetween('-1 year', 'now');
         $approvalDate = fake()->dateTimeBetween('-1 year', $publicationDate);
-        
+
         return $this->state(fn (array $attributes) => [
             'status' => ManuscriptStatus::PUBLISHED,
             'publication_date' => $publicationDate,
             'published_at' => $publicationDate,
-            'doi' => '10.1234/journal.' . fake()->numberBetween(1000, 9999),
+            'doi' => '10.1234/journal.'.fake()->numberBetween(1000, 9999),
             'volume' => fake()->numberBetween(1, 10),
             'issue' => fake()->numberBetween(1, 4),
-            'page_range' => fake()->numberBetween(1, 200) . '-' . fake()->numberBetween(201, 250),
-            'final_pdf_path' => 'final-manuscripts/' . fake()->uuid() . '.pdf',
+            'page_range' => fake()->numberBetween(1, 200).'-'.fake()->numberBetween(201, 250),
+            'final_pdf_path' => 'final-manuscripts/'.fake()->uuid().'.pdf',
             'author_approval_date' => $approvalDate,
             'issue_id' => null, // Will be set by seeder if needed
         ]);

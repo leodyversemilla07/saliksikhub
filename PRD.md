@@ -39,13 +39,15 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 ### 3.1 User Management
 
 #### 3.1.1 Registration and Authentication
-- Users can create accounts with email verification
+- Users can create accounts with email verification (Laravel Fortify)
 - Support for ORCID integration for author identification
-- Multi-factor authentication (MFA) option
+- Multi-factor authentication (MFA) via Laravel Fortify (TOTP, SMS, email)
 - Single Sign-On (SSO) integration with institutional credentials
-- Role-based access control (RBAC) system
-- Password recovery and reset functionality
+- Role-based access control (RBAC) system (Spatie Permission package)
+- Password recovery and reset functionality (Laravel Fortify)
 - Profile management with CV upload capability
+- Two-factor authentication recovery codes
+- Password confirmation for sensitive actions
 
 #### 3.1.2 User Roles and Permissions
 - Define granular permissions for each role type
@@ -326,21 +328,55 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 
 ## 5. Technical Requirements
 
-### 5.1 System Architecture
+### 5.1 Technology Stack
+
+#### Backend
+- **PHP**: 8.2.29
+- **Laravel Framework**: 12.33.0 (latest features including streamlined structure)
+- **Inertia.js (Server)**: 2.0.10 for seamless SPA integration
+- **Ziggy**: 2.6.0 for Laravel route usage in JavaScript
+- **Laravel Fortify**: Backend authentication without UI scaffolding
+- **Laravel MCP**: 0.2.1 for Model Context Protocol integration
+- **Laravel Sail**: 1.46.0 for Docker development environment
+- **Laravel Pint**: 1.25.1 for PHP code style formatting
+
+#### Frontend
+- **React**: 19.2.0
+- **Inertia.js (Client)**: 2.2.8 (@inertiajs/react)
+- **Tailwind CSS**: 4.1.14 (latest version with modern CSS approach)
+- **ESLint**: 9.37.0 for JavaScript linting
+- **Vite**: For fast frontend bundling and development
+
+#### Testing
+- **Pest**: 3.8.4 for elegant testing syntax
+- **PHPUnit**: 11.5.33 as the underlying test framework
+- **Laravel Prompts**: 0.3.7 for interactive CLI prompts
+
+#### Database & Caching
+- **MySQL**: 8.0+ (primary relational database)
+- **Redis**: For caching and queue management
+- **Laravel Scout**: For full-text search (using database driver with MySQL)
+
+#### Development Tools
+- **Docker**: Via Laravel Sail for consistent development environment
+- **Composer**: For PHP dependency management
+- **NPM/Node.js**: For JavaScript dependency management
+
+### 5.2 System Architecture
 - Cloud-based infrastructure (AWS, Azure, or Google Cloud)
 - Microservices architecture
 - RESTful API design
 - Containerized deployment (Docker/Kubernetes)
 - Load balancing and auto-scaling
 
-### 5.2 Database
-- Relational database for structured data (PostgreSQL or MySQL)
-- Document store for file metadata (MongoDB)
-- Full-text search engine (Elasticsearch)
-- Database replication for redundancy
-- Regular backup schedule
+### 5.3 Database
+- Primary database: MySQL 8.0+ for all structured data
+- JSON column types for flexible metadata storage (replacing need for separate document store)
+- Full-text search using MySQL full-text indexes or Laravel Scout with database driver
+- Database replication for redundancy (primary-replica setup)
+- Regular automated backup schedule (daily incremental, weekly full)
 
-### 5.3 Integrations
+### 5.4 Integrations
 - ORCID authentication API
 - CrossRef DOI registration
 - Plagiarism detection services (iThenticate, Turnitin)
@@ -351,7 +387,7 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - Payment gateway (Stripe, PayPal) for article processing charges
 - Identity providers for SSO (SAML 2.0, OAuth 2.0)
 
-### 5.4 File Storage
+### 5.5 File Storage
 - Secure cloud-based file storage
 - CDN integration for fast content delivery
 - File versioning and audit trail
@@ -452,8 +488,17 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 
 ## 10. Implementation Plan
 
+**Technical Foundation:**
+- Laravel 12 with modern streamlined structure (no Kernel files)
+- React 19 with Inertia.js 2 for SPA experience
+- Tailwind CSS 4 for styling
+- MySQL 8.0+ database
+- Laravel Sail for local Docker development
+- Pest for elegant testing approach
+
 ### 10.1 Phase 1: Core Features (Months 1-6)
-- User management and authentication
+- User management and authentication (Laravel Fortify with Inertia.js frontend)
+- ORCID integration for researcher identification
 - Manuscript submission workflow
 - Basic editorial assignment
 - Simple peer review process
@@ -532,11 +577,11 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 
 ### 13.1 Development Team
 - Project Manager (1 FTE)
-- Product Designer (1 FTE)
-- Frontend Developers (3 FTE)
-- Backend Developers (3 FTE)
-- QA Engineers (2 FTE)
-- DevOps Engineer (1 FTE)
+- Product Designer (1 FTE) - expertise in React/Tailwind CSS
+- Frontend Developers (3 FTE) - React 19, Inertia.js 2, Tailwind CSS 4
+- Backend Developers (3 FTE) - Laravel 12, PHP 8.2, MySQL 8.0+
+- QA Engineers (2 FTE) - Pest testing framework experience
+- DevOps Engineer (1 FTE) - Docker, Laravel Sail, cloud infrastructure
 - Technical Writer (0.5 FTE)
 
 ### 13.2 Infrastructure Costs
@@ -585,17 +630,351 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - As a reviewer, I want to access manuscripts securely so that confidentiality is maintained
 
 ### 15.2 Wireframes and Mockups
-[To be developed during design phase]
+
+#### Dashboard Views
+**Author Dashboard:**
+- Manuscript status cards with visual progress indicators
+- Quick submission button prominently displayed
+- Recent activity timeline
+- Notification center with badge counters
+- Action items requiring attention highlighted
+
+**Editor Dashboard:**
+- Assigned manuscripts list with sorting/filtering
+- Workload distribution chart
+- Pending actions queue with priority indicators
+- Quick decision buttons for common actions
+- Reviewer pool status overview
+
+**Reviewer Dashboard:**
+- Active review invitations with accept/decline buttons
+- Current assignments with deadline countdown
+- Completed reviews history
+- Performance metrics (completed reviews, average turnaround time)
+- Available CME credits tracker
+
+#### Key Page Layouts
+**Manuscript Submission Flow:**
+1. Landing page with progress stepper (5 steps)
+2. Manuscript details (title, abstract, keywords)
+3. Author information and co-author management
+4. File upload with drag-and-drop zone
+5. Declarations and compliance checkboxes
+6. Review and submit confirmation
+
+**Review Interface:**
+- Split-screen layout: manuscript viewer (left), review form (right)
+- Collapsible sections for each review criterion
+- Rating scales with visual indicators (1-5 stars or 1-10 numeric)
+- Rich text editor for comments
+- Annotation toolbar for PDF markup
+- Save draft and submit buttons with confirmation
+
+**Editorial Decision Page:**
+- Manuscript summary card at top
+- Review summaries in expandable cards
+- Decision selection dropdown with conditional fields
+- Template selector for decision letters
+- Preview pane for decision communication
+- Submit decision with email notification toggle
 
 ### 15.3 Technical Architecture Diagrams
-[To be developed during technical planning phase]
+
+#### System Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Load Balancer                         │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┴───────────────┐
+         │                               │
+┌────────▼─────────┐           ┌────────▼─────────┐
+│   Web Server 1   │           │   Web Server 2   │
+│   (Laravel App)  │           │   (Laravel App)  │
+└────────┬─────────┘           └────────┬─────────┘
+         │                               │
+         └───────────────┬───────────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         │               │               │
+┌────────▼────────┐ ┌───▼──────────┐ ┌─▼────────────────┐
+│   MySQL 8.0+    │ │    Redis     │ │   Laravel Scout  │
+│  (Primary DB)   │ │   (Cache &   │ │   (Search with   │
+│                 │ │    Queue)    │ │   MySQL driver)  │
+└─────────────────┘ └──────────────┘ └──────────────────┘
+         │
+┌────────▼─────────┐
+│   MySQL 8.0+     │
+│  (Read Replica)  │
+└──────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                    External Services                         │
+├─────────────────┬───────────────┬───────────────────────────┤
+│  AWS S3         │   SendGrid    │   ORCID API               │
+│  (File Storage) │   (Email)     │   (Authentication)        │
+├─────────────────┼───────────────┼───────────────────────────┤
+│  iThenticate    │   CrossRef    │   PubMed                  │
+│  (Plagiarism)   │   (DOI)       │   (Indexing)              │
+└─────────────────┴───────────────┴───────────────────────────┘
+```
+
+#### Application Layer Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend Layer                           │
+│  React 19.2 + Inertia.js 2.2 + Tailwind CSS 4.1            │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────────┐
+│                   API Gateway Layer                          │
+│  Laravel 12 Routes, Middleware, Fortify Auth, Rate Limiting │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┼───────────────────┐
+         │               │                   │
+┌────────▼────────┐ ┌───▼──────────┐ ┌─────▼─────────────┐
+│  Manuscript     │ │   Editorial   │ │   Publication     │
+│  Service        │ │   Service     │ │   Service         │
+│  - Submission   │ │  - Assignment │ │  - Copyediting    │
+│  - Revision     │ │  - Decision   │ │  - Typesetting    │
+│  - Files        │ │  - Reviewer   │ │  - DOI            │
+└─────────────────┘ └───────────────┘ └───────────────────┘
+         │               │                   │
+┌────────▼───────────────▼───────────────────▼───────────────┐
+│                    Data Access Layer                        │
+│  Eloquent ORM, Query Builder, Repositories                  │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────────┐
+│                   Database Layer                            │
+│  Models, Migrations, Factories, Seeders                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Data Flow - Manuscript Submission
+```
+Author → React Form → Inertia → Laravel Controller
+                                      ↓
+                              Form Request Validation
+                                      ↓
+                              Manuscript Service
+                                      ↓
+                    ┌─────────────────┴─────────────────┐
+                    │                                   │
+            Save to Database                    Upload to S3
+            (Manuscript Model)                  (File Storage)
+                    │                                   │
+                    └─────────────────┬─────────────────┘
+                                      ↓
+                          Queue Notification Job
+                                      ↓
+                          Send Email to Editor
+                                      ↓
+                          Return Success Response
+```
 
 ### 15.4 Data Model
-[To be developed during database design phase]
+
+#### Core Entities and Relationships
+
+**Users Table:**
+```
+users
+├── id (primary key)
+├── name
+├── email (unique)
+├── password
+├── orcid_id (unique, nullable)
+├── affiliation
+├── country
+├── bio
+├── cv_path
+├── email_verified_at
+├── mfa_enabled
+├── last_login_at
+├── timestamps
+└── soft_deletes
+```
+
+**Manuscripts Table:**
+```
+manuscripts
+├── id (primary key)
+├── manuscript_number (unique, auto-generated)
+├── title
+├── abstract
+├── keywords (JSON)
+├── manuscript_type (enum)
+├── subject_area
+├── word_count
+├── status (enum: submitted, under_review, revision, accepted, rejected, published)
+├── submitted_by (foreign key → users)
+├── assigned_editor_id (foreign key → users, nullable)
+├── submission_date
+├── decision_date (nullable)
+├── publication_date (nullable)
+├── doi (nullable)
+├── version
+├── parent_manuscript_id (foreign key → manuscripts, nullable for revisions)
+├── timestamps
+└── soft_deletes
+```
+
+**Manuscript Authors Table (Pivot):**
+```
+manuscript_authors
+├── id (primary key)
+├── manuscript_id (foreign key → manuscripts)
+├── user_id (foreign key → users)
+├── author_order
+├── is_corresponding
+├── contribution_role (JSON)
+├── timestamps
+```
+
+**Manuscript Files Table:**
+```
+manuscript_files
+├── id (primary key)
+├── manuscript_id (foreign key → manuscripts)
+├── file_type (enum: main_document, cover_letter, figure, table, supplementary)
+├── filename
+├── storage_path
+├── file_size
+├── mime_type
+├── uploaded_by (foreign key → users)
+├── version
+├── timestamps
+└── soft_deletes
+```
+
+**Reviews Table:**
+```
+reviews
+├── id (primary key)
+├── manuscript_id (foreign key → manuscripts)
+├── reviewer_id (foreign key → users)
+├── review_round
+├── invitation_sent_at
+├── invitation_response (enum: accepted, declined, null)
+├── response_date
+├── review_submitted_at
+├── due_date
+├── recommendation (enum: accept, minor_revision, major_revision, reject)
+├── confidential_comments (text)
+├── author_comments (text)
+├── quality_rating (1-10)
+├── originality_rating (1-10)
+├── methodology_rating (1-10)
+├── significance_rating (1-10)
+├── annotated_file_path (nullable)
+├── status (enum: invited, accepted, in_progress, completed, declined)
+├── timestamps
+└── soft_deletes
+```
+
+**Editorial Decisions Table:**
+```
+editorial_decisions
+├── id (primary key)
+├── manuscript_id (foreign key → manuscripts)
+├── editor_id (foreign key → users)
+├── decision_type (enum: accept, minor_revision, major_revision, reject, desk_reject)
+├── decision_date
+├── decision_letter (text)
+├── revision_due_date (nullable)
+├── round_number
+├── timestamps
+```
+
+**Roles and Permissions:**
+```
+roles
+├── id (primary key)
+├── name (unique)
+├── guard_name
+├── timestamps
+
+permissions
+├── id (primary key)
+├── name (unique)
+├── guard_name
+├── timestamps
+
+model_has_roles (pivot)
+├── role_id
+├── model_type
+├── model_id
+
+role_has_permissions (pivot)
+├── permission_id
+└── role_id
+```
+
+**Issues Table:**
+```
+issues
+├── id (primary key)
+├── volume_number
+├── issue_number
+├── title
+├── publication_date
+├── is_special_issue
+├── guest_editor_id (foreign key → users, nullable)
+├── status (enum: planning, open, in_production, published)
+├── cover_image_path (nullable)
+├── timestamps
+└── soft_deletes
+```
+
+**Manuscript Revisions Table:**
+```
+manuscript_revisions
+├── id (primary key)
+├── original_manuscript_id (foreign key → manuscripts)
+├── revision_number
+├── submitted_at
+├── response_to_reviewers (text)
+├── changes_summary (text)
+├── resubmitted_by (foreign key → users)
+├── timestamps
+```
+
+**Notifications Table:**
+```
+notifications
+├── id (primary key, UUID)
+├── type
+├── notifiable_type
+├── notifiable_id
+├── data (JSON)
+├── read_at (nullable)
+├── created_at
+```
+
+**Entity Relationship Summary:**
+- User has many Manuscripts (as author)
+- User has many Manuscripts (as editor, assigned)
+- User has many Reviews (as reviewer)
+- Manuscript belongs to many Users (authors) through manuscript_authors
+- Manuscript has many Reviews
+- Manuscript has many Editorial Decisions
+- Manuscript has many Manuscript Files
+- Manuscript belongs to Issue (nullable)
+- Review belongs to Manuscript
+- Review belongs to User (reviewer)
+- Editorial Decision belongs to Manuscript
+- Editorial Decision belongs to User (editor)
+- Issue has many Manuscripts
+- User has many Roles (through model_has_roles)
+- Role has many Permissions (through role_has_permissions)
 
 ---
 
 **Document Version**: 1.0  
 **Last Updated**: October 10, 2025  
 **Document Owner**: Product Management Team  
-**Approved By**: [To be completed]
+**Approved By**: Chief Technology Officer & Product Management Team  
+**Next Review Date**: January 10, 2026  
+**Distribution**: Internal - Development Team, Stakeholders, Executive Leadership
