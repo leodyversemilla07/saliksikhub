@@ -31,22 +31,8 @@ Route::get('/manuscripts/{manuscript:slug}', [ManuscriptController::class, 'show
 // Public issue view for published issues
 Route::get('/issues/{issue:slug}', [IssueController::class, 'showPublic'])->name('issues.public.show');
 
-// Auth routes (views for Fortify)
-Route::middleware('guest')->group(function () {
-    Route::inertia('/login', 'auth/login')->name('login');
-    Route::inertia('/register', 'auth/register')->name('register');
-    Route::inertia('/forgot-password', 'auth/forgot-password')->name('password.request');
-    Route::get('/reset-password/{token}', fn ($token) => inertia('auth/reset-password', [
-        'token' => $token,
-        'email' => request('email'),
-    ]))->name('password.reset');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::inertia('/verify-email', 'auth/verify-email')->name('verification.notice');
-    Route::inertia('/confirm-password', 'auth/confirm-password')->name('password.confirm');
-    Route::inertia('/two-factor-challenge', 'auth/two-factor-challenge')->name('two-factor.login');
-});
+// Authentication routes
+require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -99,6 +85,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])->name('editor.manuscripts.prepare_publication_form');
         Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
+        // Review assignment routes
+        Route::get('/editor/manuscripts/{manuscript}/assign-reviewers', [EditorController::class, 'showAssignReviewers'])->name('editor.manuscripts.assign_reviewers');
+        Route::post('/editor/manuscripts/{manuscript}/assign-reviewers', [EditorController::class, 'assignReviewers'])->name('editor.manuscripts.assign_reviewers.store');
+        Route::get('/editor/manuscripts/{manuscript}/reviews', [EditorController::class, 'showManuscriptReviews'])->name('editor.manuscripts.reviews');
+
         // User management CRUD resource route
         Route::resource('users', UserController::class);
         Route::post('users/bulk-destroy', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
@@ -116,6 +107,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reviewer', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
         Route::get('/reviewer/manuscripts', [ReviewerController::class, 'index'])->name('reviewer.manuscripts.index');
         Route::get('/reviewer/manuscripts/{id}', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');
+
+        // Review management routes
+        Route::get('/reviewer/reviews', [\App\Http\Controllers\ReviewController::class, 'index'])->name('reviewer.reviews.index');
+        Route::get('/reviewer/reviews/history', [\App\Http\Controllers\ReviewController::class, 'history'])->name('reviewer.reviews.history');
+        Route::get('/reviewer/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'show'])->name('reviewer.reviews.show');
+        Route::post('/reviewer/reviews/{review}/accept', [\App\Http\Controllers\ReviewController::class, 'accept'])->name('reviewer.reviews.accept');
+        Route::post('/reviewer/reviews/{review}/decline', [\App\Http\Controllers\ReviewController::class, 'decline'])->name('reviewer.reviews.decline');
+        Route::post('/reviewer/reviews/{review}/submit', [\App\Http\Controllers\ReviewController::class, 'submit'])->name('reviewer.reviews.submit');
+        Route::post('/reviewer/reviews/{review}/save-draft', [\App\Http\Controllers\ReviewController::class, 'saveDraft'])->name('reviewer.reviews.save-draft');
+        Route::post('/reviewer/reviews/{review}/request-extension', [\App\Http\Controllers\ReviewController::class, 'requestExtension'])->name('reviewer.reviews.request-extension');
     });
 });
 
@@ -124,6 +125,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('api.notifications');
     Route::post('/api/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('api.notifications.read');
     Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('api.notifications.readAll');
+
+    // Manuscript file management routes
+    Route::post('/manuscripts/{manuscript}/files/upload', [\App\Http\Controllers\ManuscriptFileController::class, 'upload'])->name('manuscripts.files.upload');
+    Route::get('/manuscripts/{manuscript}/files', [\App\Http\Controllers\ManuscriptFileController::class, 'index'])->name('manuscripts.files.index');
+    Route::get('/manuscripts/files/{file}/download', [\App\Http\Controllers\ManuscriptFileController::class, 'download'])->name('manuscripts.files.download');
+    Route::delete('/manuscripts/files/{file}', [\App\Http\Controllers\ManuscriptFileController::class, 'destroy'])->name('manuscripts.files.destroy');
+    Route::get('/manuscripts/files/requirements', [\App\Http\Controllers\ManuscriptFileController::class, 'requirements'])->name('manuscripts.files.requirements');
 });
 
 Route::get('/unauthorized', function () {

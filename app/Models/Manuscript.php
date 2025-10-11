@@ -8,6 +8,7 @@ use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 
@@ -66,11 +67,62 @@ class Manuscript extends Model
     }
 
     /**
-     * Get the author of the manuscript.
+     * Get the primary author of the manuscript.
      */
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get all co-authors of the manuscript.
+     */
+    public function coAuthors(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'manuscript_authors', 'manuscript_id', 'user_id')
+            ->withPivot(['author_order', 'is_corresponding', 'contribution_role'])
+            ->withTimestamps()
+            ->orderBy('author_order');
+    }
+
+    /**
+     * Get all manuscript authors (pivot records).
+     */
+    public function manuscriptAuthors(): HasMany
+    {
+        return $this->hasMany(ManuscriptAuthor::class)->orderBy('author_order');
+    }
+
+    /**
+     * Get the corresponding author.
+     */
+    public function correspondingAuthor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get all files associated with the manuscript.
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(ManuscriptFile::class);
+    }
+
+    /**
+     * Get all reviews for this manuscript.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get all revisions of this manuscript.
+     */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(ManuscriptRevision::class, 'original_manuscript_id');
     }
 
     /**
@@ -102,10 +154,31 @@ class Manuscript extends Model
      */
     public function needsRevision(): bool
     {
-        return in_array($this->status, [
-            ManuscriptStatus::MINOR_REVISION,
-            ManuscriptStatus::MAJOR_REVISION,
-        ], true);
+        return $this->status?->requiresRevision() ?? false;
+    }
+
+    /**
+     * Check if manuscript is in review process.
+     */
+    public function isInReview(): bool
+    {
+        return $this->status?->isInReview() ?? false;
+    }
+
+    /**
+     * Check if manuscript is in production.
+     */
+    public function isInProduction(): bool
+    {
+        return $this->status?->isInProduction() ?? false;
+    }
+
+    /**
+     * Check if manuscript can be edited by author.
+     */
+    public function canBeEditedByAuthor(): bool
+    {
+        return $this->status?->canBeEditedByAuthor() ?? false;
     }
 
     /**
@@ -114,6 +187,43 @@ class Manuscript extends Model
     public function getLatestDecision(): ?EditorialDecision
     {
         return $this->editorialDecisions()->latest('decision_date')->first();
+    }
+
+    /**
+     * Get active reviews for current round.
+     */
+    public function activeReviews(): HasMany
+    {
+        return $this->reviews()->where('status', '!=', 'completed')
+            ->where('status', '!=', 'declined');
+    }
+
+    /**
+     * Get completed reviews.
+     */
+    public function completedReviews(): HasMany
+    {
+        return $this->reviews()->where('status', 'completed');
+    }
+
+    /**
+     * Get main document file.
+     */
+    public function mainDocument()
+    {
+        return $this->files()->where('file_type', 'main_document')
+            ->latest()
+            ->first();
+    }
+
+    /**
+     * Get cover letter file.
+     */
+    public function coverLetter()
+    {
+        return $this->files()->where('file_type', 'cover_letter')
+            ->latest()
+            ->first();
     }
 
     /**
@@ -189,7 +299,7 @@ class Manuscript extends Model
      */
     public function isReadyForAuthorApproval(): bool
     {
-        return $this->status === ManuscriptStatus::AWAITING_APPROVAL;
+        return $this->status === ManuscriptStatus::AWAITING_AUTHOR_APPROVAL;
     }
 
     /**
@@ -197,7 +307,7 @@ class Manuscript extends Model
      */
     public function isReadyForPublication(): bool
     {
-        return $this->status === ManuscriptStatus::READY_TO_PUBLISH;
+        return $this->status === ManuscriptStatus::READY_FOR_PUBLICATION;
     }
 
     /**
@@ -205,6 +315,31 @@ class Manuscript extends Model
      */
     public function isPublished(): bool
     {
-        return $this->status === ManuscriptStatus::PUBLISHED;
+        return $this->status === ManuscriptStatus::PUBLISHED ||
+               $this->status === ManuscriptStatus::PUBLISHED_ONLINE_FIRST;
+    }
+
+    /**
+     * Get progress percentage (0-100).
+     */
+    public function getProgressPercentage(): int
+    {
+        return $this->status?->progressPercentage() ?? 0;
+    }
+
+    /**
+     * Get workflow stage name.
+     */
+    public function getWorkflowStage(): string
+    {
+        return $this->status?->workflowStage() ?? 'unknown';
+    }
+
+    /**
+     * Get all possible next statuses.
+     */
+    public function getPossibleNextStatuses(): array
+    {
+        return $this->status?->possibleNextStatuses() ?? [];
     }
 }

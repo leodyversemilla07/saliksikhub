@@ -132,7 +132,7 @@ class ManuscriptFactory extends Factory
     public function needsRevision(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => fake()->randomElement([ManuscriptStatus::MINOR_REVISION, ManuscriptStatus::MAJOR_REVISION]),
+            'status' => fake()->randomElement([ManuscriptStatus::MINOR_REVISION_REQUIRED, ManuscriptStatus::MAJOR_REVISION_REQUIRED]),
             'decision_date' => fake()->dateTimeBetween('-6 months', 'now'),
             'decision_comments' => fake()->paragraph(),
             'revision_comments' => fake()->paragraph(),

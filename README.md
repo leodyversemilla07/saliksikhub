@@ -8,17 +8,19 @@
 
 ### Manuscript Management
 
--   **Complete Submission Workflow** – Submit manuscripts with metadata, abstracts, and file uploads
--   **Lifecycle Tracking** – Statuses: Submitted → Under Review → Revisions → Accepted → Copyediting → Ready to Publish → Published
--   **File Storage** – Secure file management using DigitalOcean Spaces
+-   **Complete Submission Workflow** – Submit manuscripts with metadata, abstracts, and file uploads (max 100MB)
+-   **Lifecycle Tracking** – 20+ statuses from Submitted → Under Review → Revisions → Accepted → Copyediting → Typesetting → Published
+-   **File Storage** – Secure cloud storage using DigitalOcean Spaces (S3-compatible)
 -   **PDF Processing** – Automated PDF parsing and text extraction
+-   **Version Control** – Track manuscript revisions through multiple rounds (typically 3-4)
 
 ### Editorial System
 
--   **Editorial Dashboard** – Interface for managing submissions and decisions
--   **Decision Management** – Accept, reject, or request revisions with detailed feedback
--   **Issue Management** – Create and organize journal issues by volume/number
--   **Pre-Review Checks** – Detect format issues, keyword mismatch, or possible plagiarism
+-   **Editorial Dashboard** – Comprehensive interface for managing submissions and decisions
+-   **Decision Management** – Six decision types: Accept, Conditional Accept, Minor Revision, Major Revision, Reject, Desk Reject
+-   **Issue Management** – Create and organize journal issues by volume/number with publication scheduling
+-   **Pre-Review Checks** – Automated screening for format issues, scope fit, and plagiarism detection integration
+-   **Workflow Automation** – Automated assignment based on subject area and workload balancing
 
 ### Peer Review
 
@@ -28,9 +30,11 @@
 
 ### User Management
 
--   **Role-Based Access** – Distinct roles for Authors, Reviewers, and Editors
--   **Authentication** – Secure login and session management
--   **User Profiles** – With academic affiliations and contact info
+-   **Role-Based Access** – Six distinct roles: Managing Editor, Editor-in-Chief, Associate Editor, Language Editor, Reviewer, Author
+-   **Authentication** – Laravel Fortify with two-factor authentication (TOTP) support
+-   **ORCID Integration** – Link researcher profiles with ORCID IDs
+-   **User Profiles** – Academic affiliations, expertise keywords, CV upload, and performance metrics
+-   **Granular Permissions** – Spatie Permission package for fine-grained access control
 
 ### Communication & Notifications
 
@@ -50,21 +54,38 @@
 
 ### Backend
 
--   **Laravel 12 (PHP 8.2+)** – MVC framework with modern features
--   **Database** – Compatible with MySQL, PostgreSQL, SQLite
+-   **Laravel 12 (PHP 8.2+)** – Modern MVC framework with streamlined structure
+-   **Inertia.js Server** – Seamless SPA integration without REST API complexity
+-   **Laravel Fortify** – Authentication with two-factor support
+-   **Spatie Permission** – Role-based access control (RBAC)
+-   **Eloquent ORM** – Database abstraction and relationships
+-   **Database** – MySQL 8.0+ (primary), PostgreSQL, SQLite compatible
 
 ### Frontend
 
--   **React 19** – With TypeScript support
--   **Inertia.js** – SPA framework without REST complexity
--   **Tailwind CSS 4.1.3** – Utility-first design
+-   **React 19** – Modern UI library with TypeScript support
+-   **Inertia.js Client** – SPA framework for Laravel
+-   **Tailwind CSS 4.1** – Utility-first CSS framework
+-   **Radix UI** – Accessible component primitives
+-   **shadcn/ui** – Pre-built component library
+-   **React Hook Form + Zod** – Form handling and validation
+-   **TypeScript** – Type safety and developer experience
 
 ### Infrastructure
 
--   **DigitalOcean Spaces** – File storage
--   **Vite** – For modern frontend tooling
--   **PDF Parser** – For file content extraction
+-   **DigitalOcean Spaces** – Cloud file storage (S3-compatible)
+-   **Vite 7** – Fast frontend build tooling
+-   **PDF Parser** – Manuscript text extraction
 -   **Email System** – SMTP-based notifications
+-   **Laravel Queue** – Background job processing
+-   **Redis** – Optional caching and session storage
+
+### Development Tools
+
+-   **Laravel Sail** – Docker development environment
+-   **Pest** – Modern PHP testing framework
+-   **ESLint** – JavaScript/TypeScript linting
+-   **Laravel Pint** – PHP code style fixer
 
 ---
 
@@ -202,7 +223,22 @@ MIT License – see the [LICENSE](LICENSE) file.
 
 ---
 
+## Documentation
+
+-   **[PRD.md](PRD.md)** - Complete Product Requirements Document
+-   **[USER_WORKFLOWS.md](USER_WORKFLOWS.md)** - Detailed workflows for each user role
+-   **[MANUSCRIPT_STATUSES.md](MANUSCRIPT_STATUSES.md)** - Complete status definitions and transitions
+-   **[roles.md](roles.md)** - User roles, permissions, and access levels
+
+---
+
 ## Acknowledgments
 
 -   Thanks to Laravel, React, Inertia, and Tailwind communities
 -   Built in response to the need for a modern, accessible academic publishing platform
+
+---
+
+**Version**: 1.1  
+**Last Updated**: January 11, 2025  
+**System Name**: SaliksikHub (from Filipino _"saliksik"_ meaning _research_)

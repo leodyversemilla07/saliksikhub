@@ -99,4 +99,113 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(EditorialDecision::class, 'editor_id');
     }
+
+    /**
+     * Get all manuscripts where user is a co-author.
+     */
+    public function coAuthoredManuscripts()
+    {
+        return $this->belongsToMany(Manuscript::class, 'manuscript_authors', 'user_id', 'manuscript_id')
+            ->withPivot(['author_order', 'is_corresponding', 'contribution_role'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all manuscript author records for this user.
+     */
+    public function manuscriptAuthorships(): HasMany
+    {
+        return $this->hasMany(ManuscriptAuthor::class, 'user_id');
+    }
+
+    /**
+     * Get all reviews assigned to this user.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    /**
+     * Get active reviews (not completed or declined).
+     */
+    public function activeReviews(): HasMany
+    {
+        return $this->reviews()->whereIn('status', ['invited', 'accepted', 'in_progress']);
+    }
+
+    /**
+     * Get completed reviews.
+     */
+    public function completedReviews(): HasMany
+    {
+        return $this->reviews()->where('status', 'completed');
+    }
+
+    /**
+     * Get uploaded files.
+     */
+    public function uploadedFiles(): HasMany
+    {
+        return $this->hasMany(ManuscriptFile::class, 'uploaded_by');
+    }
+
+    /**
+     * Check if user has reviewer role.
+     */
+    public function isReviewer(): bool
+    {
+        return $this->hasRole('reviewer');
+    }
+
+    /**
+     * Check if user has any editor role.
+     */
+    public function isEditor(): bool
+    {
+        return $this->hasAnyRole(['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor']);
+    }
+
+    /**
+     * Check if user has author role.
+     */
+    public function isAuthor(): bool
+    {
+        return $this->hasRole('author');
+    }
+
+    /**
+     * Get reviewer performance metrics.
+     */
+    public function getReviewerMetrics(): array
+    {
+        $totalReviews = $this->reviews()->count();
+        $completedReviews = $this->completedReviews()->count();
+        $declinedReviews = $this->reviews()->where('status', 'declined')->count();
+        $activeReviews = $this->activeReviews()->count();
+
+        $completedReviewsWithTime = $this->completedReviews()
+            ->whereNotNull('review_submitted_at')
+            ->whereNotNull('invitation_sent_at')
+            ->get();
+
+        $averageDays = 0;
+        if ($completedReviewsWithTime->count() > 0) {
+            $totalDays = $completedReviewsWithTime->sum(function ($review) {
+                return $review->invitation_sent_at->diffInDays($review->review_submitted_at);
+            });
+            $averageDays = round($totalDays / $completedReviewsWithTime->count(), 1);
+        }
+
+        $acceptanceRate = $totalReviews > 0 ? round(($completedReviews / $totalReviews) * 100, 1) : 0;
+
+        return [
+            'total_reviews' => $totalReviews,
+            'completed_reviews' => $completedReviews,
+            'declined_reviews' => $declinedReviews,
+            'active_reviews' => $activeReviews,
+            'average_review_time_days' => $averageDays,
+            'acceptance_rate' => $acceptanceRate,
+        ];
+    }
 }

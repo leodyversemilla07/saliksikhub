@@ -1668,6 +1668,7 @@ Each user role has access to:
 
 ---
 
-*Document Version: 1.0*  
-*Last Updated: October 10, 2025*  
-*System: Research Journal Management System*
+**Document Version**: 1.1  
+**Last Updated**: January 11, 2025  
+**System**: SaliksikHub Research Journal Management System  
+**Related Documents**: PRD.md, MANUSCRIPT_STATUSES.md, roles.md

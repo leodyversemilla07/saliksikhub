@@ -972,9 +972,10 @@ notifications
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: October 10, 2025  
+**Document Version**: 1.1  
+**Last Updated**: January 11, 2025  
 **Document Owner**: Product Management Team  
 **Approved By**: Chief Technology Officer & Product Management Team  
-**Next Review Date**: January 10, 2026  
-**Distribution**: Internal - Development Team, Stakeholders, Executive Leadership
+**Next Review Date**: April 11, 2025  
+**Distribution**: Internal - Development Team, Stakeholders, Executive Leadership  
+**Related Documents**: USER_WORKFLOWS.md, MANUSCRIPT_STATUSES.md, roles.md

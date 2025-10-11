@@ -1,0 +1,335 @@
+import { useState } from 'react';
+import { useForm } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Rating } from '@/components/ui/rating';
+import { Separator } from '@/components/ui/separator';
+import { FileUpload } from '@/components/file-upload';
+import { 
+    AlertCircle, 
+    CheckCircle2, 
+    Info, 
+    Send,
+    Save
+} from 'lucide-react';
+import type { ReviewFormData, ReviewRecommendation, RecommendationOption } from '@/types/review';
+
+interface ReviewSubmissionFormProps {
+    reviewId: number;
+    manuscriptTitle: string;
+    onSuccess?: () => void;
+    onSaveDraft?: () => void;
+    initialData?: Partial<ReviewFormData>;
+}
+
+const recommendationOptions: RecommendationOption[] = [
+    {
+        value: 'accept',
+        label: 'Accept',
+        description: 'Manuscript is suitable for publication as is',
+        color: 'text-green-600 bg-green-50 border-green-200',
+    },
+    {
+        value: 'minor_revision',
+        label: 'Minor Revision',
+        description: 'Accept pending minor revisions',
+        color: 'text-blue-600 bg-blue-50 border-blue-200',
+    },
+    {
+        value: 'major_revision',
+        label: 'Major Revision',
+        description: 'Significant revisions required before acceptance',
+        color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+    },
+    {
+        value: 'reject',
+        label: 'Reject',
+        description: 'Manuscript is not suitable for publication',
+        color: 'text-red-600 bg-red-50 border-red-200',
+    },
+];
+
+export function ReviewSubmissionForm({
+    reviewId,
+    manuscriptTitle,
+    onSuccess,
+    onSaveDraft,
+    initialData,
+}: ReviewSubmissionFormProps) {
+    const [characterCount, setCharacterCount] = useState(
+        initialData?.author_comments?.length || 0
+    );
+
+    const { data, setData, post, processing, errors, isDirty } = useForm<ReviewFormData>({
+        recommendation: initialData?.recommendation || '',
+        author_comments: initialData?.author_comments || '',
+        confidential_comments: initialData?.confidential_comments || '',
+        quality_rating: initialData?.quality_rating || 5,
+        originality_rating: initialData?.originality_rating || 5,
+        methodology_rating: initialData?.methodology_rating || 5,
+        significance_rating: initialData?.significance_rating || 5,
+        annotated_file: null,
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        post(route('reviewer.reviews.submit', reviewId), {
+            onSuccess: () => {
+                onSuccess?.();
+            },
+        });
+    };
+
+    const handleSaveDraft = () => {
+        post(route('reviewer.reviews.save-draft', reviewId), {
+            onSuccess: () => {
+                onSaveDraft?.();
+            },
+        });
+    };
+
+    const isFormValid = () => {
+        return (
+            data.recommendation !== '' &&
+            data.author_comments.length >= 100 &&
+            data.quality_rating > 0 &&
+            data.originality_rating > 0 &&
+            data.methodology_rating > 0 &&
+            data.significance_rating > 0
+        );
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Recommendation */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Recommendation</CardTitle>
+                    <CardDescription>
+                        Select your overall recommendation for this manuscript
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <RadioGroup
+                        value={data.recommendation}
+                        onValueChange={(value) => setData('recommendation', value as ReviewRecommendation)}
+                    >
+                        <div className="space-y-3">
+                            {recommendationOptions.map((option) => (
+                                <div key={option.value}>
+                                    <div className="flex items-start space-x-3">
+                                        <RadioGroupItem 
+                                            value={option.value} 
+                                            id={option.value}
+                                            className="mt-1"
+                                        />
+                                        <div className="flex-1">
+                                            <Label 
+                                                htmlFor={option.value}
+                                                className="cursor-pointer"
+                                            >
+                                                <div className={`p-3 rounded-lg border-2 transition-colors ${
+                                                    data.recommendation === option.value 
+                                                        ? option.color 
+                                                        : 'border-gray-200 hover:border-gray-300'
+                                                }`}>
+                                                    <div className="font-semibold">{option.label}</div>
+                                                    <div className="text-sm text-gray-600 mt-1">
+                                                        {option.description}
+                                                    </div>
+                                                </div>
+                                            </Label>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </RadioGroup>
+                    {errors.recommendation && (
+                        <Alert variant="destructive" className="mt-4">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{errors.recommendation}</AlertDescription>
+                        </Alert>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Ratings */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Evaluation Criteria</CardTitle>
+                    <CardDescription>
+                        Rate the manuscript on a scale of 1-10
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="quality">Quality of Work</Label>
+                        <Rating
+                            value={data.quality_rating}
+                            onChange={(value) => setData('quality_rating', value)}
+                            max={10}
+                            size="lg"
+                        />
+                        {errors.quality_rating && (
+                            <p className="text-sm text-red-500">{errors.quality_rating}</p>
+                        )}
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                        <Label htmlFor="originality">Originality & Novelty</Label>
+                        <Rating
+                            value={data.originality_rating}
+                            onChange={(value) => setData('originality_rating', value)}
+                            max={10}
+                            size="lg"
+                        />
+                        {errors.originality_rating && (
+                            <p className="text-sm text-red-500">{errors.originality_rating}</p>
+                        )}
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                        <Label htmlFor="methodology">Methodology & Rigor</Label>
+                        <Rating
+                            value={data.methodology_rating}
+                            onChange={(value) => setData('methodology_rating', value)}
+                            max={10}
+                            size="lg"
+                        />
+                        {errors.methodology_rating && (
+                            <p className="text-sm text-red-500">{errors.methodology_rating}</p>
+                        )}
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                        <Label htmlFor="significance">Significance & Impact</Label>
+                        <Rating
+                            value={data.significance_rating}
+                            onChange={(value) => setData('significance_rating', value)}
+                            max={10}
+                            size="lg"
+                        />
+                        {errors.significance_rating && (
+                            <p className="text-sm text-red-500">{errors.significance_rating}</p>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Comments to Author */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Comments to Author</CardTitle>
+                    <CardDescription>
+                        Provide detailed feedback that will be shared with the author
+                        <span className="text-red-500 ml-1">*</span>
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Textarea
+                            id="author_comments"
+                            value={data.author_comments}
+                            onChange={(e) => {
+                                setData('author_comments', e.target.value);
+                                setCharacterCount(e.target.value.length);
+                            }}
+                            placeholder="Provide constructive feedback on strengths, weaknesses, and areas for improvement..."
+                            className="min-h-[200px]"
+                        />
+                        <div className="flex justify-between text-sm">
+                            <span className={characterCount < 100 ? 'text-red-500' : 'text-gray-500'}>
+                                Minimum 100 characters required
+                            </span>
+                            <span className="text-gray-500">
+                                {characterCount} characters
+                            </span>
+                        </div>
+                        {errors.author_comments && (
+                            <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription>{errors.author_comments}</AlertDescription>
+                            </Alert>
+                        )}
+                    </div>
+
+                    <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                            These comments will be shared with the author. Be constructive and professional.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+
+            {/* Confidential Comments */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Confidential Comments to Editor</CardTitle>
+                    <CardDescription>
+                        Optional comments that will only be seen by the editor
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Textarea
+                        id="confidential_comments"
+                        value={data.confidential_comments}
+                        onChange={(e) => setData('confidential_comments', e.target.value)}
+                        placeholder="Any additional comments or concerns for the editor only..."
+                        className="min-h-[100px]"
+                    />
+                </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 justify-end">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleSaveDraft}
+                    disabled={processing || !isDirty}
+                >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Draft
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={processing || !isFormValid()}
+                >
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit Review
+                </Button>
+            </div>
+
+            {/* Validation Summary */}
+            {!isFormValid() && (
+                <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                        <p className="font-semibold mb-2">Please complete the following:</p>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                            {!data.recommendation && <li>Select a recommendation</li>}
+                            {data.author_comments.length < 100 && <li>Write at least 100 characters in comments to author</li>}
+                            {data.quality_rating === 0 && <li>Rate quality of work</li>}
+                            {data.originality_rating === 0 && <li>Rate originality & novelty</li>}
+                            {data.methodology_rating === 0 && <li>Rate methodology & rigor</li>}
+                            {data.significance_rating === 0 && <li>Rate significance & impact</li>}
+                        </ul>
+                    </AlertDescription>
+                </Alert>
+            )}
+        </form>
+    );
+}

@@ -27,18 +27,17 @@ class EditorialDecision extends Model
         'decision_type' => DecisionType::class,
     ];
 
-    // Define constants for decision types that match both the form and database
-    const DECISION_TYPES = [
-        'ACCEPT' => 'Accept',
-        'MINOR_REVISION' => 'Minor Revision',
-        'MAJOR_REVISION' => 'Major Revision',
-        'REJECT' => 'Reject',
-    ];
+    // Status constants
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_FINALIZED = 'finalized';
+
+    public const STATUS_ARCHIVED = 'archived';
 
     public const STATUSES = [
-        'PENDING' => 'Pending',
-        'FINALIZED' => 'Finalized',
-        'ARCHIVED' => 'Archived',
+        self::STATUS_PENDING => 'Pending',
+        self::STATUS_FINALIZED => 'Finalized',
+        self::STATUS_ARCHIVED => 'Archived',
     ];
 
     // Relationships
@@ -57,7 +56,7 @@ class EditorialDecision extends Model
      */
     public function isPending(): bool
     {
-        return $this->status === self::STATUSES['PENDING'];
+        return $this->status === self::STATUS_PENDING;
     }
 
     /**
@@ -65,7 +64,7 @@ class EditorialDecision extends Model
      */
     public function isFinalized(): bool
     {
-        return $this->status === self::STATUSES['FINALIZED'];
+        return $this->status === self::STATUS_FINALIZED;
     }
 
     /**
@@ -73,7 +72,10 @@ class EditorialDecision extends Model
      */
     public function requiresRevision(): bool
     {
-        return in_array($this->decision_type?->value, [DecisionType::MINOR_REVISION->value, DecisionType::MAJOR_REVISION->value], true);
+        return in_array($this->decision_type, [
+            DecisionType::MINOR_REVISION,
+            DecisionType::MAJOR_REVISION,
+        ], true);
     }
 
     public function isAccepted(): bool
@@ -81,9 +83,19 @@ class EditorialDecision extends Model
         return $this->decision_type === DecisionType::ACCEPT;
     }
 
+    public function isConditionallyAccepted(): bool
+    {
+        return $this->decision_type === DecisionType::CONDITIONAL_ACCEPT;
+    }
+
     public function isRejected(): bool
     {
         return $this->decision_type === DecisionType::REJECT;
+    }
+
+    public function isDeskRejected(): bool
+    {
+        return $this->decision_type === DecisionType::DESK_REJECT;
     }
 
     public function isMinorRevision(): bool
@@ -94,5 +106,13 @@ class EditorialDecision extends Model
     public function isMajorRevision(): bool
     {
         return $this->decision_type === DecisionType::MAJOR_REVISION;
+    }
+
+    /**
+     * Get the resulting manuscript status for this decision.
+     */
+    public function getResultingStatus(): \App\ManuscriptStatus
+    {
+        return $this->decision_type?->resultingStatus() ?? \App\ManuscriptStatus::UNDER_SCREENING;
     }
 }

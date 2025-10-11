@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\PasswordResetResponse;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -29,6 +31,38 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->singleton(UpdatesUserProfileInformation::class, UpdateUserProfileInformation::class);
         $this->app->singleton(UpdatesUserPasswords::class, UpdateUserPassword::class);
         $this->app->singleton(ResetsUserPasswords::class, ResetUserPassword::class);
+
+        // Custom login response
+        $this->app->singleton(LoginResponse::class, function () {
+            return new class implements LoginResponse
+            {
+                public function toResponse($request)
+                {
+                    $user = auth()->user();
+
+                    if ($user->hasRole(['chief_editor', 'editor_in_chief', 'editor', 'associate_editor'])) {
+                        return redirect()->route('editor.dashboard');
+                    } elseif ($user->hasRole('reviewer')) {
+                        return redirect()->route('reviewer.dashboard');
+                    } elseif ($user->hasRole('author')) {
+                        return redirect()->route('manuscripts.index');
+                    }
+
+                    return redirect('/dashboard');
+                }
+            };
+        });
+
+        // Custom password reset response
+        $this->app->singleton(PasswordResetResponse::class, function () {
+            return new class implements PasswordResetResponse
+            {
+                public function toResponse($request)
+                {
+                    return redirect()->route('login');
+                }
+            };
+        });
     }
 
     /**
@@ -36,6 +70,28 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Custom redirect after login based on user role
+        Fortify::redirects('login', function () {
+            $user = auth()->user();
+
+            if ($user->hasRole(['chief_editor', 'editor_in_chief'])) {
+                return route('editor.dashboard');
+            } elseif ($user->hasRole('editor')) {
+                return route('editor.dashboard');
+            } elseif ($user->hasRole('associate_editor')) {
+                return route('editor.dashboard');
+            } elseif ($user->hasRole('reviewer')) {
+                return route('reviewer.dashboard');
+            } elseif ($user->hasRole('author')) {
+                return route('manuscripts.index');
+            }
+
+            return '/dashboard';
+        });
+
+        // Redirect to login after password reset
+        Fortify::redirects('password-reset', fn () => route('login'));
+
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
