@@ -1,12 +1,11 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
-import { Book, Calendar, Archive } from 'lucide-react';
+import { Calendar, Archive, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -41,6 +40,14 @@ interface VolumeYear {
 }
 
 export default function Archives({ auth }: PageProps) {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            router.visit(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+        }
+    };
 
     const archiveData: VolumeYear[] = [
         {
@@ -111,36 +118,89 @@ export default function Archives({ auth }: PageProps) {
                         </p>
                     </div>
 
-                    {/* Tabs Navigation */}
-                    <Tabs defaultValue="issues" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 mb-8">
-                            <TabsTrigger value="issues" className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                Published Issues
-                            </TabsTrigger>
-                            <TabsTrigger value="search" className="flex items-center gap-2">
-                                <Book className="h-4 w-4" />
+                    {/* Search Section */}
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Search className="h-5 w-5" />
                                 Search Archives
-                            </TabsTrigger>
-                            <TabsTrigger value="statistics" className="flex items-center gap-2">
-                                <Archive className="h-4 w-4" />
-                                Statistics
-                            </TabsTrigger>
-                        </TabsList>
+                            </CardTitle>
+                            <CardDescription>
+                                Use our advanced search to find specific articles, authors, or research topics across all published issues.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <form onSubmit={handleSearch} className="flex gap-4">
+                                <Input
+                                    placeholder="Search articles, authors, keywords..."
+                                    className="flex-1"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <Button type="submit">
+                                    Search
+                                </Button>
+                            </form>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-base">Advanced Filters</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div>
+                                            <label className="text-sm font-medium text-foreground mb-2 block">
+                                                Publication Year
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Input placeholder="From" type="number" />
+                                                <Input placeholder="To" type="number" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium text-foreground mb-2 block">
+                                                Author
+                                            </label>
+                                            <Input placeholder="Author name" />
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium text-foreground mb-2 block">
+                                                Subject Area
+                                            </label>
+                                            <Input placeholder="Research area or topic" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-base">Search Tips</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ul className="text-sm text-muted-foreground space-y-2">
+                                            <li>• Use quotes for exact phrases: "climate change"</li>
+                                            <li>• Use AND/OR for multiple terms: research AND methodology</li>
+                                            <li>• Use wildcards for partial matches: sustain*</li>
+                                            <li>• Search by DOI for specific articles</li>
+                                        </ul>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                        {/* Published Issues Tab */}
-                        <TabsContent value="issues" className="space-y-8">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="h-5 w-5" />
-                                        Published Issues
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Browse all published volumes and issues organized by year.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
+                    {/* Published Issues Section */}
+                    <Card className="mb-8">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Calendar className="h-5 w-5" />
+                                Published Issues
+                            </CardTitle>
+                            <CardDescription>
+                                Browse all published volumes and issues organized by year.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
                                     <div className="space-y-8">
                                         {archiveData.map((yearData) => (
                                             <div key={yearData.year}>
@@ -207,170 +267,95 @@ export default function Archives({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
 
-                        {/* Search Archives Tab */}
-                        <TabsContent value="search">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Book className="h-5 w-5" />
-                                        Search Archives
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Use our advanced search to find specific articles, authors, or research topics across all published issues.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <div className="flex gap-4">
-                                        <Input
-                                            placeholder="Search articles, authors, keywords..."
-                                            className="flex-1"
-                                        />
-                                        <Button>
-                                            Search
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-base">Advanced Filters</CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div>
-                                                    <label className="text-sm font-medium text-foreground mb-2 block">
-                                                        Publication Year
-                                                    </label>
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <Input placeholder="From" type="number" />
-                                                        <Input placeholder="To" type="number" />
+                    {/* Statistics Section */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Archive className="h-5 w-5" />
+                                Archive Statistics
+                            </CardTitle>
+                            <CardDescription>
+                                Overview of our publication statistics and research impact.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid md:grid-cols-3 gap-6 mb-8">
+                                <Card className="text-center">
+                                    <CardContent className="pt-6">
+                                        <div className="text-3xl font-bold text-primary mb-2">
+                                            {archiveData.reduce((total, year) =>
+                                                total + year.volumes.reduce((volTotal, vol) => volTotal + vol.issues.length, 0), 0
+                                            )}
+                                        </div>
+                                        <p className="text-muted-foreground">Total Issues</p>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card className="text-center">
+                                    <CardContent className="pt-6">
+                                        <div className="text-3xl font-bold text-primary mb-2">
+                                            {archiveData.length}
+                                        </div>
+                                        <p className="text-muted-foreground">Years Published</p>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card className="text-center">
+                                    <CardContent className="pt-6">
+                                        <div className="text-3xl font-bold text-primary mb-2">
+                                            {archiveData.reduce((total, year) => total + year.volumes.length, 0)}
+                                        </div>
+                                        <p className="text-muted-foreground">Total Volumes</p>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-base">Publication History</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-3">
+                                            {archiveData.map((yearData) => (
+                                                <div key={yearData.year} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                                                    <span className="font-medium">{yearData.year}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant="secondary">
+                                                            {yearData.volumes.reduce((total, vol) => total + vol.issues.length, 0)} issues
+                                                        </Badge>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <label className="text-sm font-medium text-foreground mb-2 block">
-                                                        Author
-                                                    </label>
-                                                    <Input placeholder="Author name" />
-                                                </div>
-                                                <div>
-                                                    <label className="text-sm font-medium text-foreground mb-2 block">
-                                                        Subject Area
-                                                    </label>
-                                                    <Input placeholder="Research area or topic" />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                        
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-base">Search Tips</CardTitle>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <ul className="text-sm text-muted-foreground space-y-2">
-                                                    <li>• Use quotes for exact phrases: "climate change"</li>
-                                                    <li>• Use AND/OR for multiple terms: research AND methodology</li>
-                                                    <li>• Use wildcards for partial matches: sustain*</li>
-                                                    <li>• Search by DOI for specific articles</li>
-                                                </ul>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        {/* Statistics Tab */}
-                        <TabsContent value="statistics">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Archive className="h-5 w-5" />
-                                        Archive Statistics
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Overview of our publication statistics and research impact.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid md:grid-cols-3 gap-6 mb-8">
-                                        <Card className="text-center">
-                                            <CardContent className="pt-6">
-                                                <div className="text-3xl font-bold text-primary mb-2">
-                                                    {archiveData.reduce((total, year) =>
-                                                        total + year.volumes.reduce((volTotal, vol) => volTotal + vol.issues.length, 0), 0
-                                                    )}
-                                                </div>
-                                                <p className="text-muted-foreground">Total Issues</p>
-                                            </CardContent>
-                                        </Card>
-                                        
-                                        <Card className="text-center">
-                                            <CardContent className="pt-6">
-                                                <div className="text-3xl font-bold text-primary mb-2">
-                                                    {archiveData.length}
-                                                </div>
-                                                <p className="text-muted-foreground">Years Published</p>
-                                            </CardContent>
-                                        </Card>
-                                        
-                                        <Card className="text-center">
-                                            <CardContent className="pt-6">
-                                                <div className="text-3xl font-bold text-primary mb-2">
-                                                    {archiveData.reduce((total, year) => total + year.volumes.length, 0)}
-                                                </div>
-                                                <p className="text-muted-foreground">Total Volumes</p>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                    
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-base">Publication History</CardTitle>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="space-y-3">
-                                                    {archiveData.map((yearData) => (
-                                                        <div key={yearData.year} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                                                            <span className="font-medium">{yearData.year}</span>
-                                                            <div className="flex items-center gap-2">
-                                                                <Badge variant="secondary">
-                                                                    {yearData.volumes.reduce((total, vol) => total + vol.issues.length, 0)} issues
-                                                                </Badge>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                        
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-base">Quick Access</CardTitle>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="space-y-3">
-                                                    <Link href="/current-issue" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
-                                                        <span>Current Issue</span>
-                                                        <Badge>Latest</Badge>
-                                                    </Link>
-                                                    <Link href="/most-cited" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
-                                                        <span>Most Cited Articles</span>
-                                                        <Badge variant="secondary">Popular</Badge>
-                                                    </Link>
-                                                    <Link href="/recent-articles" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
-                                                        <span>Recent Articles</span>
-                                                        <Badge variant="secondary">New</Badge>
-                                                    </Link>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                    </Tabs>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                                
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="text-base">Quick Access</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-3">
+                                            <Link href="/current-issue" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
+                                                <span>Current Issue</span>
+                                                <Badge>Latest</Badge>
+                                            </Link>
+                                            <Link href="/most-cited" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
+                                                <span>Most Cited Articles</span>
+                                                <Badge variant="secondary">Popular</Badge>
+                                            </Link>
+                                            <Link href="/recent-articles" className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors">
+                                                <span>Recent Articles</span>
+                                                <Badge variant="secondary">New</Badge>
+                                            </Link>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </main>
             <Footer />

@@ -28,6 +28,9 @@ Route::get('/manuscripts/{manuscript:slug}/pdf', [ManuscriptController::class, '
 // Public manuscript view for published manuscripts
 Route::get('/manuscripts/{manuscript:slug}', [ManuscriptController::class, 'showPublic'])->name('manuscripts.public.show');
 
+// Public search for published manuscripts
+Route::get('/search', [ManuscriptController::class, 'search'])->name('manuscripts.search');
+
 // Public issue view for published issues
 Route::get('/issues/{issue:slug}', [IssueController::class, 'showPublic'])->name('issues.public.show');
 

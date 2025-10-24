@@ -3,6 +3,8 @@ import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { dashboard } from '@/routes';
+import users from '@/routes/users';
 
 type User = {
     id: number;
@@ -25,9 +27,9 @@ type User = {
 
 export default function UserShow({ user }: { user: User }) {
     const breadcrumbItems = [
-        { label: 'Dashboard', href: route('dashboard') },
-        { label: 'User Management', href: route('users.index') },
-        { label: `${user.firstname} ${user.lastname}`, href: route('users.show', user.id), current: true },
+        { label: 'Dashboard', href: dashboard.url() },
+        { label: 'User Management', href: users.index.url() },
+        { label: `${user.firstname} ${user.lastname}`, href: users.show.url({ user: user.id }), current: true },
     ];
 
     // Role label mapping

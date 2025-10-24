@@ -332,7 +332,7 @@ class IssueController extends Controller
 
             // Verify all manuscripts are valid for assignment
             foreach ($manuscripts as $manuscript) {
-                if (! in_array($manuscript->status, ['Ready to Publish', 'Accepted', 'Published'])) {
+                if (! in_array((string) $manuscript->status, ['ready_for_publication', 'accepted', 'published'], true)) {
                     return redirect()->back()
                         ->with('error', "Manuscript '{$manuscript->title}' is not in a valid status for assignment.");
                 }
@@ -388,10 +388,9 @@ class IssueController extends Controller
                     ->orWhere('issue_id', 0); // Handle any zero values that might exist
             })
             ->where(function ($query) {
-                $query->whereIn('status', ['Ready to Publish', 'Accepted', 'Published'])
-                    ->orWhereRaw('LOWER(status) = ?', ['ready to publish'])
-                    ->orWhereRaw('LOWER(status) = ?', ['accepted'])
-                    ->orWhereRaw('LOWER(status) = ?', ['published']);
+                // Store values are lower_snake_case from enum casts; support legacy strings too
+                $query->whereIn('status', ['ready_for_publication', 'accepted', 'published'])
+                    ->orWhereRaw('LOWER(status) IN (?, ?, ?, ?)', ['ready to publish', 'ready_for_publication', 'accepted', 'published']);
             })
             ->get();
 

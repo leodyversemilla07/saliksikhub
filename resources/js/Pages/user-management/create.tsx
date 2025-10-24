@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { getData } from 'country-list';
+import { dashboard } from '@/routes';
+import users from '@/routes/users';
 
 interface CreateUserProps {
     roles: string[];
@@ -34,9 +36,9 @@ type FormData = {
 
 export default function CreateUser({ roles, errors }: CreateUserProps) {
     const breadcrumbItems = [
-        { label: 'Dashboard', href: route('dashboard') },
-        { label: 'User Management', href: route('users.index') },
-        { label: 'Add User', href: route('users.create'), current: true },
+        { label: 'Dashboard', href: dashboard.url() },
+        { label: 'User Management', href: users.index.url() },
+        { label: 'Add User', href: users.create.url(), current: true },
     ];
 
     const { data, setData, post, processing, reset } = useForm<FormData>({
@@ -68,7 +70,7 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('users.store'), {
+        post(users.store.url(), {
             onSuccess: () => {
                 reset();
                 toast("User has been successfully created.");

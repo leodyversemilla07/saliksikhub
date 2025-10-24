@@ -206,13 +206,12 @@ class NotificationController extends Controller
         if (isset($data['manuscript_id'])) {
             $user = Auth::user();
 
-            // Generate the appropriate URL based on user role
-            if ($user->role === 'editor') {
+            // Generate the appropriate URL based on Spatie roles
+            if (method_exists($user, 'isEditor') && $user->isEditor()) {
                 return '/editor/manuscripts/'.$data['manuscript_id'];
-            } else {
-                // Use manuscript.show route for authors
-                return '/author/manuscripts/'.$data['manuscript_id'];
             }
+
+            return '/author/manuscripts/'.$data['manuscript_id'];
         }
 
         return null;

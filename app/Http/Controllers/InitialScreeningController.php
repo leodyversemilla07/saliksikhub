@@ -43,7 +43,7 @@ class InitialScreeningController extends Controller
                 $manuscript->status = ManuscriptStatus::UNDER_REVIEW;
 
                 // Notify editors that manuscript is ready for review
-                $editors = User::where('role', 'editor')->get();
+                $editors = User::role(['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor'])->get();
                 foreach ($editors as $editor) {
                     // You would need to create this notification
                     // $editor->notify(new ManuscriptReadyForReview($manuscript));

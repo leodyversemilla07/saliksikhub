@@ -122,7 +122,7 @@ class Manuscript extends Model
      */
     public function revisions(): HasMany
     {
-        return $this->hasMany(ManuscriptRevision::class, 'original_manuscript_id');
+        return $this->hasMany(ManuscriptRevision::class, 'manuscript_id');
     }
 
     /**
@@ -292,6 +292,20 @@ class Manuscript extends Model
             \App\ManuscriptStatus::SUBMITTED,
             \App\ManuscriptStatus::UNDER_REVIEW,
         ]);
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        if (! $searchTerm) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($searchTerm) {
+            $q->where('title', 'like', "%{$searchTerm}%")
+                ->orWhere('authors', 'like', "%{$searchTerm}%")
+                ->orWhere('keywords', 'like', "%{$searchTerm}%")
+                ->orWhere('abstract', 'like', "%{$searchTerm}%");
+        });
     }
 
     /**

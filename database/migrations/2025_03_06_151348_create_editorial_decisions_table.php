@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('manuscript_id')->constrained()->onDelete('cascade');
             $table->foreignId('editor_id')->constrained('users')->onDelete('cascade');
             $table->dateTime('decision_date')->nullable();
-            $table->enum('decision_type', ['Accept', 'Minor Revision', 'Major Revision', 'Reject']);
+            $table->enum('decision_type', ['accept', 'minor_revision', 'major_revision', 'reject', 'desk_reject', 'conditional_accept']);
             $table->text('comments_to_author')->nullable();
             $table->string('decision_file_path')->nullable();  // for uploading decision letter PDF
             $table->date('revision_deadline')->nullable();

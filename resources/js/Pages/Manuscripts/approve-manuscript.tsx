@@ -9,6 +9,8 @@ import { FileText, AlertTriangle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import editor from '@/routes/editor';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 interface ManuscriptProps {
     id: number;
@@ -30,7 +32,7 @@ export default function ApproveManuscript({ manuscript }: PageProps<{ manuscript
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(route('manuscripts.approve.submit', manuscript.id), {
+        post(manuscriptsRoutes.approve.submit.url({ id: manuscript.id }), {
             preserveScroll: true,
             preserveState: false,
             forceFormData: true,
@@ -225,11 +227,11 @@ export default function ApproveManuscript({ manuscript }: PageProps<{ manuscript
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('editor.dashboard'),
+            href: editor.dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: route('editor.indexManuscripts'),
+            href: editor.indexManuscripts.url(),
         },
         {
             label: 'Approve Manuscript',

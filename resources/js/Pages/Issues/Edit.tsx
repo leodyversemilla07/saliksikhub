@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, AlertCircle, FileText, Eye, BookOpen, Archive } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import issuesRoutes from '@/routes/issues';
 
 interface JournalIssue {
     id: number;
@@ -91,7 +93,7 @@ export default function Edit({ issue }: EditProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('issues.update', issue.id), {
+        post(issuesRoutes.update.url({ id: issue.id }), {
             forceFormData: true,
         });
     };
@@ -99,19 +101,19 @@ export default function Edit({ issue }: EditProps) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Journal Issues',
-            href: route('issues.index'),
+            href: issuesRoutes.index.url(),
         },
         {
             label: `Vol. ${issue.volume_number}, Issue ${issue.issue_number}`,
-            href: route('issues.show', issue.id),
+            href: issuesRoutes.show.url({ id: issue.id }),
         },
         {
             label: 'Edit',
-            href: route('issues.edit', issue.id),
+            href: issuesRoutes.edit.url({ id: issue.id }),
         }
     ];
 

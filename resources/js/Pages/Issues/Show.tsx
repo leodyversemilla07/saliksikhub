@@ -30,6 +30,8 @@ import {
     Trash2
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import issuesRoutes from '@/routes/issues';
 
 interface JournalIssue {
     id: number;
@@ -127,7 +129,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
 
         setUnassigningManuscript(manuscriptToUnassign.id);
         router.delete(
-            route('issues.manuscripts.unassign', [issue.id, manuscriptToUnassign.id]),
+            issuesRoutes.manuscripts.unassign.url({ issue: issue.id, manuscript: manuscriptToUnassign.id }),
             {
                 onSuccess: () => {
                     setUnassigningManuscript(null);
@@ -146,15 +148,15 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Journal Issues',
-            href: route('issues.index'),
+            href: issuesRoutes.index.url(),
         },
         {
             label: `Vol. ${issue.volume_number}, Issue ${issue.issue_number}`,
-            href: route('issues.show', issue.id),
+            href: issuesRoutes.show.url({ id: issue.id }),
         }
     ];    
     
@@ -206,7 +208,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 )}
                                 
                                 <div className="flex space-x-2 ml-4">
-                                    <Link href={route('issues.edit', issue.id)}>
+                                    <Link href={issuesRoutes.edit.url({ id: issue.id })}>
                                         <Button variant="outline">
                                             <Edit className="h-4 w-4 mr-2" />
                                             Edit
@@ -322,7 +324,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 </CardTitle>                                <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => router.visit(route('issues.assign-manuscripts.form', issue.id))}
+                                    onClick={() => router.visit(issuesRoutes.assignManuscripts.url({ id: issue.id }))}
                                 >
                                     <Plus className="h-4 w-4 mr-2" />
                                     Assign Manuscripts
@@ -391,7 +393,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                         This journal issue doesn't have any manuscripts assigned yet.
                                     </p>                                    <Button
                                         variant="outline"
-                                        onClick={() => router.visit(route('issues.assign-manuscripts.form', issue.id))}
+                                        onClick={() => router.visit(issuesRoutes.assignManuscripts.url({ id: issue.id }))}
                                     >
                                         <Plus className="h-4 w-4 mr-2" />
                                         Assign Manuscripts

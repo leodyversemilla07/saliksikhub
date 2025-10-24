@@ -6,11 +6,13 @@ import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
+import { home, login as loginRoute, logout } from '@/routes';
+import verification from '@/routes/verification';
 
 export default function VerifyEmail({ status, auth }: { status?: string } & PageProps) {
     const breadcrumbItems = [
-        { label: 'Home', href: route('home') },
-        { label: 'Login', href: route('login') },
+        { label: 'Home', href: home.url() },
+        { label: 'Login', href: loginRoute.url() },
         { label: 'Verify Email' }
     ];
 
@@ -18,7 +20,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('verification.send'));
+        post(verification.send.url());
     };
 
     return (
@@ -57,7 +59,7 @@ export default function VerifyEmail({ status, auth }: { status?: string } & Page
 
                         <div className="pt-4">
                             <Link
-                                href={route('logout')}
+                                href={logout.url()}
                                 method="post"
                                 as="button"
                                 className="inline-flex items-center text-sm font-medium text-[#18652c] hover:text-[#145024] dark:text-[#3fb65e] dark:hover:text-[#52c773]"

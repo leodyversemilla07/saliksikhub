@@ -1,11 +1,14 @@
 import { Head, usePage } from '@inertiajs/react';
 import React, { useMemo } from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Manuscript, ManuscriptStatus } from '@/types/manuscript';
+import { Manuscript, ManuscriptStatus } from '@/types';
 import { PageProps } from '@/types';
 import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import DocumentViewer from '@/components/document-viewer';
+import { dashboard } from '@/routes';
+import editor from '@/routes/editor';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 interface ShowProps {
     manuscript: Manuscript;
@@ -100,8 +103,8 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                 user.role === 'associate_editor' ||
                 user.role === 'language_editor'
             )
-                ? route('editor.dashboard')
-                : route('dashboard'),
+                ? editor.dashboard.url()
+                : dashboard.url(),
         },
         {
             label: 'Manuscripts',
@@ -111,12 +114,12 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                 user.role === 'associate_editor' ||
                 user.role === 'language_editor'
             )
-                ? route('editor.indexManuscripts')
-                : route('manuscripts.index'),
+                ? editor.indexManuscripts.url()
+                : manuscriptsRoutes.index.url(),
         },
         {
             label: manuscript.title,
-            href: route('manuscripts.show', manuscript.id),
+            href: manuscriptsRoutes.show.url({ id: manuscript.id }),
             current: true,
         },
     ];

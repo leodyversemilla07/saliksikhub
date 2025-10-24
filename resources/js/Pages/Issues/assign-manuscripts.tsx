@@ -6,6 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, FileText, User, Calendar } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import issuesRoutes from '@/routes/issues';
 
 interface JournalIssue {
     id: number;
@@ -61,10 +63,10 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
 
         console.log('Submitting manuscripts:', selectedManuscripts);
 
-        post(route('issues.assign-manuscripts', issue.id), {
+        post(issuesRoutes.assignManuscripts.url({ id: issue.id }), {
             onSuccess: () => {
                 console.log('Manuscripts assigned successfully');
-                router.visit(route('issues.show', issue.id));
+                router.visit(issuesRoutes.show.url({ id: issue.id }));
             },
             onError: (errors) => {
                 console.error('Error assigning manuscripts:', errors);
@@ -78,19 +80,19 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Journal Issues',
-            href: route('issues.index'),
+            href: issuesRoutes.index.url(),
         },
         {
             label: `Vol. ${issue.volume_number}, Issue ${issue.issue_number}`,
-            href: route('issues.show', issue.id),
+            href: issuesRoutes.show.url({ id: issue.id }),
         },
         {
             label: 'Assign Manuscripts',
-            href: route('issues.assign-manuscripts.form', issue.id),
+            href: issuesRoutes.assignManuscripts.url({ id: issue.id }),
         }
     ];
 
@@ -178,7 +180,7 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => router.visit(route('issues.show', issue.id))}
+                                                onClick={() => router.visit(issuesRoutes.show.url({ id: issue.id }))}
                                             >
                                                 Cancel
                                             </Button>
@@ -202,7 +204,7 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
                                     </p>
                                     <Button
                                         variant="outline"
-                                        onClick={() => router.visit(route('issues.show', issue.id))}
+                                        onClick={() => router.visit(issuesRoutes.show.url({ id: issue.id }))}
                                     >
                                         <ArrowLeft className="h-4 w-4 mr-2" />
                                         Back to Issue

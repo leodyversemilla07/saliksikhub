@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import editor from '@/routes/editor';
 
 interface Manuscript {
     id: number;
@@ -52,7 +53,7 @@ export default function PreparePublication({ manuscript, currentVolumes, current
         });
 
         try {
-            post(route('editor.manuscripts.prepare_publication', manuscript.id), {
+            post(editor.manuscripts.prepare_publication.url({ id: manuscript.id }), {
                 onSuccess: () => {
                     reset();
                     setIsSubmitting(false);
@@ -61,7 +62,7 @@ export default function PreparePublication({ manuscript, currentVolumes, current
                         description: `"${manuscript.title}" has been published and is now available to readers.`
                     });
                     // Redirect to manuscripts index page
-                    window.location.href = route('editor.indexManuscripts');
+                    window.location.href = editor.indexManuscripts.url();
                 },
                 onError: () => {
                     setIsSubmitting(false);
@@ -89,15 +90,15 @@ export default function PreparePublication({ manuscript, currentVolumes, current
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('editor.dashboard'),
+            href: editor.dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: route('editor.indexManuscripts'),
+            href: editor.indexManuscripts.url(),
         },
         {
             label: 'Prepare for Publication',
-            href: route('editor.manuscripts.prepare_publication', manuscript.id),
+            href: editor.manuscripts.prepare_publication.url({ id: manuscript.id }),
         }
     ];
 
@@ -266,7 +267,7 @@ export default function PreparePublication({ manuscript, currentVolumes, current
 
                     {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <Link href={route('editor.indexManuscripts')}>
+                        <Link href={editor.indexManuscripts.url()}>
                             <Button
                                 variant="outline"
                                 className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"

@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 
 const guidelines = [
@@ -326,47 +325,20 @@ export default function Submissions({ auth }: PageProps) {
                 </section>
 
                 <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
-                    <Tabs defaultValue="overview" className="space-y-8">
-                        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 h-auto p-1">
-                            <TabsTrigger value="overview" className="flex flex-col gap-1 p-3">
-                                <Info className="h-4 w-4" />
-                                <span className="text-xs">Overview</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="scope" className="flex flex-col gap-1 p-3">
-                                <BookOpen className="h-4 w-4" />
-                                <span className="text-xs">Scope</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="types" className="flex flex-col gap-1 p-3">
-                                <FileQuestion className="h-4 w-4" />
-                                <span className="text-xs">Types</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="guidelines" className="flex flex-col gap-1 p-3">
-                                <CheckCircle className="h-4 w-4" />
-                                <span className="text-xs">Guidelines</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="process" className="flex flex-col gap-1 p-3">
-                                <Clock className="h-4 w-4" />
-                                <span className="text-xs">Process</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="review" className="flex flex-col gap-1 p-3">
-                                <Users className="h-4 w-4" />
-                                <span className="text-xs">Review</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="publication" className="flex flex-col gap-1 p-3">
-                                <Award className="h-4 w-4" />
-                                <span className="text-xs">Publication</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="resources" className="flex flex-col gap-1 p-3">
-                                <Download className="h-4 w-4" />
-                                <span className="text-xs">Resources</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="support" className="flex flex-col gap-1 p-3">
-                                <Mail className="h-4 w-4" />
-                                <span className="text-xs">Support</span>
-                            </TabsTrigger>
-                        </TabsList>
+                    <div className="space-y-12">
 
-                        <TabsContent value="overview" className="space-y-8">
+                        {/* Overview Section */}
+                        <section id="overview" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Info className="h-8 w-8 text-primary" />
+                                    Overview
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Get started with your manuscript submission process
+                                </p>
+                            </div>
+
                             {/* Key Information */}
                             <Card className="bg-gradient-to-br from-muted/50 to-background">
                                 <CardHeader className="border-b">
@@ -397,17 +369,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
+                        </section>
 
-                        </TabsContent>
+                        {/* Scope Section */}
+                        <section id="scope" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <BookOpen className="h-8 w-8 text-primary" />
+                                    Aims and Scope
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Learn about our journal's focus and thematic areas
+                                </p>
+                            </div>
 
-                        <TabsContent value="scope" className="space-y-8">
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <BookOpen className="h-6 w-6 text-primary" />
-                                        Aims and Scope
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div>
                                         <h3 className="text-lg font-semibold mb-4">Journal Overview</h3>
@@ -441,16 +417,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </Card>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="types" className="space-y-8">
+                        {/* Types Section */}
+                        <section id="types" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <FileQuestion className="h-8 w-8 text-primary" />
+                                    Types of Articles We Publish
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Explore the different types of manuscripts we accept
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <FileQuestion className="h-6 w-6 text-primary" />
-                                        Types of Articles We Publish
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent>
                                     <div className="grid md:grid-cols-2 gap-6">
                                         {articleTypes.map((type, index) => (
@@ -475,16 +456,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="guidelines" className="space-y-8">
+                        {/* Guidelines Section */}
+                        <section id="guidelines" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <CheckCircle className="h-8 w-8 text-primary" />
+                                    Submission Guidelines
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Follow our comprehensive guidelines for successful submission
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <CheckCircle className="h-6 w-6 text-primary" />
-                                        Submission Guidelines
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent className="space-y-6">
                                     {guidelines.map((category, categoryIndex) => (
                                         <Card key={categoryIndex}>
@@ -524,16 +510,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </Card>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="process" className="space-y-8">
+                        {/* Process Section */}
+                        <section id="process" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Clock className="h-8 w-8 text-primary" />
+                                    Submission Process
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Step-by-step guide through our submission workflow
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <Clock className="h-6 w-6 text-primary" />
-                                        Submission Process
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent>
                                     <div className="space-y-6">
                                         {steps.map((step, index) => (
@@ -562,16 +553,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="review" className="space-y-8">
+                        {/* Review Section */}
+                        <section id="review" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Users className="h-8 w-8 text-primary" />
+                                    Review Process & Criteria
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Understand our rigorous peer review standards
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <Users className="h-6 w-6 text-primary" />
-                                        Review Process & Criteria
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="text-muted-foreground space-y-4">
                                         <p>Upon the submission of the manuscript, it undergoes an initial assessment by the journal's editorial staff to determine alignment with the journal's scope and thematic areas, adherence to formatting standards, and overall preliminary quality.</p>
@@ -596,32 +592,42 @@ export default function Submissions({ auth }: PageProps) {
                                     ))}
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="publication" className="space-y-8">
+                        {/* Publication Section */}
+                        <section id="publication" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Award className="h-8 w-8 text-primary" />
+                                    Publication Frequency and Funding
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Learn about our publication schedule and policies
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <Award className="h-6 w-6 text-primary" />
-                                        Publication Frequency and Funding
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent className="space-y-4 text-muted-foreground">
                                     <p>This journal is published annually but may also feature special issues dedicated to specific themes and emerging research areas.</p>
                                     <p>There are no processing and publication fees for accepted articles, as the journal is supported by the MinSU Research, Development and Extension Unit.</p>
                                     <p>We invite you to submit your work and participate in building this dynamic channel for knowledge dissemination.</p>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="resources" className="space-y-8">
+                        {/* Resources Section */}
+                        <section id="resources" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Download className="h-8 w-8 text-primary" />
+                                    Submission Templates & Resources
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Download templates and resources to help with your submission
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <Download className="h-6 w-6 text-primary" />
-                                        Submission Templates & Resources
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent>
                                     <div className="grid md:grid-cols-3 gap-6">
                                         <ResourceCard
@@ -663,16 +669,21 @@ export default function Submissions({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
+                        </section>
 
-                        <TabsContent value="support" className="space-y-8">
+                        {/* Support Section */}
+                        <section id="support" className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+                                    <Mail className="h-8 w-8 text-primary" />
+                                    Author Support
+                                </h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    Get help with your submission and find additional resources
+                                </p>
+                            </div>
+
                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-3">
-                                        <Mail className="h-6 w-6 text-primary" />
-                                        Author Support
-                                    </CardTitle>
-                                </CardHeader>
                                 <CardContent className="space-y-6">
                                     <p className="text-muted-foreground">
                                         Our editorial team is available to assist authors throughout the submission and review process.
@@ -749,8 +760,8 @@ export default function Submissions({ auth }: PageProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-                        </TabsContent>
-                    </Tabs>
+                        </section>
+                    </div>
                 </div>
             </main>
             <Footer />

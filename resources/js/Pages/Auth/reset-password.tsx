@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from 'lucide-react';
+import { home } from '@/routes';
+import password from '@/routes/password';
 
 export default function ResetPassword({
     token,
@@ -21,7 +23,7 @@ export default function ResetPassword({
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const breadcrumbItems = [
-        { label: 'Home', href: route('home') },
+        { label: 'Home', href: home.url() },
         { label: 'Reset Password' }
     ];
 
@@ -34,7 +36,7 @@ export default function ResetPassword({
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.store'), {
+        post(password.update.url(), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };

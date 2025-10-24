@@ -13,6 +13,7 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useForm } from "@inertiajs/react";
+import users from '@/routes/users';
 
 export interface BulkDeleteUserDialogProps {
     open: boolean;
@@ -38,7 +39,7 @@ const BulkDeleteUserDialog: React.FC<BulkDeleteUserDialogProps> = ({
 
     const onSubmit = () => {
         setError(null);
-        post(route('users.bulk-destroy'), {
+        post(users.bulkDestroy.url(), {
             preserveScroll: true,
             onSuccess: () => {
                 onOpenChange(false);

@@ -16,9 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
-    @routes
     @viteReactRefresh
-    @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.tsx"])
+    @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
     @inertiaHead
 </head>
 

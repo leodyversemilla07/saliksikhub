@@ -57,6 +57,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
+import editor from '@/routes/editor';
 
 // TypeScript interface definitions
 interface Metric {
@@ -154,7 +155,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('editor.dashboard'),
+            href: editor.dashboard.url(),
         }
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\DecisionType;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
 use Illuminate\Bus\Queueable;
@@ -53,19 +54,19 @@ class ManuscriptDecision extends Notification implements ShouldQueue
             ->line('A decision has been made on your manuscript titled "'.$this->manuscript->title.'".');
 
         switch ($this->decision->decision_type) {
-            case EditorialDecision::DECISION_TYPES['ACCEPT']:
+            case DecisionType::ACCEPT:
                 $mailMessage->line('We are pleased to inform you that your manuscript has been accepted for publication.');
                 break;
-            case EditorialDecision::DECISION_TYPES['REJECT']:
+            case DecisionType::REJECT:
                 $mailMessage->line('We regret to inform you that your manuscript has not been accepted for publication.');
                 break;
-            case EditorialDecision::DECISION_TYPES['MINOR_REVISION']:
+            case DecisionType::MINOR_REVISION:
                 $mailMessage->line('Your manuscript requires minor revisions before it can be accepted for publication.');
                 if ($this->decision->revision_deadline) {
                     $mailMessage->line('Please submit your revision by: '.$this->decision->revision_deadline->format('F j, Y'));
                 }
                 break;
-            case EditorialDecision::DECISION_TYPES['MAJOR_REVISION']:
+            case DecisionType::MAJOR_REVISION:
                 $mailMessage->line('Your manuscript requires major revisions before it can be considered for publication.');
                 if ($this->decision->revision_deadline) {
                     $mailMessage->line('Please submit your revision by: '.$this->decision->revision_deadline->format('F j, Y'));

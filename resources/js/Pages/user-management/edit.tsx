@@ -10,6 +10,8 @@ import AppLayout from '@/layouts/app-layout';
 import { User, UserRole } from '@/types';
 import InputError from '@/components/input-error';
 import { getData } from 'country-list';
+import { dashboard } from '@/routes';
+import users from '@/routes/users';
 
 interface EditUserProps {
     user: User;
@@ -24,9 +26,9 @@ interface Country {
 
 export default function EditUser({ user, errors, roles }: EditUserProps) {
     const breadcrumbItems = [
-        { label: 'Dashboard', href: route('dashboard') },
-        { label: 'User Management', href: route('users.index') },
-        { label: `${user.firstname} ${user.lastname}`, href: route('users.edit', user.id), current: true },
+        { label: 'Dashboard', href: dashboard.url() },
+        { label: 'User Management', href: users.index.url() },
+        { label: `${user.firstname} ${user.lastname}`, href: users.edit.url({ user: user.id }), current: true },
     ];
 
     type FormData = {
@@ -88,7 +90,7 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('users.update', user.id), {
+        put(users.update.url({ user: user.id }), {
             onSuccess: () => {
                 toast("User has been successfully updated.");
             },

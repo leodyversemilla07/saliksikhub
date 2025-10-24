@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'data_collection',
         'notifications',
         'review_requests',
+        'email_notification_enabled',
     ];
 
     /**
@@ -63,6 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'data_collection' => 'boolean',
         'notifications' => 'boolean',
         'review_requests' => 'boolean',
+        'email_notification_enabled' => 'boolean',
     ];
 
     /**

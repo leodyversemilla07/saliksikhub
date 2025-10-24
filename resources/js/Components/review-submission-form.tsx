@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Rating } from '@/components/ui/rating';
+import { Rating } from '@/components/rating';
 import { Separator } from '@/components/ui/separator';
 import { FileUpload } from '@/components/file-upload';
 import { 
@@ -16,7 +16,8 @@ import {
     Send,
     Save
 } from 'lucide-react';
-import type { ReviewFormData, ReviewRecommendation, RecommendationOption } from '@/types/review';
+import type { ReviewFormData, ReviewRecommendation, RecommendationOption } from '@/types';
+import reviewer from '@/routes/reviewer';
 
 interface ReviewSubmissionFormProps {
     reviewId: number;
@@ -78,7 +79,7 @@ export function ReviewSubmissionForm({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        post(route('reviewer.reviews.submit', reviewId), {
+        post(reviewer.reviews.submit.url({ id: reviewId }), {
             onSuccess: () => {
                 onSuccess?.();
             },
@@ -86,7 +87,7 @@ export function ReviewSubmissionForm({
     };
 
     const handleSaveDraft = () => {
-        post(route('reviewer.reviews.save-draft', reviewId), {
+        post(reviewer.reviews.saveDraft.url({ id: reviewId }), {
             onSuccess: () => {
                 onSaveDraft?.();
             },

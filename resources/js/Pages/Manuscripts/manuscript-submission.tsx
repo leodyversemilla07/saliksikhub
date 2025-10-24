@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
+import { dashboard } from '@/routes';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 export default function ManuscriptSubmissionForm() {
     interface PageProps {
@@ -187,7 +189,7 @@ export default function ManuscriptSubmissionForm() {
         const { flash } = usePage<PageProps>().props;
 
         const handleSubmit = useCallback(() => {
-            form.post(route('manuscripts.store'), {
+            form.post(manuscriptsRoutes.store.url(), {
                 preserveScroll: true,
                 errorBag: 'manuscriptSubmission',
                 onSuccess: () => {
@@ -336,8 +338,8 @@ export default function ManuscriptSubmissionForm() {
     };
 
     const breadcrumbItems = [
-        { label: 'Dashboard', href: route('dashboard') },
-        { label: 'Manuscripts', href: route('manuscripts.index') },
+        { label: 'Dashboard', href: dashboard.url() },
+        { label: 'Manuscripts', href: manuscriptsRoutes.index.url() },
         { label: 'Submit Manuscript' }
     ];
 

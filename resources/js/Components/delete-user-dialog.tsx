@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useForm } from "@inertiajs/react";
 import { User } from "@/types";
+import users from '@/routes/users';
 
 export interface DeleteUserDialogProps {
     open: boolean;
@@ -28,7 +29,7 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ open, onOpenChange,
 
     const onSubmit = () => {
         setError(null);
-        destroy(route('users.destroy', user.id), {
+        destroy(users.destroy.url({ user: user.id }), {
             preserveScroll: true,
             onSuccess: () => {
                 onOpenChange(false);

@@ -4,11 +4,12 @@ import {
 } from 'lucide-react';
 import { useState, FormEvent } from 'react';
 import AppLayout from '@/layouts/app-layout';
-// import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { dashboard } from '@/routes';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 interface Decision {
     id: string;
@@ -73,7 +74,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
             return;
         }
 
-        post(route('manuscripts.revision.submit', manuscript.id));
+        post(manuscriptsRoutes.revision.submit.url({ id: manuscript.id }));
     };
 
     const getRemainingDays = () => {
@@ -93,19 +94,19 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: route('manuscripts.index'),
+            href: manuscriptsRoutes.index.url(),
         },
         {
             label: manuscript.title,
-            href: route('manuscripts.show', manuscript.id),
+            href: manuscriptsRoutes.show.url({ id: manuscript.id }),
         },
         {
             label: 'Submit Revision',
-            href: route('manuscripts.revision', manuscript.id),
+            href: manuscriptsRoutes.revision.form.url({ id: manuscript.id }),
             current: true,
         },
     ];
@@ -118,7 +119,7 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
                 <div className="w-full max-w-5xl mx-auto">
                     <div className="mb-6">
                         <Link
-                            href={route('manuscripts.show', manuscript.id)}
+                            href={manuscriptsRoutes.show.url({ id: manuscript.id })}
                             className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary-foreground transition-colors"
                         >
                             <ChevronLeft className="h-4 w-4 mr-1" />

@@ -18,7 +18,8 @@ import {
     Building,
     AlertCircle
 } from 'lucide-react';
-import type { Reviewer } from '@/types/review';
+import type { Reviewer } from '@/types';
+import editor from '@/routes/editor';
 
 interface ReviewerAssignmentProps {
     manuscriptId: number;
@@ -63,7 +64,7 @@ export function ReviewerAssignment({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(route('editor.manuscripts.assign_reviewers.store', manuscriptId), {
+        post(editor.manuscripts.assign_reviewers.store.url({ id: manuscriptId }), {
             onSuccess: () => {
                 setSelectedReviewers([]);
                 onSuccess?.();

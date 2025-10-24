@@ -23,6 +23,7 @@ export interface User {
     data_collection?: boolean;
     notifications?: boolean;
     review_requests?: boolean;
+    email_notification_enabled?: boolean;
     email_verified_at?: string;
     created_at?: string;
     updated_at?: string;

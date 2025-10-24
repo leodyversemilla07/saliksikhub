@@ -4,6 +4,7 @@ import { Eye, EyeOff, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import password from '@/routes/password';
 
 export default function PasswordUpdate() {
     const passwordInput = useRef<HTMLInputElement>(null);
@@ -29,7 +30,7 @@ export default function PasswordUpdate() {
     const updatePassword: FormEventHandler = (e) => {
         e.preventDefault();
 
-        put(route('password.update'), {
+        put(password.update.url(), {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {

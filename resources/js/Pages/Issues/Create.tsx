@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, AlertCircle } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import issuesRoutes from '@/routes/issues';
 
 export default function Create() {
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
@@ -63,19 +65,19 @@ export default function Create() {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Journal Issues',
-            href: route('issues.index'),
+            href: issuesRoutes.index.url(),
         },
         {
             label: 'Create New Issue',
-            href: route('issues.create'),
+            href: issuesRoutes.create.url(),
         }
     ];    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('issues.store'), {
+        post(issuesRoutes.store.url(), {
             forceFormData: true,
         });
     };

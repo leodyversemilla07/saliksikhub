@@ -101,7 +101,10 @@ class ManuscriptController extends Controller
                 : null;
 
             $finalPdfUrl = $manuscript->final_pdf_path
-                ? $storageService->generateTemporaryUrl($manuscript->final_pdf_path, $manuscript->status === 'Published' ? 30 : 5)
+                ? $storageService->generateTemporaryUrl(
+                    $manuscript->final_pdf_path,
+                    $manuscript->status === ManuscriptStatus::PUBLISHED ? 30 : 5
+                )
                 : null;
 
             return Inertia::render('manuscripts/show-manuscript', [
@@ -175,6 +178,39 @@ class ManuscriptController extends Controller
     }
 
     /**
+     * Search published manuscripts publicly.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q', '');
+        $perPage = 20;
+
+        $manuscripts = Manuscript::published()
+            ->search($query)
+            ->with('author')
+            ->paginate($perPage)
+            ->through(function ($manuscript) {
+                return [
+                    'id' => $manuscript->id,
+                    'title' => $manuscript->title,
+                    'slug' => $manuscript->slug,
+                    'authors' => explode(', ', $manuscript->authors),
+                    'abstract' => Str::limit($manuscript->abstract, 200),
+                    'keywords' => explode(', ', $manuscript->keywords),
+                    'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->format('M j, Y') : null,
+                    'doi' => $manuscript->doi,
+                    'volume' => $manuscript->volume,
+                    'issue' => $manuscript->issue,
+                ];
+            });
+
+        return Inertia::render('search-results', [
+            'results' => $manuscripts,
+            'query' => $query ?? '',
+        ]);
+    }
+
+    /**
      * Remove the specified manuscript from storage.
      */
     public function destroy($id)
@@ -223,8 +259,8 @@ class ManuscriptController extends Controller
             }
 
             if (
-                $manuscript->status !== ManuscriptStatus::MINOR_REVISION &&
-                $manuscript->status !== ManuscriptStatus::MAJOR_REVISION
+                $manuscript->status !== ManuscriptStatus::MINOR_REVISION_REQUIRED &&
+                $manuscript->status !== ManuscriptStatus::MAJOR_REVISION_REQUIRED
             ) {
                 return redirect()->route('manuscripts.show', $id)
                     ->with('error', 'This manuscript does not require a revision at this time.');
@@ -366,7 +402,7 @@ class ManuscriptController extends Controller
             $previousStatus = $manuscript->status;
 
             $manuscript->author_approval_date = now();
-            $manuscript->status = (string) ManuscriptStatus::READY_TO_PUBLISH;
+            $manuscript->status = ManuscriptStatus::READY_FOR_PUBLICATION;
             $manuscript->save();
 
             try {
@@ -374,8 +410,8 @@ class ManuscriptController extends Controller
 
                 $manuscript->author->notify(new ManuscriptStatusChanged(
                     $manuscript,
-                    (string) $previousStatus,
-                    (string) $manuscript->status
+                    $previousStatus->value,
+                    $manuscript->status->value
                 ));
             } catch (Exception $e) {
                 Log::error('Failed to send publication notification', [

@@ -56,7 +56,7 @@ export function AppSidebar({
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {navigationMap[user.role]?.map((link: SidebarLinkType) => {
-                                const isActive = route().current(link.href);
+                                const isActive = window.location.pathname === link.href;
                                 return (
                                     <SidebarMenuItem key={link.href}>
                                         <SidebarMenuButton
@@ -64,7 +64,7 @@ export function AppSidebar({
                                             isActive={isActive}
                                             tooltip={link.label}
                                         >
-                                            <Link href={route(link.href)}>
+                                            <Link href={link.href}>
                                                 <link.icon />
                                                 <span>{link.label}</span>
                                             </Link>

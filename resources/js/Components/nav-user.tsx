@@ -20,6 +20,8 @@ import {
     useSidebar
 } from '@/components/ui/sidebar';
 import { User as UserType } from '@/types';
+import profile from '@/routes/profile';
+import { logout } from '@/routes';
 
 interface NavUserProps {
     user: UserType;
@@ -93,7 +95,7 @@ export function NavUser({ user }: NavUserProps) {
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link href={route('profile.edit')} className="cursor-pointer">
+                                <Link href={profile.edit.url()} className="cursor-pointer">
                                     <User className="mr-2 size-4" />
                                     Profile Settings
                                 </Link>
@@ -102,7 +104,7 @@ export function NavUser({ user }: NavUserProps) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild className="w-full">
                             <Link
-                                href={route('logout')}
+                                href={logout.url()}
                                 method="post"
                                 as="button"
                                 className="w-full cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center"

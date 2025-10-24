@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { dashboard } from '@/routes';
+import notificationsRoutes from '@/routes/notifications';
 
 interface NotificationData {
     message?: string;
@@ -145,11 +147,11 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Notifications',
-            href: route('notifications.index'),
+            href: notificationsRoutes.index.url(),
             current: true,
         },
     ];

@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Loader2, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { home, login as loginRoute } from '@/routes';
+import password from '@/routes/password';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
@@ -14,7 +16,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.email'), {
+        post(password.email.url(), {
             onSuccess: () => {
                 reset('email');
             },
@@ -28,7 +30,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <div className="max-w-md w-full">
                 <Card className="shadow-xl animate-in fade-in-50 duration-500">
                     <CardHeader className="text-center space-y-4">
-                        <Link href={route('home')} className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center group hover:scale-105 transition-transform duration-200">
+                        <Link href={home.url()} className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center group hover:scale-105 transition-transform duration-200">
                             <img
                                 src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
                                 className="w-12 h-12 object-contain"
@@ -112,7 +114,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                     <CardFooter className="text-center pb-6 flex justify-center">
                         <Link
-                            href={route('login')}
+                            href={loginRoute.url()}
                             className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
                         >
                             <ArrowLeft className="h-4 w-4" />

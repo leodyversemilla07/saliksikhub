@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Smartphone, Key } from 'lucide-react';
+import twoFactor from '@/routes/two-factor';
 
 export default function TwoFactorChallenge() {
     const [recovery, setRecovery] = useState(false);
@@ -34,7 +35,7 @@ export default function TwoFactorChallenge() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('two-factor.login'));
+        post(twoFactor.login.url());
     };
 
     return (

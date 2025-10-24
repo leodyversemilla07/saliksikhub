@@ -8,12 +8,14 @@ import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { home } from '@/routes';
+import password from '@/routes/password';
 
 export default function ConfirmPassword({ auth }: PageProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     const breadcrumbItems = [
-        { label: 'Home', href: route('home') },
+        { label: 'Home', href: home.url() },
         { label: 'Confirm Password' }
     ];
 
@@ -23,7 +25,7 @@ export default function ConfirmPassword({ auth }: PageProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.confirm'), {
+        post(password.confirm.url(), {
             onFinish: () => reset('password'),
         });
     };

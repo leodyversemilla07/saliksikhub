@@ -26,7 +26,14 @@ class ReviewSubmitted extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        $channels = ['database']; // Always send database notification
+
+        // Only add email if user has email notifications enabled
+        if ($notifiable->email_notification_enabled ?? true) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     /**

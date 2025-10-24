@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { Head, router } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 
-import { Manuscript, ManuscriptStatus } from '@/types/manuscript'
+import type { Manuscript } from '@/types'
+import { ManuscriptStatus } from '@/types'
+import editor from '@/routes/editor'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -100,17 +102,17 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('editor.dashboard'),
+            href: editor.dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: route('editor.indexManuscripts'),
+            href: editor.indexManuscripts.url(),
         }
     ];
 
     const handleViewManuscript = (id: number) => {
         setIsLoading(true);
-        router.visit(route('editor.manuscripts.show', id), {
+        router.visit(editor.manuscripts.show.url({ id }), {
             onFinish: () => setIsLoading(false)
         });
     };
@@ -131,7 +133,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
         if (!manuscriptToReview) return;
 
         setIsLoading(true);
-        router.post(route('editor.manuscripts.set_under_review', manuscriptToReview), {}, {
+        router.post(editor.manuscripts.set_under_review.url({ id: manuscriptToReview }), {}, {
             onFinish: () => {
                 setIsLoading(false);
                 setShowReviewDialog(false);
@@ -149,7 +151,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        fetch(route('editor.manuscripts.start_copyediting', manuscriptToCopyEdit), {
+        fetch(editor.manuscripts.start_copyediting.url({ id: manuscriptToCopyEdit }), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -169,7 +171,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             })
             .then(data => {
                 console.log('Success:', data);
-                window.location.href = route('editor.indexManuscripts');
+                window.location.href = editor.indexManuscripts.url();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -184,7 +186,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     const handleEditorialDecision = (id: number) => {
         setIsLoading(true);
-        router.visit(route('editor.manuscripts.create_decision', id), {
+        router.visit(editor.manuscripts.create_decision.url({ id }), {
             onFinish: () => setIsLoading(false)
         });
     };
@@ -203,7 +205,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
         setIsLoading(true);
 
-        router.post(route('editor.manuscripts.upload_finalized', manuscriptToCopyEdit), {
+        router.post(editor.manuscripts.upload_finalized.url({ id: manuscriptToCopyEdit }), {
             manuscript_file: uploadFile
         }, {
             forceFormData: true, // Ensure FormData is used
@@ -212,7 +214,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             },
             onSuccess: () => {
                 console.log('Upload successful');
-                window.location.href = route('editor.indexManuscripts');
+                window.location.href = editor.indexManuscripts.url();
             },
             onError: (errors) => {
                 console.error('Upload error:', errors);
@@ -304,7 +306,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                                             {manuscript.status === ManuscriptStatus.READY_FOR_PUBLICATION && (
                                                 <DropdownMenuItem onClick={() => {
                                                     setIsLoading(true);
-                                                    router.visit(route('editor.manuscripts.prepare_publication_form', manuscript.id), {
+                                                    router.visit(editor.manuscripts.prepare_publication_form.url({ id: manuscript.id }), {
                                                         onFinish: () => setIsLoading(false)
                                                     });
                                                 }}>

@@ -30,6 +30,8 @@ import { Eye, UserPlus, Trash2, Filter, Users, UserCog, Search, X, MoreHorizonta
 import DeleteUserDialog from '@/components/delete-user-dialog';
 import BulkDeleteUserDialog from "@/components/bulk-delete-user-dialog";
 import { Skeleton } from '@/components/ui/skeleton';
+import { dashboard } from '@/routes';
+import usersRoutes from '@/routes/users';
 
 interface PaginationMeta {
     current_page: number;
@@ -47,11 +49,11 @@ interface PaginationData {
 const breadcrumbItems = [
     {
         label: 'Dashboard',
-        href: route('dashboard'),
+        href: dashboard.url(),
     },
     {
         label: 'User Management',
-        href: route('users.index'),
+        href: usersRoutes.index.url(),
         current: true,
     },
 ];
@@ -229,7 +231,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     </div>
                     <Button
                         className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                        onClick={() => router.visit(route('users.create'))}
+                        onClick={() => router.visit(usersRoutes.create.url())}
                     >
                         <UserPlus className="w-4 h-4 mr-2" />
                         Add User
@@ -426,14 +428,14 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuItem
                                                                 className="cursor-pointer"
-                                                                onClick={() => router.visit(route('users.show', user.id))}
+                                                                onClick={() => router.visit(usersRoutes.show.url({ user: user.id }))}
                                                             >
                                                                 <Eye className="w-4 h-4 mr-2 text-primary" />
                                                                 View Details
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 className="cursor-pointer"
-                                                                onClick={() => router.visit(route('users.edit', user.id))}
+                                                                onClick={() => router.visit(usersRoutes.edit.url({ user: user.id }))}
                                                             >
                                                                 <UserCog className="w-4 h-4 mr-2 text-muted-foreground" />
                                                                 Edit User
@@ -480,7 +482,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                                 {!searchTerm && !selectedRole && (
                                                     <Button
                                                         className="mt-4"
-                                                        onClick={() => router.visit(route('users.create'))}
+                                                        onClick={() => router.visit(usersRoutes.create.url())}
                                                     >
                                                         <UserPlus className="w-4 h-4 mr-2" />
                                                         Add First User

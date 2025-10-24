@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { dashboard, submissions } from '@/routes';
+import { register as registerRoute } from '@/routes';
 
 export default function Home({ auth }: PageProps) {
     return (
@@ -55,7 +57,7 @@ export default function Home({ auth }: PageProps) {
 
                             <div className="mt-10 flex items-center gap-x-6">
                                 <Link
-                                    href={route('dashboard')}
+                                    href={dashboard.url()}
                                     className="group inline-flex items-center justify-center rounded-lg bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-200"
                                 >
                                     Get Started
@@ -63,7 +65,7 @@ export default function Home({ auth }: PageProps) {
                                 </Link>
 
                                 <Link
-                                    href={route('submissions')}
+                                    href={submissions.url()}
                                     className="inline-flex items-center text-sm font-semibold leading-6 text-foreground hover:text-primary transition-colors"
                                 >
                                     Submit Manuscript
@@ -338,7 +340,7 @@ export default function Home({ auth }: PageProps) {
                             </p>
                             <div className="mt-10 flex items-center justify-center gap-x-6">
                                 <Link
-                                    href={route('register')}
+                                    href={registerRoute.url()}
                                     className="rounded-lg bg-background px-8 py-4 text-sm font-semibold text-foreground shadow-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-primary transition-all duration-200"
                                 >
                                     Get started for free

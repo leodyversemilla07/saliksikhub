@@ -30,8 +30,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Manuscript } from '@/types/manuscript';
-import { User as UserType } from '@/types';
+import editor from '@/routes/editor';
+import { Manuscript, User as UserType } from '@/types';
 
 interface DecisionTypes {
     [key: string]: string;
@@ -109,15 +109,15 @@ export default function CreateDecision({ manuscript }: Props) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('editor.dashboard'),
+            href: editor.dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: route('editor.indexManuscripts'),
+            href: editor.indexManuscripts.url(),
         },
         {
             label: 'Editorial Decision',
-            href: route('editor.manuscripts.decision', manuscript.id),
+            href: editor.manuscripts.decision.url({ id: manuscript.id }),
         }
     ];
 
@@ -137,7 +137,7 @@ export default function CreateDecision({ manuscript }: Props) {
     };
 
     const handleSubmit = () => {
-        post(route('editor.manuscripts.decision', manuscript.id), {
+        post(editor.manuscripts.decision.url({ id: manuscript.id }), {
             preserveScroll: true,
             onSuccess: () => {
                 reset();

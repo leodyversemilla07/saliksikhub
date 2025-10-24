@@ -21,6 +21,10 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { home, current, submissions, archives, editorialBoard, aboutJournal, login as loginRoute, register as registerRoute } from '@/routes';
+import editor from '@/routes/editor';
+import author from '@/routes/author';
+import { dashboard } from '@/routes';
 
 // Define the navigation item interface for type safety
 interface NavigationItem {
@@ -37,12 +41,12 @@ interface SiteHeaderProps {
 
 // Main navigation items configuration for the journal system
 const navigationItems: NavigationItem[] = [
-    { name: "Home", href: route('home') },
-    { name: "Current", href: route('current'), icon: <BookOpen className="w-4 h-4" /> },
-    { name: "Submissions", href: route('submissions') },
-    { name: "Archives", href: route('archives') },
-    { name: "Editorial Board", href: route('editorial-board') },
-    { name: "About", href: route('about-journal'), icon: <Globe className="w-4 h-4" /> },
+    { name: "Home", href: home.url() },
+    { name: "Current", href: current.url(), icon: <BookOpen className="w-4 h-4" /> },
+    { name: "Submissions", href: submissions.url() },
+    { name: "Archives", href: archives.url() },
+    { name: "Editorial Board", href: editorialBoard.url() },
+    { name: "About", href: aboutJournal.url(), icon: <Globe className="w-4 h-4" /> },
 ];
 
 // Main site header component with modern responsive design
@@ -84,9 +88,9 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
 
     const getDashboardRoute = (userRole: string) => {
         try {
-            if (userRole === 'editor') return route('editor.dashboard');
-            if (userRole === 'author') return route('author.dashboard');
-            return route('dashboard');
+            if (userRole === 'editor') return editor.dashboard.url();
+            if (userRole === 'author') return author.dashboard.url();
+            return dashboard.url();
         } catch (error) {
             console.warn('Dashboard route error:', error);
             return userRole === 'editor' ? '/editor/dashboard' : '/manuscripts';
@@ -105,7 +109,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
         event.preventDefault();
         if (searchForm.data.query.trim()) {
             // Navigate to search results page with the query
-            router.visit(route('search'), {
+            router.visit('/search', {
                 method: 'get',
                 data: { q: searchForm.data.query },
                 preserveState: true,
@@ -141,7 +145,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Brand Section */}
-                        <Link href={route('home')} prefetch="hover" className="flex items-center gap-3 group shrink-0">
+                        <Link href={home.url()} prefetch="hover" className="flex items-center gap-3 group shrink-0">
                             <img
                                 src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
                                 className="h-8 w-auto transition-transform group-hover:scale-105"
@@ -202,12 +206,12 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                             ) : (
                                 <div className="flex items-center gap-2">
                                     <Button variant="ghost" asChild>
-                                        <Link href={route('login')} prefetch="hover">
+                                        <Link href={loginRoute.url()} prefetch="hover">
                                             Login
                                         </Link>
                                     </Button>
                                     <Button asChild>
-                                        <Link href={route('register')} prefetch="hover">
+                                        <Link href={registerRoute.url()} prefetch="hover">
                                             Register
                                         </Link>
                                     </Button>

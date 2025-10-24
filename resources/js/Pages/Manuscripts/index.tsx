@@ -41,7 +41,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from '@/layouts/app-layout';
 import { Eye, MoreHorizontal, Search, Filter, Calendar, Users, FileText, Clock, RefreshCw, CheckCircle, Trash2, Plus } from "lucide-react";
-import { Manuscript, ManuscriptStatus } from "@/types/manuscript";
+import { Manuscript, ManuscriptStatus } from "@/types";
+import { dashboard } from '@/routes';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 interface PaginatedManuscripts {
     data: Manuscript[];
@@ -67,11 +69,11 @@ interface Filters {
 const breadcrumbItems = [
     {
         label: 'Dashboard',
-        href: route('dashboard'),
+        href: dashboard.url(),
     },
     {
         label: 'Manuscripts',
-        href: route('manuscripts.index'),
+        href: manuscriptsRoutes.index.url(),
     }
 ];
 
@@ -255,14 +257,14 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={route('manuscripts.show', manuscript.id)} prefetch="hover">
+                                <Link href={manuscriptsRoutes.show.url({ id: manuscript.id })} prefetch="hover">
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                 </Link>
                             </DropdownMenuItem>
                             {(manuscript.status === ManuscriptStatus.MINOR_REVISION || manuscript.status === ManuscriptStatus.MAJOR_REVISION) && (
                                 <DropdownMenuItem asChild>
-                                    <Link href={route('manuscripts.revision.form', manuscript.id)} prefetch="hover">
+                                    <Link href={manuscriptsRoutes.revision.form.url({ id: manuscript.id })} prefetch="hover">
                                         <RefreshCw className="mr-2 h-4 w-4" />
                                         Submit Revision
                                     </Link>
@@ -270,7 +272,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                             )}
                             {manuscript.status === ManuscriptStatus.AWAITING_AUTHOR_APPROVAL && (
                                 <DropdownMenuItem asChild>
-                                    <Link href={route('manuscripts.approve', { manuscript: manuscript.id })} prefetch="hover">
+                                    <Link href={manuscriptsRoutes.approve.url({ manuscript: manuscript.id })} prefetch="hover">
                                         <CheckCircle className="mr-2 h-4 w-4" />
                                         Approve
                                     </Link>
@@ -281,7 +283,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                                 className="cursor-pointer text-destructive focus:text-destructive"
                                 onClick={() => {
                                     if (confirm(`Are you sure you want to delete "${manuscript.title}"?`)) {
-                                        window.location.href = route('manuscripts.destroy', manuscript.id);
+                                        window.location.href = manuscriptsRoutes.destroy.url({ id: manuscript.id });
                                     }
                                 }}
                             >
@@ -314,7 +316,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
 
     React.useEffect(() => {
         if (debouncedSearch !== currentFilters.search || statusFilter !== currentFilters.status) {
-            router.visit(route('manuscripts.index'), {
+            router.visit(manuscriptsRoutes.index.url(), {
                 data: {
                     search: debouncedSearch,
                     status: statusFilter,
@@ -346,7 +348,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     });
 
     const handlePageChange = (page: number) => {
-        router.visit(route('manuscripts.index'), {
+        router.visit(manuscriptsRoutes.index.url(), {
             data: {
                 page,
                 search: debouncedSearch,
@@ -359,7 +361,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     };
 
     const handlePageSizeChange = (size: number) => {
-        router.visit(route('manuscripts.index'), {
+        router.visit(manuscriptsRoutes.index.url(), {
             data: {
                 search: debouncedSearch,
                 status: statusFilter,
@@ -394,7 +396,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                         asChild
                     >
-                        <Link href={route('manuscripts.create')}>
+                        <Link href={manuscriptsRoutes.create.url()}>
                             <Plus className="w-4 h-4 mr-2" />
                             New Manuscript
                         </Link>

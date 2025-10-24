@@ -1,442 +1,193 @@
-import { useState } from 'react';
 import { Head, Form, Link } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { getData } from 'country-list';
-import { UserPlus, Mail, Building, MapPin, User, Lock, Eye, EyeOff, Loader2, Users, Shield, Bell, FileText } from 'lucide-react';
-
-interface Country {
-    code: string;
-    name: string;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import { home, login as loginRoute, register as registerRoute } from '@/routes';
 
 export default function Register() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    const countries: Country[] = getData().map(({ code, name }) => ({ code, name }));
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <Head title="Create Account | Daluyang Dunong" />
 
-            <div className="max-w-2xl w-full">
-                <Card className="shadow-xl animate-in fade-in-50 duration-500">
-                    <CardHeader className="text-center space-y-4">
-                        <Link href={route('home')} className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center group hover:scale-105 transition-transform duration-200">
-                            <img
-                                src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
-                                className="w-12 h-12 object-contain"
-                                alt="Research Journal Manager"
-                            />
-                        </Link>
-                        <div>
-                            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                                Join Our Community
-                            </CardTitle>
-                            <CardDescription className="text-base mt-2">
-                                Create your account to start your academic journey
-                            </CardDescription>
-                        </div>
-                        <p className="text-xs text-muted-foreground/80">
-                            Required fields are marked with an asterisk (*)
-                        </p>
-                    </CardHeader>
+            <div className="flex w-full max-w-sm flex-col gap-6">
+                {/* Logo/Brand */}
+                <Link href={home.url()} className="flex items-center gap-2 self-center font-medium">
+                    <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
+                        <img
+                            src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                            className="size-8 object-contain"
+                            alt="Daluyang Dunong"
+                        />
+                    </div>
+                    Daluyang Dunong
+                </Link>
 
-                    <CardContent className="space-y-8">
+                {/* Registration Card */}
+                <Card>
+                    <CardHeader className="text-center">
+                        <CardTitle className="text-xl">Create your account</CardTitle>
+                        <CardDescription>
+                            Enter your information below to create your account
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
                         <Form 
-                            action={route('register')} 
+                            action={registerRoute.url()} 
                             method="post"
                             resetOnSuccess
                         >
                             {({ errors, processing, clearErrors }) => (
-                                <div className="space-y-6">
-                                    {/* Personal Information Section */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <User className="h-5 w-5 text-primary" />
-                                            <h3 className="text-lg font-semibold text-foreground">Personal Information</h3>
-                                        </div>
+                                <FieldGroup>
+                                    {/* Name Fields */}
+                                    <Field className="grid grid-cols-2 gap-4">
+                                        <Field data-invalid={!!errors.firstname}>
+                                            <FieldLabel htmlFor="firstname">First Name</FieldLabel>
+                                            <Input
+                                                id="firstname"
+                                                name="firstname"
+                                                type="text"
+                                                placeholder="John"
+                                                onChange={() => {
+                                                    if (errors.firstname) {
+                                                        clearErrors('firstname');
+                                                    }
+                                                }}
+                                                required
+                                                autoComplete="given-name"
+                                            />
+                                            {errors.firstname && <FieldError>{errors.firstname}</FieldError>}
+                                        </Field>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <Field data-invalid={!!errors.firstname}>
-                                                <FieldLabel htmlFor="firstname">
-                                                    Given Name *
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        id="firstname"
-                                                        name="firstname"
-                                                        type="text"
-                                                        className={`w-full pl-10 transition-all duration-200 ${errors.firstname
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}
-                                                        placeholder="Enter your given name"
-                                                        onChange={() => {
-                                                            if (errors.firstname) {
-                                                                clearErrors('firstname');
-                                                            }
-                                                        }}
-                                                        required
-                                                        autoComplete="given-name"
-                                                    />
-                                                </div>
-                                                <FieldError>{errors.firstname}</FieldError>
-                                            </Field>
+                                        <Field data-invalid={!!errors.lastname}>
+                                            <FieldLabel htmlFor="lastname">Last Name</FieldLabel>
+                                            <Input
+                                                id="lastname"
+                                                name="lastname"
+                                                type="text"
+                                                placeholder="Doe"
+                                                onChange={() => {
+                                                    if (errors.lastname) {
+                                                        clearErrors('lastname');
+                                                    }
+                                                }}
+                                                autoComplete="family-name"
+                                            />
+                                            {errors.lastname && <FieldError>{errors.lastname}</FieldError>}
+                                        </Field>
+                                    </Field>
 
-                                            <Field data-invalid={!!errors.lastname}>
-                                                <FieldLabel htmlFor="lastname">
-                                                    Family Name
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        id="lastname"
-                                                        name="lastname"
-                                                        type="text"
-                                                        className={`w-full pl-10 transition-all duration-200 ${errors.lastname
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}
-                                                        placeholder="Enter your family name"
-                                                        onChange={() => {
-                                                            if (errors.lastname) {
-                                                                clearErrors('lastname');
-                                                            }
-                                                        }}
-                                                        autoComplete="family-name"
-                                                    />
-                                                </div>
-                                                <FieldError>{errors.lastname}</FieldError>
-                                            </Field>
-                                        </div>
-                                    </div>
+                                    {/* Email */}
+                                    <Field data-invalid={!!errors.email}>
+                                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                                        <Input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            placeholder="m@example.com"
+                                            onChange={() => {
+                                                if (errors.email) {
+                                                    clearErrors('email');
+                                                }
+                                            }}
+                                            required
+                                            autoComplete="email"
+                                        />
+                                        {errors.email && <FieldError>{errors.email}</FieldError>}
+                                    </Field>
 
-                                            <Separator />
+                                    {/* Username */}
+                                    <Field data-invalid={!!errors.username}>
+                                        <FieldLabel htmlFor="username">Username</FieldLabel>
+                                        <Input
+                                            id="username"
+                                            name="username"
+                                            type="text"
+                                            placeholder="johndoe"
+                                            onChange={() => {
+                                                if (errors.username) {
+                                                    clearErrors('username');
+                                                }
+                                            }}
+                                            required
+                                            autoComplete="username"
+                                        />
+                                        {errors.username && <FieldError>{errors.username}</FieldError>}
+                                    </Field>
 
-                                    {/* Academic Information Section */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Building className="h-5 w-5 text-primary" />
-                                            <h3 className="text-lg font-semibold text-foreground">Academic Information</h3>
-                                        </div>
+                                    {/* Password Fields */}
+                                    <Field className="grid grid-cols-2 gap-4">
+                                        <Field data-invalid={!!errors.password}>
+                                            <FieldLabel htmlFor="password">Password</FieldLabel>
+                                            <Input
+                                                id="password"
+                                                name="password"
+                                                type="password"
+                                                onChange={() => {
+                                                    if (errors.password) {
+                                                        clearErrors('password');
+                                                    }
+                                                }}
+                                                required
+                                                autoComplete="new-password"
+                                            />
+                                            {errors.password && <FieldError>{errors.password}</FieldError>}
+                                        </Field>
 
-                                        <div className="space-y-4">
-                                            <Field data-invalid={!!errors.affiliation}>
-                                                <FieldLabel htmlFor="affiliation">
-                                                    Affiliation *
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        id="affiliation"
-                                                        name="affiliation"
-                                                        type="text"
-                                                        className={`w-full pl-10 transition-all duration-200 ${errors.affiliation
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}
-                                                        placeholder="University or Organization"
-                                                        onChange={() => {
-                                                            if (errors.affiliation) {
-                                                                clearErrors('affiliation');
-                                                            }
-                                                        }}
-                                                        required
-                                                        autoComplete="organization"
-                                                    />
-                                                </div>
-                                                <FieldError>{errors.affiliation}</FieldError>
-                                            </Field>
+                                        <Field data-invalid={!!errors.password_confirmation}>
+                                            <FieldLabel htmlFor="password_confirmation">
+                                                Confirm Password
+                                            </FieldLabel>
+                                            <Input
+                                                id="password_confirmation"
+                                                name="password_confirmation"
+                                                type="password"
+                                                onChange={() => {
+                                                    if (errors.password_confirmation) {
+                                                        clearErrors('password_confirmation');
+                                                    }
+                                                }}
+                                                required
+                                                autoComplete="new-password"
+                                            />
+                                            {errors.password_confirmation && <FieldError>{errors.password_confirmation}</FieldError>}
+                                        </Field>
+                                    </Field>
 
-                                            <Field data-invalid={!!errors.country}>
-                                                <FieldLabel htmlFor="country">
-                                                    Country *
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                                                    <Select
-                                                        name="country"
-                                                        onValueChange={() => {
-                                                            if (errors.country) {
-                                                                clearErrors('country');
-                                                            }
-                                                        }}
-                                                        required
-                                                    >
-                                                        <SelectTrigger className={`w-full pl-10 transition-all duration-200 ${errors.country
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}>
-                                                            <SelectValue placeholder="Select your country" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {countries.map((country) => (
-                                                                <SelectItem key={country.code} value={country.name}>
-                                                                    {country.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <FieldError>{errors.country}</FieldError>
-                                            </Field>
-                                        </div>
-                                    </div>
-
-                                            <Separator />
-
-                                    {/* Account Information Section */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <UserPlus className="h-5 w-5 text-primary" />
-                                            <h3 className="text-lg font-semibold text-foreground">Account Information</h3>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <Field data-invalid={!!errors.email}>
-                                                <FieldLabel htmlFor="email">
-                                                    Email Address *
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        id="email"
-                                                        name="email"
-                                                        type="email"
-                                                        className={`w-full pl-10 transition-all duration-200 ${errors.email
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}
-                                                        placeholder="your.email@example.com"
-                                                        onChange={() => {
-                                                            if (errors.email) {
-                                                                clearErrors('email');
-                                                            }
-                                                        }}
-                                                        required
-                                                        autoComplete="email"
-                                                    />
-                                                </div>
-                                                <FieldError>{errors.email}</FieldError>
-                                            </Field>
-
-                                            <Field data-invalid={!!errors.username}>
-                                                <FieldLabel htmlFor="username">
-                                                    Username *
-                                                </FieldLabel>
-                                                <div className="relative group">
-                                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        id="username"
-                                                        name="username"
-                                                        type="text"
-                                                        className={`w-full pl-10 transition-all duration-200 ${errors.username
-                                                            ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                            : 'focus:border-primary focus:ring-primary/20'
-                                                            }`}
-                                                        placeholder="Choose a username"
-                                                        onChange={() => {
-                                                            if (errors.username) {
-                                                                clearErrors('username');
-                                                            }
-                                                        }}
-                                                        required
-                                                        autoComplete="username"
-                                                    />
-                                                </div>
-                                                <FieldError>{errors.username}</FieldError>
-                                            </Field>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <Field data-invalid={!!errors.password}>
-                                                    <FieldLabel htmlFor="password">
-                                                        Password *
-                                                    </FieldLabel>
-                                                    <div className="relative group">
-                                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                        <Input
-                                                            id="password"
-                                                            name="password"
-                                                            type={showPassword ? 'text' : 'password'}
-                                                            className={`w-full pl-10 pr-10 transition-all duration-200 ${errors.password
-                                                                ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                                : 'focus:border-primary focus:ring-primary/20'
-                                                                }`}
-                                                            placeholder="Create a password"
-                                                            onChange={() => {
-                                                                if (errors.password) {
-                                                                    clearErrors('password');
-                                                                }
-                                                            }}
-                                                            required
-                                                            autoComplete="new-password"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                                        >
-                                                            {showPassword ? (
-                                                                <EyeOff className="h-4 w-4" />
-                                                            ) : (
-                                                                <Eye className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                    <FieldError>{errors.password}</FieldError>
-                                                </Field>
-
-                                                <Field data-invalid={!!errors.password_confirmation}>
-                                                    <FieldLabel htmlFor="password_confirmation">
-                                                        Confirm Password *
-                                                    </FieldLabel>
-                                                    <div className="relative group">
-                                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                        <Input
-                                                            id="password_confirmation"
-                                                            name="password_confirmation"
-                                                            type={showConfirmPassword ? 'text' : 'password'}
-                                                            className={`w-full pl-10 pr-10 transition-all duration-200 ${errors.password_confirmation
-                                                                ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                                                                : 'focus:border-primary focus:ring-primary/20'
-                                                                }`}
-                                                            placeholder="Confirm your password"
-                                                            onChange={() => {
-                                                                if (errors.password_confirmation) {
-                                                                    clearErrors('password_confirmation');
-                                                                }
-                                                            }}
-                                                            required
-                                                            autoComplete="new-password"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-muted"
-                                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                                                        >
-                                                            {showConfirmPassword ? (
-                                                                <EyeOff className="h-4 w-4" />
-                                                            ) : (
-                                                                <Eye className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                    <FieldError>{errors.password_confirmation}</FieldError>
-                                                </Field>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Separator />
-
-                                    {/* Privacy Options Section */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Shield className="h-5 w-5 text-primary" />
-                                            <h3 className="text-lg font-semibold text-foreground">Privacy & Preferences</h3>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card/50">
-                                                <Checkbox
-                                                    id="data_collection"
-                                                    name="data_collection"
-                                                    className="h-4 w-4 mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                    disabled={processing}
-                                                />
-                                                <div className="flex-1">
-                                                    <FieldLabel htmlFor="data_collection" className="text-sm cursor-pointer flex items-center gap-2 font-normal">
-                                                        <FileText className="h-4 w-4" />
-                                                        Data Collection Consent
-                                                    </FieldLabel>
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        I agree to the collection and processing of my personal data for research purposes.
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card/50">
-                                                <Checkbox
-                                                    id="notifications"
-                                                    name="notifications"
-                                                    className="h-4 w-4 mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                    disabled={processing}
-                                                />
-                                                <div className="flex-1">
-                                                    <FieldLabel htmlFor="notifications" className="text-sm cursor-pointer flex items-center gap-2 font-normal">
-                                                        <Bell className="h-4 w-4" />
-                                                        Email Notifications
-                                                    </FieldLabel>
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        Receive updates about new publications, calls for papers, and system announcements.
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card/50">
-                                                <Checkbox
-                                                    id="review_requests"
-                                                    name="review_requests"
-                                                    className="h-4 w-4 mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                    disabled={processing}
-                                                />
-                                                <div className="flex-1">
-                                                    <FieldLabel htmlFor="review_requests" className="text-sm cursor-pointer flex items-center gap-2 font-normal">
-                                                        <Users className="h-4 w-4" />
-                                                        Review Requests
-                                                    </FieldLabel>
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        I am open to receiving manuscript review requests from editors.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        className="w-full font-semibold py-3 shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        disabled={processing}
-                                    >
-                                        {processing ? (
-                                            <div className="flex items-center gap-2">
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                <span>Creating your account...</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                <UserPlus className="h-4 w-4" />
-                                                <span>Create Account</span>
-                                            </div>
-                                        )}
-                                    </Button>
-                                </div>
+                                    {/* Submit Button */}
+                                    <Field>
+                                        <Button 
+                                            type="submit" 
+                                            className="w-full"
+                                            disabled={processing}
+                                        >
+                                            {processing ? 'Creating account...' : 'Create Account'}
+                                        </Button>
+                                        <FieldDescription className="text-center">
+                                            Already have an account?{' '}
+                                            <Link href={loginRoute.url()} className="underline underline-offset-4">
+                                                Sign in
+                                            </Link>
+                                        </FieldDescription>
+                                    </Field>
+                                </FieldGroup>
                             )}
                         </Form>
                     </CardContent>
-
-                    <CardFooter className="text-center pb-6 flex justify-center">
-                        <p className="text-sm text-muted-foreground text-center">
-                            Already have an account?{' '}
-                            <Link
-                                href={route('login')}
-                                className="font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
-                            >
-                                Sign in here
-                            </Link>
-                        </p>
-                    </CardFooter>
                 </Card>
+
+                {/* Footer Terms */}
+                <FieldDescription className="px-6 text-center text-balance">
+                    By clicking continue, you agree to our{' '}
+                    <Link href="#" className="underline underline-offset-4">
+                        Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="#" className="underline underline-offset-4">
+                        Privacy Policy
+                    </Link>
+                    .
+                </FieldDescription>
             </div>
         </div>
     );

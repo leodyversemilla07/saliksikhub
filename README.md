@@ -13,6 +13,7 @@
 -   **File Storage** – Secure cloud storage using DigitalOcean Spaces (S3-compatible)
 -   **PDF Processing** – Automated PDF parsing and text extraction
 -   **Version Control** – Track manuscript revisions through multiple rounds (typically 3-4)
+-   **Public Search** – Search published manuscripts by title, authors, keywords, and abstract
 
 ### Editorial System
 

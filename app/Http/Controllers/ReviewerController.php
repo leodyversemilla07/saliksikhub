@@ -14,15 +14,73 @@ class ReviewerController extends Controller
      */
     public function dashboard()
     {
-        // Get manuscripts under review for this reviewer
-        // For now, show all manuscripts under review since there's no specific reviewer assignment
-        $manuscriptsUnderReview = Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)
-            ->with('author')
+        $user = auth()->user();
+
+        // Get review statistics for this reviewer
+        $reviewsCompleted = $user->reviews()->where('status', 'completed')->count();
+        $reviewsPending = $user->reviews()->whereIn('status', ['assigned', 'in_progress'])->count();
+        $reviewsOverdue = $user->reviews()
+            ->whereIn('status', ['assigned', 'in_progress'])
+            ->where('deadline', '<', now())
+            ->count();
+
+        // Get recent reviews
+        $recentReviews = $user->reviews()
+            ->with('manuscript')
             ->latest()
+            ->take(5)
             ->get();
+
+        // Get review completion rate over time (last 6 months)
+        $sixMonthsAgo = now()->subMonths(6);
+        $monthlyStats = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $completedInMonth = $user->reviews()
+                ->where('status', 'completed')
+                ->whereYear('updated_at', $month->year)
+                ->whereMonth('updated_at', $month->month)
+                ->count();
+
+            $monthlyStats[] = [
+                'month' => $month->format('M Y'),
+                'completed' => $completedInMonth,
+            ];
+        }
+
+        // Get average review time (in days)
+        $avgReviewTime = $user->reviews()
+            ->where('status', 'completed')
+            ->whereNotNull('completed_at')
+            ->selectRaw('AVG(DATEDIFF(completed_at, created_at)) as avg_days')
+            ->first()
+            ->avg_days ?? 0;
+
+        // Get manuscripts currently under review by this reviewer
+        $manuscriptsUnderReview = Manuscript::whereHas('reviews', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->whereIn('status', ['assigned', 'in_progress']);
+        })->with('author')->get();
 
         return Inertia::render('reviewer/dashboard', [
             'manuscriptsUnderReview' => $manuscriptsUnderReview,
+            'stats' => [
+                'reviews_completed' => $reviewsCompleted,
+                'reviews_pending' => $reviewsPending,
+                'reviews_overdue' => $reviewsOverdue,
+                'avg_review_time' => round($avgReviewTime, 1),
+            ],
+            'monthlyStats' => $monthlyStats,
+            'recentReviews' => $recentReviews->map(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'manuscript_title' => $review->manuscript->title,
+                    'status' => $review->status,
+                    'deadline' => $review->deadline?->format('M j, Y'),
+                    'created_at' => $review->created_at->format('M j, Y'),
+                    'is_overdue' => $review->deadline && $review->deadline->isPast() && $review->status !== 'completed',
+                ];
+            }),
         ]);
     }
 

@@ -28,6 +28,7 @@ import {
 import { Pagination as ShadcnPagination } from "@/components/pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import reviewer from '@/routes/reviewer';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -40,7 +41,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AppLayout from '@/layouts/app-layout';
 import { Eye, MoreHorizontal, Search, Filter, Calendar, Users, FileText, Clock } from "lucide-react";
-import { Manuscript } from "@/types/manuscript";
+import { Manuscript } from "@/types";
 
 interface PaginatedManuscripts {
     data: Manuscript[];
@@ -90,7 +91,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
 
     React.useEffect(() => {
         if (debouncedSearch !== filters.search || statusFilter !== filters.status) {
-            router.visit(route('reviewer.manuscripts.index'), {
+            router.visit(reviewer.manuscripts.index.url(), {
                 data: {
                     search: debouncedSearch,
                     status: statusFilter,
@@ -246,7 +247,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={route('reviewer.manuscripts.show', manuscript.id)} prefetch="hover">
+                                <Link href={reviewer.manuscripts.show.url({ id: manuscript.id })} prefetch="hover">
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                 </Link>
@@ -278,7 +279,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     });
 
     const handlePageChange = (page: number) => {
-        router.visit(route('reviewer.manuscripts.index'), {
+        router.visit(reviewer.manuscripts.index.url(), {
             data: {
                 page,
                 search: debouncedSearch,
@@ -291,7 +292,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     };
 
     const handlePageSizeChange = (size: number) => {
-        router.visit(route('reviewer.manuscripts.index'), {
+        router.visit(reviewer.manuscripts.index.url(), {
             data: {
                 search: debouncedSearch,
                 status: statusFilter,

@@ -48,6 +48,7 @@ class ProfileUpdateRequest extends FormRequest
             'data_collection' => ['nullable', 'boolean'],
             'notifications' => ['nullable', 'boolean'],
             'review_requests' => ['nullable', 'boolean'],
+            'email_notification_enabled' => ['nullable', 'boolean'],
         ];
     }
 

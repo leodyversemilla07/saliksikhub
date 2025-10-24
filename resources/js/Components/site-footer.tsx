@@ -5,15 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { home, submissions, archives, editorialBoard, announcements, aboutJournal, contactUs } from '@/routes';
 
 const footerQuickLinks = [
-    { name: "Home", href: route('home') },
-    { name: "Submissions", href: route('submissions') },
-    { name: "Archives", href: route('archives') },
-    { name: "Editorial Board", href: route('editorial-board') },
-    { name: "Announcements", href: route('announcements') },
-    { name: "About", href: route('about-journal') },
-    { name: "Contact", href: route('contact-us') },
+    { name: "Home", href: home.url() },
+    { name: "Submissions", href: submissions.url() },
+    { name: "Archives", href: archives.url() },
+    { name: "Editorial Board", href: editorialBoard.url() },
+    { name: "Announcements", href: announcements.url() },
+    { name: "About", href: aboutJournal.url() },
+    { name: "Contact", href: contactUs.url() },
 ];
 
 const socialLinks = [
@@ -34,7 +35,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pt-12">
                     {/* Column 1: About & Newsletter */}
                     <div className="space-y-8">
-                        <Link href={route('home')} className="inline-block">
+                        <Link href={home.url()} className="inline-block">
                             <span className="text-2xl font-bold text-primary">
                                 Research Journal Manager
                             </span>
@@ -90,7 +91,7 @@ export default function Footer() {
                                 </CardHeader>
                                 <CardContent>
                                     <Button variant="ghost" asChild className="p-0 h-auto font-medium text-primary hover:underline">
-                                        <Link href={route('submissions')} className="inline-flex items-center gap-2">
+                                        <Link href={submissions.url()} className="inline-flex items-center gap-2">
                                             Submit Now
                                             <LuArrowRight className="h-4 w-4" />
                                         </Link>

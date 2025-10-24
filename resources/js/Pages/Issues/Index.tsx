@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Search, BookOpen, Calendar, Eye, Edit, Archive, FileText, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import issuesRoutes from '@/routes/issues';
 
 interface JournalIssue {
     id: number;
@@ -129,11 +131,11 @@ export default function Index({ issues, filters }: IndexProps) {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: route('dashboard'),
+            href: dashboard.url(),
         },
         {
             label: 'Journal Issues',
-            href: route('issues.index'),
+            href: issuesRoutes.index.url(),
         }
     ]; const clearFilters = () => {
         setSearchTerm('');

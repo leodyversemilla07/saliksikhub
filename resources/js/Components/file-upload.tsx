@@ -8,7 +8,6 @@ import {
     Upload, 
     File, 
     X, 
-    CheckCircle2, 
     AlertCircle,
     FileText,
     Image as ImageIcon,
@@ -16,7 +15,8 @@ import {
     Paperclip
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { FileType, FileRequirements } from '@/types/review';
+import type { FileType, FileRequirements } from '@/types';
+import manuscripts from '@/routes/manuscripts';
 
 interface FileUploadProps {
     manuscriptId: number;
@@ -116,7 +116,7 @@ export function FileUpload({
     const handleUpload = () => {
         if (!data.file) return;
 
-        post(route('manuscripts.files.upload', manuscriptId), {
+        post(manuscripts.files.upload.url({ id: manuscriptId }), {
             onSuccess: () => {
                 reset();
                 setUploadProgress(0);
@@ -126,7 +126,9 @@ export function FileUpload({
                 onError?.(Object.values(errors).join(', '));
             },
             onProgress: (progress) => {
-                setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
+                if (progress && progress.total) {
+                    setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
+                }
             },
         });
     };
