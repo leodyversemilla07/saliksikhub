@@ -1,17 +1,32 @@
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { BookOpen, Target, Eye, Star, Unlock, Users, BookCopy, Globe, ShieldCheck, LifeBuoy } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export default function AboutJournal({ auth }: PageProps) {
+    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalAbbreviation = currentJournal?.abbreviation ?? 'RJMS';
+    const institutionName = currentInstitution?.name ?? 'Institution';
+    const journalDescription = currentJournal?.description 
+        ?? 'A distinguished, open-access, peer-reviewed scholarly publication committed to advancing knowledge and fostering intellectual discourse across a wide spectrum of disciplines.';
+    
+    const badges = [
+        ...(currentJournal?.settings?.open_access !== false ? ['Open Access'] : []),
+        ...(currentJournal?.settings?.peer_reviewed !== false ? ['Peer Reviewed'] : []),
+        ...(currentJournal?.settings?.disciplines ?? ['Multidisciplinary']),
+        `${currentInstitution?.abbreviation ?? institutionName} Publication`,
+    ];
+
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <Head title="About the Journal | Daluyang Dunong" />
+            <Head title={`About the Journal | ${journalName}`} />
             <Header auth={auth} />
-            <main className="flex-grow">
+            <main className="grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -19,12 +34,12 @@ export default function AboutJournal({ auth }: PageProps) {
                             About the Journal
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Learn about Daluyang Dunong Multidisciplinary Research Journal and our commitment to academic excellence.
+                            Learn about {journalName} and our commitment to academic excellence.
                         </p>
                     </div>
 
                     {/* Journal Overview Section */}
-                    <Card className="mb-8 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+                    <Card className="mb-8 bg-linear-to-r from-primary/5 to-primary/10 border-primary/20">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3 text-2xl">
                                 <BookOpen className="h-8 w-8 text-primary" />
@@ -34,21 +49,18 @@ export default function AboutJournal({ auth }: PageProps) {
                         <CardContent>
                             <div className="space-y-4">
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    <strong className="text-foreground">Daluyang Dunong: Multidisciplinary Research Journal (DDMRJ)</strong> is a distinguished,
-                                    open-access, peer-reviewed scholarly publication committed to advancing knowledge and fostering intellectual discourse
-                                    across a wide spectrum of disciplines.
+                                    <strong className="text-foreground">{journalName} ({journalAbbreviation})</strong> {journalDescription}
                                 </p>
                                 <p className="text-muted-foreground leading-relaxed">
-                                    Published by Mindoro State University (MinSU), DDMRJ serves as a vital platform for researchers, academics, and
+                                    Published by {institutionName}, {journalAbbreviation} serves as a vital platform for researchers, academics, and
                                     practitioners to disseminate original research, innovative ideas, and insightful analyses. The journal upholds rigorous
                                     academic standards through a meticulous double-blind peer-review process, ensuring the quality, validity, and significance
                                     of every published article.
                                 </p>
                                 <div className="flex flex-wrap gap-2 pt-2">
-                                    <Badge variant="secondary">Open Access</Badge>
-                                    <Badge variant="secondary">Peer Reviewed</Badge>
-                                    <Badge variant="secondary">Multidisciplinary</Badge>
-                                    <Badge variant="secondary">MinSU Publication</Badge>
+                                    {badges.map((badge, index) => (
+                                        <Badge key={index} variant="secondary">{badge}</Badge>
+                                    ))}
                                 </div>
                             </div>
                         </CardContent>
@@ -97,7 +109,7 @@ export default function AboutJournal({ auth }: PageProps) {
                                 Key Features
                             </CardTitle>
                             <CardDescription>
-                                What makes Daluyang Dunong a distinguished research publication
+                                What makes {journalName} a distinguished research publication
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -151,7 +163,7 @@ export default function AboutJournal({ auth }: PageProps) {
                     {/* Aims & Scope Section */}
                     <div className="space-y-8 mb-8">
                         {/* Aims Section */}
-                        <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+                        <Card className="bg-linear-to-r from-primary/5 to-primary/10 border-primary/20">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-3 text-2xl">
                                     <Target className="h-8 w-8 text-primary" />
@@ -222,7 +234,7 @@ export default function AboutJournal({ auth }: PageProps) {
                                         <Card key={index} className="hover:shadow-md transition-shadow bg-muted/30">
                                             <CardContent className="pt-4">
                                                 <div className="flex items-start gap-4">
-                                                    <span className="flex-shrink-0 h-8 w-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                                                    <span className="shrink-0 h-8 w-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-sm">
                                                         {index + 1}
                                                     </span>
                                                     <div>
@@ -234,7 +246,7 @@ export default function AboutJournal({ auth }: PageProps) {
                                         </Card>
                                     ))}
                                 </div>
-                                <Card className="mt-6 bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary/30">
+                                <Card className="mt-6 bg-linear-to-r from-secondary/20 to-secondary/10 border-secondary/30">
                                     <CardContent className="pt-6">
                                         <p className="text-lg text-muted-foreground leading-relaxed">
                                             The journal encourages interdisciplinary research that connects these themes and welcomes contributions offering novel insights, methodologies, and solutions that significantly contribute to the advancement of the Sustainable Development Goals (SDGs) in both local and international contexts.

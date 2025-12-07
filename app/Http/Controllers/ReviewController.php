@@ -294,13 +294,13 @@ class ReviewController extends Controller
 
         $completedReviews = Review::forReviewer($reviewer->id)
             ->completed()
-            ->with(['manuscript'])
+            ->with(['manuscript' => fn ($q) => $q->withoutGlobalScope('journal')])
             ->latest('review_submitted_at')
             ->paginate(20)
             ->through(function ($review) {
                 return [
                     'id' => $review->id,
-                    'manuscript_title' => $review->manuscript->title,
+                    'manuscript_title' => $review->manuscript?->title ?? 'Unknown Manuscript',
                     'review_round' => $review->review_round,
                     'recommendation' => $review->recommendation?->label(),
                     'recommendation_color' => $review->recommendation?->color(),

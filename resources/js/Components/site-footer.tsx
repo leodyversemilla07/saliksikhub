@@ -1,78 +1,151 @@
-import { Link } from '@inertiajs/react'
-import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin, FaYoutube } from "react-icons/fa6";
-import { LuMail, LuMapPin, LuArrowRight } from "react-icons/lu";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { home, submissions, archives, editorialBoard, announcements, aboutJournal, contactUs } from '@/routes';
+/**
+ * SiteFooter Component
+ * 
+ * The main footer for the Saliksikhub Research Journal Management System.
+ * Provides comprehensive navigation, contact information, and institutional
+ * branding for the public-facing journal website.
+ * 
+ * ## Features
+ * - **Journal Identity**: Logo, name, and description with journal metrics
+ * - **Quick Links**: Easy access to main sections (Current Issue, Archives, etc.)
+ * - **Author Resources**: Submission guidelines, ethics, and policies
+ * - **Contact Information**: Institution address, email, and phone
+ * - **Newsletter Signup**: Email subscription form for updates
+ * - **Social Media Links**: Connect with the journal on various platforms
+ * - **Legal Links**: Privacy policy, terms of use, accessibility
+ * 
+ * ## Customization for Institutions
+ * To customize for your institution:
+ * 1. Update the logo image URL
+ * 2. Modify the journal name and description
+ * 3. Update ISSN, frequency, and language in Journal Information
+ * 4. Replace contact details (address, email, phone)
+ * 5. Update social media links
+ * 6. Modify copyright text in bottom bar
+ * 
+ * ## Link Sections
+ * - **Browse**: Home, Current Issue, Archives, Submissions
+ * - **About**: About Journal, Editorial Board, Announcements, Contact
+ * - **For Authors**: Guidelines, Process, Ethics, Copyright, Open Access
+ * 
+ * @module components/site-footer
+ * @see {@link SiteHeader} for the corresponding header component
+ */
+import { Link } from '@inertiajs/react';
+import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin, FaYoutube, FaOrcid } from 'react-icons/fa6';
+import { LuMail, LuMapPin, LuPhone, LuExternalLink, LuBookOpen, LuFileText, LuUsers, LuArchive, LuInfo, LuMessageSquare } from 'react-icons/lu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { home, submissions, archives, editorialBoard, announcements, aboutJournal, contactUs, current } from '@/routes';
 
-const footerQuickLinks = [
-    { name: "Home", href: home.url() },
-    { name: "Submissions", href: submissions.url() },
-    { name: "Archives", href: archives.url() },
-    { name: "Editorial Board", href: editorialBoard.url() },
-    { name: "Announcements", href: announcements.url() },
-    { name: "About", href: aboutJournal.url() },
-    { name: "Contact", href: contactUs.url() },
+const quickLinks = [
+    { name: 'Home', href: home.url(), icon: LuBookOpen },
+    { name: 'Current Issue', href: current.url(), icon: LuFileText },
+    { name: 'Archives', href: archives.url(), icon: LuArchive },
+    { name: 'Submissions', href: submissions.url(), icon: LuFileText },
+];
+
+const aboutLinks = [
+    { name: 'About the Journal', href: aboutJournal.url(), icon: LuInfo },
+    { name: 'Editorial Board', href: editorialBoard.url(), icon: LuUsers },
+    { name: 'Announcements', href: announcements.url(), icon: LuMessageSquare },
+    { name: 'Contact Us', href: contactUs.url(), icon: LuMail },
+];
+
+const authorResources = [
+    { name: 'Author Guidelines', href: '#' },
+    { name: 'Submission Process', href: submissions.url() },
+    { name: 'Publication Ethics', href: '#' },
+    { name: 'Copyright Policy', href: '#' },
+    { name: 'Open Access Policy', href: '#' },
 ];
 
 const socialLinks = [
-    { name: "Facebook", icon: FaFacebook, href: "https://www.facebook.com/DaluyangDunong" },
-    { name: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/daluyangdunong" },
-    { name: "Twitter", icon: FaXTwitter, href: "https://www.x.com/DaluyangDunong" },
-    { name: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/daluyang-dunong" },
-    { name: "YouTube", icon: FaYoutube, href: "https://www.youtube.com/@DaluyangDunong" },
-]
+    { name: 'Facebook', icon: FaFacebook, href: 'https://www.facebook.com/DaluyangDunong' },
+    { name: 'Twitter', icon: FaXTwitter, href: 'https://www.x.com/DaluyangDunong' },
+    { name: 'LinkedIn', icon: FaLinkedin, href: 'https://www.linkedin.com/company/daluyang-dunong' },
+    { name: 'ORCID', icon: FaOrcid, href: '#' },
+];
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-background transition-colors duration-300">
-            <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                {/* Main footer content */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pt-12">
-                    {/* Column 1: About & Newsletter */}
-                    <div className="space-y-8">
-                        <Link href={home.url()} className="inline-block">
-                            <span className="text-2xl font-bold text-primary">
-                                Research Journal Manager
-                            </span>
+        <footer className="bg-muted/30 border-t">
+            {/* Main Footer Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                    {/* Column 1: Journal Identity */}
+                    <div className="lg:col-span-1">
+                        <Link href={home.url()} className="inline-flex items-center gap-3 mb-6">
+                            <img
+                                src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                                className="h-12 w-auto"
+                                alt="MinSU Research Journal"
+                            />
+                            <div>
+                                <h3 className="text-lg font-bold text-foreground">Saliksikhub</h3>
+                                <p className="text-xs text-muted-foreground">Research Journal</p>
+                            </div>
                         </Link>
-                        <p className="text-muted-foreground text-sm leading-relaxed transition-colors duration-300">
-                            A flexible, open platform for managing scholarly journals — handling submissions, peer review,
-                            editorial decisions, and publication metadata with audit trails and integrations.
+
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                            A peer-reviewed, open-access journal dedicated to publishing high-quality research
+                            across multiple disciplines. Committed to advancing knowledge and fostering
+                            academic excellence.
                         </p>
 
-                        {/* Newsletter Signup */}
-                        <div className="pt-4">
-                            <h4 className="text-foreground font-semibold text-sm mb-4 transition-colors duration-300">
-                                Subscribe to Our Newsletter
-                            </h4>
-                            <form className="flex gap-2">
-                                <Input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="flex-1 min-w-0"
-                                />
-                                <Button type="submit" size="icon">
-                                    <LuArrowRight className="h-4 w-4" />
-                                </Button>
-                            </form>
+                        {/* Journal Metrics */}
+                        <div className="bg-background rounded-lg p-4 border">
+                            <h4 className="text-sm font-semibold text-foreground mb-3">Journal Information</h4>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">ISSN (Online)</span>
+                                    <span className="font-mono text-foreground">2024-XXXX</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Frequency</span>
+                                    <span className="text-foreground">Bi-annual</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Language</span>
+                                    <span className="text-foreground">English</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Column 2: Quick Links */}
                     <div>
-                        <h3 className="text-foreground font-semibold text-lg mb-8 transition-colors duration-300">Quick Links</h3>
-                        <ul className="space-y-4">
-                            {footerQuickLinks.map((item) => (
+                        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-6">
+                            Browse
+                        </h3>
+                        <ul className="space-y-3">
+                            {quickLinks.map((item) => (
                                 <li key={item.name}>
                                     <Link
                                         href={item.href}
-                                        className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
+                                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                                     >
+                                        <item.icon className="h-4 w-4" />
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+
+                        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mt-8 mb-6">
+                            About
+                        </h3>
+                        <ul className="space-y-3">
+                            {aboutLinks.map((item) => (
+                                <li key={item.name}>
+                                    <Link
+                                        href={item.href}
+                                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <item.icon className="h-4 w-4" />
                                         {item.name}
                                     </Link>
                                 </li>
@@ -80,109 +153,153 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Column 3: Call to Action */}
+                    {/* Column 3: For Authors */}
                     <div>
-                        <h3 className="text-foreground font-semibold text-lg mb-8 transition-colors duration-300">For Authors</h3>
-                        <div className="space-y-6">
-                            <Card className="hover:bg-accent transition-all duration-300">
-                                <CardHeader>
-                                    <CardTitle>Submit Your Research</CardTitle>
-                                    <CardDescription>Ready to publish? Submit your manuscript for peer review.</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Button variant="ghost" asChild className="p-0 h-auto font-medium text-primary hover:underline">
-                                        <Link href={submissions.url()} className="inline-flex items-center gap-2">
-                                            Submit Now
-                                            <LuArrowRight className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                            <Card className="hover:bg-accent transition-all duration-300">
-                                <CardHeader>
-                                    <CardTitle>Review Guidelines</CardTitle>
-                                    <CardDescription>Learn about our peer review process and guidelines.</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Button variant="ghost" asChild className="p-0 h-auto font-medium text-primary hover:underline">
-                                        <Link href="#" className="inline-flex items-center gap-2">
-                                            Learn More
-                                            <LuArrowRight className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </CardContent>
-                            </Card>
+                        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-6">
+                            For Authors
+                        </h3>
+                        <ul className="space-y-3">
+                            {authorResources.map((item) => (
+                                <li key={item.name}>
+                                    <Link
+                                        href={item.href}
+                                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+
+                        {/* Call to Action */}
+                        <div className="mt-8 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                            <h4 className="font-semibold text-foreground mb-2">Ready to Publish?</h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Submit your research for peer review.
+                            </p>
+                            <Button asChild size="sm" className="w-full">
+                                <Link href={submissions.url()}>
+                                    Submit Manuscript
+                                </Link>
+                            </Button>
                         </div>
                     </div>
 
-                    {/* Column 4: Contact & Social */}
+                    {/* Column 4: Contact & Newsletter */}
                     <div>
-                        <h3 className="text-foreground font-semibold text-lg mb-8 transition-colors duration-300">Contact Us</h3>
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-2.5 bg-accent rounded-xl">
-                                    <LuMail className="h-5 w-5 text-primary" />
-                                </div>
-                                <span className="text-muted-foreground text-sm transition-colors duration-300">support@journal-manager.local</span>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <div className="p-2.5 bg-accent rounded-xl">
-                                    <LuMapPin className="h-5 w-5 text-primary" />
-                                </div>
-                                <span className="text-muted-foreground text-sm transition-colors duration-300">Institutional address or publisher contact</span>
-                            </div>
+                        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-6">
+                            Contact
+                        </h3>
 
-                            {/* Social Media Links */}
-                            <div className="pt-6">
-                                <h4 className="text-foreground font-semibold text-sm mb-4 transition-colors duration-300">
-                                    Follow Us
-                                </h4>
-                                <div className="flex flex-wrap gap-4">
-                                    {socialLinks.map((item) => (
-                                        <Button
-                                            key={item.name}
-                                            variant="secondary"
-                                            size="icon"
-                                            asChild
-                                        >
-                                            <Link
-                                                href={item.href}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <item.icon
-                                                    className="h-5 w-5"
-                                                    aria-hidden="true"
-                                                />
-                                                <span className="sr-only">{item.name}</span>
-                                            </Link>
-                                        </Button>
-                                    ))}
+                        <div className="space-y-4 mb-8">
+                            <div className="flex items-start gap-3">
+                                <LuMapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                <div className="text-sm text-muted-foreground">
+                                    Mindoro State University<br />
+                                    Calapan City, Oriental Mindoro<br />
+                                    Philippines
                                 </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <LuMail className="h-5 w-5 text-primary shrink-0" />
+                                <a
+                                    href="mailto:journal@minsu.edu.ph"
+                                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                    journal@minsu.edu.ph
+                                </a>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <LuPhone className="h-5 w-5 text-primary shrink-0" />
+                                <span className="text-sm text-muted-foreground">
+                                    +63 (43) XXX-XXXX
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Newsletter */}
+                        <div className="bg-background rounded-lg p-4 border">
+                            <h4 className="text-sm font-semibold text-foreground mb-2">
+                                Stay Updated
+                            </h4>
+                            <p className="text-xs text-muted-foreground mb-3">
+                                Subscribe to receive notifications about new issues and announcements.
+                            </p>
+                            <form className="flex gap-2">
+                                <Input
+                                    type="email"
+                                    placeholder="Your email"
+                                    className="h-9 text-sm"
+                                />
+                                <Button type="submit" size="sm">
+                                    Subscribe
+                                </Button>
+                            </form>
+                        </div>
+
+                        {/* Social Links */}
+                        <div className="mt-6">
+                            <h4 className="text-sm font-semibold text-foreground mb-3">Follow Us</h4>
+                            <div className="flex gap-2">
+                                {socialLinks.map((item) => (
+                                    <Button
+                                        key={item.name}
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-9 w-9"
+                                        asChild
+                                    >
+                                        <a
+                                            href={item.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={item.name}
+                                        >
+                                            <item.icon className="h-4 w-4" />
+                                        </a>
+                                    </Button>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Copyright and Legal Section */}
-                <Separator className="mt-12" />
-                <div className="pt-4">
-                    <div className="md:flex md:items-center md:justify-between pb-4">
-                        <div className="text-center md:text-left">
-                            <p className="text-muted-foreground text-sm transition-colors duration-300">
-                                &copy; {currentYear} Daluyang Dunong. All rights reserved.
-                            </p>
+            {/* Bottom Bar */}
+            <div className="border-t bg-background">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                            <span>© {currentYear} Mindoro State University. All rights reserved.</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>Powered by Saliksikhub</span>
                         </div>
-                        <div className="mt-4 md:mt-0 flex justify-center md:justify-end space-x-8">
-                            <Button variant="link" size="sm" asChild className="text-muted-foreground hover:text-primary p-0 h-auto">
-                                <Link href="#">Privacy Policy</Link>
-                            </Button>
-                            <Button variant="link" size="sm" asChild className="text-muted-foreground hover:text-primary p-0 h-auto">
-                                <Link href="#">Terms of Service</Link>
-                            </Button>
-                            <Button variant="link" size="sm" asChild className="text-muted-foreground hover:text-primary p-0 h-auto">
-                                <Link href="#">Copyright Notice</Link>
-                            </Button>
+
+                        <div className="flex flex-wrap items-center gap-4 text-sm">
+                            <Link
+                                href="#"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Privacy Policy
+                            </Link>
+                            <Link
+                                href="#"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Terms of Use
+                            </Link>
+                            <Link
+                                href="#"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Accessibility
+                            </Link>
+                            <Link
+                                href="#"
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                Sitemap
+                            </Link>
                         </div>
                     </div>
                 </div>

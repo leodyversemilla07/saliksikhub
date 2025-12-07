@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToJournal;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Issue extends Model
 {
-    use HasFactory, Sluggable, SluggableScopeHelpers;
+    use BelongsToJournal, HasFactory, Sluggable, SluggableScopeHelpers;
 
     // Journal Issue Status Constants
     const STATUS_DRAFT = 'draft';
@@ -30,6 +31,7 @@ class Issue extends Model
     ];
 
     protected $fillable = [
+        'journal_id',
         'volume_number',
         'issue_number',
         'issue_title',

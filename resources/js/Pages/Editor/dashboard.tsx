@@ -202,7 +202,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                                             <p className="text-xs text-muted-foreground mt-1">{metric.description}</p>
                                         </div>
                                         <div className={cn(
-                                            "p-3 rounded-lg bg-gradient-to-br",
+                                            "p-3 rounded-lg bg-linear-to-br",
                                             metric.color,
                                             "text-white shadow-sm"
                                         )}>
@@ -226,7 +226,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                         </div>
                         <Select value={areaChartRange} onValueChange={setAreaChartRange}>
                             <SelectTrigger
-                                className="w-[160px] rounded-lg sm:ml-auto"
+                                className="w-40 rounded-lg sm:ml-auto"
                                 aria-label="Select a value"
                             >
                                 <SelectValue placeholder="Last 12 months" />
@@ -322,8 +322,8 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                 </Card>
 
                 <Card className="py-0">
-                    <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
-                        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
+                    <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
+                        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
                             <CardTitle>Bar Chart - Interactive</CardTitle>
                             <CardDescription>
                                 Showing total submissions for the last 12 months
@@ -395,7 +395,7 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                 </Card>
 
                 <Card className="py-4 sm:py-0">
-                    <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
+                    <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
                         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
                             <CardTitle>Line Chart - Interactive</CardTitle>
                             <CardDescription>

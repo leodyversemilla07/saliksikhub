@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Institution;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -11,6 +13,8 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -24,6 +28,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'institution_id' => Institution::factory(),
             'firstname' => fake()->firstName(),
             'lastname' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
@@ -55,6 +60,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Associate with a specific institution.
+     */
+    public function forInstitution(Institution $institution): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'institution_id' => $institution->id,
         ]);
     }
 }

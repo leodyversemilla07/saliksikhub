@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Issue;
+use App\Models\Journal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,6 +27,7 @@ class IssueFactory extends Factory
     public function definition(): array
     {
         return [
+            'journal_id' => Journal::factory(),
             'volume_number' => fake()->numberBetween(1, 15),
             'issue_number' => fake()->numberBetween(1, 4),
             'issue_title' => $this->generateIssueTitle(),

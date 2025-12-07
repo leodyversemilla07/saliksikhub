@@ -1,5 +1,5 @@
 import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import Header from '@/components/site-header';
 import Footer from '@/components/site-footer';
 import { Link } from '@inertiajs/react';
@@ -12,16 +12,26 @@ import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
 
 export default function Home({ auth }: PageProps) {
+    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    
+    const pageTitle = currentJournal?.name 
+        ? `${currentJournal.name} | ${currentInstitution?.abbreviation ?? 'RJMS'}`
+        : 'Research Journal Management System';
+    
+    const heroTitle = currentJournal?.settings?.hero_title ?? 'Modern Research';
+    const heroDescription = currentJournal?.settings?.hero_description 
+        ?? 'Streamline your scholarly publishing workflow with our comprehensive platform. From manuscript submission to publication, we\'ve got you covered with cutting-edge tools and intuitive interfaces.';
+
     return (
         <div className="flex flex-col min-h-screen bg-background transition-colors duration-300">
-            <Head title="Research Journal Management System" />
+            <Head title={pageTitle} />
             <Header auth={auth} />
 
-            <main className="flex-grow">
+            <main className="grow">
                 {/* Hero Section */}
                 <section className="relative isolate overflow-hidden">
                     <div className="absolute inset-0 -z-10">
-                        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/50 to-background" />
+                        <div className="absolute inset-0 bg-linear-to-br from-background via-muted/50 to-background" />
                         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-30">
                             <div className="aspect-square w-72 bg-primary/20 rounded-full" />
                         </div>
@@ -42,7 +52,7 @@ export default function Home({ auth }: PageProps) {
                             </div>
 
                             <h1 className="mt-10 text-5xl font-bold tracking-tight text-foreground sm:text-7xl">
-                                Modern Research
+                                {heroTitle}
                                 <span className="text-primary">
                                     {" "}Journal{" "}
                                 </span>
@@ -50,9 +60,7 @@ export default function Home({ auth }: PageProps) {
                             </h1>
 
                             <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl">
-                                Streamline your scholarly publishing workflow with our comprehensive platform.
-                                From manuscript submission to publication, we've got you covered with
-                                cutting-edge tools and intuitive interfaces.
+                                {heroDescription}
                             </p>
 
                             <div className="mt-10 flex items-center gap-x-6">
@@ -90,7 +98,7 @@ export default function Home({ auth }: PageProps) {
                             </div>
                         </div>
 
-                        <div className="mt-16 sm:mt-24 lg:mt-0 lg:flex-shrink-0 lg:flex-grow">
+                        <div className="mt-16 sm:mt-24 lg:mt-0 lg:shrink-0 lg:grow">
                             <div className="mx-auto w-full max-w-lg">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-xl opacity-30 animate-pulse" />

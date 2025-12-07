@@ -18,11 +18,19 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\SlugRedirectMiddleware::class,
+            \App\Http\Middleware\TeamsPermission::class,
         ]);
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'journal' => \App\Http\Middleware\SetCurrentJournal::class,
+            'user_role' => \App\Http\Middleware\CheckUserRole::class,
+        ]);
+        // Ensure TeamsPermission runs before SubstituteBindings (as per Spatie docs)
+        $middleware->priority([
+            \App\Http\Middleware\TeamsPermission::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

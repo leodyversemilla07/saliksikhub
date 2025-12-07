@@ -1,6 +1,7 @@
 // User related types
 
 export type UserRole =
+    | 'super_admin'
     | 'managing_editor'
     | 'editor_in_chief'
     | 'associate_editor'
@@ -30,12 +31,52 @@ export interface User {
     name?: string;
 }
 
+// Multi-tenancy types
+
+export interface Institution {
+    id: number;
+    name: string;
+    slug: string;
+    abbreviation?: string | null;
+    logo_path?: string | null;
+    logo_url?: string | null;
+    website?: string | null;
+}
+
+export interface Journal {
+    id: number;
+    name: string;
+    slug: string;
+    abbreviation?: string | null;
+    description?: string | null;
+    issn?: string | null;
+    eissn?: string | null;
+    logo_path?: string | null;
+    logo_url?: string | null;
+    settings?: JournalSettings | null;
+}
+
+export interface JournalSettings {
+    tagline?: string;
+    hero_title?: string;
+    hero_description?: string;
+    submission_guidelines?: string;
+    review_policy?: string;
+    open_access?: boolean;
+    peer_reviewed?: boolean;
+    disciplines?: string[];
+    primary_color?: string;
+    [key: string]: unknown;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     auth: {
         user: User;
     };
+    currentJournal?: Journal | null;
+    currentInstitution?: Institution | null;
 };
 
 // Manuscript related types

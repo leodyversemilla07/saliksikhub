@@ -14,8 +14,6 @@ class ManuscriptAndIssueSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Starting Manuscript and Issue seeding...');
-
         // Get existing users or create if none exist
         $editors = User::where('role', 'editor_in_chief')->get();
         $associateEditors = User::where('role', 'associate_editor')->get();
@@ -40,11 +38,8 @@ class ManuscriptAndIssueSeeder extends Seeder
             );
         }
 
-        $this->command->info("Users available - Editors: {$editors->count()}, Associate Editors: {$associateEditors->count()}, Authors: {$authors->count()}");
-
         // Create published issues for volumes 1-3
         $publishedIssues = collect();
-        $this->command->info('Creating published issues...');
 
         for ($volume = 1; $volume <= 3; $volume++) {
             for ($issueNum = 1; $issueNum <= 4; $issueNum++) {
@@ -61,17 +56,13 @@ class ManuscriptAndIssueSeeder extends Seeder
                         ->create();
 
                     $publishedIssues->push($issue);
-                    $this->command->info("Created issue: Vol. {$volume}, No. {$issueNum} - {$issue->issue_title}");
                 } else {
                     $publishedIssues->push($existingIssue);
-                    $this->command->info("Using existing issue: Vol. {$volume}, No. {$issueNum}");
                 }
             }
         }
 
         // Create current year issues (volume 4)
-        $this->command->info('Creating current year issues...');
-
         $currentYearIssues = [
             [4, 1, 'draft'],
             [4, 2, 'draft'],
@@ -94,13 +85,10 @@ class ManuscriptAndIssueSeeder extends Seeder
                 if ($status === 'published') {
                     $publishedIssues->push($issue);
                 }
-
-                $this->command->info("Created {$status} issue: Vol. {$volume}, No. {$issueNum}");
             }
         }
 
         // Create a special issue for AI in Education
-        $this->command->info('Creating special issue...');
         $specialIssueExists = Issue::where('volume_number', 5)->where('issue_number', 1)->first();
 
         if (! $specialIssueExists) {
@@ -113,14 +101,12 @@ class ManuscriptAndIssueSeeder extends Seeder
                 ->create();
 
             $publishedIssues->push($specialIssue);
-            $this->command->info("Created special issue: {$specialIssue->issue_title}");
         } else {
             $specialIssue = $specialIssueExists;
             $publishedIssues->push($specialIssue);
         }
 
         // Create published manuscripts for published issues
-        $this->command->info('Creating published manuscripts...');
         foreach ($publishedIssues->take(6) as $index => $issue) {
             $manuscriptCount = rand(3, 5);
 
@@ -133,13 +119,9 @@ class ManuscriptAndIssueSeeder extends Seeder
                         'editor_id' => $associateEditors->random()->id,
                     ]);
             }
-
-            $this->command->info("Created {$manuscriptCount} published manuscripts for issue: {$issue->issue_title}");
         }
 
         // Create manuscripts in various review stages
-        $this->command->info('Creating manuscripts in review stages...');
-
         $manuscriptStages = [
             ['submitted', 8],
             ['underReview', 6],
@@ -164,12 +146,9 @@ class ManuscriptAndIssueSeeder extends Seeder
                     ->{$stage}()
                     ->create($manuscriptData);
             }
-
-            $this->command->info("Created {$count} {$stage} manuscripts");
         }
 
         // Create some manuscripts with revision history
-        $this->command->info('Creating manuscripts with revisions...');
         for ($i = 0; $i < 3; $i++) {
             Manuscript::factory()
                 ->withRevisions()
@@ -179,15 +158,5 @@ class ManuscriptAndIssueSeeder extends Seeder
                     'issue_id' => null, // Manuscripts with revisions are still in process
                 ]);
         }
-
-        // Display final counts
-        $this->command->info('Seeding completed!');
-        $this->command->info('Final counts:');
-        $this->command->info('- Total Issues: '.Issue::count());
-        $this->command->info('- Total Manuscripts: '.Manuscript::count());
-        $this->command->info('- Published Issues: '.Issue::where('status', Issue::STATUS_PUBLISHED)->count());
-        $this->command->info('- Published Manuscripts: '.Manuscript::where('status', 'Published')->count());
-        $this->command->info('- Submitted Manuscripts: '.Manuscript::where('status', 'Submitted')->count());
-        $this->command->info('- Under Review Manuscripts: '.Manuscript::where('status', 'Under Review')->count());
     }
 }

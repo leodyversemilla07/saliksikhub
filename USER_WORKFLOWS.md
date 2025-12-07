@@ -1,6 +1,8 @@
-# User Workflows - Research Journal Management System
+# User Workflows - Saliksikhub Research Journal Management System
 
-This document outlines the detailed workflows for each user role in the Research Journal Management System.
+This document outlines the detailed workflows for each user role in Saliksikhub, a comprehensive open-source research journal management system designed for universities, colleges, and research institutions.
+
+> **Note for Adopting Institutions**: This workflow documentation can be customized to match your institution's specific policies and procedures. The system is designed to be flexible and adaptable to various academic publishing contexts.
 
 ---
 
@@ -11,13 +13,17 @@ This document outlines the detailed workflows for each user role in the Research
 4. [Associate Editor Workflow](#associate-editor-workflow)
 5. [Reviewer Workflow](#reviewer-workflow)
 6. [Language Editor Workflow](#language-editor-workflow)
+7. [System Customization Guide](#system-customization-guide)
 
 ---
 
 ## Author Workflow
 
 ### Overview
-Authors submit manuscripts, respond to reviews, submit revisions, and track their submission through the publication process.
+
+Authors submit manuscripts, respond to reviews, submit revisions, and track their submission through the publication process. This workflow supports researchers at any institution, from graduate students to senior faculty members.
+
+> **💡 Institutional Note**: Your institution may have specific requirements for ethics approval, funding disclosure, or data availability. These can be configured by your system administrator.
 
 ### Step-by-Step Workflow
 
@@ -26,8 +32,8 @@ Authors submit manuscripts, respond to reviews, submit revisions, and track thei
 
 1. **Account Setup**
    - Register with email verification
-   - Complete profile with ORCID integration
-   - Upload CV
+   - Complete profile with ORCID integration (optional but recommended)
+   - Upload CV (optional)
    - Set preferences and notifications
 
 2. **Start New Submission**
@@ -38,25 +44,24 @@ Authors submit manuscripts, respond to reviews, submit revisions, and track thei
 3. **Upload Files** (Max 100MB per submission)
    - Upload main manuscript (PDF, Word, LaTeX)
    - Upload cover letter (required)
-   - Upload unidentifiable manuscript for blind review
+   - Upload anonymized manuscript for blind review
    - Upload figures and tables
-   - Upload questionnaire and attachments
-   - Upload ethics clearance
-   - Add supplementary materials (optional)
+   - Upload supplementary materials (optional)
+   - Upload ethics clearance (if applicable)
    - System auto-saves every 2 minutes
 
 4. **Enter Metadata**
-   - Title (automatic extraction from file)
-   - Abstract (max 500 words)
+   - Title (automatic extraction from file when possible)
+   - Abstract (configurable word limit, default 500 words)
    - Keywords and subject area classification
    - Add co-authors with:
      - Names, emails, affiliations
-     - ORCID IDs
-     - Contribution roles
+     - ORCID IDs (optional)
+     - Contribution roles (CRediT taxonomy)
      - Corresponding author designation
 
 5. **Compliance & Declarations**
-   - Complete submission checklist:
+   - Complete institutional submission checklist:
      - Ethics approval (if applicable)
      - Data availability statement
      - Funding disclosure
@@ -231,14 +236,17 @@ Authors submit manuscripts, respond to reviews, submit revisions, and track thei
 - **Notifications:** Receive real-time updates
 - **Messages:** Communicate with editorial team
 - **Profile:** Update information and preferences
-- **Metrics:** View article-level statistics
+- **Metrics:** View article-level statistics (downloads, views, citations)
 
 ---
 
 ## Managing Editor Workflow
 
 ### Overview
-Managing editors have full system access and oversee overall journal operations, system administration, and workflow management.
+
+Managing Editors have full system access and oversee overall journal operations, system administration, and workflow management. This is typically a staff position within the institution's research office or library.
+
+> **💡 Role Flexibility**: Depending on your institution's size, the Managing Editor role may be combined with other editorial roles or shared among multiple staff members.
 
 ### Step-by-Step Workflow
 
@@ -251,7 +259,7 @@ Managing editors have full system access and oversee overall journal operations,
      - Average processing time by stage
      - Editor workload distribution
      - Reviewer performance metrics
-     - Geographic submission distribution
+     - Geographic submission distribution (optional)
    - Identify bottlenecks in workflow
    - Monitor system performance
 
@@ -463,7 +471,10 @@ Managing editors have full system access and oversee overall journal operations,
 ## Editor-in-Chief (EIC) Workflow
 
 ### Overview
-The Editor-in-Chief provides editorial oversight, makes final publication decisions, and ensures journal quality and standards.
+
+The Editor-in-Chief provides editorial oversight, makes final publication decisions, and ensures journal quality and standards. This is typically a senior faculty position responsible for the journal's academic direction.
+
+> **💡 Small Institution Tip**: For smaller journals, the EIC and Managing Editor roles may be combined into a single position.
 
 ### Step-by-Step Workflow
 
@@ -664,7 +675,10 @@ The Editor-in-Chief provides editorial oversight, makes final publication decisi
 ## Associate Editor Workflow
 
 ### Overview
-Associate Editors manage assigned manuscripts, coordinate peer review, and make editorial recommendations.
+
+Associate Editors manage assigned manuscripts, coordinate peer review, and make editorial recommendations. They are typically faculty members with subject-matter expertise who handle manuscripts in their specialty areas.
+
+> **💡 Workload Guidance**: Associate Editors typically manage 10-20 active manuscripts. The system provides workload balancing to prevent overload.
 
 ### Step-by-Step Workflow
 
@@ -936,7 +950,10 @@ Associate Editors manage assigned manuscripts, coordinate peer review, and make 
 ## Reviewer Workflow
 
 ### Overview
-Reviewers evaluate manuscripts, provide constructive feedback, and make recommendations to editors.
+
+Reviewers evaluate manuscripts, provide constructive feedback, and make recommendations to editors. Peer review is the cornerstone of academic publishing, and Saliksikhub makes it easy to participate as a reviewer.
+
+> **💡 For New Reviewers**: If you're new to peer review, the system provides templates and guidelines to help you write effective, constructive reviews. See the [Reviewer Best Practices](#reviewer-best-practices) section below.
 
 ### Step-by-Step Workflow
 
@@ -1260,7 +1277,10 @@ Reviewers evaluate manuscripts, provide constructive feedback, and make recommen
 ## Language Editor Workflow
 
 ### Overview
-Language Editors perform copyediting on accepted manuscripts during the production process, ensuring clarity, consistency, and adherence to style guidelines.
+
+Language Editors (also known as Copyeditors) perform copyediting on accepted manuscripts during the production process, ensuring clarity, consistency, and adherence to style guidelines. This role may be filled by in-house staff or freelance professionals.
+
+> **💡 Style Guide Flexibility**: Each journal can configure its own style guide preferences. The system supports common formats including APA, MLA, Chicago, AMA, and custom institutional styles.
 
 ### Step-by-Step Workflow
 
@@ -1668,7 +1688,104 @@ Each user role has access to:
 
 ---
 
-**Document Version**: 1.1  
-**Last Updated**: January 11, 2025  
-**System**: SaliksikHub Research Journal Management System  
-**Related Documents**: PRD.md, MANUSCRIPT_STATUSES.md, roles.md
+## System Customization Guide
+
+Saliksikhub is designed to be easily customized for your institution. This section provides guidance on adapting the workflows to your needs.
+
+### Branding & Identity
+
+| Component | Location | What to Update |
+|-----------|----------|----------------|
+| Logo | `site-header.tsx`, `site-footer.tsx` | Replace image URL with your institution's logo |
+| Institution Name | `site-header.tsx` top bar | Update university/journal name |
+| ISSN | `site-header.tsx`, `site-footer.tsx` | Replace with your journal's ISSN |
+| Contact Info | `site-footer.tsx` | Update address, email, phone |
+| Social Media | `site-footer.tsx` | Update social media links |
+
+### Workflow Configuration
+
+**Timeline Adjustments:**
+The default timelines can be adjusted in the system configuration:
+
+| Setting | Default | Customizable Range |
+|---------|---------|-------------------|
+| Desk review | 3-7 days | 1-14 days |
+| Peer review deadline | 2-4 weeks | 1-8 weeks |
+| Minor revision deadline | 30 days | 14-60 days |
+| Major revision deadline | 60-90 days | 30-180 days |
+| Copyediting | 7-14 days | 3-21 days |
+
+**Role Permissions:**
+Permissions can be adjusted via the Spatie Permission package. Common customizations include:
+- Adding custom roles for your institution
+- Modifying role capabilities
+- Creating role hierarchies
+
+### Compliance Checklists
+
+Institutions can customize the submission compliance checklist to match their requirements:
+
+**Default Checklist Items:**
+- [ ] Ethics approval (if applicable)
+- [ ] Data availability statement
+- [ ] Funding disclosure
+- [ ] Conflict of interest declaration
+- [ ] Copyright/licensing agreement
+
+**Example Institutional Additions:**
+- [ ] Institutional Review Board (IRB) approval
+- [ ] Grant compliance verification
+- [ ] Open access mandate compliance
+- [ ] Data retention policy acknowledgment
+
+### Email Templates
+
+All automated emails can be customized in the system. Key templates include:
+
+| Template | Purpose |
+|----------|---------|
+| Submission Confirmation | Sent when manuscript is submitted |
+| Review Invitation | Sent to invite reviewers |
+| Decision Letter | Editorial decision notification |
+| Revision Request | Request for manuscript revisions |
+| Publication Notice | Final publication announcement |
+
+### Multi-Journal Configuration
+
+Saliksikhub supports managing multiple journals from a single installation:
+
+- Each journal can have its own branding
+- Separate editorial boards per journal
+- Independent workflow configurations
+- Shared reviewer database (optional)
+- Cross-journal analytics
+
+---
+
+## Getting Help
+
+### For System Administrators
+
+- Refer to the [README.md](README.md) for installation and setup
+- Check [PRD.md](PRD.md) for complete feature specifications
+- Review [roles.md](roles.md) for permission configurations
+
+### For End Users
+
+- Access in-system help documentation
+- Contact your institution's system administrator
+- Submit issues via the system's support portal
+
+### Community Support
+
+- GitHub Issues: Report bugs and request features
+- GitHub Discussions: Community Q&A
+- Documentation: Comprehensive guides in the `/docs` folder
+
+---
+
+**Document Version**: 2.0  
+**Last Updated**: December 2025  
+**System**: Saliksikhub Research Journal Management System  
+**License**: MIT License - Free for institutional use  
+**Related Documents**: PRD.md, MANUSCRIPT_STATUSES.md, roles.md, README.md

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\ManuscriptStatus;
 use App\Models\Issue;
+use App\Models\Journal;
 use App\Models\Manuscript;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -32,6 +33,7 @@ class ManuscriptFactory extends Factory
         $decisionDate = fake()->boolean(60) ? fake()->dateTimeBetween($submissionDate, 'now') : null;
 
         return [
+            'journal_id' => Journal::factory(),
             'user_id' => User::factory(),
             'issue_id' => null, // Don't auto-create issues - let seeder handle this
             'title' => fake()->sentence(fake()->numberBetween(8, 15)),

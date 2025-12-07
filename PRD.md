@@ -1,47 +1,66 @@
-# Product Requirements Document: Research Journal Management System
+# Product Requirements Document: Saliksikhub Research Journal Management System
 
 ## 1. Executive Summary
 
 ### 1.1 Product Overview
-The Research Journal Management System (RJMS) is a comprehensive digital platform designed specifically for **State Universities and Colleges (SUCs) in the Philippines** to streamline the entire lifecycle of academic journal publishing, from manuscript submission through peer review, editorial management, production, and publication. The system will serve Filipino researchers, faculty members, editors, reviewers, and university administrators in managing scholarly content efficiently while promoting open access research and supporting the Philippines' higher education research agenda.
+
+**Saliksikhub** (from the Filipino word "saliksik" meaning "research") is a comprehensive, open-source digital platform designed for universities, colleges, and research institutions to streamline the entire lifecycle of academic journal publishing. The system handles everything from manuscript submission through peer review, editorial management, production, and publication.
+
+Saliksikhub serves researchers, faculty members, editors, reviewers, and administrators in managing scholarly content efficiently while promoting open access research and supporting institutional research goals.
+
+> **Open Source & Customizable**: Saliksikhub is released under the MIT License, allowing institutions to freely use, modify, and distribute the software to meet their specific needs.
 
 ### 1.2 Business Objectives
-- Support Philippine SUCs' research publication and dissemination goals
+
+**For All Institutions:**
 - Reduce manuscript processing time by 40%
 - Increase reviewer engagement and response rates by 30%
 - Provide real-time visibility into manuscript status for all stakeholders
-- Ensure compliance with CHED, DOST-SEI, and international academic publishing standards
+- Ensure compliance with international academic publishing standards (COPE, DOAJ, etc.)
 - Enable data-driven decision making through analytics and reporting
-- Promote Filipino research visibility and impact nationally and internationally
-- Support SUC faculty research output requirements for promotion and tenure
-- Facilitate compliance with Philippine research ethics and data privacy laws
-- Enable multi-institutional collaboration across SUCs nationwide
+- Promote research visibility and impact
+- Support faculty research output requirements for promotion and tenure
+- Facilitate compliance with research ethics and data privacy regulations
+
+**Additional Customization Options:**
+- Multi-journal support from a single installation
+- Institutional branding and theming
+- Integration with institutional authentication (SSO/LDAP)
+- Custom compliance checklists for regional requirements
+- Multi-language interface support
 
 ### 1.3 Success Metrics
-- Average time from submission to first decision: < 45 days
-- Reviewer acceptance rate: > 60%
-- System uptime: 99.9%
-- User satisfaction score: > 4.5/5
-- Monthly active users growth: 20% year-over-year
+
+| Metric | Target |
+|--------|--------|
+| Average time from submission to first decision | < 45 days |
+| Reviewer acceptance rate | > 60% |
+| System uptime | 99.9% |
+| User satisfaction score | > 4.5/5 |
+| Monthly active users growth | 20% year-over-year |
 
 ## 2. Stakeholders
 
 ### 2.1 Primary Users
-- **Faculty Authors**: SUC faculty members submitting research for publication, promotion, and tenure requirements
-- **Student Researchers**: Graduate students and undergraduate thesis writers
-- **Editors-in-Chief**: Usually senior faculty members overseeing journal operations
-- **Associate Editors**: Faculty members managing assigned manuscripts, coordinating reviews
-- **Peer Reviewers**: Filipino and international subject matter experts
-- **Editorial Assistants**: University staff performing administrative tasks
-- **Managing Editors**: University research office personnel coordinating publication workflow
+
+| Role | Description |
+|------|-------------|
+| **Faculty Authors** | Researchers submitting manuscripts for publication, promotion, and tenure |
+| **Student Researchers** | Graduate students and thesis writers contributing to institutional journals |
+| **Editors-in-Chief** | Senior faculty members overseeing journal operations and quality |
+| **Associate Editors** | Faculty members managing assigned manuscripts and coordinating reviews |
+| **Peer Reviewers** | Subject matter experts evaluating manuscript quality |
+| **Managing Editors** | Staff coordinating publication workflow and system administration |
+| **Language Editors** | Copyeditors ensuring clarity and style consistency |
 
 ### 2.2 Secondary Users
-- **University Research Directors**: Monitor institutional research output and impact
-- **CHED Representatives**: Monitor SUC compliance with research publication standards
-- **Library Staff**: Manage institutional repositories and archives
-- **Readers**: Filipino and international researchers with free, unrestricted access
-- **Institutional Repositories**: PhilPapers, ASEAN Citation Index, local university repositories
-- **System Administrators**: University IT staff maintaining the platform
+
+| Role | Description |
+|------|-------------|
+| **Research Directors** | Administrators monitoring institutional research output |
+| **Library Staff** | Managing institutional repositories and archives |
+| **Readers** | Researchers accessing published articles |
+| **System Administrators** | IT staff maintaining the platform |
 
 ## 3. Functional Requirements
 
@@ -67,26 +86,26 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 ### 3.2 Manuscript Submission
 
 #### 3.2.1 Submission Workflow
-- Multi-step submission wizard with progress indication (bilingual: English/Filipino)
+- Multi-step submission wizard with progress indication
 - Support for multiple file formats (PDF, Word, LaTeX, images)
-- File size limit: up to 100MB per submission
+- File size limit: up to 100MB per submission (configurable)
 - Drag-and-drop file upload interface
 - Automatic metadata extraction from uploaded files
-- Co-author management with contribution roles and **Philippine institutional affiliations**
-- **Funding source declaration** (CHED, DOST, PCAARRD, etc.)
+- Co-author management with contribution roles (CRediT taxonomy)
+- Funding source declaration (configurable for institutional requirements)
 - Conflict of interest declaration
 - Suggested and opposed reviewer nominations
-- Cover letter and abstract entry (up to 500 words, English or Filipino)
+- Cover letter and abstract entry (configurable word limit, default 500 words)
 - Keyword and subject area classification
 - Supplementary materials upload
-- **Philippine research ethics compliance checklist**:
-  - University ethics committee approval (if applicable)
-  - National Ethics Committee (NEC) clearance (for health research)
+- **Customizable compliance checklist**:
+  - Ethics committee approval (if applicable)
+  - Institutional Review Board (IRB) clearance
   - Data availability statement
-  - Funding disclosure (CHED, DOST, international grants)
-  - Indigenous Peoples (IP) community consent (if applicable)
-- **Creative Commons license selection** (CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA)
-- **Copyright retention confirmation** (authors retain copyright)
+  - Funding disclosure
+  - Community consent requirements (if applicable)
+- **License selection** (Creative Commons options: CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, or custom)
+- **Copyright configuration** (author-retained or institutional)
 - Save draft functionality with auto-save every 2 minutes
 - Submission confirmation email with manuscript ID
 
@@ -210,16 +229,15 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - Open access metadata generation:
   - CrossRef
   - DOAJ (Directory of Open Access Journals)
-  - **ASEAN Citation Index (ACI)**
   - Google Scholar
   - Scopus/Web of Science (if indexed)
+  - **Configurable regional/national citation indices**
 - Creative Commons license badge display
-- Social media sharing integration (Facebook, Twitter, LinkedIn - popular in Philippines)
+- Social media sharing integration (Facebook, Twitter/X, LinkedIn, ResearchGate)
 - Usage statistics tracking (downloads, views, geographic distribution)
-- **Philippine institutional repository integration**
+- **Institutional repository integration** (configurable API endpoints)
 - OAI-PMH endpoint for repository harvesting
-- **PhilPapers submission** (Philippine research repository)
-- **CHED/DOST research database submission**
+- **External database submission** (configurable for national/regional repositories)
 - Google Scholar indexing optimization
 
 ### 3.7 Content Management
@@ -334,15 +352,15 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - Graceful degradation for non-critical features
 
 ### 4.4 Usability
-- Intuitive interface requiring minimal training (considering varying IT literacy levels)
+- Intuitive interface requiring minimal training
 - Responsive design for desktop, tablet, and mobile devices
 - Accessibility compliance (WCAG 2.1 AA standards)
-- **Bilingual support: English and Filipino**
-- Contextual help and tooltips in both languages
-- Comprehensive user documentation in English and Filipino
-- Video tutorials for key workflows (with Filipino subtitles)
+- **Internationalization (i18n) support**: Configurable language packs
+- Contextual help and tooltips
+- Comprehensive user documentation
+- Video tutorials for key workflows
 - Maximum 3 clicks to reach any major function
-- **Optimized for Philippine internet speeds** (efficient loading, progressive enhancement)
+- **Progressive enhancement** for varying internet speeds
 
 ### 4.5 Compatibility
 - Browser support: Chrome, Firefox, Safari, Edge (latest 2 versions)
@@ -395,14 +413,14 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - **NPM/Node.js**: For JavaScript dependency management
 
 ### 5.2 System Architecture
-- Cloud-based infrastructure (AWS, Azure, Google Cloud, or **local Philippine hosting providers**)
-- Option for **on-premises deployment** at SUC data centers (for institutions preferring local hosting)
+- Cloud-based infrastructure (AWS, Azure, Google Cloud, DigitalOcean, or regional providers)
+- Option for **on-premises deployment** at institutional data centers
 - Microservices architecture
 - RESTful API design
 - Containerized deployment (Docker/Kubernetes)
 - Load balancing and auto-scaling
-- **Philippine server location options** for data sovereignty compliance
-- **Multi-tenancy support** for hosting multiple SUC journals on single instance
+- **Regional server location options** for data sovereignty compliance
+- **Multi-tenancy support** for hosting multiple journals on single instance
 
 ### 5.3 Database
 - Primary database: MySQL 8.0+ for all structured data
@@ -412,21 +430,22 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 - Regular automated backup schedule (daily incremental, weekly full)
 
 ### 5.4 Integrations
-- ORCID authentication API
-- CrossRef DOI registration (for open access content)
-- DOAJ (Directory of Open Access Journals) registration
-- **ASEAN Citation Index (ACI) submission**
-- **PhilPapers integration** (Philippine repository)
-- **CHED/DOST-SEI research database integration**
-- Plagiarism detection services (Turnitin - commonly used by Philippine universities)
-- Reference management tools (EndNote, Mendeley, Zotero)
-- Indexing services (Google Scholar, Scopus, Web of Science)
-- **Philippine institutional repositories** (university libraries)
-- Email service provider (SendGrid, AWS SES, or local SMTP)
-- Cloud storage (AWS S3, Azure Blob Storage, or local storage)
-- Open access repository protocols (OAI-PMH for harvesting)
-- **Single Sign-On with university credentials** (SAML 2.0, OAuth 2.0, LDAP)
-- **Philippine educational network integration** (if applicable)
+
+| Category | Integration | Description |
+|----------|-------------|-------------|
+| **Identity** | ORCID | Researcher identification |
+| **DOI** | CrossRef | DOI registration for articles |
+| **Indexing** | DOAJ | Open access journal directory |
+| | Google Scholar | Search indexing |
+| | Scopus / Web of Science | Citation databases (if indexed) |
+| | **Regional indices** | Configurable (e.g., SciELO, ACI, etc.) |
+| **Plagiarism** | Turnitin, iThenticate, Plagiarism Checker X | Similarity detection |
+| **Reference Tools** | EndNote, Mendeley, Zotero | Export and citation management |
+| **Repositories** | **Institutional repositories** | Configurable API integration |
+| | OAI-PMH | Metadata harvesting protocol |
+| **Email** | SendGrid, AWS SES, SMTP | Notification delivery |
+| **Storage** | AWS S3, DigitalOcean Spaces, MinIO | File storage |
+| **Authentication** | SAML 2.0, OAuth 2.0, LDAP | Single Sign-On with institutional credentials |
 
 ### 5.5 File Storage
 - Secure cloud-based file storage
@@ -460,31 +479,36 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 ## 7. Compliance and Standards
 
 ### 7.1 Publishing Standards
-- **CHED (Commission on Higher Education) research publication guidelines**
-- **DOST-SEI (Department of Science and Technology - Science Education Institute) standards**
-- COPE (Committee on Publication Ethics) guidelines
-- ICMJE (International Committee of Medical Journal Editors) recommendations
-- **DOAJ (Directory of Open Access Journals) standards**
-- **ASEAN Citation Index (ACI) requirements**
-- **Budapest Open Access Initiative principles**
-- **Plan S compliance** (immediate open access)
-- COUNTER metrics for usage statistics
-- FAIR data principles
-- CONSORT, PRISMA, and other reporting guidelines
-- Creative Commons licensing best practices
-- **Philippine research ethics standards**
+
+Saliksikhub is designed to meet international publishing standards while allowing institutions to configure compliance for their specific regional requirements.
+
+| Standard | Description | Configuration |
+|----------|-------------|---------------|
+| **COPE** | Committee on Publication Ethics | Built-in workflow enforcement |
+| **ICMJE** | Medical Journal Editors recommendations | Configurable for health research |
+| **DOAJ** | Directory of Open Access Journals | Metadata export ready |
+| **COUNTER** | Usage statistics | Built-in metrics tracking |
+| **FAIR** | Data principles | Metadata and accessibility support |
+| **Plan S** | Immediate open access compliance | Default behavior |
+| **Creative Commons** | Licensing best practices | Multiple CC options |
+
+**Configurable reporting guidelines**: CONSORT, PRISMA, STROBE, and other discipline-specific checklists can be enabled per journal.
+
+**Regional/National Standards**: The system supports configuration for local regulatory bodies (e.g., national research councils, higher education commissions, ethics boards).
 
 ### 7.2 Legal and Regulatory Compliance
-- **Data Privacy Act of 2012 (Republic Act No. 10173)** - Philippine data protection law
-- **National Privacy Commission (NPC) guidelines** for personal data handling
-- **Intellectual Property Code of the Philippines (Republic Act No. 8293)**
-- **CHED Memorandum Orders** on research publication and ethics
-- **Philippine Research Ethics Board standards** for human subjects research
-- **Freedom of Information (FOI) Executive Order No. 2** for transparency
-- GDPR compliance for European users (international collaboration)
-- Copyright and intellectual property management
-- Terms of service and privacy policy in English and Filipino
-- Data processing agreements with SUCs and partner institutions
+
+Saliksikhub provides configurable compliance frameworks for different jurisdictions:
+
+| Framework | Purpose | Notes |
+|-----------|---------|-------|
+| **GDPR** | EU data protection | Consent management, data portability |
+| **Data Privacy Laws** | National privacy regulations | Configurable per jurisdiction |
+| **Intellectual Property** | Copyright and licensing | Author-retained or institutional copyright |
+| **Research Ethics** | IRB/Ethics committee standards | Configurable compliance checklists |
+| **Open Access Mandates** | Funder requirements | Configurable embargo and deposit rules |
+
+**Note**: Institutions are responsible for configuring the system to meet their specific national and regional regulatory requirements.
 
 ### 7.3 Accessibility
 - WCAG 2.1 Level AA compliance
@@ -519,116 +543,129 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 ## 9. Support and Training
 
 ### 9.1 User Support
-- **Filipino-language email support** with 24-hour response time (during Philippine business hours)
-- **Phone/SMS support** for critical issues (considering Philippine communication preferences)
-- Live chat during Philippine business hours (8 AM - 5 PM PHT)
-- **Facebook Messenger support** (widely used in Philippines)
-- Searchable knowledge base (English and Filipino)
-- FAQ section for common issues (bilingual)
-- **Community forum for Filipino researchers**
-- Dedicated support for editors and university administrators
-- **On-site training** for SUC faculty and staff (as needed)
+
+| Support Channel | Availability | Response Time |
+|-----------------|--------------|---------------|
+| **Email** | 24/7 | 24-48 hours |
+| **Live Chat** | Business hours | Real-time |
+| **Knowledge Base** | 24/7 | Self-service |
+| **Community Forum** | 24/7 | Community-driven |
+| **Video Tutorials** | 24/7 | Self-service |
+
+**Institutional administrators** receive dedicated support and onboarding assistance.
 
 ### 9.2 Training Materials
-- **Video tutorials in English with Filipino subtitles** for each user role
-- Interactive onboarding wizard for new users (bilingual)
-- Downloadable user guides (PDF in English and Filipino)
-- **Webinar series for Filipino faculty, editors, and reviewers**
-- Regular online office hours for Q&A sessions (via Zoom/Google Meet)
-- **In-person training workshops** at partner SUCs
-- **Train-the-trainer programs** for university research office staff
-- YouTube channel with tutorial videos
+- Video tutorials for each user role
+- Interactive onboarding wizard for new users
+- Downloadable user guides (PDF)
+- Regular webinar series for editors and reviewers
+- Online office hours for Q&A sessions
+- Train-the-trainer programs for institutional staff
+- YouTube/video channel with tutorial content
+
+**Internationalization**: Training materials can be translated and localized by institutions for their specific language needs.
 
 ### 9.3 Release Management
-- Quarterly feature releases (coordinated with SUC academic calendar)
+- Quarterly feature releases
 - Monthly security and bug fix updates
-- Release notes with detailed change logs (bilingual)
-- **Advance notice during enrollment and exam periods** (minimize disruption)
+- Release notes with detailed change logs
 - User feedback mechanism for feature requests
-- **Philippine SUC consortium input** on feature prioritization
+- Community input on feature prioritization
 
 ## 10. Implementation Plan
 
 **Technical Foundation:**
-- Laravel 12 with modern streamlined structure (no Kernel files)
+- Laravel 12 with modern streamlined structure
 - React 19 with Inertia.js 2 for SPA experience
 - Tailwind CSS 4 for styling
 - MySQL 8.0+ database
 - Laravel Sail for local Docker development
 - Pest for elegant testing approach
 
-### 10.1 Phase 1: Core Features (Months 1-6) - **Pilot with 3-5 SUCs**
-- User management and authentication (Laravel Fortify with Inertia.js frontend)
-- **Bilingual interface** (English/Filipino)
-- ORCID integration for researcher identification
-- Manuscript submission workflow with Philippine compliance checklist
-- Basic editorial assignment
-- Simple peer review process
-- Email notifications
-- **Philippine Data Privacy Act compliance**
-- **CHED research ethics integration**
+### 10.1 Phase 1: Core Features (Months 1-6)
+**Goal**: Launch pilot with 3-5 institutional journals
 
-### 10.2 Phase 2: Advanced Workflow (Months 7-12) - **Expand to 10-15 SUCs**
-- Advanced reviewer matching (Filipino and ASEAN reviewers)
-- Production and publication tools
-- Analytics dashboard with CHED reporting metrics
-- Integration with Turnitin (plagiarism detection)
-- DOI assignment (CrossRef)
-- **ASEAN Citation Index submission**
-- **PhilPapers integration**
-- Multi-tenancy support for multiple SUC journals
+| Component | Features |
+|-----------|----------|
+| **Authentication** | User management, Laravel Fortify, ORCID integration |
+| **Submission** | Full manuscript submission workflow with configurable compliance checklist |
+| **Editorial** | Basic editorial assignment and desk review |
+| **Review** | Simple peer review process with structured forms |
+| **Notifications** | Email notifications for all workflow stages |
+| **Compliance** | Configurable ethics and regulatory checklists |
 
-### 10.3 Phase 3: Optimization (Months 13-18) - **Nationwide Rollout Preparation**
-- Advanced reporting and analytics (CHED/DOST compliance reports)
-- Mobile optimization (considering Philippine mobile-first internet usage)
-- API for third-party integrations
-- Advanced search capabilities
-- Performance optimization for Philippine internet speeds
-- **On-premises deployment option** for SUCs preferring local hosting
-- **SUC consortium portal** for cross-university collaboration
+### 10.2 Phase 2: Advanced Workflow (Months 7-12)
+**Goal**: Expand to 10-15 institutional journals
 
-### 10.4 Phase 4: Expansion (Months 19-24) - **Full Nationwide Deployment**
-- Enhanced bilingual support (Tagalog regional language options)
-- Advanced customization options per SUC
-- AI-assisted reviewer matching
-- Predictive analytics for research trends
-- Enhanced mobile apps
-- **Regional/ASEAN collaboration features**
-- **Integration with international indexing services**
-- **National research impact dashboard**
+| Component | Features |
+|-----------|----------|
+| **Reviewer Matching** | Advanced matching based on expertise and availability |
+| **Production** | Copyediting, typesetting, and publication tools |
+| **Analytics** | Dashboard with institutional reporting metrics |
+| **Plagiarism** | Integration with plagiarism detection services |
+| **DOI** | CrossRef DOI assignment integration |
+| **Indexing** | Metadata export for DOAJ and regional indices |
+| **Multi-tenancy** | Support for multiple journals on single instance |
+
+### 10.3 Phase 3: Optimization (Months 13-18)
+**Goal**: Production-ready for widespread deployment
+
+| Component | Features |
+|-----------|----------|
+| **Reporting** | Advanced reporting and analytics |
+| **Mobile** | Full mobile optimization |
+| **API** | Third-party integration APIs |
+| **Search** | Advanced search capabilities |
+| **Performance** | Optimization for varying network conditions |
+| **Deployment** | On-premises deployment option |
+| **Collaboration** | Cross-institutional collaboration features |
+
+### 10.4 Phase 4: Expansion (Months 19-24)
+**Goal**: Full-scale institutional adoption
+
+| Component | Features |
+|-----------|----------|
+| **i18n** | Enhanced internationalization and localization |
+| **Customization** | Advanced customization options per journal |
+| **AI** | AI-assisted reviewer matching and recommendations |
+| **Analytics** | Predictive analytics for research trends |
+| **Mobile Apps** | Native mobile applications (optional) |
+| **Integration** | Enhanced integration with international indexing services |
 
 ## 11. Success Criteria
 
 ### 11.1 Launch Criteria (Pilot Phase)
 - All Phase 1 features complete and tested
-- Security audit passed (including Philippine Data Privacy Act compliance)
-- Performance benchmarks met (optimized for Philippine internet speeds)
-- User acceptance testing completed with SUC faculty and staff
-- **Bilingual training materials** published (English and Filipino)
-- At least **3 SUC pilot journals** successfully onboarded
-- **CHED endorsement** or approval obtained
-- National Privacy Commission (NPC) compliance verified
+- Security audit passed
+- Performance benchmarks met
+- User acceptance testing completed with institutional stakeholders
+- Training materials published
+- At least 3 pilot journals successfully onboarded
+- Compliance verification for applicable regulations
 
-### 11.2 Post-Launch Metrics (6 months) - Pilot Phase
-- User adoption rate > 80% for pilot SUC journals
-- System uptime > 99.5%
-- Average processing time reduced by 25%
-- User satisfaction score > 4.0/5 (among Filipino faculty)
-- Critical bug count < 5
-- **At least 50 manuscripts submitted** across pilot journals
-- **At least 20 manuscripts published** in open access format
+### 11.2 Post-Launch Metrics (6 months)
 
-### 11.3 Long-Term Success (24 months) - Nationwide Deployment
-- **50+ SUC journals** using the platform nationwide
-- **At least 20 universities** actively using the system
-- Processing time targets met
-- Reviewer engagement targets met
-- **ASEAN Citation Index listing** for majority of journals
-- **DOAJ listing** for qualifying journals
-- **10,000+ published articles** accessible through the platform
-- **Regional recognition** as leading open access platform in Southeast Asia
-- **CHED integration** as recommended platform for SUC research journals
-- Sustainable funding secured (government appropriations or consortia funding)
+| Metric | Target |
+|--------|--------|
+| User adoption rate | > 80% for pilot journals |
+| System uptime | > 99.5% |
+| Processing time reduction | 25% improvement |
+| User satisfaction score | > 4.0/5 |
+| Critical bugs | < 5 open |
+| Manuscripts submitted | > 50 across pilot journals |
+| Articles published | > 20 in open access format |
+
+### 11.3 Long-Term Success (24 months)
+
+| Metric | Target |
+|--------|--------|
+| Active journals | 50+ |
+| Participating institutions | 20+ |
+| Processing time targets | Met per SLA |
+| Reviewer engagement | Active reviewer pool |
+| Indexing coverage | DOAJ listing for qualifying journals |
+| Published articles | 10,000+ accessible |
+| Sustainability | Funding model established |
 
 ## 12. Risks and Mitigation
 
@@ -657,54 +694,61 @@ The Research Journal Management System (RJMS) is a comprehensive digital platfor
 ## 13. Budget and Resources
 
 ### 13.1 Development Team
-- Project Manager (1 FTE) - can be faculty or university IT staff
-- Product Designer (1 FTE) - expertise in React/Tailwind CSS
-- Frontend Developers (2-3 FTE) - React 19, Inertia.js 2, Tailwind CSS 4
-- Backend Developers (2-3 FTE) - Laravel 12, PHP 8.2, MySQL 8.0+
-- QA Engineers (1-2 FTE) - Pest testing framework experience
-- DevOps Engineer (1 FTE) - Docker, Laravel Sail, cloud/on-premises infrastructure
-- Technical Writer (0.5 FTE) - bilingual documentation (English/Filipino)
 
-**Alternative Staffing Model for Philippine SUCs:**
-- Utilize university IT department staff
+| Role | FTE | Notes |
+|------|-----|-------|
+| Project Manager | 1 | Can be faculty or IT staff |
+| Product Designer | 1 | React/Tailwind CSS expertise |
+| Frontend Developers | 2-3 | React 19, Inertia.js 2, Tailwind CSS 4 |
+| Backend Developers | 2-3 | Laravel 12, PHP 8.2+, MySQL 8.0+ |
+| QA Engineers | 1-2 | Pest testing framework experience |
+| DevOps Engineer | 1 | Docker, cloud/on-premises infrastructure |
+| Technical Writer | 0.5 | Documentation |
+
+**Alternative Staffing Model for Institutions:**
+- Utilize IT department staff
 - Engage faculty with programming expertise
-- Hire student assistants/interns from IT/Computer Science programs
-- Collaborate with other SUCs for shared resources
+- Hire student assistants/interns from CS programs
+- Collaborate with partner institutions for shared resources
 
-### 13.2 Infrastructure Costs (PHP/USD estimates)
-**Cloud Hosting Option:**
-- Cloud hosting: ₱250,000-500,000/month ($5,000-10,000/month)
-- Third-party services: ₱100,000-250,000/month ($2,000-5,000/month)
-- Storage and bandwidth: ₱50,000-150,000/month ($1,000-3,000/month)
-- Security tools: ₱50,000-100,000/month ($1,000-2,000/month)
+### 13.2 Infrastructure Costs
 
-**On-Premises Hosting Option (One-time + Maintenance):**
-- Server hardware: ₱500,000-1,500,000 (one-time)
-- Annual maintenance: ₱100,000-300,000
-- University data center hosting: Often free/subsidized
-- Internet bandwidth: Usually covered by university
+**Cloud Hosting Option (Monthly):**
+
+| Component | Estimated Cost |
+|-----------|----------------|
+| Cloud hosting | $1,000-10,000/month |
+| Third-party services | $500-2,000/month |
+| Storage and bandwidth | $500-3,000/month |
+| Security tools | $200-1,000/month |
+
+**On-Premises Option:**
+
+| Component | Estimated Cost |
+|-----------|----------------|
+| Server hardware | $10,000-30,000 (one-time) |
+| Annual maintenance | $2,000-6,000 |
+| Data center hosting | Often free at institutions |
 
 **Service Fees:**
-- DOI registration: ~₱50/article ($1 per article) via CrossRef
+- DOI registration: ~$1/article via CrossRef
 - DOAJ membership: Free
-- Turnitin subscription: ₱200,000-500,000/year (if not already licensed by university)
+- Plagiarism detection: Varies (often institutionally licensed)
 - SSL certificates: Free (Let's Encrypt)
 
 ### 13.3 Ongoing Costs
-- Customer support (university staff: 1-2 FTE)
+- Customer support (1-2 FTE from institutional staff)
 - Maintenance and updates (1-2 developers, can be part-time)
-- Infrastructure scaling (bandwidth for free public access)
+- Infrastructure scaling
 - Third-party service fees
 
-### 13.4 Funding Model for Philippine SUCs
-- **CHED/DOST research grants** for system development
-- **University budget allocation** (research office, library)
-- **SUC consortia funding** (multiple universities sharing costs)
-- **Government appropriations** through SUC budgets
-- **International development grants** (USAID, World Bank, etc.)
-- **No article processing charges (APCs)** - completely free to publish
-- **No subscription fees** - completely free to read
-- Potential **GAA (General Appropriations Act) inclusion** for nationwide rollout
+### 13.4 Funding Model Options
+- Institutional budget allocation (research office, library)
+- Consortium funding (multiple institutions sharing costs)
+- Government research grants
+- International development grants
+- **No article processing charges (APCs)** - free to publish
+- **No subscription fees** - free to read
 
 ## 14. Glossary
 
@@ -1082,10 +1126,9 @@ notifications
 
 ---
 
-**Document Version**: 1.1  
-**Last Updated**: January 11, 2025  
+**Document Version**: 2.0  
+**Last Updated**: January 2025  
 **Document Owner**: Product Management Team  
-**Approved By**: Chief Technology Officer & Product Management Team  
-**Next Review Date**: April 11, 2025  
-**Distribution**: Internal - Development Team, Stakeholders, Executive Leadership  
-**Related Documents**: USER_WORKFLOWS.md, MANUSCRIPT_STATUSES.md, roles.md
+**License**: MIT License - Open Source  
+**Related Documents**: USER_WORKFLOWS.md, roles.md  
+**Repository**: [GitHub](https://github.com/your-org/saliksikhub)

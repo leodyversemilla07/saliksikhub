@@ -14,6 +14,21 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $users = [
+            // Super Admin - Platform Administrator
+            [
+                'firstname' => 'System',
+                'lastname' => 'Administrator',
+                'username' => 'superadmin',
+                'email' => 'admin@saliksikhub.com',
+                'password' => Hash::make('SuperAdmin@2024!'),
+                'role' => 'super_admin',
+                'affiliation' => 'Saliksikhub Platform',
+                'country' => 'Philippines',
+                'email_verified_at' => now(),
+                'data_collection' => true,
+                'notifications' => true,
+                'review_requests' => false,
+            ],
             [
                 'firstname' => 'Leif Sage',
                 'lastname' => 'Semilla',
@@ -127,6 +142,9 @@ class UserSeeder extends Seeder
                 'review_requests' => true,
             ],
         ];
+
+        // Set team_id to 0 for global/platform roles during seeding
+        setPermissionsTeamId(0);
 
         foreach ($users as $userData) {
             // Remove avatar_url if present

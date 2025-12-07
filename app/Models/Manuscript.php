@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\ManuscriptStatus;
+use App\Models\Concerns\BelongsToJournal;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,9 +15,10 @@ use Illuminate\Support\Arr;
 
 class Manuscript extends Model
 {
-    use HasFactory, Sluggable, SluggableScopeHelpers;
+    use BelongsToJournal, HasFactory, Sluggable, SluggableScopeHelpers;
 
     protected $fillable = [
+        'journal_id',
         'user_id',
         'issue_id',
         'title',

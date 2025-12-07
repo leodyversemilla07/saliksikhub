@@ -293,9 +293,9 @@ export default function Submissions({ auth }: PageProps) {
             <Head title="Submission Guidelines | Daluyang Dunong" />
             <Header auth={auth} />
 
-            <main className="flex-grow">
+            <main className="grow">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-gradient-to-br from-muted/50 to-background py-16 lg:py-24">
+                <section className="relative overflow-hidden bg-linear-to-br from-muted/50 to-background py-16 lg:py-24">
                     <div className="absolute inset-0 -z-10">
                         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-20">
                             <div className="aspect-square w-72 bg-primary/30 rounded-full" />
@@ -340,7 +340,7 @@ export default function Submissions({ auth }: PageProps) {
                             </div>
 
                             {/* Key Information */}
-                            <Card className="bg-gradient-to-br from-muted/50 to-background">
+                            <Card className="bg-linear-to-br from-muted/50 to-background">
                                 <CardHeader className="border-b">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 bg-primary/10 rounded-lg">
@@ -360,7 +360,7 @@ export default function Submissions({ auth }: PageProps) {
                                                     <h3 className="text-base font-semibold text-foreground mb-2">{info.title}</h3>
                                                     <p className="text-sm text-muted-foreground mb-3">{info.subtitle}</p>
                                                     <div className="flex items-center">
-                                                        <info.icon className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                                                        <info.icon className="h-4 w-4 text-primary mr-2 shrink-0" />
                                                         <span className="font-medium text-foreground">{info.date}</span>
                                                     </div>
                                                 </CardContent>
@@ -481,7 +481,7 @@ export default function Submissions({ auth }: PageProps) {
                                                 <ul className="space-y-4">
                                                     {category.items.map((guideline, index) => (
                                                         <li key={index} className="flex items-start">
-                                                            <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0 mt-0.5" />
+                                                            <CheckCircle className="h-5 w-5 text-primary mr-3 shrink-0 mt-0.5" />
                                                             <span className="text-muted-foreground">{guideline}</span>
                                                         </li>
                                                     ))}
@@ -493,7 +493,7 @@ export default function Submissions({ auth }: PageProps) {
                                     <Card className="border-l-4 border-destructive bg-destructive/5">
                                         <CardContent className="p-5">
                                             <div className="flex">
-                                                <div className="flex-shrink-0">
+                                                <div className="shrink-0">
                                                     <AlertCircle className="h-5 w-5 text-destructive" />
                                                 </div>
                                                 <div className="ml-3">
@@ -531,7 +531,7 @@ export default function Submissions({ auth }: PageProps) {
                                             <Card key={index} className="hover:shadow-md transition-all">
                                                 <CardContent className="p-6">
                                                     <div className="flex items-start gap-4">
-                                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center">
+                                                        <div className="shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center">
                                                             {index + 1}
                                                         </div>
                                                         <div className="flex-1">
@@ -540,7 +540,7 @@ export default function Submissions({ auth }: PageProps) {
                                                             <ul className="text-sm text-muted-foreground space-y-1">
                                                                 {step.details.map((detail, detailIndex) => (
                                                                     <li key={detailIndex} className="flex items-start">
-                                                                        <CheckCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0 mt-0.5" />
+                                                                        <CheckCircle className="h-4 w-4 text-primary mr-2 shrink-0 mt-0.5" />
                                                                         {detail}
                                                                     </li>
                                                                 ))}
@@ -582,7 +582,7 @@ export default function Submissions({ auth }: PageProps) {
                                                 <ul className="space-y-3">
                                                     {stage.criteria.map((criterion, criterionIndex) => (
                                                         <li key={criterionIndex} className="flex items-start">
-                                                            <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0 mt-0.5" />
+                                                            <CheckCircle className="h-5 w-5 text-primary mr-3 shrink-0 mt-0.5" />
                                                             <span className="text-muted-foreground">{criterion}</span>
                                                         </li>
                                                     ))}
@@ -748,7 +748,7 @@ export default function Submissions({ auth }: PageProps) {
                                                 We look forward to receiving your research contribution.
                                             </p>
                                         </div>
-                                        <div className="flex-shrink-0">
+                                        <div className="shrink-0">
                                             <Link
                                                 href="#"
                                                 className="inline-flex items-center px-6 py-3 border border-transparent rounded-lg bg-background text-primary hover:bg-accent font-medium shadow-sm"

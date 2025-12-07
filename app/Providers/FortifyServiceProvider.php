@@ -40,11 +40,19 @@ class FortifyServiceProvider extends ServiceProvider
                 {
                     $user = auth()->user();
 
-                    if ($user->hasRole(['chief_editor', 'editor_in_chief', 'editor', 'associate_editor'])) {
+                    // Super Admin - check DB role column (team-independent)
+                    if ($user->role === 'super_admin') {
+                        return redirect()->route('admin.institutions.index');
+                    }
+
+                    // For other roles, check both DB column and Spatie roles
+                    $role = $user->role;
+
+                    if (in_array($role, ['chief_editor', 'editor_in_chief', 'editor', 'associate_editor', 'managing_editor'])) {
                         return redirect()->route('editor.dashboard');
-                    } elseif ($user->hasRole('reviewer')) {
+                    } elseif ($role === 'reviewer') {
                         return redirect()->route('reviewer.dashboard');
-                    } elseif ($user->hasRole('author')) {
+                    } elseif ($role === 'author') {
                         return redirect()->route('manuscripts.index');
                     }
 
@@ -73,16 +81,20 @@ class FortifyServiceProvider extends ServiceProvider
         // Custom redirect after login based on user role
         Fortify::redirects('login', function () {
             $user = auth()->user();
+            $role = $user->role;
 
-            if ($user->hasRole(['chief_editor', 'editor_in_chief'])) {
+            // Super Admin - redirect to admin panel
+            if ($role === 'super_admin') {
+                return route('admin.institutions.index');
+            }
+
+            if (in_array($role, ['chief_editor', 'editor_in_chief', 'managing_editor'])) {
                 return route('editor.dashboard');
-            } elseif ($user->hasRole('editor')) {
+            } elseif (in_array($role, ['editor', 'associate_editor'])) {
                 return route('editor.dashboard');
-            } elseif ($user->hasRole('associate_editor')) {
-                return route('editor.dashboard');
-            } elseif ($user->hasRole('reviewer')) {
+            } elseif ($role === 'reviewer') {
                 return route('reviewer.dashboard');
-            } elseif ($user->hasRole('author')) {
+            } elseif ($role === 'author') {
                 return route('manuscripts.index');
             }
 

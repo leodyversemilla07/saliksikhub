@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Settings } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -16,6 +16,7 @@ import users from '@/routes/users';
 import author from '@/routes/author';
 import manuscripts from '@/routes/manuscripts';
 import reviewer from '@/routes/reviewer';
+import admin from '@/routes/admin';
 
 interface BreadcrumbItem {
     label: string;
@@ -23,6 +24,11 @@ interface BreadcrumbItem {
 }
 
 const navigationMap = {
+    super_admin: [
+        { href: admin.institutions.index.url(), label: 'Institutions', icon: Building2 },
+        { href: admin.journals.index.url(), label: 'Journals', icon: BookOpen },
+        { href: users.index.url(), label: 'User Management', icon: UserCheck },
+    ],
     managing_editor: [
         { href: editor.dashboard.url(), label: 'Dashboard', icon: LayoutDashboard },
         { href: editor.indexManuscripts.url(), label: 'Submitted Manuscripts', icon: FileText },

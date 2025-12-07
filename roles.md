@@ -1,6 +1,6 @@
-# User Roles - SaliksikHub Research Journal Management System
+# User Roles - Saliksikhub Research Journal Management System
 
-This document outlines the user roles, access levels, and key functions in the SaliksikHub system.
+This document outlines the user roles, access levels, and key functions in the Saliksikhub system.
 
 ---
 
@@ -390,10 +390,10 @@ This document outlines the user roles, access levels, and key functions in the S
 ---
 
 **Document Version**: 2.0  
-**Last Updated**: January 11, 2025  
+**Last Updated**: January 2025  
 **Related Documents**: 
 - USER_WORKFLOWS.md - Detailed workflow for each role
-- MANUSCRIPT_STATUSES.md - Complete status definitions and transitions
 - PRD.md - Product Requirements Document
 
-**System**: SaliksikHub Research Journal Management System
+**System**: Saliksikhub Research Journal Management System  
+**License**: MIT License - Open Source

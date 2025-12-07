@@ -1,4 +1,4 @@
-import { Head, Link, Form } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,19 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/c
 import { CheckCircle } from 'lucide-react';
 import { home, login as loginRoute, register as registerRoute } from '@/routes';
 import password from '@/routes/password';
+import { FormEventHandler } from 'react';
 
 export default function Login({ status, canResetPassword }: PageProps<{ status?: string, canResetPassword: boolean }>) {
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        email: '',
+        password: '',
+    });
+
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post(loginRoute().url);
+    };
+
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <Head title="Login | Daluyang Dunong" />
@@ -44,77 +55,74 @@ export default function Login({ status, canResetPassword }: PageProps<{ status?:
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Form
-                            action={loginRoute()}
-                            method="post"
-                            resetOnSuccess
-                            resetOnError={false}
-                        >
-                            {({ errors, processing, clearErrors }) => (
-                                <FieldGroup>
-                                    <Field data-invalid={!!errors.email}>
-                                        <FieldLabel htmlFor="email">Email</FieldLabel>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            placeholder="m@example.com"
-                                            onChange={() => {
-                                                if (errors.email) {
-                                                    clearErrors('email');
-                                                }
-                                            }}
-                                            required
-                                            autoComplete="email"
-                                        />
-                                        {errors.email && <FieldError>{errors.email}</FieldError>}
-                                    </Field>
+                        <form onSubmit={submit}>
+                            <FieldGroup>
+                                <Field data-invalid={!!errors.email}>
+                                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder="m@example.com"
+                                        value={data.email}
+                                        onChange={(e) => {
+                                            setData('email', e.target.value);
+                                            if (errors.email) {
+                                                clearErrors('email');
+                                            }
+                                        }}
+                                        required
+                                        autoComplete="email"
+                                    />
+                                    {errors.email && <FieldError>{errors.email}</FieldError>}
+                                </Field>
 
-                                    <Field data-invalid={!!errors.password}>
-                                        <div className="flex items-center">
-                                            <FieldLabel htmlFor="password">Password</FieldLabel>
-                                            {canResetPassword && (
-                                                <Link
-                                                    href={password.request()}
-                                                    className="ml-auto text-sm underline-offset-4 hover:underline"
-                                                >
-                                                    Forgot your password?
-                                                </Link>
-                                            )}
-                                        </div>
-                                        <Input
-                                            id="password"
-                                            name="password"
-                                            type="password"
-                                            onChange={() => {
-                                                if (errors.password) {
-                                                    clearErrors('password');
-                                                }
-                                            }}
-                                            required
-                                            autoComplete="current-password"
-                                        />
-                                        {errors.password && <FieldError>{errors.password}</FieldError>}
-                                    </Field>
-
-                                    <Field>
-                                        <Button 
-                                            type="submit" 
-                                            className="w-full"
-                                            disabled={processing}
-                                        >
-                                            {processing ? 'Logging in...' : 'Login'}
-                                        </Button>
-                                        <FieldDescription className="text-center">
-                                            Don&apos;t have an account?{' '}
-                                            <Link href={registerRoute()} className="underline underline-offset-4">
-                                                Sign up
+                                <Field data-invalid={!!errors.password}>
+                                    <div className="flex items-center">
+                                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                                        {canResetPassword && (
+                                            <Link
+                                                href={password.request()}
+                                                className="ml-auto text-sm underline-offset-4 hover:underline"
+                                            >
+                                                Forgot your password?
                                             </Link>
-                                        </FieldDescription>
-                                    </Field>
-                                </FieldGroup>
-                            )}
-                        </Form>
+                                        )}
+                                    </div>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        value={data.password}
+                                        onChange={(e) => {
+                                            setData('password', e.target.value);
+                                            if (errors.password) {
+                                                clearErrors('password');
+                                            }
+                                        }}
+                                        required
+                                        autoComplete="current-password"
+                                    />
+                                    {errors.password && <FieldError>{errors.password}</FieldError>}
+                                </Field>
+
+                                <Field>
+                                    <Button 
+                                        type="submit" 
+                                        className="w-full"
+                                        disabled={processing}
+                                    >
+                                        {processing ? 'Logging in...' : 'Login'}
+                                    </Button>
+                                    <FieldDescription className="text-center">
+                                        Don&apos;t have an account?{' '}
+                                        <Link href={registerRoute()} className="underline underline-offset-4">
+                                            Sign up
+                                        </Link>
+                                    </FieldDescription>
+                                </Field>
+                            </FieldGroup>
+                        </form>
                     </CardContent>
                 </Card>
 

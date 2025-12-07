@@ -197,13 +197,13 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                             }
                                         }}
                                     >
-                                        <div className="flex-shrink-0 mt-1">
+                                        <div className="shrink-0 mt-1">
                                             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
                                                 {getNotificationIcon(getNotificationType(notification.data))}
                                             </div>
                                         </div>
 
-                                        <div className="flex-grow">
+                                        <div className="grow">
                                             <div className="flex items-center justify-between">
                                                 <h4 className={cn(
                                                     "text-base",
@@ -233,7 +233,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                         </div>
 
                                         {!notification.read_at && (
-                                            <div className="flex-shrink-0 self-start mt-1">
+                                            <div className="shrink-0 self-start mt-1">
                                                 <div className="h-3 w-3 rounded-full bg-green-600"></div>
                                             </div>
                                         )}
@@ -254,13 +254,13 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                         className="p-4 border rounded-lg bg-green-50 flex items-start gap-4"
                                         onClick={() => markAsRead(notification.id)}
                                     >
-                                        <div className="flex-shrink-0 mt-1">
+                                        <div className="shrink-0 mt-1">
                                             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
                                                 {getNotificationIcon(getNotificationType(notification.data))}
                                             </div>
                                         </div>
 
-                                        <div className="flex-grow">
+                                        <div className="grow">
                                             <div className="flex items-center justify-between">
                                                 <h4 className="text-base font-semibold">
                                                     {getNotificationTitle(notification.data)}
@@ -286,7 +286,7 @@ export default function Notifications({ auth, notifications }: PageProps<{ notif
                                             )}
                                         </div>
 
-                                        <div className="flex-shrink-0 self-start mt-1">
+                                        <div className="shrink-0 self-start mt-1">
                                             <div className="h-3 w-3 rounded-full bg-green-600"></div>
                                         </div>
                                     </div>

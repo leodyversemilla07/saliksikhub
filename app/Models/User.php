@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToInstitution;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
+    use BelongsToInstitution, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
+        'institution_id',
         'firstname',
         'lastname',
         'email',
@@ -209,5 +212,54 @@ class User extends Authenticatable implements MustVerifyEmail
             'average_review_time_days' => $averageDays,
             'acceptance_rate' => $acceptanceRate,
         ];
+    }
+
+    /**
+     * Get all journals this user is associated with.
+     */
+    public function journals(): BelongsToMany
+    {
+        return $this->belongsToMany(Journal::class, 'journal_user')
+            ->withPivot(['role', 'is_active', 'assigned_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all institutions this user is associated with (including non-primary).
+     */
+    public function institutions(): BelongsToMany
+    {
+        return $this->belongsToMany(Institution::class, 'institution_user')
+            ->withPivot('is_primary')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if user has a specific role in a journal.
+     */
+    public function hasJournalRole(string $role, Journal|int $journal): bool
+    {
+        $journalId = $journal instanceof Journal ? $journal->id : $journal;
+
+        return $this->journals()
+            ->wherePivot('role', $role)
+            ->wherePivot('is_active', true)
+            ->where('journals.id', $journalId)
+            ->exists();
+    }
+
+    /**
+     * Get user's roles for a specific journal.
+     */
+    public function journalRoles(Journal|int $journal): array
+    {
+        $journalId = $journal instanceof Journal ? $journal->id : $journal;
+
+        return $this->journals()
+            ->where('journals.id', $journalId)
+            ->wherePivot('is_active', true)
+            ->get()
+            ->pluck('pivot.role')
+            ->toArray();
     }
 }

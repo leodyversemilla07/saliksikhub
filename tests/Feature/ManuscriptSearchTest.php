@@ -1,13 +1,24 @@
 <?php
 
 use App\ManuscriptStatus;
+use App\Models\Institution;
+use App\Models\Journal;
 use App\Models\Manuscript;
 use App\Models\User;
+
+beforeEach(function () {
+    $this->institution = Institution::factory()->create();
+    $this->journal = Journal::factory()->forInstitution($this->institution)->create();
+
+    app()->instance('currentJournal', $this->journal);
+    app()->instance('currentInstitution', $this->institution);
+});
 
 it('allows searching published manuscripts by title', function () {
     $author = User::factory()->create();
     $manuscript = Manuscript::factory()->create([
         'user_id' => $author->id,
+        'journal_id' => $this->journal->id,
         'title' => 'Machine Learning Applications',
         'status' => ManuscriptStatus::PUBLISHED,
         'authors' => 'John Doe',
@@ -30,6 +41,7 @@ it('allows searching published manuscripts by author', function () {
     $author = User::factory()->create();
     $manuscript = Manuscript::factory()->create([
         'user_id' => $author->id,
+        'journal_id' => $this->journal->id,
         'title' => 'Research Paper',
         'status' => ManuscriptStatus::PUBLISHED,
         'authors' => 'Jane Smith',
@@ -51,12 +63,14 @@ it('does not return unpublished manuscripts in search results', function () {
     $author = User::factory()->create();
     $published = Manuscript::factory()->create([
         'user_id' => $author->id,
+        'journal_id' => $this->journal->id,
         'title' => 'Published Paper',
         'status' => ManuscriptStatus::PUBLISHED,
         'authors' => 'Author One',
     ]);
     $unpublished = Manuscript::factory()->create([
         'user_id' => $author->id,
+        'journal_id' => $this->journal->id,
         'title' => 'Unpublished Paper',
         'status' => ManuscriptStatus::SUBMITTED,
         'authors' => 'Author Two',
@@ -89,6 +103,7 @@ it('handles pagination for search results', function () {
     // Create 25 published manuscripts
     Manuscript::factory()->count(25)->create([
         'user_id' => $author->id,
+        'journal_id' => $this->journal->id,
         'status' => ManuscriptStatus::PUBLISHED,
         'title' => 'Test Paper',
         'authors' => 'Test Author',

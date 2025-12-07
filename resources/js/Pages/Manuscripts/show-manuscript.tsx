@@ -204,7 +204,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                                     <div className="space-y-3">
                                         {timelineItems.map((item, idx) => (
                                             <div key={idx} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
-                                                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
+                                                <div className="shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-center justify-between mb-1">
                                                         <span className="text-sm font-medium text-foreground">
