@@ -8,12 +8,18 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+    /* Typography - Scholarly Aesthetic */
+    --font-serif:
+        'Merriweather', 'Georgia', 'Times New Roman', serif;
     --font-sans:
-        'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono:
+        'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 
-    --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    /* Border Radius - Minimal, traditional */
+    --radius-lg: 0.25rem;
+    --radius-md: 0.1875rem;
+    --radius-sm: 0.125rem;
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -78,74 +84,136 @@
 }
 
 :root {
-    --background: oklch(0.99 0 0);
-    --foreground: oklch(0.15 0 0);
-    --card: oklch(0.99 0 0);
-    --card-foreground: oklch(0.15 0 0);
-    --popover: oklch(0.99 0 0);
-    --popover-foreground: oklch(0.15 0 0);
-    --primary: oklch(0.55 0.12 142);
-    --primary-foreground: oklch(0.98 0 0);
-    --secondary: oklch(0.94 0.01 142);
-    --secondary-foreground: oklch(0.25 0.08 142);
-    --muted: oklch(0.94 0.01 142);
-    --muted-foreground: oklch(0.55 0.05 142);
-    --accent: oklch(0.92 0.03 160);
-    --accent-foreground: oklch(0.25 0.08 142);
-    --destructive: oklch(0.577 0.245 27.325);
+    /* Light Mode - Scholarly Library Aesthetic */
+    
+    /* Surfaces - Parchment-inspired */
+    --background: oklch(0.98 0.01 85);          /* Warm off-white, like paper */
+    --foreground: oklch(0.20 0.01 250);         /* Charcoal text */
+    
+    --card: oklch(0.99 0.005 85);               /* Subtle parchment cards */
+    --card-foreground: oklch(0.20 0.01 250);    /* Charcoal */
+    
+    --popover: oklch(0.99 0.005 85);
+    --popover-foreground: oklch(0.20 0.01 250);
+    
+    /* Primary - Oxford Blue (Authoritative, Academic) */
+    --primary: oklch(0.35 0.08 250);            /* Deep scholarly blue */
+    --primary-foreground: oklch(0.98 0 0);      /* White text on blue */
+    
+    /* Secondary - Soft Parchment Tones */
+    --secondary: oklch(0.95 0.02 85);           /* Light warm gray */
+    --secondary-foreground: oklch(0.30 0.03 250); /* Dark charcoal */
+    
+    /* Muted - Archive Gray */
+    --muted: oklch(0.92 0.01 250);              /* Subtle gray background */
+    --muted-foreground: oklch(0.50 0.02 250);   /* Slate text */
+    
+    /* Accent - Burgundy (Academic Robes) */
+    --accent: oklch(0.40 0.12 15);              /* Rich burgundy */
+    --accent-foreground: oklch(0.98 0 0);       /* White text */
+    
+    /* Semantic Colors */
+    --destructive: oklch(0.50 0.20 25);         /* Crimson for errors */
     --destructive-foreground: oklch(0.98 0 0);
-    --border: oklch(0.9 0.01 142);
-    --input: oklch(0.9 0.01 142);
-    --ring: oklch(0.55 0.12 142);
-    --chart-1: oklch(0.5 0.12 142);
-    --chart-2: oklch(0.55 0.1 160);
-    --chart-3: oklch(0.6 0.08 180);
-    --chart-4: oklch(0.45 0.14 120);
-    --chart-5: oklch(0.5 0.11 100);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.98 0 0);
-    --sidebar-foreground: oklch(0.15 0 0);
-    --sidebar-primary: oklch(0.55 0.12 142);
+    
+    --success: oklch(0.45 0.10 145);            /* Forest green */
+    --success-foreground: oklch(0.98 0 0);
+    
+    --warning: oklch(0.65 0.15 75);             /* Amber */
+    --warning-foreground: oklch(0.20 0.01 250);
+    
+    --info: oklch(0.48 0.08 235);               /* Prussian blue */
+    --info-foreground: oklch(0.98 0 0);
+    
+    /* UI Elements */
+    --border: oklch(0.88 0.01 250);             /* Pearl - subtle borders */
+    --input: oklch(0.96 0.01 85);               /* Slightly darker than background */
+    --ring: oklch(0.35 0.08 250);               /* Oxford blue focus ring */
+    
+    /* Charts - Academic Color Palette */
+    --chart-1: oklch(0.35 0.08 250);            /* Oxford blue */
+    --chart-2: oklch(0.40 0.12 15);             /* Burgundy */
+    --chart-3: oklch(0.45 0.10 145);            /* Forest green */
+    --chart-4: oklch(0.48 0.08 235);            /* Prussian blue */
+    --chart-5: oklch(0.50 0.12 30);             /* Terracotta */
+    
+    /* Border Radius */
+    --radius: 0.25rem;                          /* 4px - minimal, traditional */
+    
+    /* Sidebar - Library Shelf Aesthetic */
+    --sidebar: oklch(0.96 0.01 250);            /* Soft gray, like library shelves */
+    --sidebar-foreground: oklch(0.20 0.01 250); /* Charcoal */
+    --sidebar-primary: oklch(0.35 0.08 250);    /* Oxford blue */
     --sidebar-primary-foreground: oklch(0.98 0 0);
-    --sidebar-accent: oklch(0.94 0.01 142);
-    --sidebar-accent-foreground: oklch(0.25 0.08 142);
-    --sidebar-border: oklch(0.9 0.01 142);
-    --sidebar-ring: oklch(0.55 0.12 142);
+    --sidebar-accent: oklch(0.92 0.01 250);     /* Light gray hover */
+    --sidebar-accent-foreground: oklch(0.20 0.01 250);
+    --sidebar-border: oklch(0.88 0.01 250);     /* Pearl borders */
+    --sidebar-ring: oklch(0.35 0.08 250);       /* Oxford blue */
 }
 
 .dark {
-    --background: oklch(0.15 0 0);
-    --foreground: oklch(0.98 0 0);
-    --card: oklch(0.15 0 0);
-    --card-foreground: oklch(0.98 0 0);
-    --popover: oklch(0.15 0 0);
-    --popover-foreground: oklch(0.98 0 0);
-    --primary: oklch(0.65 0.12 142);
-    --primary-foreground: oklch(0.15 0 0);
-    --secondary: oklch(0.25 0.03 142);
-    --secondary-foreground: oklch(0.85 0.08 142);
-    --muted: oklch(0.25 0.03 142);
-    --muted-foreground: oklch(0.7 0.06 142);
-    --accent: oklch(0.28 0.04 160);
-    --accent-foreground: oklch(0.85 0.08 142);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.98 0 0);
-    --border: oklch(0.25 0.03 142);
-    --input: oklch(0.25 0.03 142);
-    --ring: oklch(0.65 0.12 142);
-    --chart-1: oklch(0.6 0.1 142);
-    --chart-2: oklch(0.65 0.08 160);
-    --chart-3: oklch(0.7 0.06 180);
-    --chart-4: oklch(0.55 0.12 120);
-    --chart-5: oklch(0.6 0.09 100);
-    --sidebar: oklch(0.18 0 0);
-    --sidebar-foreground: oklch(0.98 0 0);
-    --sidebar-primary: oklch(0.65 0.12 142);
-    --sidebar-primary-foreground: oklch(0.15 0 0);
-    --sidebar-accent: oklch(0.25 0.03 142);
-    --sidebar-accent-foreground: oklch(0.85 0.08 142);
-    --sidebar-border: oklch(0.25 0.03 142);
-    --sidebar-ring: oklch(0.65 0.12 142);
+    /* Dark Mode - Library at Night Aesthetic */
+    
+    /* Surfaces - Warm Dark (not pure black) */
+    --background: oklch(0.17 0.01 250);         /* Dark charcoal with warmth */
+    --foreground: oklch(0.95 0.01 85);          /* Warm off-white, not harsh */
+    
+    --card: oklch(0.20 0.01 250);               /* Slightly lighter cards */
+    --card-foreground: oklch(0.95 0.01 85);
+    
+    --popover: oklch(0.20 0.01 250);
+    --popover-foreground: oklch(0.95 0.01 85);
+    
+    /* Primary - Lighter Oxford Blue for dark backgrounds */
+    --primary: oklch(0.60 0.10 250);            /* Softer blue */
+    --primary-foreground: oklch(0.15 0.01 250); /* Dark text on light blue */
+    
+    /* Secondary */
+    --secondary: oklch(0.25 0.02 250);          /* Dark warm gray */
+    --secondary-foreground: oklch(0.85 0.02 85);
+    
+    /* Muted */
+    --muted: oklch(0.25 0.01 250);
+    --muted-foreground: oklch(0.70 0.02 250);   /* Light gray text */
+    
+    /* Accent - Lighter Burgundy */
+    --accent: oklch(0.55 0.12 15);              /* Lighter burgundy */
+    --accent-foreground: oklch(0.95 0.01 85);
+    
+    /* Semantic Colors - Adjusted for dark mode */
+    --destructive: oklch(0.55 0.18 25);         /* Lighter crimson */
+    --destructive-foreground: oklch(0.95 0.01 85);
+    
+    --success: oklch(0.55 0.10 145);            /* Lighter forest green */
+    --success-foreground: oklch(0.15 0.01 250);
+    
+    --warning: oklch(0.70 0.14 75);             /* Lighter amber */
+    --warning-foreground: oklch(0.20 0.01 250);
+    
+    --info: oklch(0.60 0.08 235);               /* Lighter Prussian blue */
+    --info-foreground: oklch(0.15 0.01 250);
+    
+    /* UI Elements */
+    --border: oklch(0.28 0.01 250);             /* Dark borders */
+    --input: oklch(0.22 0.01 250);
+    --ring: oklch(0.60 0.10 250);               /* Lighter blue ring */
+    
+    /* Charts */
+    --chart-1: oklch(0.60 0.10 250);
+    --chart-2: oklch(0.55 0.12 15);
+    --chart-3: oklch(0.55 0.10 145);
+    --chart-4: oklch(0.60 0.08 235);
+    --chart-5: oklch(0.60 0.12 30);
+    
+    /* Sidebar */
+    --sidebar: oklch(0.19 0.01 250);
+    --sidebar-foreground: oklch(0.95 0.01 85);
+    --sidebar-primary: oklch(0.60 0.10 250);
+    --sidebar-primary-foreground: oklch(0.15 0.01 250);
+    --sidebar-accent: oklch(0.25 0.01 250);
+    --sidebar-accent-foreground: oklch(0.85 0.02 85);
+    --sidebar-border: oklch(0.28 0.01 250);
+    --sidebar-ring: oklch(0.60 0.10 250);
 }
 
 @layer base {
@@ -155,6 +223,67 @@
 
     body {
         @apply bg-background text-foreground;
+        font-family: var(--font-serif);
+        font-feature-settings: 'kern' 1, 'liga' 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Typography Hierarchy - Scholarly Style */
+    h1, h2, h3, h4 {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    h5, h6 {
+        font-family: var(--font-sans);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.875rem;
+    }
+
+    /* UI Elements use sans-serif */
+    button, input, select, textarea, label {
+        font-family: var(--font-sans);
+    }
+
+    /* Tables use sans-serif for better readability */
+    table {
+        font-family: var(--font-sans);
+        font-size: 0.875rem;
+    }
+
+    /* Monospace for technical content */
+    code, kbd, samp, pre {
+        font-family: var(--font-mono);
+    }
+
+    /* Improved readability for article content */
+    article, .prose {
+        font-family: var(--font-serif);
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    /* Link styling - academic style */
+    a {
+        color: oklch(var(--primary));
+        text-decoration: underline;
+        text-decoration-color: oklch(var(--primary) / 0.3);
+        text-underline-offset: 2px;
+        transition: text-decoration-color 150ms ease;
+    }
+
+    a:hover {
+        text-decoration-color: oklch(var(--primary));
+    }
+
+    /* Focus states for accessibility */
+    *:focus-visible {
+        outline: 2px solid oklch(var(--ring));
+        outline-offset: 2px;
     }
 }
 

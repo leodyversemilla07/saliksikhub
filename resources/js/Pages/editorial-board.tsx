@@ -203,7 +203,7 @@ export default function EditorialBoard({ auth }: PageProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-12">
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                        <h1 className="font-serif text-3xl md:text-4xl font-bold text-oxford-blue mb-4">
                             Editorial Board
                         </h1>
                         <Card>
@@ -220,11 +220,11 @@ export default function EditorialBoard({ auth }: PageProps) {
                         {boardCategories.map((category, categoryIndex) => (
                             <Card key={categoryIndex}>
                                 <CardHeader>
-                                    <CardTitle className="text-2xl flex items-center gap-3">
-                                        {categoryIndex === 0 && <Users className="h-6 w-6 text-primary" />}
-                                        {categoryIndex === 1 && <BookOpen className="h-6 w-6 text-primary" />}
-                                        {categoryIndex === 2 && <Award className="h-6 w-6 text-primary" />}
-                                        {categoryIndex === 3 && <Users className="h-6 w-6 text-primary" />}
+                                    <CardTitle className="font-serif text-2xl flex items-center gap-3 text-oxford-blue">
+                                        {categoryIndex === 0 && <Users className="h-6 w-6 text-oxford-blue" />}
+                                        {categoryIndex === 1 && <BookOpen className="h-6 w-6 text-oxford-blue" />}
+                                        {categoryIndex === 2 && <Award className="h-6 w-6 text-oxford-blue" />}
+                                        {categoryIndex === 3 && <Users className="h-6 w-6 text-oxford-blue" />}
                                         {category.title}
                                     </CardTitle>
                                     <CardDescription className="text-base">
@@ -255,10 +255,10 @@ export default function EditorialBoard({ auth }: PageProps) {
                                                         <div className="flex-grow space-y-4">
                                                             {/* Name and Basic Info */}
                                                             <div>
-                                                                <h3 className="text-xl font-semibold text-foreground mb-1">
+                                                                <h3 className="font-serif text-xl font-semibold text-oxford-blue mb-1">
                                                                     {member.name}
                                                                 </h3>
-                                                                <p className="text-sm text-primary font-medium mb-1">
+                                                                <p className="text-sm text-burgundy font-medium mb-1">
                                                                     {member.role}
                                                                 </p>
                                                                 <p className="text-sm text-muted-foreground">
@@ -274,14 +274,14 @@ export default function EditorialBoard({ auth }: PageProps) {
                                                             {/* Education */}
                                                             {member.education && (
                                                                 <div>
-                                                                    <h4 className="text-sm font-medium text-foreground mb-1">Education</h4>
+                                                                    <h4 className="font-sans text-sm font-medium text-oxford-blue mb-1">Education</h4>
                                                                     <p className="text-sm text-muted-foreground">{member.education}</p>
                                                                 </div>
                                                             )}
 
                                                             {/* Bio */}
                                                             <div>
-                                                                <h4 className="text-sm font-medium text-foreground mb-1">Biography</h4>
+                                                                <h4 className="font-sans text-sm font-medium text-oxford-blue mb-1">Biography</h4>
                                                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                                                     {member.bio}
                                                                 </p>
@@ -290,11 +290,11 @@ export default function EditorialBoard({ auth }: PageProps) {
                                                             {/* Academic Metrics */}
                                                             {(member.publications || member.citations || member.hIndex) && (
                                                                 <div>
-                                                                    <h4 className="text-sm font-medium text-foreground mb-2">Academic Impact</h4>
+                                                                    <h4 className="font-sans text-sm font-medium text-oxford-blue mb-2">Academic Impact</h4>
                                                                     <div className="flex gap-4">
                                                                         {member.publications && (
                                                                             <div className="text-center">
-                                                                                <div className="text-lg font-bold text-primary">{member.publications}</div>
+                                                                                <div className="font-serif text-lg font-bold text-oxford-blue">{member.publications}</div>
                                                                                 <div className="text-xs text-muted-foreground">Publications</div>
                                                                             </div>
                                                                         )}

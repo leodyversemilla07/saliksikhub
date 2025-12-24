@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Settings } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -129,7 +129,7 @@ export default function AppLayout({
 
             <SidebarInset className="flex flex-col min-h-screen">
                 {/* Inline Header logic */}
-                <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 px-4">
+                <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 px-4">
                     <SidebarTrigger className="-ml-1" />
                     <Separator
                         orientation="vertical"

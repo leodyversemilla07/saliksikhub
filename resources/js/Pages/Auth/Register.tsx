@@ -26,7 +26,7 @@ export default function Register() {
                 {/* Registration Card */}
                 <Card>
                     <CardHeader className="text-center">
-                        <CardTitle className="text-xl">Create your account</CardTitle>
+                        <CardTitle className="font-serif text-xl text-oxford-blue">Create your account</CardTitle>
                         <CardDescription>
                             Enter your information below to create your account
                         </CardDescription>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saliksikhub Design System - Color Palette</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: oklch(0.98 0.01 85);
+            color: oklch(0.20 0.01 250);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.125rem;
+            color: oklch(0.50 0.02 250);
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .color-card {
+            border: 1.5px solid oklch(0.88 0.01 250);
+            border-radius: 4px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .color-swatch {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .color-info {
+            padding: 1.25rem;
+        }
+        
+        .color-name {
+            font-family: 'Merriweather', serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .color-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: oklch(0.50 0.02 250);
+            background: oklch(0.95 0.01 85);
+            padding: 0.5rem;
+            border-radius: 2px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .color-usage {
+            font-size: 0.875rem;
+            color: oklch(0.40 0.02 250);
+            line-height: 1.5;
+        }
+        
+        .typography-demo {
+            background: white;
+            border: 1.5px solid oklch(0.88 0.01 250);
+            border-radius: 4px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .font-sample {
+            margin-bottom: 2rem;
+        }
+        
+        .font-name {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: oklch(0.50 0.02 250);
+            margin-bottom: 0.5rem;
+        }
+        
+        .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        
+        .font-sans {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .toggle-theme {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: oklch(0.35 0.08 250);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .toggle-theme:hover {
+            background: oklch(0.30 0.08 250);
+        }
+        
+        body.dark {
+            background: oklch(0.17 0.01 250);
+            color: oklch(0.95 0.01 85);
+        }
+        
+        body.dark .color-card,
+        body.dark .typography-demo {
+            background: oklch(0.20 0.01 250);
+            border-color: oklch(0.28 0.01 250);
+        }
+        
+        body.dark .color-value {
+            background: oklch(0.25 0.01 250);
+            color: oklch(0.70 0.02 250);
+        }
+        
+        body.dark .color-usage,
+        body.dark .font-name {
+            color: oklch(0.70 0.02 250);
+        }
+        
+        body.dark .subtitle {
+            color: oklch(0.70 0.02 250);
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark Mode</button>
+    
+    <header>
+        <h1>Saliksikhub Design System</h1>
+        <p class="subtitle">Library & Scholarly Aesthetic for Research Journal Management</p>
+    </header>
+    
+    <section class="section">
+        <h2>Primary Colors - Academic Authority</h2>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.35 0.08 250);">
+                    Oxford Blue
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Primary</div>
+                    <div class="color-value">oklch(0.35 0.08 250)</div>
+                    <div class="color-usage">Primary actions, links, emphasis. Deep, authoritative blue reminiscent of academic institutions.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.40 0.12 15);">
+                    Burgundy
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Accent</div>
+                    <div class="color-value">oklch(0.40 0.12 15)</div>
+                    <div class="color-usage">Important markers, status highlights, calls-to-action. Rich burgundy like academic robes.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.95 0.02 85); color: oklch(0.20 0.01 250);">
+                    Parchment
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Secondary</div>
+                    <div class="color-value">oklch(0.95 0.02 85)</div>
+                    <div class="color-usage">Secondary surfaces, backgrounds. Warm off-white like aged academic paper.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>Neutral Palette - Archive Gray</h2>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.20 0.01 250);">
+                    Charcoal
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Foreground</div>
+                    <div class="color-value">oklch(0.20 0.01 250)</div>
+                    <div class="color-usage">Primary text, almost black with slight warmth for comfortable reading.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.50 0.02 250);">
+                    Slate
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Muted Foreground</div>
+                    <div class="color-value">oklch(0.50 0.02 250)</div>
+                    <div class="color-usage">Secondary text, captions, metadata. Medium gray for supporting information.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.88 0.01 250); color: oklch(0.20 0.01 250);">
+                    Pearl
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Border</div>
+                    <div class="color-value">oklch(0.88 0.01 250)</div>
+                    <div class="color-usage">Subtle borders, dividers, separators. Refined and understated.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>Semantic Colors - Manuscript Status</h2>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.45 0.10 145);">
+                    Forest Green
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Success</div>
+                    <div class="color-value">oklch(0.45 0.10 145)</div>
+                    <div class="color-usage">Published, approved, accepted manuscripts. Positive outcomes.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.65 0.15 75);">
+                    Amber
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Warning</div>
+                    <div class="color-value">oklch(0.65 0.15 75)</div>
+                    <div class="color-usage">Under review, pending, revision needed. Requires attention.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.50 0.20 25);">
+                    Crimson
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Error/Destructive</div>
+                    <div class="color-value">oklch(0.50 0.20 25)</div>
+                    <div class="color-usage">Rejected, errors, critical issues. Negative outcomes.</div>
+                </div>
+            </div>
+            
+            <div class="color-card">
+                <div class="color-swatch" style="background: oklch(0.48 0.08 235);">
+                    Prussian Blue
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Info</div>
+                    <div class="color-value">oklch(0.48 0.08 235)</div>
+                    <div class="color-usage">Information, notes, submitted status. Neutral informational state.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>Typography - Scholarly Hierarchy</h2>
+        <div class="typography-demo">
+            <div class="font-sample">
+                <div class="font-name">Merriweather (Serif) - Content & Headings</div>
+                <h1 class="font-serif" style="font-size: 2.441rem; line-height: 1.2; margin-bottom: 1rem;">
+                    The Impact of Machine Learning on Research Publishing
+                </h1>
+                <p class="font-serif" style="font-size: 1rem; line-height: 1.7; color: oklch(0.50 0.02 250);">
+                    <em>By Dr. Maria Rodriguez & Dr. James Chen</em>
+                </p>
+                <p class="font-serif" style="font-size: 1rem; line-height: 1.7; margin-top: 1rem;">
+                    This comprehensive study examines the transformative effects of machine learning algorithms 
+                    on modern academic publishing workflows. Through extensive research conducted across multiple 
+                    institutions, we present findings that demonstrate significant improvements in peer review 
+                    efficiency and manuscript quality assessment.
+                </p>
+            </div>
+            
+            <div class="font-sample">
+                <div class="font-name">Inter (Sans-serif) - UI Elements</div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button style="background: oklch(0.35 0.08 250); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;">
+                        Submit Manuscript
+                    </button>
+                    <button style="background: transparent; color: oklch(0.35 0.08 250); border: 1.5px solid oklch(0.35 0.08 250); padding: 0.75rem 1.5rem; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;">
+                        Save as Draft
+                    </button>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label class="font-sans" style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                        Manuscript Title
+                    </label>
+                    <input type="text" placeholder="Enter manuscript title..." style="width: 100%; padding: 0.75rem; border: 1.5px solid oklch(0.88 0.01 250); border-radius: 2px; font-family: 'Inter', sans-serif; font-size: 0.875rem;">
+                </div>
+            </div>
+            
+            <div class="font-sample">
+                <div class="font-name">JetBrains Mono (Monospace) - Technical Content</div>
+                <code class="font-mono" style="display: block; background: oklch(0.95 0.01 85); padding: 1rem; border-radius: 2px; font-size: 0.875rem; color: oklch(0.30 0.03 250);">
+                    DOI: 10.1234/saliksikhub.2025.001<br>
+                    ISSN: 2719-0633<br>
+                    Manuscript ID: MS-2025-001234
+                </code>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>Design Principles</h2>
+        <div class="typography-demo">
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 1rem 0; border-bottom: 1px solid oklch(0.88 0.01 250);">
+                    <strong style="font-family: 'Merriweather', serif; font-size: 1.125rem;">Readability First</strong>
+                    <p style="margin-top: 0.5rem; color: oklch(0.50 0.02 250);">
+                        Text-heavy academic interfaces demand excellent typography and generous spacing
+                    </p>
+                </li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid oklch(0.88 0.01 250);">
+                    <strong style="font-family: 'Merriweather', serif; font-size: 1.125rem;">Information Density</strong>
+                    <p style="margin-top: 0.5rem; color: oklch(0.50 0.02 250);">
+                        Balanced data presentation allowing users to see critical information at a glance
+                    </p>
+                </li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid oklch(0.88 0.01 250);">
+                    <strong style="font-family: 'Merriweather', serif; font-size: 1.125rem;">Timeless Aesthetic</strong>
+                    <p style="margin-top: 0.5rem; color: oklch(0.50 0.02 250);">
+                        Classic, professional appearance inspired by traditional academic publishing
+                    </p>
+                </li>
+                <li style="padding: 1rem 0;">
+                    <strong style="font-family: 'Merriweather', serif; font-size: 1.125rem;">Trust & Authority</strong>
+                    <p style="margin-top: 0.5rem; color: oklch(0.50 0.02 250);">
+                        Visual language that conveys scholarly credibility and institutional gravitas
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </section>
+    
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const button = document.querySelector('.toggle-theme');
+            button.textContent = document.body.classList.contains('dark') 
+                ? 'Toggle Light Mode' 
+                : 'Toggle Dark Mode';
+        }
+    </script>
+</body>
+</html>

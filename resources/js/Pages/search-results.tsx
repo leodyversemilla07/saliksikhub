@@ -139,7 +139,7 @@ export default function SearchResults({ auth, results, query }: SearchResultsPro
     return (
         <div className="flex flex-col min-h-screen bg-background">
             <Header auth={auth} />
-            <main className="flex-grow">
+            <main className="grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">

@@ -12,10 +12,10 @@ export default function ContactUs({ auth }: PageProps) {
             <Head title="Contact Us | Daluyang Dunong" />
             <Header auth={auth} />
 
-            <main className="flex-grow">
+            <main className="grow">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                     <div className="text-center">
-                        <h1 className="text-4xl font-bold text-foreground mb-2">
+                        <h1 className="font-serif text-4xl font-bold text-oxford-blue mb-2">
                             Contact Us
                         </h1>
                         <p className="text-lg text-muted-foreground mb-8">
@@ -27,14 +27,14 @@ export default function ContactUs({ auth }: PageProps) {
                         {/* Contact Information Card */}
                         <Card className="bg-card border-border">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-3 text-2xl">
-                                    <MessageSquare className="h-8 w-8 text-primary" />
+                                <CardTitle className="font-serif flex items-center gap-3 text-2xl text-oxford-blue">
+                                    <MessageSquare className="h-8 w-8 text-oxford-blue" />
                                     Contact Information
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <MapPin className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                                    <MapPin className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-semibold text-card-foreground mb-1">Mailing Address</h3>
                                         <p className="text-muted-foreground leading-relaxed">
@@ -46,7 +46,7 @@ export default function ContactUs({ auth }: PageProps) {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                                    <Mail className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-semibold text-card-foreground mb-1">Email Address</h3>
                                         <p className="text-muted-foreground">
@@ -61,7 +61,7 @@ export default function ContactUs({ auth }: PageProps) {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <Phone className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                                    <Phone className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-semibold text-card-foreground mb-1">Phone</h3>
                                         <p className="text-muted-foreground">
@@ -71,7 +71,7 @@ export default function ContactUs({ auth }: PageProps) {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <Clock className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                                    <Clock className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-semibold text-card-foreground mb-1">Office Hours</h3>
                                         <p className="text-muted-foreground">
@@ -86,8 +86,8 @@ export default function ContactUs({ auth }: PageProps) {
                         {/* Editorial Team Card */}
                         <Card className="bg-card border-border">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-3 text-2xl">
-                                    <Users className="h-8 w-8 text-primary" />
+                                <CardTitle className="font-serif flex items-center gap-3 text-2xl text-oxford-blue">
+                                    <Users className="h-8 w-8 text-oxford-blue" />
                                     Editorial Team
                                 </CardTitle>
                             </CardHeader>
@@ -130,10 +130,10 @@ export default function ContactUs({ auth }: PageProps) {
                     </div>
 
                     {/* Additional Information Card */}
-                    <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+                    <Card className="bg-linear-to-r from-parchment/20 to-parchment/10 border-oxford-blue/20">
                         <CardContent className="pt-6">
                             <div className="text-center space-y-4">
-                                <h3 className="text-xl font-semibold text-foreground">
+                                <h3 className="font-serif text-xl font-semibold text-oxford-blue">
                                     Response Time
                                 </h3>
                                 <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">

@@ -62,10 +62,10 @@ interface ReviewerDashboardProps {
 }
 
 const statusColors = {
-    'assigned': 'bg-blue-100 text-blue-800',
-    'in_progress': 'bg-yellow-100 text-yellow-800',
-    'completed': 'bg-green-100 text-green-800',
-    'declined': 'bg-red-100 text-red-800',
+    'assigned': 'bg-prussian-blue/10 text-prussian-blue',
+    'in_progress': 'bg-amber/10 text-amber-dark',
+    'completed': 'bg-forest-green/10 text-forest-green',
+    'declined': 'bg-crimson/10 text-crimson',
 };
 
 const statusLabels = {
@@ -99,7 +99,7 @@ export default function ReviewerDashboard({
                 {/* Welcome Section */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">Reviewer Dashboard</h1>
+                        <h1 className="font-serif text-3xl font-bold text-oxford-blue">Reviewer Dashboard</h1>
                         <p className="text-muted-foreground mt-1">
                             Track your review assignments and performance
                         </p>
@@ -116,11 +116,11 @@ export default function ReviewerDashboard({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Reviews Completed</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Reviews Completed</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{stats.reviews_completed}</div>
+                            <div className="font-serif text-2xl font-bold text-forest-green">{stats.reviews_completed}</div>
                             <p className="text-xs text-muted-foreground">
                                 Total reviews finished
                             </p>
@@ -129,11 +129,11 @@ export default function ReviewerDashboard({
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Pending Reviews</CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{stats.reviews_pending}</div>
+                            <div className="font-serif text-2xl font-bold text-amber">{stats.reviews_pending}</div>
                             <p className="text-xs text-muted-foreground">
                                 Currently assigned
                             </p>
@@ -142,11 +142,11 @@ export default function ReviewerDashboard({
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Overdue Reviews</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Overdue Reviews</CardTitle>
                             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-red-600">{stats.reviews_overdue}</div>
+                            <div className="font-serif text-2xl font-bold text-crimson">{stats.reviews_overdue}</div>
                             <p className="text-xs text-muted-foreground">
                                 Past deadline
                             </p>

@@ -46,13 +46,13 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
                 <Head title="Current Issue - Daluyang Dunong MinSU Research Journal" />
                 <Header auth={auth} />
 
-                <main className="flex-grow">
+                <main className="grow">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="text-center py-16">
                             <Card className="max-w-md mx-auto">
                                 <CardContent className="pt-6">
                                     <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                    <h1 className="text-2xl font-bold text-foreground mb-2">
+                                    <h1 className="font-serif text-2xl font-bold text-oxford-blue mb-2">
                                         Current Issue
                                     </h1>
                                     <p className="text-muted-foreground mb-4">
@@ -77,11 +77,11 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
             <Head title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`} />
             <Header auth={auth} />
 
-            <main className="flex-grow">
+            <main className="grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                        <h1 className="font-serif text-3xl md:text-4xl font-bold text-oxford-blue mb-2">
                             {currentIssue.fullTitle}
                         </h1>
                         <p className="text-lg text-muted-foreground">
@@ -94,7 +94,7 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
                         <div className="lg:col-span-1">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
+                                    <CardTitle className="font-serif flex items-center gap-2 text-oxford-blue">
                                         <BookOpen className="h-5 w-5" />
                                         Issue Details
                                     </CardTitle>

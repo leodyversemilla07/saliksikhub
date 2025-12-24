@@ -53,7 +53,7 @@ export default function Edit({
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-semibold text-foreground">
+                    <h1 className="font-serif text-2xl font-semibold text-oxford-blue">
                         Settings
                     </h1>
                     <p className="text-muted-foreground">
@@ -75,7 +75,7 @@ export default function Edit({
                                             className={cn(
                                                 'flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-colors',
                                                 item.current
-                                                    ? 'bg-primary text-primary-foreground'
+                                                    ? 'bg-oxford-blue text-white'
                                                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                                             )}
                                         >

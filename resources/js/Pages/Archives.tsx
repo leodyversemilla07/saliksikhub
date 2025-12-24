@@ -106,7 +106,7 @@ export default function Archives({ auth }: PageProps) {
         <div className="flex flex-col min-h-screen bg-background">
             <Head title="Archives | Daluyang Dunong" />
             <Header auth={auth} />
-            <main className="flex-grow">
+            <main className="grow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -219,7 +219,7 @@ export default function Archives({ auth }: PageProps) {
                                                                 <Card key={issue.id} className="hover:shadow-md transition-shadow">
                                                                     <CardContent className="p-6">
                                                                         <div className="flex items-start gap-4">
-                                                                            <div className="w-24 h-32 flex-shrink-0">
+                                                                            <div className="w-24 h-32 shrink-0">
                                                                                 <img
                                                                                     src={issue.coverImageUrl}
                                                                                     alt={`Cover for ${issue.title}`}

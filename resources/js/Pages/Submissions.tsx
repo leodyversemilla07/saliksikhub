@@ -295,7 +295,7 @@ export default function Submissions({ auth }: PageProps) {
 
             <main className="grow">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-linear-to-br from-muted/50 to-background py-16 lg:py-24">
+                <section className="relative overflow-hidden bg-gradient-to-br from-parchment/30 to-background py-16 lg:py-24">
                     <div className="absolute inset-0 -z-10">
                         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-20">
                             <div className="aspect-square w-72 bg-primary/30 rounded-full" />

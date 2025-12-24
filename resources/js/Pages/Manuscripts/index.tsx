@@ -103,7 +103,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             },
             cell: ({ row }) => (
                 <div className="max-w-xs">
-                    <div className="font-medium truncate" title={row.getValue("title")}>
+                    <div className="font-serif font-medium truncate text-base" title={row.getValue("title")}>
                         {row.getValue("title")}
                     </div>
                 </div>
@@ -124,7 +124,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                 );
             },
             cell: ({ row }) => (
-                <div className="max-w-xs truncate text-muted-foreground" title={row.getValue("authors")}>
+                <div className="max-w-xs truncate font-serif italic text-sm text-muted-foreground" title={row.getValue("authors")}>
                     {row.getValue("authors")}
                 </div>
             ),

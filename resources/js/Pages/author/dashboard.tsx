@@ -53,15 +53,15 @@ interface AuthorDashboardProps {
 
 const statusColors = {
     'draft': 'bg-gray-100 text-gray-800',
-    'submitted': 'bg-blue-100 text-blue-800',
-    'under_review': 'bg-yellow-100 text-yellow-800',
-    'minor_revision_required': 'bg-orange-100 text-orange-800',
-    'major_revision_required': 'bg-red-100 text-red-800',
-    'accepted': 'bg-green-100 text-green-800',
-    'rejected': 'bg-red-100 text-red-800',
-    'published': 'bg-purple-100 text-purple-800',
-    'ready_for_publication': 'bg-indigo-100 text-indigo-800',
-    'awaiting_author_approval': 'bg-cyan-100 text-cyan-800',
+    'submitted': 'bg-prussian-blue/10 text-prussian-blue',
+    'under_review': 'bg-amber/10 text-amber-dark',
+    'minor_revision_required': 'bg-amber/20 text-amber-dark',
+    'major_revision_required': 'bg-burgundy/10 text-burgundy',
+    'accepted': 'bg-forest-green/10 text-forest-green',
+    'rejected': 'bg-crimson/10 text-crimson',
+    'published': 'bg-oxford-blue/10 text-oxford-blue',
+    'ready_for_publication': 'bg-prussian-blue/10 text-prussian-blue',
+    'awaiting_author_approval': 'bg-parchment text-oxford-blue',
 };
 
 const statusLabels = {
@@ -130,7 +130,7 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                 {/* Welcome Section */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">Author Dashboard</h1>
+                        <h1 className="font-serif text-3xl font-bold text-oxford-blue">Author Dashboard</h1>
                         <p className="text-muted-foreground mt-1">
                             Track your manuscript submissions and review progress
                         </p>
@@ -147,11 +147,11 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Total Submissions</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{totalSubmissions}</div>
+                            <div className="font-serif text-2xl font-bold">{totalSubmissions}</div>
                             <p className="text-xs text-muted-foreground">
                                 All time submissions
                             </p>
@@ -160,11 +160,11 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Published</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Published</CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-green-600">{publishedCount}</div>
+                            <div className="font-serif text-2xl font-bold text-forest-green">{publishedCount}</div>
                             <p className="text-xs text-muted-foreground">
                                 Successfully published
                             </p>
@@ -173,11 +173,11 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Under Review</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Under Review</CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-yellow-600">{underReviewCount}</div>
+                            <div className="font-serif text-2xl font-bold text-amber">{underReviewCount}</div>
                             <p className="text-xs text-muted-foreground">
                                 Currently being reviewed
                             </p>
@@ -186,11 +186,11 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Revisions Needed</CardTitle>
+                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Revisions Needed</CardTitle>
                             <XCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-orange-600">{revisionCount}</div>
+                            <div className="font-serif text-2xl font-bold text-burgundy">{revisionCount}</div>
                             <p className="text-xs text-muted-foreground">
                                 Require your attention
                             </p>

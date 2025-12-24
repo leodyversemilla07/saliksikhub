@@ -49,7 +49,7 @@ export default function Login({ status, canResetPassword }: PageProps<{ status?:
                 {/* Login Card */}
                 <Card>
                     <CardHeader className="text-center">
-                        <CardTitle className="text-xl">Welcome back</CardTitle>
+                        <CardTitle className="font-serif text-xl text-oxford-blue">Welcome back</CardTitle>
                         <CardDescription>
                             Login with your email below to access your account
                         </CardDescription>

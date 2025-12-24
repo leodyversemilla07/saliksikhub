@@ -30,7 +30,7 @@ export default function AboutJournal({ auth }: PageProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                        <h1 className="font-serif text-3xl md:text-4xl font-bold text-oxford-blue mb-2">
                             About the Journal
                         </h1>
                         <p className="text-lg text-muted-foreground">
@@ -39,10 +39,10 @@ export default function AboutJournal({ auth }: PageProps) {
                     </div>
 
                     {/* Journal Overview Section */}
-                    <Card className="mb-8 bg-linear-to-r from-primary/5 to-primary/10 border-primary/20">
+                    <Card className="mb-8 bg-linear-to-r from-parchment/20 to-parchment/10 border-oxford-blue/20">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-3 text-2xl">
-                                <BookOpen className="h-8 w-8 text-primary" />
+                            <CardTitle className="font-serif flex items-center gap-3 text-2xl text-oxford-blue">
+                                <BookOpen className="h-8 w-8 text-oxford-blue" />
                                 Journal Overview
                             </CardTitle>
                         </CardHeader>
@@ -104,8 +104,8 @@ export default function AboutJournal({ auth }: PageProps) {
                     {/* Key Features Section */}
                     <Card className="mb-8">
                         <CardHeader className="text-center">
-                            <CardTitle className="flex items-center justify-center gap-3 text-2xl">
-                                <Star className="h-8 w-8 text-yellow-500" />
+                            <CardTitle className="font-serif flex items-center justify-center gap-3 text-2xl text-oxford-blue">
+                                <Star className="h-8 w-8 text-amber" />
                                 Key Features
                             </CardTitle>
                             <CardDescription>
@@ -118,39 +118,39 @@ export default function AboutJournal({ auth }: PageProps) {
                                     {
                                         title: "Open Access",
                                         description: "Ensuring free and unrestricted access to all published articles, promoting wider readership and knowledge sharing.",
-                                        icon: <Unlock className="h-10 w-10 text-primary mb-3" />
+                                        icon: <Unlock className="h-10 w-10 text-oxford-blue mb-3" />
                                     },
                                     {
                                         title: "Peer Review",
                                         description: "Employing a rigorous double-blind peer-review process to maintain high academic standards and integrity.",
-                                        icon: <Users className="h-10 w-10 text-primary mb-3" />
+                                        icon: <Users className="h-10 w-10 text-oxford-blue mb-3" />
                                     },
                                     {
                                         title: "Multidisciplinary Scope",
                                         description: "Welcoming contributions from a broad range of disciplines, encouraging cross-pollination of ideas.",
-                                        icon: <BookCopy className="h-10 w-10 text-primary mb-3" />
+                                        icon: <BookCopy className="h-10 w-10 text-oxford-blue mb-3" />
                                     },
                                     {
                                         title: "Global Reach",
                                         description: "Disseminating research to a worldwide audience, fostering international collaboration and impact.",
-                                        icon: <Globe className="h-10 w-10 text-primary mb-3" />
+                                        icon: <Globe className="h-10 w-10 text-oxford-blue mb-3" />
                                     },
                                     {
                                         title: "Ethical Standards",
                                         description: "Adhering to the highest ethical guidelines in publishing, ensuring transparency and accountability.",
-                                        icon: <ShieldCheck className="h-10 w-10 text-primary mb-3" />
+                                        icon: <ShieldCheck className="h-10 w-10 text-oxford-blue mb-3" />
                                     },
                                     {
                                         title: "Author Support",
                                         description: "Providing comprehensive support to authors throughout the submission and publication process.",
-                                        icon: <LifeBuoy className="h-10 w-10 text-primary mb-3" />
+                                        icon: <LifeBuoy className="h-10 w-10 text-oxford-blue mb-3" />
                                     }
                                 ].map((feature, index) => (
                                     <Card key={index} className="text-center hover:shadow-md transition-shadow">
                                         <CardContent className="pt-6">
                                             <div className="flex flex-col items-center">
                                                 {feature.icon}
-                                                <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
+                                                <h3 className="font-serif text-xl font-semibold text-oxford-blue mb-2">{feature.title}</h3>
                                                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                                             </div>
                                         </CardContent>
@@ -163,10 +163,10 @@ export default function AboutJournal({ auth }: PageProps) {
                     {/* Aims & Scope Section */}
                     <div className="space-y-8 mb-8">
                         {/* Aims Section */}
-                        <Card className="bg-linear-to-r from-primary/5 to-primary/10 border-primary/20">
+                        <Card className="bg-linear-to-r from-parchment/20 to-parchment/10 border-oxford-blue/20">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-3 text-2xl">
-                                    <Target className="h-8 w-8 text-primary" />
+                                <CardTitle className="font-serif flex items-center gap-3 text-2xl text-oxford-blue">
+                                    <Target className="h-8 w-8 text-oxford-blue" />
                                     Aims
                                 </CardTitle>
                             </CardHeader>
@@ -180,8 +180,8 @@ export default function AboutJournal({ auth }: PageProps) {
                         {/* Scope Section */}
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-3 text-2xl">
-                                    <BookOpen className="h-8 w-8 text-primary" />
+                                <CardTitle className="font-serif flex items-center gap-3 text-2xl text-oxford-blue">
+                                    <BookOpen className="h-8 w-8 text-oxford-blue" />
                                     Scope
                                 </CardTitle>
                                 <CardDescription>
@@ -234,11 +234,11 @@ export default function AboutJournal({ auth }: PageProps) {
                                         <Card key={index} className="hover:shadow-md transition-shadow bg-muted/30">
                                             <CardContent className="pt-4">
                                                 <div className="flex items-start gap-4">
-                                                    <span className="shrink-0 h-8 w-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                                                    <span className="shrink-0 h-8 w-8 bg-oxford-blue rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                                         {index + 1}
                                                     </span>
                                                     <div>
-                                                        <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
+                                                        <h3 className="font-serif text-lg font-semibold text-oxford-blue mb-2">{item.title}</h3>
                                                         <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                                                     </div>
                                                 </div>

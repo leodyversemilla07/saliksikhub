@@ -9,63 +9,74 @@ interface ManuscriptStatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: ManuscriptStatusBadgeProps) {
-  // Helper function to get appropriate styles and icon for status
+  // Helper function to get appropriate styles and icon for status - Scholarly Design System
   const getStatusConfig = () => {
     switch (status) {
       case ManuscriptStatus.SUBMITTED:
         return {
           icon: <Edit className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800/30'
+          // Prussian Blue - info color
+          color: 'bg-[oklch(0.48_0.08_235)]/10 text-[oklch(0.48_0.08_235)] dark:text-[oklch(0.60_0.08_235)] border-[oklch(0.48_0.08_235)]/20'
         };
       case ManuscriptStatus.UNDER_REVIEW:
         return {
           icon: <Clock className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border-purple-200 dark:border-purple-800/30'
+          // Amber - warning color
+          color: 'bg-[oklch(0.65_0.15_75)]/10 text-[oklch(0.65_0.15_75)] dark:text-[oklch(0.70_0.14_75)] border-[oklch(0.65_0.15_75)]/20'
         };
       case ManuscriptStatus.MINOR_REVISION:
         return {
           icon: <Edit className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800/30'
+          // Amber - warning color
+          color: 'bg-[oklch(0.65_0.15_75)]/10 text-[oklch(0.65_0.15_75)] dark:text-[oklch(0.70_0.14_75)] border-[oklch(0.65_0.15_75)]/20'
         };
       case ManuscriptStatus.MAJOR_REVISION:
         return {
           icon: <Edit className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800/30'
+          // Darker amber/orange
+          color: 'bg-[oklch(0.60_0.16_70)]/10 text-[oklch(0.60_0.16_70)] dark:text-[oklch(0.65_0.15_70)] border-[oklch(0.60_0.16_70)]/20'
         };
       case ManuscriptStatus.ACCEPTED:
         return {
           icon: <CheckCircle className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800/30'
+          // Forest Green - success color
+          color: 'bg-[oklch(0.45_0.10_145)]/10 text-[oklch(0.45_0.10_145)] dark:text-[oklch(0.55_0.10_145)] border-[oklch(0.45_0.10_145)]/20'
         };
       case ManuscriptStatus.IN_COPYEDITING:
         return {
           icon: <Edit className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/30'
+          // Oxford Blue - primary color
+          color: 'bg-[oklch(0.35_0.08_250)]/10 text-[oklch(0.35_0.08_250)] dark:text-[oklch(0.60_0.10_250)] border-[oklch(0.35_0.08_250)]/20'
         };
       case ManuscriptStatus.AWAITING_AUTHOR_APPROVAL:
         return {
           icon: <Eye className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/30'
+          // Burgundy - accent color
+          color: 'bg-[oklch(0.40_0.12_15)]/10 text-[oklch(0.40_0.12_15)] dark:text-[oklch(0.55_0.12_15)] border-[oklch(0.40_0.12_15)]/20'
         };
       case ManuscriptStatus.READY_FOR_PUBLICATION:
         return {
           icon: <BookOpen className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/30'
+          // Darker Forest Green
+          color: 'bg-[oklch(0.40_0.12_145)]/10 text-[oklch(0.40_0.12_145)] dark:text-[oklch(0.55_0.12_145)] border-[oklch(0.40_0.12_145)]/20'
         };
       case ManuscriptStatus.REJECTED:
         return {
           icon: <XCircle className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800/30'
+          // Crimson - destructive/error color
+          color: 'bg-[oklch(0.50_0.20_25)]/10 text-[oklch(0.50_0.20_25)] dark:text-[oklch(0.55_0.18_25)] border-[oklch(0.50_0.20_25)]/20'
         };
       case ManuscriptStatus.PUBLISHED:
         return {
           icon: <BookOpen className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 border-teal-200 dark:border-teal-800/30'
+          // Deep Forest Green - published success
+          color: 'bg-[oklch(0.45_0.10_145)]/10 text-[oklch(0.45_0.10_145)] dark:text-[oklch(0.55_0.10_145)] border-[oklch(0.45_0.10_145)]/20'
         };
       default:
         return {
           icon: <Clock className="h-3.5 w-3.5 mr-1" />,
-          color: 'bg-gray-100 text-gray-800 dark:bg-gray-700/50 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+          // Muted gray
+          color: 'bg-muted/50 text-muted-foreground border-border'
         };
     }
   };
@@ -73,7 +84,7 @@ export function StatusBadge({ status, className }: ManuscriptStatusBadgeProps) {
   const { icon, color } = getStatusConfig();
 
   return (
-    <Badge className={cn(color, className)}>
+    <Badge className={cn('font-sans', color, className)}>
       {icon}
       {status}
     </Badge>

@@ -82,7 +82,7 @@ export default function JournalsIndex({ journals }: Props) {
             <div className="space-y-6">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Journals</h1>
+                        <h1 className="font-serif text-2xl font-bold tracking-tight text-oxford-blue">Journals</h1>
                         <p className="text-muted-foreground">
                             Manage journals in the research journal system
                         </p>

@@ -32,6 +32,11 @@ Route::middleware(['journal'])->group(function () {
     Route::inertia('/about/journal', 'about-journal')->name('about-journal');
     Route::inertia('/contact', 'contact-us')->name('contact-us');
 
+    // Design System Documentation
+    Route::get('/design-system', function () {
+        return response()->file(base_path('docs/design-system-palette.html'));
+    })->name('design-system');
+
     // Public PDF access for published manuscripts
     Route::get('/manuscripts/{manuscript:slug}/pdf', [ManuscriptController::class, 'servePdf'])->name('manuscripts.pdf');
 

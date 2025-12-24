@@ -182,18 +182,18 @@ export default function EditorDashboard({ dashboardData }: EditorDashboardProps)
                         const Icon = iconMap[metric.title] || FileText;
 
                         return (
-                            <Card key={`metric-${index}`} className="overflow-hidden transition-all duration-300 hover:shadow-md">
+                            <Card key={`metric-${index}`} className="overflow-hidden border-border/50 bg-card hover:border-primary/20 transition-colors">
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm font-medium text-muted-foreground mb-1">{metric.title}</p>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-foreground flex items-baseline gap-2">
+                                            <p className="font-sans text-xs uppercase tracking-wide text-muted-foreground mb-2">{metric.title}</p>
+                                            <h3 className="font-serif text-3xl font-bold text-foreground flex items-baseline gap-2">
                                                 {metric.value}
                                                 <span className={cn(
-                                                    "flex items-center text-xs px-1.5 py-0.5 rounded-full font-medium",
+                                                    "flex items-center text-xs px-2 py-0.5 font-sans font-medium",
                                                     metric.trend === 'up'
-                                                        ? "text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/40"
-                                                        : "text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/40"
+                                                        ? "text-[oklch(0.45_0.10_145)] bg-[oklch(0.45_0.10_145)]/10"
+                                                        : "text-[oklch(0.50_0.20_25)] bg-[oklch(0.50_0.20_25)]/10"
                                                 )}>
                                                     {metric.trend === 'up' ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
                                                     {metric.percentage}

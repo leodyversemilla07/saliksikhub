@@ -134,7 +134,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                         <div className="xl:col-span-2 space-y-6">
                             {/* Header Section */}
                             <div className="space-y-4">
-                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-foreground">
+                                <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-oxford-blue">
                                     {manuscript.title}
                                 </h1>
 

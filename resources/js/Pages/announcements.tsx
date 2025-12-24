@@ -16,7 +16,7 @@ export default function Announcements({ auth }: PageProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                        <h1 className="font-serif text-3xl md:text-4xl font-bold text-oxford-blue mb-2">
                             Announcements
                         </h1>
                         <p className="text-lg text-muted-foreground">
@@ -24,10 +24,10 @@ export default function Announcements({ auth }: PageProps) {
                         </p>
                     </div>                    <div className="space-y-6">
                         {/* Featured Announcement */}
-                        <Card className="bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground border-none shadow-lg">
+                        <Card className="bg-gradient-to-r from-burgundy via-burgundy to-burgundy/90 text-white border-none shadow-lg">
                             <CardContent className="p-6">
                                 <div className="flex items-center mb-3">
-                                    <Badge variant="secondary" className="mr-3 bg-yellow-400 text-yellow-900">
+                                    <Badge variant="secondary" className="mr-3 bg-amber text-amber-dark">
                                         <Megaphone className="h-3 w-3 mr-1" />
                                         Featured
                                     </Badge>
@@ -36,8 +36,8 @@ export default function Announcements({ auth }: PageProps) {
                                         May 15, 2025
                                     </span>
                                 </div>
-                                <h2 className="text-2xl font-bold mb-3">Call for Submissions: Special Issue on Sustainable Agriculture</h2>
-                                <p className="text-primary-foreground/90 mb-4">
+                                <h2 className="font-serif text-2xl font-bold mb-3">Call for Submissions: Special Issue on Sustainable Agriculture</h2>
+                                <p className="text-white/90 mb-4">
                                     We are excited to announce a special issue focusing on innovative approaches to sustainable agriculture and food security. 
                                     Submissions are now open for research papers, review articles, and case studies.
                                 </p>
@@ -75,7 +75,7 @@ export default function Announcements({ auth }: PageProps) {
                                         </span>
                                     </div>
                                 </div>
-                                <CardTitle className="text-xl">Platform Maintenance and New Features</CardTitle>
+                                <CardTitle className="font-serif text-xl text-oxford-blue">Platform Maintenance and New Features</CardTitle>
                                 <CardDescription>
                                     We've completed scheduled maintenance and introduced several new features including enhanced manuscript tracking, 
                                     improved search functionality, and a redesigned reviewer dashboard. The platform is now running more efficiently 
@@ -124,7 +124,7 @@ export default function Announcements({ auth }: PageProps) {
                                         </span>
                                     </div>
                                 </div>
-                                <CardTitle className="text-xl">Free Workshop: Academic Writing for Agricultural Sciences</CardTitle>
+                                <CardTitle className="font-serif text-xl text-oxford-blue">Free Workshop: Academic Writing for Agricultural Sciences</CardTitle>
                                 <CardDescription>
                                     Join our upcoming virtual workshop designed for emerging researchers in agricultural sciences. Learn best practices 
                                     for academic writing, manuscript preparation, and publication strategies from experienced editors and published authors.
