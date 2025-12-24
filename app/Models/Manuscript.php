@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 
 class Manuscript extends Model
@@ -141,6 +142,30 @@ class Manuscript extends Model
     public function editorialDecisions(): HasMany
     {
         return $this->hasMany(EditorialDecision::class);
+    }
+
+    /**
+     * Get the copyright agreement for this manuscript.
+     */
+    public function copyrightAgreement(): HasOne
+    {
+        return $this->hasOne(CopyrightAgreement::class);
+    }
+
+    /**
+     * Get all proof corrections for this manuscript.
+     */
+    public function proofCorrections(): HasMany
+    {
+        return $this->hasMany(ProofCorrection::class);
+    }
+
+    /**
+     * Get all indexing records for this manuscript.
+     */
+    public function indexingRecords(): HasMany
+    {
+        return $this->hasMany(ManuscriptIndexing::class);
     }
 
     /**

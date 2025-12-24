@@ -4,15 +4,28 @@ namespace App\Services;
 
 use App\DecisionType;
 use App\ManuscriptStatus;
+use App\Models\CopyrightAgreement;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
+use App\Models\ManuscriptIndexing;
+use App\Models\ProofCorrection;
 use App\Models\Review;
+use App\Models\User;
+use App\Notifications\LanguageEditorAssigned;
+use App\Notifications\ManuscriptReadyForReview;
+use App\Notifications\ManuscriptSubmitted;
+use App\Notifications\ProductionAssigned;
 use App\ReviewStatus;
+use App\Services\PublicationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class ManuscriptWorkflowService
 {
+    public function __construct(
+        protected PublicationService $publicationService
+    ) {}
+
     /**
      * Submit a new manuscript for review.
      */
@@ -24,8 +37,9 @@ class ManuscriptWorkflowService
             $manuscript->status = ManuscriptStatus::SUBMITTED;
             $manuscript->save();
 
-            // TODO: Send notification to managing editor
-            // Notification::send($managingEditors, new ManuscriptSubmitted($manuscript));
+            // Send notification to managing editors and editor-in-chief
+            $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
+            Notification::send($managingEditors, new ManuscriptSubmitted($manuscript));
 
             DB::commit();
 
@@ -48,6 +62,10 @@ class ManuscriptWorkflowService
 
             if ($passesScreening) {
                 $manuscript->status = ManuscriptStatus::AWAITING_REVIEWER_SELECTION;
+                
+                // Notify editors that manuscript is ready for review
+                $editors = User::role(['managing_editor', 'editor_in_chief', 'associate_editor'])->get();
+                Notification::send($editors, new ManuscriptReadyForReview($manuscript));
             } else {
                 $manuscript->status = ManuscriptStatus::DESK_REJECTED;
 
@@ -209,11 +227,15 @@ class ManuscriptWorkflowService
 
             if ($languageEditorId) {
                 $manuscript->editor_id = $languageEditorId;
+                
+                // Send notification to language editor
+                $languageEditor = User::find($languageEditorId);
+                if ($languageEditor) {
+                    $languageEditor->notify(new LanguageEditorAssigned($manuscript));
+                }
             }
 
             $manuscript->save();
-
-            // TODO: Send notification to language editor
 
             DB::commit();
 
@@ -237,7 +259,9 @@ class ManuscriptWorkflowService
             $manuscript->status = ManuscriptStatus::IN_TYPESETTING;
             $manuscript->save();
 
-            // TODO: Send notification to production team
+            // Send notification to production team
+            $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
+            Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
 
             DB::commit();
 
@@ -331,8 +355,11 @@ class ManuscriptWorkflowService
 
             $manuscript->save();
 
-            // TODO: Send publication notification to author
-            // TODO: Submit metadata to indexing services (CrossRef, PubMed, etc.)
+            // Send publication notification to author
+            $manuscript->author->notify(new \App\Notifications\ManuscriptPublished($manuscript));
+
+            // Submit metadata to indexing services
+            $this->publicationService->submitToIndexingDatabases($manuscript);
 
             DB::commit();
 
