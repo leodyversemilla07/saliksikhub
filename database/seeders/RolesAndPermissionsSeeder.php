@@ -17,6 +17,9 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // Set team_id to 0 for global roles
+        setPermissionsTeamId(0);
+
         // Define all roles including super_admin
         $roles = [
             'super_admin',      // Platform-wide administrator (manages all institutions/journals)

@@ -262,4 +262,12 @@ class User extends Authenticatable implements MustVerifyEmail
             ->pluck('pivot.role')
             ->toArray();
     }
+
+    /**
+     * Get user's expertises.
+     */
+    public function expertises(): BelongsToMany
+    {
+        return $this->belongsToMany(Expertise::class, 'expertise_user');
+    }
 }

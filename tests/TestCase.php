@@ -22,6 +22,10 @@ abstract class TestCase extends BaseTestCase
         // Seed roles and permissions for tests and clear spatie cache
         $this->seed(RolesAndPermissionsSeeder::class);
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        // For tests, we use team ID 0 for global roles to avoid NOT NULL constraints in SQLite
+        setPermissionsTeamId(0);
+
         // Disable the SlugRedirectMiddleware in tests to avoid unexpected redirects or 404s
         $this->withoutMiddleware(\App\Http\Middleware\SlugRedirectMiddleware::class);
     }

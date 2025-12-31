@@ -223,14 +223,7 @@ class ReviewService
     public function findSuitableReviewers(Manuscript $manuscript, int $limit = 10)
     {
         // Get users with reviewer role
-        $query = User::role('reviewer');
-
-        // TODO: Implement more sophisticated matching based on:
-        // - Expertise keywords
-        // - Subject area
-        // - Past review performance
-        // - Current workload
-        // - Conflict of interest checking
+        $query = User::role('reviewer')->with('expertises');
 
         // Exclude manuscript author
         $query->where('id', '!=', $manuscript->user_id);
@@ -249,11 +242,38 @@ class ReviewService
             $query->whereNotIn('id', $currentReviewerIds);
         }
 
-        // Order by completed reviews (experienced reviewers first)
-        $query->withCount(['completedReviews'])
-            ->orderByDesc('completed_reviews_count');
+        // Get all potential reviewers
+        $potentialReviewers = $query->get();
 
-        return $query->limit($limit)->get();
+        // Calculate relevance score for each reviewer
+        $manuscriptKeywords = array_map('trim', explode(',', strtolower($manuscript->keywords ?? '')));
+
+        $scoredReviewers = $potentialReviewers->map(function ($reviewer) use ($manuscriptKeywords) {
+            $score = 0;
+            $reviewerExpertises = $reviewer->expertises->pluck('name')->map(fn ($name) => strtolower($name))->toArray();
+
+            // Match expertises with keywords
+            foreach ($manuscriptKeywords as $keyword) {
+                foreach ($reviewerExpertises as $expertise) {
+                    if (str_contains($expertise, $keyword) || str_contains($keyword, $expertise)) {
+                        $score += 10;
+                    }
+                }
+            }
+
+            // Add score for completed reviews (experience)
+            $completedReviews = $reviewer->completedReviews()->count();
+            $score += min($completedReviews, 10); // Cap experience bonus
+
+            $reviewer->relevance_score = $score;
+
+            return $reviewer;
+        });
+
+        // Sort by relevance score desc, then by completed reviews desc
+        return $scoredReviewers->sortByDesc(function ($reviewer) {
+            return $reviewer->relevance_score * 1000 + $reviewer->completedReviews()->count();
+        })->take($limit);
     }
 
     /**

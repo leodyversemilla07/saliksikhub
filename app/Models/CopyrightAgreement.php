@@ -29,6 +29,10 @@ class CopyrightAgreement extends Model
         'is_signed' => 'boolean',
     ];
 
+    protected $attributes = [
+        'is_signed' => false,
+    ];
+
     // Agreement types
     public const TYPE_COPYRIGHT_TRANSFER = 'copyright_transfer';
 

@@ -6,24 +6,29 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Ensure permission cache is cleared and roles exist for tests
+    // Ensure permission cache is cleared
     $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
     $registrar->forgetCachedPermissions();
     $registrar->cacheExpirationTime = 0;
-    Role::firstOrCreate(['name' => 'author', 'guard_name' => 'web']);
-    Role::firstOrCreate(['name' => 'editor_in_chief', 'guard_name' => 'web']);
+
+    // Roles are already seeded in TestCase::setUp
 });
 
 it('maps accept decision to ACCEPTED status', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -68,10 +73,16 @@ it('maps accept decision to ACCEPTED status', function () {
 });
 
 it('maps minor_revision decision to MINOR_REVISION_REQUIRED status', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -94,10 +105,16 @@ it('maps minor_revision decision to MINOR_REVISION_REQUIRED status', function ()
 });
 
 it('maps major_revision decision to MAJOR_REVISION_REQUIRED status', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -120,10 +137,16 @@ it('maps major_revision decision to MAJOR_REVISION_REQUIRED status', function ()
 });
 
 it('maps reject decision to REJECTED status', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -145,10 +168,16 @@ it('maps reject decision to REJECTED status', function () {
 });
 
 it('guards copyediting transition to only ACCEPTED manuscripts', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     // Test with SUBMITTED status (should fail)
@@ -167,10 +196,16 @@ it('guards copyediting transition to only ACCEPTED manuscripts', function () {
 });
 
 it('allows copyediting transition from ACCEPTED status', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -190,10 +225,16 @@ it('allows copyediting transition from ACCEPTED status', function () {
 it('transitions to AWAITING_AUTHOR_APPROVAL when finalized manuscript is uploaded', function () {
     Storage::fake('spaces');
 
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
-    $editor = User::factory()->create(['email_verified_at' => now()]);
+    $editor = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'editor_in_chief',
+    ]);
     $editor->assignRole('editor_in_chief');
 
     $manuscript = Manuscript::factory()->create([
@@ -218,7 +259,10 @@ it('transitions to AWAITING_AUTHOR_APPROVAL when finalized manuscript is uploade
 });
 
 it('transitions to READY_FOR_PUBLICATION when author approves finalized manuscript', function () {
-    $author = User::factory()->create(['email_verified_at' => now()]);
+    $author = User::factory()->create([
+        'email_verified_at' => now(),
+        'role' => 'author',
+    ]);
     $author->assignRole('author');
 
     $manuscript = Manuscript::factory()->create([

@@ -13,6 +13,7 @@ beforeEach(function () {
     $this->manuscript = Manuscript::factory()->create([
         'user_id' => $this->author->id,
         'doi' => '10.1234/test.2025.001',
+        'status' => \App\ManuscriptStatus::ACCEPTED, // Set to accepted for proof sending
     ]);
 });
 

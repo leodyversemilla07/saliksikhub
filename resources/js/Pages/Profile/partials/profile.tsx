@@ -39,9 +39,13 @@ interface PageProps extends Record<string, unknown> {
 export default function ProfileUpdate({
     mustVerifyEmail,
     status,
+    expertises = [],
+    userExpertises = [],
 }: {
     mustVerifyEmail: boolean;
     status?: string;
+    expertises?: { id: number; name: string }[];
+    userExpertises?: number[];
 }) {
     const user = usePage<PageProps>().props.auth.user;
     const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -268,6 +272,34 @@ export default function ProfileUpdate({
                                             </SelectContent>
                                         </Select>
                                         {errors.country && <FieldError>{errors.country}</FieldError>}
+                                    </div>
+
+                                    {/* Expertise */}
+                                    <div className="grid gap-3">
+                                        <FieldLabel>Expertise</FieldLabel>
+                                        <div className="border rounded-md p-4 h-48 overflow-y-auto space-y-2">
+                                            {expertises.length > 0 ? expertises.map((expertise) => (
+                                                <div key={expertise.id} className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id={`expertise-${expertise.id}`}
+                                                        name="expertises[]"
+                                                        value={expertise.id}
+                                                        defaultChecked={userExpertises.includes(expertise.id)}
+                                                    />
+                                                    <label
+                                                        htmlFor={`expertise-${expertise.id}`}
+                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                    >
+                                                        {expertise.name}
+                                                    </label>
+                                                </div>
+                                            )) : (
+                                                <p className="text-sm text-muted-foreground">No expertise tags available.</p>
+                                            )}
+                                        </div>
+                                        <FieldDescription>
+                                            Select your areas of expertise for better manuscript matching
+                                        </FieldDescription>
                                     </div>
 
                                     <Separator />

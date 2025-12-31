@@ -31,7 +31,8 @@
  * @module components/site-footer
  * @see {@link SiteHeader} for the corresponding header component
  */
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 import { FaFacebook, FaInstagram, FaXTwitter, FaLinkedin, FaYoutube, FaOrcid } from 'react-icons/fa6';
 import { LuMail, LuMapPin, LuPhone, LuExternalLink, LuBookOpen, LuFileText, LuUsers, LuArchive, LuInfo, LuMessageSquare } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
@@ -69,7 +70,21 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     const currentYear = new Date().getFullYear();
+
+    const journalName = currentJournal?.name || 'Saliksikhub';
+    const journalDescription = currentJournal?.description || 'A peer-reviewed, open-access journal dedicated to publishing high-quality research across multiple disciplines. Committed to advancing knowledge and fostering academic excellence.';
+    const journalLogo = currentJournal?.logo_url || 'https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png';
+    const institutionName = currentInstitution?.name || 'Mindoro State University';
+    const institutionAddress = 'Calapan City, Oriental Mindoro\nPhilippines'; // Fallback as we don't have address in Institution type yet
+    const contactEmail = currentInstitution?.contact_email || 'journal@minsu.edu.ph';
+    const contactPhone = '+63 (43) XXX-XXXX'; // Fallback
+    
+    // Check if settings has specific values if needed, otherwise use defaults
+    const issn = currentJournal?.issn || '2024-XXXX';
+    const frequency = 'Bi-annual'; // This could be in settings
+    const language = 'English'; // This could be in settings
 
     return (
         <footer className="bg-muted/30 border-t">
@@ -80,20 +95,18 @@ export default function Footer() {
                     <div className="lg:col-span-1">
                         <Link href={home.url()} className="inline-flex items-center gap-3 mb-6">
                             <img
-                                src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                                src={journalLogo}
                                 className="h-12 w-auto"
-                                alt="MinSU Research Journal"
+                                alt={journalName}
                             />
                             <div>
-                                <h3 className="text-lg font-bold text-foreground">Saliksikhub</h3>
+                                <h3 className="text-lg font-bold text-foreground">{journalName}</h3>
                                 <p className="text-xs text-muted-foreground">Research Journal</p>
                             </div>
                         </Link>
 
                         <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                            A peer-reviewed, open-access journal dedicated to publishing high-quality research
-                            across multiple disciplines. Committed to advancing knowledge and fostering
-                            academic excellence.
+                            {journalDescription}
                         </p>
 
                         {/* Journal Metrics */}
@@ -102,15 +115,15 @@ export default function Footer() {
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">ISSN (Online)</span>
-                                    <span className="font-mono text-foreground">2024-XXXX</span>
+                                    <span className="font-mono text-foreground">{issn}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Frequency</span>
-                                    <span className="text-foreground">Bi-annual</span>
+                                    <span className="text-foreground">{frequency}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Language</span>
-                                    <span className="text-foreground">English</span>
+                                    <span className="text-foreground">{language}</span>
                                 </div>
                             </div>
                         </div>
@@ -194,25 +207,24 @@ export default function Footer() {
                         <div className="space-y-4 mb-8">
                             <div className="flex items-start gap-3">
                                 <LuMapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                <div className="text-sm text-muted-foreground">
-                                    Mindoro State University<br />
-                                    Calapan City, Oriental Mindoro<br />
-                                    Philippines
+                                <div className="text-sm text-muted-foreground whitespace-pre-line">
+                                    {institutionName}<br />
+                                    {institutionAddress}
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <LuMail className="h-5 w-5 text-primary shrink-0" />
                                 <a
-                                    href="mailto:journal@minsu.edu.ph"
+                                    href={`mailto:${contactEmail}`}
                                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                                 >
-                                    journal@minsu.edu.ph
+                                    {contactEmail}
                                 </a>
                             </div>
                             <div className="flex items-center gap-3">
                                 <LuPhone className="h-5 w-5 text-primary shrink-0" />
                                 <span className="text-sm text-muted-foreground">
-                                    +63 (43) XXX-XXXX
+                                    {contactPhone}
                                 </span>
                             </div>
                         </div>
@@ -270,7 +282,7 @@ export default function Footer() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                            <span>© {currentYear} Mindoro State University. All rights reserved.</span>
+                            <span>© {currentYear} {institutionName}. All rights reserved.</span>
                             <span className="hidden sm:inline">•</span>
                             <span>Powered by Saliksikhub</span>
                         </div>

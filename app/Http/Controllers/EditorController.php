@@ -904,6 +904,8 @@ class EditorController extends Controller
                     'name' => $reviewer->firstname.' '.$reviewer->lastname,
                     'email' => $reviewer->email,
                     'affiliation' => $reviewer->affiliation,
+                    'expertises' => $reviewer->expertises->pluck('name'),
+                    'relevance_score' => $reviewer->relevance_score ?? 0,
                     'completed_reviews' => $metrics['completed_reviews'],
                     'average_review_time_days' => $metrics['average_review_time_days'],
                     'acceptance_rate' => $metrics['acceptance_rate'],

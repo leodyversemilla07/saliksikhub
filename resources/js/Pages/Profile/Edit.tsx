@@ -9,7 +9,14 @@ import { cn } from '@/lib/utils';
 export default function Edit({
     mustVerifyEmail,
     status,
-}: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
+    expertises,
+    userExpertises,
+}: PageProps<{
+    mustVerifyEmail: boolean;
+    status?: string;
+    expertises?: { id: number; name: string }[];
+    userExpertises?: number[];
+}>) {
     const [activeSection, setActiveSection] = useState('profile');
 
     const breadcrumbItems = [
@@ -41,6 +48,8 @@ export default function Edit({
                 <UpdateProfileInformationForm
                     mustVerifyEmail={mustVerifyEmail}
                     status={status}
+                    expertises={expertises}
+                    userExpertises={userExpertises}
                 />
             );
         }

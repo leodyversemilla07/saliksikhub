@@ -32,7 +32,7 @@ class ProofReviewRequired extends Notification implements ShouldQueue
             ->line('**Title:** '.$this->manuscript->title)
             ->line('**Proof Round:** '.$this->proof->proof_round)
             ->line('Please review the proofs carefully and approve them or request corrections within 48-72 hours.')
-            ->action('Review Proofs', route('manuscripts.proofs.show', [$this->manuscript, $this->proof]))
+            ->action('Review Proofs', url('/author/manuscripts'))
             ->line('Thank you for your prompt attention to this matter.');
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Expertise;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +24,8 @@ class ProfileController extends Controller
         return Inertia::render('profile/edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'expertises' => Expertise::all(),
+            'userExpertises' => $request->user()->expertises->pluck('id'),
         ]);
     }
 
@@ -75,6 +78,10 @@ class ProfileController extends Controller
         }
 
         $user->save();
+
+        if (isset($validated['expertises'])) {
+            $user->expertises()->sync($validated['expertises']);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

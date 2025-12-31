@@ -49,6 +49,8 @@ class ProfileUpdateRequest extends FormRequest
             'notifications' => ['nullable', 'boolean'],
             'review_requests' => ['nullable', 'boolean'],
             'email_notification_enabled' => ['nullable', 'boolean'],
+            'expertises' => ['nullable', 'array'],
+            'expertises.*' => ['exists:expertises,id'],
         ];
     }
 

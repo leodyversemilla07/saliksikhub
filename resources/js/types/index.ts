@@ -41,6 +41,7 @@ export interface Institution {
     logo_path?: string | null;
     logo_url?: string | null;
     website?: string | null;
+    contact_email?: string | null;
 }
 
 export interface Journal {

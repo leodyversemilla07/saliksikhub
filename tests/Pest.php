@@ -62,10 +62,10 @@ beforeEach(function () {
     app()->instance('currentJournal', $journal);
     app()->instance('currentInstitution', $institution);
 
-    // For tests, we DON'T set the team ID so roles work globally
-    // This allows tests to work without complex team scoping setup
-    // In production, the middleware will set the proper team ID
-    setPermissionsTeamId(null);
+    // For tests, we use team ID 0 for global roles to avoid NOT NULL constraints in SQLite
+    // while maintaining a "global" behavior for standard role checks.
+    // In production, the middleware will set the proper team ID for journals.
+    setPermissionsTeamId(0);
 });
 
 function something()

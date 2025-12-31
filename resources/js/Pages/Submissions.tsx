@@ -1,7 +1,7 @@
 import Footer from '@/components/site-footer';
 import Header from '@/components/site-header';
-import { PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { PageProps, JournalSettings } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     CheckCircle, FileText, Users, Clock, BookOpen,
     Calendar, ArrowRight, Download, Info, CheckSquare,
@@ -11,286 +11,314 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
-const guidelines = [
-    {
-        category: "General Requirements",
-        items: [
-            "Original research: All submissions must be original and not previously published or under consideration elsewhere",
-            "Language: Manuscripts must be written in clear, concise English with a Grammarly Rating of 95% or more",
-            "Plagiarism Check: Submissions must pass plagiarism detection with a Similarity Index of no more than 10%",
-            "Format: Use double-spacing, 12-point Times New Roman font, and 1-inch margins",
-            "Ethical Compliance: Include necessary ethical approvals and informed consent statements"
-        ]
-    },
-    {
-        category: "Manuscript Structure",
-        items: [
-            "Title: Clear, concise, and representative of the content (max 20 words)",
-            "Abstract: Structured abstract of 250 words covering objective, methodology, results, and conclusions",
-            "Keywords: 4-6 keywords that best describe your research and align with the journal's thematic areas",
-            "Introduction: Clear problem statement, objectives, and significance within the relevant thematic context",
-            "Literature Review: Comprehensive review showing familiarity with current research in the field",
-            "Methodology: Detailed research approach with clear data collection and analysis procedures",
-            "Results: Clear presentation of findings with appropriate tables and figures",
-            "Discussion: Interpretation of results in context of research questions and existing literature",
-            "Conclusion: Summary of key findings, implications, and recommendations"
-        ]
-    },
-    {
-        category: "References & Citations",
-        items: [
-            "Format: Use APA 7th edition style for all citations and references",
-            "Citations: Ensure all in-text citations are included in the reference list and vice versa",
-            "DOIs: Include DOIs for all references where available",
-            "Recent Sources: Include relevant recent literature (last 5 years) where appropriate"
-        ]
-    },
-    {
-        category: "Ethical Considerations",
-        items: [
-            "Research Ethics: Include statement on ethical approval and informed consent where applicable",
-            "Conflict of Interest: Provide a clear statement disclosing any potential conflicts of interest",
-            "Funding: Acknowledge all funding sources and their role in the research",
-            "Permissions: Obtain and document permission for use of copyrighted material",
-            "Indigenous Knowledge: Follow ethical guidelines for research involving indigenous communities"
-        ]
-    }
-];
+interface ResourceCardProps {
+    title: string;
+    description: string;
+    fileType: string;
+    fileSize: string;
+}
 
-const steps = [
-    {
-        title: "Prepare Your Manuscript",
-        description: "Format your manuscript according to our guidelines and prepare all required files.",
-        icon: FileText,
-        details: [
-            "Follow our formatting requirements (APA 7th edition style)",
-            "Prepare a blinded manuscript version with no author information",
-            "Ensure high-quality tables and figures (300 dpi minimum for images)",
-            "Compile supplementary materials if applicable"
-        ]
-    },
-    {
-        title: "Account Registration",
-        description: "Create an account on our online submission system if you haven't already.",
-        icon: Users,
-        details: [
-            "Complete your profile with academic affiliation",
-            "Add ORCID identifier if available",
-            "Select relevant expertise keywords",
-            "Register as an author"
-        ]
-    },
-    {
-        title: "Manuscript Submission",
-        description: "Log in to the submission system and upload your manuscript and related files.",
-        icon: FileText,
-        details: [
-            "Complete the submission metadata form",
-            "Upload main manuscript file (MS Word or LaTeX)",
-            "Add all co-authors with correct affiliations",
-            "Submit cover letter addressed to the Editor-in-Chief"
-        ]
-    },
-    {
-        title: "Editorial Screening",
-        description: "Our editorial team will review your submission for completeness and fit with journal scope.",
-        icon: Search,
-        details: [
-            "Initial plagiarism check (max 10% similarity)",
-            "Grammar check (min 95% Grammarly rating)",
-            "Scope and relevance assessment",
-            "Ethical compliance verification"
-        ]
-    },
-    {
-        title: "Peer Review Process",
-        description: "Submissions that pass initial screening are sent to expert reviewers in your field.",
-        icon: Users,
-        details: [
-            "Double-blind peer review by at least three field experts",
-            "Evaluation of methodology, results, and conclusions",
-            "Assessment of academic contribution",
-            "Duration: 3 months to 1 year"
-        ]
-    },
-    {
-        title: "Editorial Decision",
-        description: "Based on reviewer feedback, the editor will make a decision on your manuscript.",
-        icon: CheckSquare,
-        details: [
-            "Accept without revisions (rare)",
-            "Accept with minor revisions",
-            "Major revisions required",
-            "Reject but encourage resubmission",
-            "Reject"
-        ]
-    },
-    {
-        title: "Revision Process",
-        description: "If revisions are requested, you'll have time to address reviewer comments.",
-        icon: Edit3,
-        details: [
-            "Typically 2-4 weeks for revisions",
-            "Must submit point-by-point response to reviewers",
-            "Highlight changes in revised manuscript",
-            "May undergo additional review rounds if needed"
-        ]
-    },
-    {
-        title: "Final Decision",
-        description: "After reviewing revisions, the editor will make a final decision on publication.",
-        icon: Award,
-        details: [
-            "Final checks for compliance with requirements",
-            "Copyediting suggestions if needed",
-            "Final approval for publication",
-            "Assignment to upcoming issue"
-        ]
-    },
-    {
-        title: "Publication",
-        description: "Accepted manuscripts are prepared for publication in the next available issue.",
-        icon: BookOpen,
-        details: [
-            "Copyediting and typesetting",
-            "Author proof review (48-hour turnaround)",
-            "DOI assignment",
-            "Online publication ahead of print"
-        ]
-    },
-];
-
-const keyInfo = [
-    {
-        title: "Regular Issue",
-        subtitle: "Next submission deadline",
-        date: "January 15, 2025",
-        icon: Calendar
-    },
-    {
-        title: "Review Duration",
-        subtitle: "Average review timeline",
-        date: "3-12 months",
-        icon: Clock
-    },
-    {
-        title: "Processing Fee",
-        subtitle: "Publication charges",
-        date: "No fees",
-        icon: BookOpen
-    },
-    {
-        title: "Publication",
-        subtitle: "After acceptance",
-        date: "Annually / Next available issue",
-        icon: BookOpen
-    }
-];
-
-const articleTypes = [
-    {
-        name: "Research Articles",
-        description: "Original research within the journal's thematic areas, including Mangyan studies, agriculture, biodiversity, technology, and sustainable development",
-        wordCount: "5,000-8,000 words",
-        structure: "Abstract, Introduction, Literature Review, Methodology, Results, Discussion, Conclusion"
-    },
-    {
-        name: "Review Articles",
-        description: "Comprehensive reviews of literature in key areas such as indigenous knowledge systems, conservation strategies, or technological innovations",
-        wordCount: "6,000-10,000 words",
-        structure: "Abstract, Introduction, Methodology, Literature Analysis, Discussion, Conclusion"
-    },
-    {
-        name: "Case Studies",
-        description: "Detailed analyses of specific cases related to local development, conservation efforts, or community initiatives",
-        wordCount: "3,000-5,000 words",
-        structure: "Abstract, Introduction, Case Background, Analysis, Discussion, Conclusion"
-    },
-    {
-        name: "Short Communications",
-        description: "Brief reports of significant findings in any of the journal's thematic areas warranting rapid publication",
-        wordCount: "2,000-3,000 words",
-        structure: "Abstract, Introduction, Methods, Results & Discussion, Conclusion"
-    }
-];
-
-const thematicAreas = [
-    {
-        title: "Mangyan and Multidisciplinary Indigenous Studies",
-        description: "Research focusing on the Mangyan peoples of Mindoro, as well as broader studies concerning Indigenous communities, cultures, rights, and knowledge systems."
-    },
-    {
-        title: "Agriculture, Aquaculture, and Agri-Innovation",
-        description: "Studies on sustainable farming practices, fisheries management, food security, agricultural technology, and innovations in the agri-food sector."
-    },
-    {
-        title: "Halcon and Highlands Biodiversity Conservation",
-        description: "Research related to the unique ecosystems of Mount Halcon and other highland areas, focusing on biodiversity assessment, conservation strategies, and environmental protection."
-    },
-    {
-        title: "AI, Automation, and Advanced Technologies",
-        description: "Exploration of artificial intelligence, machine learning, automation, robotics, data science, and other emerging technologies and their applications across various sectors."
-    },
-    {
-        title: "Livelihood, Local Economy, and Sustainable Enterprises",
-        description: "Studies on community development, poverty alleviation, local economic growth, entrepreneurship, sustainable business models, and social enterprises."
-    },
-    {
-        title: "Tamaraw and Terrestrial Wildlife Protection",
-        description: "Research dedicated to the conservation of the endangered Tamaraw, other terrestrial wildlife, habitat management, and human-wildlife interactions."
-    },
-    {
-        title: "Arts, Humanities, and Anthropological Studies",
-        description: "Contributions exploring culture, history, language, literature, philosophy, ethics, visual and performing arts, and anthropological perspectives on human societies."
-    },
-    {
-        title: "Naujan Lake and National Resources Management",
-        description: "Research concerning the ecology, conservation, and sustainable management of Naujan Lake National Park and other vital natural resources (water, forests, minerals)."
-    },
-    {
-        title: "Advancement in Health, Human Security, and Holistic Well-being",
-        description: "Studies focusing on public health, healthcare systems, disease prevention, community health, human security challenges, mental health, and approaches to holistic well-being."
-    }
-];
-
-const reviewCriteria = [
-    {
-        stage: "Initial Screening",
-        criteria: [
-            "Scope and Relevance: Alignment with the multidisciplinary scope of Daluyang Dunong.",
-            "Basic Requirements: Adherence to fundamental author guidelines (manuscript structure, language).",
-            "Plagiarism Check: Similarity Index of no more than 10%.",
-            "Grammar Check: Grammarly Rating of 95% or more."
-        ]
-    },
-    {
-        stage: "Peer Review Evaluation",
-        criteria: [
-            "Originality of the contribution",
-            "Significance of the contribution",
-            "Soundness of methodology and data analysis",
-            "Clarity of presentation and logical structure",
-            "Validity of conclusions and implications",
-            "Ethical soundness and research integrity"
-        ]
-    },
-    {
-        stage: "Decision Outcomes",
-        criteria: [
-            "Accept without revisions",
-            "Accept with minor revisions",
-            "Accept with major revisions",
-            "Reject with the option to resubmit",
-            "Reject"
-        ]
-    }
-];
+function ResourceCard({ title, description, fileType, fileSize }: ResourceCardProps) {
+    return (
+        <Card className="hover:shadow-md transition-all">
+            <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-2">{title}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{description}</p>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                        <Badge variant="secondary" className="text-xs">{fileType}</Badge>
+                        <span className="ml-2">{fileSize}</span>
+                    </div>
+                    <button className="flex items-center text-primary hover:text-primary/80 transition-colors">
+                        <Download className="h-4 w-4 mr-1" />
+                        <span className="text-sm font-medium">Download</span>
+                    </button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
 
 export default function Submissions({ auth }: PageProps) {
+    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalAbbreviation = currentJournal?.abbreviation ?? 'Journal';
+    const institutionName = currentInstitution?.name ?? 'Institution';
+    const contactEmail = currentInstitution?.contact_email ?? 'submissions@example.com';
+    const settings = currentJournal?.settings as JournalSettings | undefined;
+
+    // Use settings or defaults for dynamic content
+    const guidelines = [
+        {
+            category: "General Requirements",
+            items: [
+                "Original research: All submissions must be original and not previously published or under consideration elsewhere",
+                "Language: Manuscripts must be written in clear, concise English with a Grammarly Rating of 95% or more",
+                "Plagiarism Check: Submissions must pass plagiarism detection with a Similarity Index of no more than 10%",
+                "Format: Use double-spacing, 12-point Times New Roman font, and 1-inch margins",
+                "Ethical Compliance: Include necessary ethical approvals and informed consent statements"
+            ]
+        },
+        {
+            category: "Manuscript Structure",
+            items: [
+                "Title: Clear, concise, and representative of the content (max 20 words)",
+                "Abstract: Structured abstract of 250 words covering objective, methodology, results, and conclusions",
+                "Keywords: 4-6 keywords that best describe your research and align with the journal's thematic areas",
+                "Introduction: Clear problem statement, objectives, and significance within the relevant thematic context",
+                "Literature Review: Comprehensive review showing familiarity with current research in the field",
+                "Methodology: Detailed research approach with clear data collection and analysis procedures",
+                "Results: Clear presentation of findings with appropriate tables and figures",
+                "Discussion: Interpretation of results in context of research questions and existing literature",
+                "Conclusion: Summary of key findings, implications, and recommendations"
+            ]
+        },
+        {
+            category: "References & Citations",
+            items: [
+                "Format: Use APA 7th edition style for all citations and references",
+                "Citations: Ensure all in-text citations are included in the reference list and vice versa",
+                "DOIs: Include DOIs for all references where available",
+                "Recent Sources: Include relevant recent literature (last 5 years) where appropriate"
+            ]
+        },
+        {
+            category: "Ethical Considerations",
+            items: [
+                "Research Ethics: Include statement on ethical approval and informed consent where applicable",
+                "Conflict of Interest: Provide a clear statement disclosing any potential conflicts of interest",
+                "Funding: Acknowledge all funding sources and their role in the research",
+                "Permissions: Obtain and document permission for use of copyrighted material",
+                "Indigenous Knowledge: Follow ethical guidelines for research involving indigenous communities"
+            ]
+        }
+    ];
+
+    const steps = [
+        {
+            title: "Prepare Your Manuscript",
+            description: "Format your manuscript according to our guidelines and prepare all required files.",
+            icon: FileText,
+            details: [
+                "Follow our formatting requirements (APA 7th edition style)",
+                "Prepare a blinded manuscript version with no author information",
+                "Ensure high-quality tables and figures (300 dpi minimum for images)",
+                "Compile supplementary materials if applicable"
+            ]
+        },
+        {
+            title: "Account Registration",
+            description: "Create an account on our online submission system if you haven't already.",
+            icon: Users,
+            details: [
+                "Complete your profile with academic affiliation",
+                "Add ORCID identifier if available",
+                "Select relevant expertise keywords",
+                "Register as an author"
+            ]
+        },
+        {
+            title: "Manuscript Submission",
+            description: "Log in to the submission system and upload your manuscript and related files.",
+            icon: FileText,
+            details: [
+                "Complete the submission metadata form",
+                "Upload main manuscript file (MS Word or LaTeX)",
+                "Add all co-authors with correct affiliations",
+                "Submit cover letter addressed to the Editor-in-Chief"
+            ]
+        },
+        {
+            title: "Editorial Screening",
+            description: "Our editorial team will review your submission for completeness and fit with journal scope.",
+            icon: Search,
+            details: [
+                "Initial plagiarism check (max 10% similarity)",
+                "Grammar check (min 95% Grammarly rating)",
+                "Scope and relevance assessment",
+                "Ethical compliance verification"
+            ]
+        },
+        {
+            title: "Peer Review Process",
+            description: "Submissions that pass initial screening are sent to expert reviewers in your field.",
+            icon: Users,
+            details: [
+                "Double-blind peer review by at least three field experts",
+                "Evaluation of methodology, results, and conclusions",
+                "Assessment of academic contribution",
+                "Duration: 3 months to 1 year"
+            ]
+        },
+        {
+            title: "Editorial Decision",
+            description: "Based on reviewer feedback, the editor will make a decision on your manuscript.",
+            icon: CheckSquare,
+            details: [
+                "Accept without revisions (rare)",
+                "Accept with minor revisions",
+                "Major revisions required",
+                "Reject but encourage resubmission",
+                "Reject"
+            ]
+        },
+        {
+            title: "Revision Process",
+            description: "If revisions are requested, you'll have time to address reviewer comments.",
+            icon: Edit3,
+            details: [
+                "Typically 2-4 weeks for revisions",
+                "Must submit point-by-point response to reviewers",
+                "Highlight changes in revised manuscript",
+                "May undergo additional review rounds if needed"
+            ]
+        },
+        {
+            title: "Final Decision",
+            description: "After reviewing revisions, the editor will make a final decision on publication.",
+            icon: Award,
+            details: [
+                "Final checks for compliance with requirements",
+                "Copyediting suggestions if needed",
+                "Final approval for publication",
+                "Assignment to upcoming issue"
+            ]
+        },
+        {
+            title: "Publication",
+            description: "Accepted manuscripts are prepared for publication in the next available issue.",
+            icon: BookOpen,
+            details: [
+                "Copyediting and typesetting",
+                "Author proof review (48-hour turnaround)",
+                "DOI assignment",
+                "Online publication ahead of print"
+            ]
+        },
+    ];
+
+    const keyInfo = [
+        {
+            title: "Regular Issue",
+            subtitle: "Next submission deadline",
+            date: "January 15, 2025",
+            icon: Calendar
+        },
+        {
+            title: "Review Duration",
+            subtitle: "Average review timeline",
+            date: "3-12 months",
+            icon: Clock
+        },
+        {
+            title: "Processing Fee",
+            subtitle: "Publication charges",
+            date: "No fees",
+            icon: BookOpen
+        },
+        {
+            title: "Publication",
+            subtitle: "After acceptance",
+            date: "Annually / Next available issue",
+            icon: BookOpen
+        }
+    ];
+
+    // Fallback article types if not provided in settings
+    const defaultArticleTypes = [
+        {
+            name: "Research Articles",
+            description: `Original research within the journal's thematic areas.`,
+            wordCount: "5,000-8,000 words",
+            structure: "Abstract, Introduction, Literature Review, Methodology, Results, Discussion, Conclusion"
+        },
+        {
+            name: "Review Articles",
+            description: "Comprehensive reviews of literature in key areas related to the journal's scope.",
+            wordCount: "6,000-10,000 words",
+            structure: "Abstract, Introduction, Methodology, Literature Analysis, Discussion, Conclusion"
+        },
+        {
+            name: "Case Studies",
+            description: "Detailed analyses of specific cases related to local development, conservation efforts, or community initiatives",
+            wordCount: "3,000-5,000 words",
+            structure: "Abstract, Introduction, Case Background, Analysis, Discussion, Conclusion"
+        },
+        {
+            name: "Short Communications",
+            description: "Brief reports of significant findings in any of the journal's thematic areas warranting rapid publication",
+            wordCount: "2,000-3,000 words",
+            structure: "Abstract, Introduction, Methods, Results & Discussion, Conclusion"
+        }
+    ];
+
+    const articleTypes = settings?.article_types as any[] || defaultArticleTypes;
+
+    // Fallback thematic areas if not provided in settings
+    const defaultThematicAreas = [
+        {
+            title: "Social Sciences and Humanities",
+            description: "Research exploring culture, history, language, literature, philosophy, ethics, and anthropological perspectives."
+        },
+        {
+            title: "Natural Sciences and Ecology",
+            description: "Studies on biodiversity, conservation, environmental protection, and natural resource management."
+        },
+        {
+            title: "Agriculture and Food Security",
+            description: "Research on sustainable farming practices, fisheries management, food security, and agricultural technology."
+        },
+        {
+            title: "Technology and Innovation",
+            description: "Exploration of emerging technologies, automation, data science, and their applications."
+        },
+        {
+            title: "Health and Well-being",
+            description: "Studies focusing on public health, healthcare systems, disease prevention, and community health."
+        }
+    ];
+
+    const thematicAreas = settings?.disciplines?.map(d => ({ title: d, description: `Research related to ${d}` })) 
+        ?? (settings?.thematic_areas as any[]) 
+        ?? defaultThematicAreas;
+
+    const reviewCriteria = [
+        {
+            stage: "Initial Screening",
+            criteria: [
+                `Scope and Relevance: Alignment with the multidisciplinary scope of ${journalName}.`,
+                "Basic Requirements: Adherence to fundamental author guidelines (manuscript structure, language).",
+                "Plagiarism Check: Similarity Index of no more than 10%.",
+                "Grammar Check: Grammarly Rating of 95% or more."
+            ]
+        },
+        {
+            stage: "Peer Review Evaluation",
+            criteria: [
+                "Originality of the contribution",
+                "Significance of the contribution",
+                "Soundness of methodology and data analysis",
+                "Clarity of presentation and logical structure",
+                "Validity of conclusions and implications",
+                "Ethical soundness and research integrity"
+            ]
+        },
+        {
+            stage: "Decision Outcomes",
+            criteria: [
+                "Accept without revisions",
+                "Accept with minor revisions",
+                "Accept with major revisions",
+                "Reject with the option to resubmit",
+                "Reject"
+            ]
+        }
+    ];
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <Head title="Submission Guidelines | Daluyang Dunong" />
+            <Head title={`Submission Guidelines | ${journalName}`} />
             <Header auth={auth} />
 
             <main className="grow">
@@ -317,7 +345,7 @@ export default function Submissions({ auth }: PageProps) {
                             </h1>
 
                             <p className="text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-                                Submit your research to Daluyang Dunong Multidisciplinary Research Journal.
+                                Submit your research to {journalName}.
                                 Follow our comprehensive guidelines for a smooth submission process.
                             </p>
                         </div>
@@ -389,10 +417,10 @@ export default function Submissions({ auth }: PageProps) {
                                         <h3 className="text-lg font-semibold mb-4">Journal Overview</h3>
                                         <div className="space-y-4 text-muted-foreground">
                                             <p>
-                                                DDMRJ serves as a primary multidisciplinary channel for disseminating high-quality original research and scholarly communications. It aims to nurture vibrant academic dialogue, encourage cross-disciplinary approaches, and advance knowledge addressing issues of local, national (Philippines), and global significance, ensuring impact and rigor through robust peer review.
+                                                {journalName} ({journalAbbreviation}) serves as a primary multidisciplinary channel for disseminating high-quality original research and scholarly communications. It aims to nurture vibrant academic dialogue, encourage cross-disciplinary approaches, and advance knowledge addressing issues of local, national, and global significance, ensuring impact and rigor through robust peer review.
                                             </p>
                                             <p>
-                                                Daluyang Dunong welcomes submissions of original research articles, review papers, and case studies that fall within its broad multidisciplinary mandate. The journal is particularly interested in contributions addressing, but not limited to, the following key thematic areas:
+                                                {journalName} welcomes submissions of original research articles, review papers, and case studies that fall within its broad multidisciplinary mandate. The journal is particularly interested in contributions addressing, but not limited to, the following key thematic areas:
                                             </p>
                                         </div>
                                     </div>
@@ -609,7 +637,7 @@ export default function Submissions({ auth }: PageProps) {
                             <Card>
                                 <CardContent className="space-y-4 text-muted-foreground">
                                     <p>This journal is published annually but may also feature special issues dedicated to specific themes and emerging research areas.</p>
-                                    <p>There are no processing and publication fees for accepted articles, as the journal is supported by the MinSU Research, Development and Extension Unit.</p>
+                                    <p>There are no processing and publication fees for accepted articles, as the journal is supported by the {institutionName} Research, Development and Extension Unit.</p>
                                     <p>We invite you to submit your work and participate in building this dynamic channel for knowledge dissemination.</p>
                                 </CardContent>
                             </Card>
@@ -702,10 +730,10 @@ export default function Submissions({ auth }: PageProps) {
                                                         <h3 className="text-lg font-semibold text-foreground">Editorial Office</h3>
                                                         <p className="text-muted-foreground mt-1">For questions about manuscript submission and status</p>
                                                         <a
-                                                            href="mailto:submissions@ddmrj.minsu.edu.ph"
+                                                            href={`mailto:${contactEmail}`}
                                                             className="inline-flex items-center mt-2 text-primary hover:text-primary/80 font-medium"
                                                         >
-                                                            submissions@ddmrj.minsu.edu.ph
+                                                            {contactEmail}
                                                             <ArrowRight className="ml-1 h-4 w-4" />
                                                         </a>
                                                     </div>
@@ -766,33 +794,5 @@ export default function Submissions({ auth }: PageProps) {
             </main>
             <Footer />
         </div>
-    );
-}
-
-interface ResourceCardProps {
-    title: string;
-    description: string;
-    fileType: string;
-    fileSize: string;
-}
-
-function ResourceCard({ title, description, fileType, fileSize }: ResourceCardProps) {
-    return (
-        <Card className="hover:shadow-md transition-all">
-            <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-2">{title}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{description}</p>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                        <Badge variant="secondary" className="text-xs">{fileType}</Badge>
-                        <span className="ml-2">{fileSize}</span>
-                    </div>
-                    <button className="flex items-center text-primary hover:text-primary/80 transition-colors">
-                        <Download className="h-4 w-4 mr-1" />
-                        <span className="text-sm font-medium">Download</span>
-                    </button>
-                </div>
-            </CardContent>
-        </Card>
     );
 }

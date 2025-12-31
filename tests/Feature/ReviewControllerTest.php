@@ -9,13 +9,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->reviewer = User::factory()->create();
+    $this->reviewer = User::factory()->create(['role' => 'reviewer']);
     $this->reviewer->assignRole('reviewer');
 
-    $this->author = User::factory()->create();
+    $this->author = User::factory()->create(['role' => 'author']);
     $this->author->assignRole('author');
 
-    $this->editor = User::factory()->create();
+    $this->editor = User::factory()->create(['role' => 'associate_editor']);
     $this->editor->assignRole('associate_editor');
 
     $this->manuscript = Manuscript::factory()->create([
@@ -53,7 +53,7 @@ test('reviewer can view specific review', function () {
 });
 
 test('reviewer cannot view another reviewers review', function () {
-    $otherReviewer = User::factory()->create();
+    $otherReviewer = User::factory()->create(['role' => 'reviewer']);
     $otherReviewer->assignRole('reviewer');
 
     $this->actingAs($otherReviewer)

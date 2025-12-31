@@ -58,6 +58,7 @@ class HandleInertiaRequests extends Middleware
                 'logo_path' => $institution->logo_path,
                 'logo_url' => $institution->logo_path ? asset('storage/'.$institution->logo_path) : null,
                 'website' => $institution->website,
+                'contact_email' => $institution->contact_email,
             ] : null,
         ];
     }

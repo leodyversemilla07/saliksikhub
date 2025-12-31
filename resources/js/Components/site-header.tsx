@@ -268,14 +268,14 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                         >
                             <div className="relative">
                                 <img
-                                    src={currentJournal?.logo_url ?? 'https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png'}
+                                    src={currentJournal?.logo_url ?? currentInstitution?.logo_url ?? '/images/logo.png'}
                                     className="h-12 w-auto transition-transform group-hover:scale-105"
-                                    alt={currentJournal?.name ?? 'Research Journal'}
+                                    alt={currentJournal?.name ?? currentInstitution?.name ?? 'Research Journal'}
                                 />
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-lg font-bold text-foreground leading-tight">
-                                    {currentJournal?.abbreviation ?? currentJournal?.name ?? 'Saliksikhub'}
+                                    {currentJournal?.abbreviation ?? currentJournal?.name ?? currentInstitution?.abbreviation ?? currentInstitution?.name ?? 'Saliksikhub'}
                                 </h1>
                                 <p className="text-xs text-muted-foreground">
                                     {currentJournal?.settings?.tagline ?? 'Research Journal Management System'}
