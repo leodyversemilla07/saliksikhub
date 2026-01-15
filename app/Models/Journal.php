@@ -128,12 +128,130 @@ class Journal extends Model
         return $query->where('is_active', true);
     }
 
-    /**
-     * Get a setting value from the settings JSON.
-     */
+/**
+      * Get a setting value from the settings JSON.
+      */
     public function getSetting(string $key, mixed $default = null): mixed
     {
         return data_get($this->settings, $key, $default);
+    }
+
+    /**
+     * Get the journal's publication frequency.
+     */
+    public function getPublicationFrequencyAttribute(): string
+    {
+        return $this->settings['publication_frequency'] ?? $this->publication_frequency ?? 'Bi-annual';
+    }
+
+    /**
+     * Get the journal's primary language.
+     */
+    public function getLanguageAttribute(): string
+    {
+        return $this->settings['language'] ?? 'English';
+    }
+
+    /**
+     * Get the journal's contact email.
+     */
+    public function getContactEmailAttribute(): ?string
+    {
+        return $this->settings['contact_email'] ?? null;
+    }
+
+    /**
+     * Get the journal's contact phone.
+     */
+    public function getContactPhoneAttribute(): ?string
+    {
+        return $this->settings['contact_phone'] ?? null;
+    }
+
+    /**
+     * Get the journal's address.
+     */
+    public function getAddressAttribute(): ?string
+    {
+        return $this->settings['address'] ?? null;
+    }
+
+    /**
+     * Check if the journal is open access.
+     */
+    public function getIsOpenAccessAttribute(): bool
+    {
+        return $this->settings['open_access'] ?? true;
+    }
+
+    /**
+     * Check if the journal is peer reviewed.
+     */
+    public function getIsPeerReviewedAttribute(): bool
+    {
+        return $this->settings['peer_reviewed'] ?? true;
+    }
+
+    /**
+     * Get the journal's DOI prefix.
+     */
+    public function getDoiPrefixAttribute(): ?string
+    {
+        return $this->settings['doi_prefix'] ?? null;
+    }
+
+    /**
+     * Get the abstract word limit.
+     */
+    public function getAbstractWordLimitAttribute(): int
+    {
+        return $this->settings['abstract_word_limit'] ?? 500;
+    }
+
+    /**
+     * Get the keyword limit.
+     */
+    public function getKeywordLimitAttribute(): int
+    {
+        return $this->settings['keyword_limit'] ?? 10;
+    }
+
+    /**
+     * Get the manuscript types allowed.
+     */
+    public function getManuscriptTypesAttribute(): array
+    {
+        return $this->settings['manuscript_types'] ?? [
+            'Research Article',
+            'Review Article',
+            'Short Communication',
+            'Case Study',
+            'Letter to the Editor',
+        ];
+    }
+
+    /**
+     * Get the review rounds configuration.
+     */
+    public function getReviewRoundsAttribute(): int
+    {
+        return $this->settings['review_rounds'] ?? 2;
+    }
+
+    /**
+     * Get the reviewer deadline in days.
+     */
+    public function getReviewerDeadlineDaysAttribute(): int
+    {
+        return $this->settings['reviewer_deadline_days'] ?? 21;
+    }
+
+    /**
+     * Get the revision deadline in days.
+     */
+    public function getRevisionDeadlineDaysAttribute(): int
+    {
+        return $this->settings['revision_deadline_days'] ?? 30;
     }
 
     /**

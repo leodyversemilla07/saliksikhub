@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\User;
 use App\ReviewRecommendation;
 use App\ReviewStatus;
+use App\Notifications\ReviewExtensionRequested;
 use Illuminate\Support\Facades\DB;
 
 class ReviewService
@@ -307,9 +308,16 @@ class ReviewService
             DB::beginTransaction();
 
             $review->due_date = $newDueDate;
+            $review->extension_requested = true;
+            $review->extension_reason = $reason;
             $review->save();
 
-            // TODO: Notify editor about extension request
+            // Notify editor about extension request
+            $manuscript = $review->manuscript;
+            $editor = $manuscript->getEditor();
+            if ($editor) {
+                $editor->notify(new ReviewExtensionRequested($review, $newDueDate, $reason));
+            }
 
             DB::commit();
 

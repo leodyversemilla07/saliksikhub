@@ -42,6 +42,9 @@ export interface Institution {
     logo_url?: string | null;
     website?: string | null;
     contact_email?: string | null;
+    contact_phone?: string | null;
+    address?: string | null;
+    settings?: Record<string, unknown> | null;
 }
 
 export interface Journal {

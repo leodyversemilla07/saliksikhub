@@ -85,11 +85,59 @@ class Institution extends Model
         return Storage::url($this->logo_path);
     }
 
-    /**
-     * Scope a query to only include active institutions.
-     */
+/**
+      * Scope a query to only include active institutions.
+      */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the institution's contact phone.
+     */
+    public function getContactPhoneAttribute(): ?string
+    {
+        return $this->settings['contact_phone'] ?? null;
+    }
+
+    /**
+     * Get the institution's address.
+     */
+    public function getAddressAttribute(): ?string
+    {
+        return $this->settings['address'] ?? $this->getRawOriginal('address');
+    }
+
+    /**
+     * Get the institution's ISSN.
+     */
+    public function getIssnAttribute(): ?string
+    {
+        return $this->settings['issn'] ?? null;
+    }
+
+    /**
+     * Get the default journal frequency.
+     */
+    public function getDefaultFrequencyAttribute(): string
+    {
+        return $this->settings['frequency'] ?? 'Bi-annual';
+    }
+
+    /**
+     * Get the default language.
+     */
+    public function getDefaultLanguageAttribute(): string
+    {
+        return $this->settings['language'] ?? 'English';
+    }
+
+    /**
+     * Get a setting value.
+     */
+    public function getSetting(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->settings, $key, $default);
     }
 }

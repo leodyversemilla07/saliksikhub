@@ -77,14 +77,14 @@ export default function Footer() {
     const journalDescription = currentJournal?.description || 'A peer-reviewed, open-access journal dedicated to publishing high-quality research across multiple disciplines. Committed to advancing knowledge and fostering academic excellence.';
     const journalLogo = currentJournal?.logo_url || 'https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png';
     const institutionName = currentInstitution?.name || 'Mindoro State University';
-    const institutionAddress = 'Calapan City, Oriental Mindoro\nPhilippines'; // Fallback as we don't have address in Institution type yet
+    const institutionAddress = currentInstitution?.address || 'Calapan City, Oriental Mindoro\nPhilippines';
     const contactEmail = currentInstitution?.contact_email || 'journal@minsu.edu.ph';
-    const contactPhone = '+63 (43) XXX-XXXX'; // Fallback
-    
+    const contactPhone = currentInstitution?.contact_phone || currentInstitution?.settings?.contact_phone || '+63 (43) 286-XXXX';
+
     // Check if settings has specific values if needed, otherwise use defaults
-    const issn = currentJournal?.issn || '2024-XXXX';
-    const frequency = 'Bi-annual'; // This could be in settings
-    const language = 'English'; // This could be in settings
+    const issn = currentJournal?.issn || currentInstitution?.settings?.issn || '2024-XXXX';
+    const frequency = currentJournal?.settings?.publication_frequency || currentInstitution?.settings?.frequency || 'Bi-annual';
+    const language = currentJournal?.settings?.language || currentInstitution?.settings?.language || 'English';
 
     return (
         <footer className="bg-muted/30 border-t">

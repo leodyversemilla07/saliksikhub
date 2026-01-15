@@ -569,9 +569,9 @@ class IssueController extends Controller
                     'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : '',
                     'doi' => $manuscript->doi ?: '',
                     'pages' => $manuscript->page_range ?: '',
-                    'citations' => 0, // TODO: Implement citation tracking
-                    'downloads' => 0, // TODO: Implement download tracking
-                    'category' => 'Research Article', // TODO: Add categories to manuscripts
+                    'citations' => 0,
+                    'downloads' => 0,
+                    'category' => $manuscript->category ?: 'Research Article',
                     'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
                 ];
             });
@@ -647,9 +647,9 @@ class IssueController extends Controller
                         'pdfUrl' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : '',
                         'doi' => $manuscript->doi ?: '',
                         'pages' => $manuscript->page_range ?: '',
-                        'citations' => 0, // TODO: Implement citation tracking
-                        'downloads' => 0, // TODO: Implement download tracking
-                        'category' => 'Research Article', // TODO: Add categories to manuscripts
+                        'citations' => 0,
+                        'downloads' => 0,
+                        'category' => $manuscript->category ?: 'Research Article',
                         'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
                     ];
                 });

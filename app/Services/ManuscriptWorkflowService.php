@@ -12,12 +12,15 @@ use App\Models\ProofCorrection;
 use App\Models\Review;
 use App\Models\User;
 use App\Notifications\LanguageEditorAssigned;
+use App\Notifications\ManuscriptDecision;
 use App\Notifications\ManuscriptReadyForReview;
+use App\Notifications\ManuscriptRevisionSubmitted;
+use App\Notifications\ManuscriptStatusChanged;
 use App\Notifications\ManuscriptSubmitted;
+use App\Notifications\ManuscriptWithdrawn;
 use App\Notifications\ProductionAssigned;
-use App\ReviewStatus;
-use App\Services\PublicationService;
-use Illuminate\Support\Facades\DB;
+use App\Notifications\AuthorApprovalRequired;
+use App\Notifications\ManuscriptApproved;
 use Illuminate\Support\Facades\Notification;
 
 class ManuscriptWorkflowService
@@ -82,7 +85,12 @@ class ManuscriptWorkflowService
 
             $manuscript->save();
 
-            // TODO: Send notification to author
+            // Send notification to author about screening result
+            $previousStatus = ManuscriptStatus::SUBMITTED->value;
+            $newStatus = $manuscript->status->value;
+            if ($manuscript->author) {
+                $manuscript->author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $newStatus));
+            }
 
             DB::commit();
 
@@ -123,7 +131,16 @@ class ManuscriptWorkflowService
             $manuscript->status = ManuscriptStatus::IN_REVIEW;
             $manuscript->save();
 
-            // TODO: Send review invitations to reviewers
+            // Send review invitations to reviewers
+            $reviewers = User::whereIn('id', $reviewerIds)->get();
+            foreach ($reviewers as $reviewer) {
+                $review = Review::where('manuscript_id', $manuscript->id)
+                    ->where('reviewer_id', $reviewer->id)
+                    ->first();
+                if ($review) {
+                    $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
+                }
+            }
 
             DB::commit();
 
@@ -167,7 +184,10 @@ class ManuscriptWorkflowService
             $manuscript->decision_date = now();
             $manuscript->save();
 
-            // TODO: Send notification to author with decision
+            // Send notification to author with decision
+            if ($manuscript->author) {
+                $manuscript->author->notify(new ManuscriptDecision($manuscript, $decision));
+            }
 
             DB::commit();
 
@@ -202,7 +222,11 @@ class ManuscriptWorkflowService
 
             $manuscript->save();
 
-            // TODO: Send notification to editor
+            // Send notification to editor about revision
+            $editor = $manuscript->getEditor();
+            if ($editor) {
+                $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
+            }
 
             DB::commit();
 
@@ -285,7 +309,10 @@ class ManuscriptWorkflowService
             $manuscript->status = ManuscriptStatus::AWAITING_AUTHOR_APPROVAL;
             $manuscript->save();
 
-            // TODO: Send notification to author for approval
+            // Send notification to author for approval
+            if ($manuscript->author) {
+                $manuscript->author->notify(new AuthorApprovalRequired($manuscript));
+            }
 
             DB::commit();
 
@@ -309,14 +336,40 @@ class ManuscriptWorkflowService
             if ($approved) {
                 $manuscript->status = ManuscriptStatus::READY_FOR_PUBLICATION;
                 $manuscript->author_approval_date = now();
+
+                // Notify managing editors that manuscript is ready for publication
+                $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
+                foreach ($managingEditors as $editor) {
+                    $editor->notify(new ManuscriptApproved($manuscript, $comments));
+                }
             } else {
                 // Send back to copyediting for corrections
                 $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
+
+                // Notify language editor about corrections needed
+                if ($manuscript->editor_id) {
+                    $languageEditor = User::find($manuscript->editor_id);
+                    if ($languageEditor) {
+                        $languageEditor->notify(new ManuscriptStatusChanged(
+                            $manuscript,
+                            ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
+                            ManuscriptStatus::IN_COPYEDITING->value
+                        ));
+                    }
+                }
             }
 
             $manuscript->save();
 
-            // TODO: Send notification
+            // Send notification to author about their decision
+            if ($manuscript->author) {
+                $authorStatus = $approved ? 'approved' : 'requested revisions';
+                $manuscript->author->notify(new ManuscriptStatusChanged(
+                    $manuscript,
+                    ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
+                    $manuscript->status->value
+                ));
+            }
 
             DB::commit();
 
@@ -388,7 +441,17 @@ class ManuscriptWorkflowService
             $manuscript->status = ManuscriptStatus::WITHDRAWN;
             $manuscript->save();
 
-            // TODO: Send notification to editor and reviewers
+            // Send notification to editor and reviewers
+            $editor = $manuscript->getEditor();
+            if ($editor) {
+                $editor->notify(new ManuscriptWithdrawn($manuscript, $reason, auth()->user?->name ?? 'Author'));
+            }
+
+            // Notify reviewers
+            $reviewers = $manuscript->reviews()->whereNotIn('status', ['completed', 'declined'])->get();
+            foreach ($reviewers as $review) {
+                $review->reviewer->notify(new ManuscriptWithdrawn($manuscript, $reason, 'Author'));
+            }
 
             DB::commit();
 

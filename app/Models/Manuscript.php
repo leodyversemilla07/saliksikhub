@@ -26,6 +26,7 @@ class Manuscript extends Model
         'authors',
         'abstract',
         'keywords',
+        'category',
         'manuscript_path',
         'status',
         'revision_history',
