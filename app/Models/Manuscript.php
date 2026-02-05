@@ -170,6 +170,62 @@ class Manuscript extends Model
     }
 
     /**
+     * Get all publications (versions) of this manuscript.
+     */
+    public function publications(): HasMany
+    {
+        return $this->hasMany(Publication::class)->orderByDesc('version_major')->orderByDesc('version_minor');
+    }
+
+    /**
+     * Get the current published version.
+     */
+    public function currentPublication(): BelongsTo
+    {
+        return $this->belongsTo(Publication::class, 'current_publication_id');
+    }
+
+    /**
+     * Get the latest publication.
+     */
+    public function latestPublication()
+    {
+        return $this->publications()->latest('created_at')->first();
+    }
+
+    /**
+     * Get all payments for this manuscript.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get all statistics for this manuscript.
+     */
+    public function statistics(): HasMany
+    {
+        return $this->hasMany(ManuscriptStatistic::class);
+    }
+
+    /**
+     * Get the copyeditor assigned to this manuscript.
+     */
+    public function copyeditor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'copyeditor_id');
+    }
+
+    /**
+     * Get the layout editor assigned to this manuscript.
+     */
+    public function layoutEditor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'layout_editor_id');
+    }
+
+    /**
      * Get the issue this manuscript is assigned to.
      */
     public function issue(): BelongsTo

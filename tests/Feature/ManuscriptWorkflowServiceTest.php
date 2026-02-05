@@ -37,6 +37,8 @@ describe('submitManuscript', function () {
 
 describe('screenManuscript', function () {
     it('can pass screening and update status', function () {
+        $this->actingAs($this->editor);
+
         $result = $this->workflowService->screenManuscript($this->manuscript, true);
 
         expect($result)->toBeTrue();
@@ -44,6 +46,8 @@ describe('screenManuscript', function () {
     });
 
     it('can fail screening and update status to desk rejected', function () {
+        $this->actingAs($this->editor);
+
         $result = $this->workflowService->screenManuscript($this->manuscript, false, 'Does not meet scope');
 
         expect($result)->toBeTrue();
@@ -51,6 +55,8 @@ describe('screenManuscript', function () {
     });
 
     it('creates desk rejection decision when failing screening', function () {
+        $this->actingAs($this->editor);
+
         $this->workflowService->screenManuscript($this->manuscript, false, 'Quality issues');
 
         $decision = EditorialDecision::where('manuscript_id', $this->manuscript->id)->first();
@@ -182,6 +188,7 @@ describe('startCopyediting', function () {
 
 describe('startTypesetting', function () {
     it('can start typesetting', function () {
+        $this->actingAs($this->editor);
         $this->manuscript->update(['status' => ManuscriptStatus::IN_COPYEDITING]);
 
         $result = $this->workflowService->startTypesetting($this->manuscript);
@@ -267,14 +274,15 @@ describe('withdrawManuscript', function () {
 
 describe('getWorkflowStatistics', function () {
     it('returns correct workflow statistics', function () {
-        Manuscript::factory()->count(5)->create(['status' => ManuscriptStatus::SUBMITTED]);
-        Manuscript::factory()->count(3)->create(['status' => ManuscriptStatus::UNDER_REVIEW]);
+        // Note: beforeEach creates 1 manuscript with SUBMITTED status
+        Manuscript::factory()->count(5)->create(['status' => ManuscriptStatus::UNDER_SCREENING]);
+        Manuscript::factory()->count(3)->create(['status' => ManuscriptStatus::IN_REVIEW]);
         Manuscript::factory()->count(2)->create(['status' => ManuscriptStatus::PUBLISHED]);
         Manuscript::factory()->count(1)->create(['status' => ManuscriptStatus::REJECTED]);
 
         $stats = $this->workflowService->getWorkflowStatistics();
 
-        expect($stats['total_submissions'])->toBe(11);
+        expect($stats['total_submissions'])->toBe(12); // 11 + 1 from beforeEach
         expect($stats['under_screening'])->toBe(5);
         expect($stats['in_review'])->toBe(3);
         expect($stats['published'])->toBe(2);
@@ -285,7 +293,7 @@ describe('getWorkflowStatistics', function () {
         $editorManuscript = Manuscript::factory()->create([
             'user_id' => $this->author->id,
             'editor_id' => $this->editor->id,
-            'status' => ManuscriptStatus::UNDER_REVIEW,
+            'status' => ManuscriptStatus::IN_REVIEW,
         ]);
 
         $stats = $this->workflowService->getWorkflowStatistics($this->editor->id);

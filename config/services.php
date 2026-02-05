@@ -35,4 +35,43 @@ return [
         ],
     ],
 
+    'crossref' => [
+        'username' => env('CROSSREF_USERNAME'),
+        'password' => env('CROSSREF_PASSWORD'),
+        'doi_prefix' => env('CROSSREF_DOI_PREFIX', '10.00000'),
+        'depositor_name' => env('CROSSREF_DEPOSITOR_NAME', 'SalikSikHub'),
+        'depositor_email' => env('CROSSREF_DEPOSITOR_EMAIL', 'admin@saliksikhub.org'),
+    ],
+
+    'datacite' => [
+        'username' => env('DATACITE_USERNAME'),
+        'password' => env('DATACITE_PASSWORD'),
+        'doi_prefix' => env('DATACITE_DOI_PREFIX', '10.00000'),
+        'repository_id' => env('DATACITE_REPOSITORY_ID'),
+        'api_url' => env('DATACITE_API_URL', 'https://api.test.datacite.org'), // Use test for development
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_SECRET'),
+        'mode' => env('PAYPAL_MODE', 'sandbox'), // sandbox or live
+    ],
+
+    'sushi' => [
+        'customer_id' => env('SUSHI_CUSTOMER_ID', 'saliksikhub'),
+        'registry_url' => env('SUSHI_REGISTRY_URL', 'https://registry.projectcounter.org/'),
+        'api_keys' => array_filter(explode(',', env('SUSHI_API_KEYS', ''))),
+    ],
+
+    'fees' => [
+        'submission' => env('SUBMISSION_FEE', 50.00),
+        'publication' => env('PUBLICATION_FEE', 100.00),
+    ],
+
 ];

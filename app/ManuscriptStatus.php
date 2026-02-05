@@ -5,6 +5,7 @@ namespace App;
 enum ManuscriptStatus: string
 {
     // Initial submission states
+    case DRAFT = 'draft';
     case SUBMITTED = 'submitted';
     case UNDER_SCREENING = 'under_screening';
     case DESK_REJECTED = 'desk_rejected';
@@ -47,6 +48,7 @@ enum ManuscriptStatus: string
     public function label(): string
     {
         return match ($this) {
+            self::DRAFT => 'Draft',
             self::SUBMITTED => 'Submitted',
             self::UNDER_SCREENING => 'Under Screening',
             self::DESK_REJECTED => 'Desk Rejected',
@@ -79,6 +81,7 @@ enum ManuscriptStatus: string
     public function color(): string
     {
         return match ($this) {
+            self::DRAFT => 'gray',
             self::SUBMITTED => 'blue',
             self::UNDER_SCREENING => 'indigo',
             self::DESK_REJECTED => 'red',
@@ -102,6 +105,7 @@ enum ManuscriptStatus: string
     public function description(): string
     {
         return match ($this) {
+            self::DRAFT => 'Manuscript is being drafted and not yet submitted',
             self::SUBMITTED => 'Manuscript has been submitted and is awaiting initial screening',
             self::UNDER_SCREENING => 'Editor is reviewing manuscript for scope and quality',
             self::DESK_REJECTED => 'Manuscript rejected without peer review',
@@ -199,6 +203,9 @@ enum ManuscriptStatus: string
     public function possibleNextStatuses(): array
     {
         return match ($this) {
+            self::DRAFT => [
+                self::SUBMITTED,
+            ],
             self::SUBMITTED => [
                 self::UNDER_SCREENING,
                 self::WITHDRAWN,
@@ -262,6 +269,7 @@ enum ManuscriptStatus: string
     public function workflowStage(): string
     {
         return match ($this) {
+            self::DRAFT => 'draft',
             self::SUBMITTED, self::UNDER_SCREENING => 'submission',
             self::DESK_REJECTED => 'rejected',
             self::UNDER_REVIEW, self::AWAITING_REVIEWER_SELECTION, self::AWAITING_REVIEWER_ASSIGNMENT, self::IN_REVIEW => 'review',
@@ -281,6 +289,7 @@ enum ManuscriptStatus: string
     public function progressPercentage(): int
     {
         return match ($this) {
+            self::DRAFT => 0,
             self::SUBMITTED => 10,
             self::UNDER_SCREENING => 15,
             self::AWAITING_REVIEWER_SELECTION, self::AWAITING_REVIEWER_ASSIGNMENT => 20,

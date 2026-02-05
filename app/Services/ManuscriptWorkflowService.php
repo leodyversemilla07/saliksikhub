@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DecisionType;
 use App\ManuscriptStatus;
+use App\ReviewStatus;
 use App\Models\CopyrightAgreement;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
@@ -21,6 +22,7 @@ use App\Notifications\ManuscriptWithdrawn;
 use App\Notifications\ProductionAssigned;
 use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\ManuscriptApproved;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class ManuscriptWorkflowService
@@ -35,20 +37,17 @@ class ManuscriptWorkflowService
     public function submitManuscript(Manuscript $manuscript): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript) {
+                $manuscript->status = ManuscriptStatus::SUBMITTED;
+                $manuscript->save();
 
-            $manuscript->status = ManuscriptStatus::SUBMITTED;
-            $manuscript->save();
+                // Send notification to managing editors and editor-in-chief
+                $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
+                Notification::send($managingEditors, new ManuscriptSubmitted($manuscript));
 
-            // Send notification to managing editors and editor-in-chief
-            $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
-            Notification::send($managingEditors, new ManuscriptSubmitted($manuscript));
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to submit manuscript: '.$e->getMessage());
 
             return false;
@@ -61,42 +60,39 @@ class ManuscriptWorkflowService
     public function screenManuscript(Manuscript $manuscript, bool $passesScreening, ?string $comments = null): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $passesScreening, $comments) {
+                if ($passesScreening) {
+                    $manuscript->status = ManuscriptStatus::AWAITING_REVIEWER_SELECTION;
+                    
+                    // Notify editors that manuscript is ready for review
+                    $editors = User::role(['managing_editor', 'editor_in_chief', 'associate_editor'])->get();
+                    Notification::send($editors, new ManuscriptReadyForReview($manuscript));
+                } else {
+                    $manuscript->status = ManuscriptStatus::DESK_REJECTED;
 
-            if ($passesScreening) {
-                $manuscript->status = ManuscriptStatus::AWAITING_REVIEWER_SELECTION;
-                
-                // Notify editors that manuscript is ready for review
-                $editors = User::role(['managing_editor', 'editor_in_chief', 'associate_editor'])->get();
-                Notification::send($editors, new ManuscriptReadyForReview($manuscript));
-            } else {
-                $manuscript->status = ManuscriptStatus::DESK_REJECTED;
+                    // Create desk rejection decision
+                    EditorialDecision::create([
+                        'manuscript_id' => $manuscript->id,
+                        'editor_id' => auth()->id(),
+                        'decision_type' => DecisionType::DESK_REJECT,
+                        'comments_to_author' => $comments ?? 'Manuscript does not meet journal scope or quality standards.',
+                        'decision_date' => now(),
+                        'status' => EditorialDecision::STATUS_FINALIZED,
+                    ]);
+                }
 
-                // Create desk rejection decision
-                EditorialDecision::create([
-                    'manuscript_id' => $manuscript->id,
-                    'editor_id' => auth()->id(),
-                    'decision_type' => DecisionType::DESK_REJECT,
-                    'comments_to_author' => $comments ?? 'Manuscript does not meet journal scope or quality standards.',
-                    'decision_date' => now(),
-                    'status' => EditorialDecision::STATUS_FINALIZED,
-                ]);
-            }
+                $manuscript->save();
 
-            $manuscript->save();
+                // Send notification to author about screening result
+                $previousStatus = ManuscriptStatus::SUBMITTED->value;
+                $newStatus = $manuscript->status->value;
+                if ($manuscript->author) {
+                    $manuscript->author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $newStatus));
+                }
 
-            // Send notification to author about screening result
-            $previousStatus = ManuscriptStatus::SUBMITTED->value;
-            $newStatus = $manuscript->status->value;
-            if ($manuscript->author) {
-                $manuscript->author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $newStatus));
-            }
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to screen manuscript: '.$e->getMessage());
 
             return false;
@@ -109,44 +105,41 @@ class ManuscriptWorkflowService
     public function assignReviewers(Manuscript $manuscript, array $reviewerIds, int $reviewRound = 1, ?\DateTime $dueDate = null): bool
     {
         try {
-            DB::beginTransaction();
-
-            // Set default due date (2-4 weeks)
-            if (! $dueDate) {
-                $dueDate = now()->addWeeks(3);
-            }
-
-            foreach ($reviewerIds as $reviewerId) {
-                Review::create([
-                    'manuscript_id' => $manuscript->id,
-                    'reviewer_id' => $reviewerId,
-                    'review_round' => $reviewRound,
-                    'invitation_sent_at' => now(),
-                    'due_date' => $dueDate,
-                    'status' => ReviewStatus::INVITED,
-                ]);
-            }
-
-            // Update manuscript status
-            $manuscript->status = ManuscriptStatus::IN_REVIEW;
-            $manuscript->save();
-
-            // Send review invitations to reviewers
-            $reviewers = User::whereIn('id', $reviewerIds)->get();
-            foreach ($reviewers as $reviewer) {
-                $review = Review::where('manuscript_id', $manuscript->id)
-                    ->where('reviewer_id', $reviewer->id)
-                    ->first();
-                if ($review) {
-                    $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
+            return DB::transaction(function () use ($manuscript, $reviewerIds, $reviewRound, $dueDate) {
+                // Set default due date (2-4 weeks)
+                if (! $dueDate) {
+                    $dueDate = now()->addWeeks(3);
                 }
-            }
 
-            DB::commit();
+                foreach ($reviewerIds as $reviewerId) {
+                    Review::create([
+                        'manuscript_id' => $manuscript->id,
+                        'reviewer_id' => $reviewerId,
+                        'review_round' => $reviewRound,
+                        'invitation_sent_at' => now(),
+                        'due_date' => $dueDate,
+                        'status' => ReviewStatus::INVITED,
+                    ]);
+                }
 
-            return true;
+                // Update manuscript status
+                $manuscript->status = ManuscriptStatus::IN_REVIEW;
+                $manuscript->save();
+
+                // Send review invitations to reviewers
+                $reviewers = User::whereIn('id', $reviewerIds)->get();
+                foreach ($reviewers as $reviewer) {
+                    $review = Review::where('manuscript_id', $manuscript->id)
+                        ->where('reviewer_id', $reviewer->id)
+                        ->first();
+                    if ($review) {
+                        $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
+                    }
+                }
+
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to assign reviewers: '.$e->getMessage());
 
             return false;
@@ -164,36 +157,33 @@ class ManuscriptWorkflowService
         ?\DateTime $revisionDeadline = null
     ): ?EditorialDecision {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $decisionType, $commentsToAuthor, $editorId, $revisionDeadline) {
+                $editorId = $editorId ?? auth()->id();
 
-            $editorId = $editorId ?? auth()->id();
+                // Create editorial decision
+                $decision = EditorialDecision::create([
+                    'manuscript_id' => $manuscript->id,
+                    'editor_id' => $editorId,
+                    'decision_type' => $decisionType,
+                    'comments_to_author' => $commentsToAuthor,
+                    'decision_date' => now(),
+                    'revision_deadline' => $revisionDeadline,
+                    'status' => EditorialDecision::STATUS_FINALIZED,
+                ]);
 
-            // Create editorial decision
-            $decision = EditorialDecision::create([
-                'manuscript_id' => $manuscript->id,
-                'editor_id' => $editorId,
-                'decision_type' => $decisionType,
-                'comments_to_author' => $commentsToAuthor,
-                'decision_date' => now(),
-                'revision_deadline' => $revisionDeadline,
-                'status' => EditorialDecision::STATUS_FINALIZED,
-            ]);
+                // Update manuscript status based on decision
+                $manuscript->status = $decisionType->resultingStatus();
+                $manuscript->decision_date = now();
+                $manuscript->save();
 
-            // Update manuscript status based on decision
-            $manuscript->status = $decisionType->resultingStatus();
-            $manuscript->decision_date = now();
-            $manuscript->save();
+                // Send notification to author with decision
+                if ($manuscript->author) {
+                    $manuscript->author->notify(new ManuscriptDecision($manuscript, $decision));
+                }
 
-            // Send notification to author with decision
-            if ($manuscript->author) {
-                $manuscript->author->notify(new ManuscriptDecision($manuscript, $decision));
-            }
-
-            DB::commit();
-
-            return $decision;
+                return $decision;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to make editorial decision: '.$e->getMessage());
 
             return null;
@@ -206,33 +196,30 @@ class ManuscriptWorkflowService
     public function submitRevision(Manuscript $manuscript, string $responseToReviewers): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $responseToReviewers) {
+                $manuscript->status = ManuscriptStatus::REVISION_SUBMITTED;
+                $manuscript->revision_comments = $responseToReviewers;
+                $manuscript->revised_at = now();
 
-            $manuscript->status = ManuscriptStatus::REVISION_SUBMITTED;
-            $manuscript->revision_comments = $responseToReviewers;
-            $manuscript->revised_at = now();
+                // Increment revision count
+                $revisionHistory = $manuscript->revision_history ?? [];
+                $revisionHistory[] = [
+                    'date' => now()->toDateTimeString(),
+                    'comments' => $responseToReviewers,
+                ];
+                $manuscript->revision_history = $revisionHistory;
 
-            // Increment revision count
-            $revisionHistory = $manuscript->revision_history ?? [];
-            $revisionHistory[] = [
-                'date' => now()->toDateTimeString(),
-                'comments' => $responseToReviewers,
-            ];
-            $manuscript->revision_history = $revisionHistory;
+                $manuscript->save();
 
-            $manuscript->save();
+                // Send notification to editor about revision
+                $editor = $manuscript->getEditor();
+                if ($editor) {
+                    $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
+                }
 
-            // Send notification to editor about revision
-            $editor = $manuscript->getEditor();
-            if ($editor) {
-                $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
-            }
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to submit revision: '.$e->getMessage());
 
             return false;
@@ -245,27 +232,24 @@ class ManuscriptWorkflowService
     public function startCopyediting(Manuscript $manuscript, ?int $languageEditorId = null): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $languageEditorId) {
+                $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
 
-            $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
-
-            if ($languageEditorId) {
-                $manuscript->editor_id = $languageEditorId;
-                
-                // Send notification to language editor
-                $languageEditor = User::find($languageEditorId);
-                if ($languageEditor) {
-                    $languageEditor->notify(new LanguageEditorAssigned($manuscript));
+                if ($languageEditorId) {
+                    $manuscript->editor_id = $languageEditorId;
+                    
+                    // Send notification to language editor
+                    $languageEditor = User::find($languageEditorId);
+                    if ($languageEditor) {
+                        $languageEditor->notify(new LanguageEditorAssigned($manuscript));
+                    }
                 }
-            }
 
-            $manuscript->save();
+                $manuscript->save();
 
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to start copyediting: '.$e->getMessage());
 
             return false;
@@ -278,20 +262,17 @@ class ManuscriptWorkflowService
     public function startTypesetting(Manuscript $manuscript): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript) {
+                $manuscript->status = ManuscriptStatus::IN_TYPESETTING;
+                $manuscript->save();
 
-            $manuscript->status = ManuscriptStatus::IN_TYPESETTING;
-            $manuscript->save();
+                // Send notification to production team
+                $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
+                Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
 
-            // Send notification to production team
-            $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
-            Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to start typesetting: '.$e->getMessage());
 
             return false;
@@ -304,21 +285,18 @@ class ManuscriptWorkflowService
     public function requestAuthorApproval(Manuscript $manuscript): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript) {
+                $manuscript->status = ManuscriptStatus::AWAITING_AUTHOR_APPROVAL;
+                $manuscript->save();
 
-            $manuscript->status = ManuscriptStatus::AWAITING_AUTHOR_APPROVAL;
-            $manuscript->save();
+                // Send notification to author for approval
+                if ($manuscript->author) {
+                    $manuscript->author->notify(new AuthorApprovalRequired($manuscript));
+                }
 
-            // Send notification to author for approval
-            if ($manuscript->author) {
-                $manuscript->author->notify(new AuthorApprovalRequired($manuscript));
-            }
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to request author approval: '.$e->getMessage());
 
             return false;
@@ -331,51 +309,48 @@ class ManuscriptWorkflowService
     public function processAuthorApproval(Manuscript $manuscript, bool $approved, ?string $comments = null): bool
     {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $approved, $comments) {
+                if ($approved) {
+                    $manuscript->status = ManuscriptStatus::READY_FOR_PUBLICATION;
+                    $manuscript->author_approval_date = now();
 
-            if ($approved) {
-                $manuscript->status = ManuscriptStatus::READY_FOR_PUBLICATION;
-                $manuscript->author_approval_date = now();
+                    // Notify managing editors that manuscript is ready for publication
+                    $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
+                    foreach ($managingEditors as $editor) {
+                        $editor->notify(new ManuscriptApproved($manuscript, $comments));
+                    }
+                } else {
+                    // Send back to copyediting for corrections
+                    $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
 
-                // Notify managing editors that manuscript is ready for publication
-                $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
-                foreach ($managingEditors as $editor) {
-                    $editor->notify(new ManuscriptApproved($manuscript, $comments));
-                }
-            } else {
-                // Send back to copyediting for corrections
-                $manuscript->status = ManuscriptStatus::IN_COPYEDITING;
-
-                // Notify language editor about corrections needed
-                if ($manuscript->editor_id) {
-                    $languageEditor = User::find($manuscript->editor_id);
-                    if ($languageEditor) {
-                        $languageEditor->notify(new ManuscriptStatusChanged(
-                            $manuscript,
-                            ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
-                            ManuscriptStatus::IN_COPYEDITING->value
-                        ));
+                    // Notify language editor about corrections needed
+                    if ($manuscript->editor_id) {
+                        $languageEditor = User::find($manuscript->editor_id);
+                        if ($languageEditor) {
+                            $languageEditor->notify(new ManuscriptStatusChanged(
+                                $manuscript,
+                                ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
+                                ManuscriptStatus::IN_COPYEDITING->value
+                            ));
+                        }
                     }
                 }
-            }
 
-            $manuscript->save();
+                $manuscript->save();
 
-            // Send notification to author about their decision
-            if ($manuscript->author) {
-                $authorStatus = $approved ? 'approved' : 'requested revisions';
-                $manuscript->author->notify(new ManuscriptStatusChanged(
-                    $manuscript,
-                    ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
-                    $manuscript->status->value
-                ));
-            }
+                // Send notification to author about their decision
+                if ($manuscript->author) {
+                    $authorStatus = $approved ? 'approved' : 'requested revisions';
+                    $manuscript->author->notify(new ManuscriptStatusChanged(
+                        $manuscript,
+                        ManuscriptStatus::AWAITING_AUTHOR_APPROVAL->value,
+                        $manuscript->status->value
+                    ));
+                }
 
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to process author approval: '.$e->getMessage());
 
             return false;
@@ -392,33 +367,30 @@ class ManuscriptWorkflowService
         bool $onlineFirst = false
     ): bool {
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $doi, $issueId, $onlineFirst) {
+                $manuscript->status = $onlineFirst
+                    ? ManuscriptStatus::PUBLISHED_ONLINE_FIRST
+                    : ManuscriptStatus::PUBLISHED;
 
-            $manuscript->status = $onlineFirst
-                ? ManuscriptStatus::PUBLISHED_ONLINE_FIRST
-                : ManuscriptStatus::PUBLISHED;
+                $manuscript->doi = $doi;
+                $manuscript->published_at = now();
+                $manuscript->publication_date = now();
 
-            $manuscript->doi = $doi;
-            $manuscript->published_at = now();
-            $manuscript->publication_date = now();
+                if ($issueId) {
+                    $manuscript->issue_id = $issueId;
+                }
 
-            if ($issueId) {
-                $manuscript->issue_id = $issueId;
-            }
+                $manuscript->save();
 
-            $manuscript->save();
+                // Send publication notification to author
+                $manuscript->author->notify(new \App\Notifications\ManuscriptPublished($manuscript));
 
-            // Send publication notification to author
-            $manuscript->author->notify(new \App\Notifications\ManuscriptPublished($manuscript));
+                // Submit metadata to indexing services
+                $this->publicationService->submitToIndexingDatabases($manuscript);
 
-            // Submit metadata to indexing services
-            $this->publicationService->submitToIndexingDatabases($manuscript);
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to publish manuscript: '.$e->getMessage());
 
             return false;
@@ -430,34 +402,31 @@ class ManuscriptWorkflowService
      */
     public function withdrawManuscript(Manuscript $manuscript, string $reason): bool
     {
+        // Only allow withdrawal before publication
+        if ($manuscript->isPublished()) {
+            return false;
+        }
+
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($manuscript, $reason) {
+                $manuscript->status = ManuscriptStatus::WITHDRAWN;
+                $manuscript->save();
 
-            // Only allow withdrawal before publication
-            if ($manuscript->isPublished()) {
-                return false;
-            }
+                // Send notification to editor and reviewers
+                $editor = $manuscript->getEditor();
+                if ($editor) {
+                    $editor->notify(new ManuscriptWithdrawn($manuscript, $reason, auth()->user?->name ?? 'Author'));
+                }
 
-            $manuscript->status = ManuscriptStatus::WITHDRAWN;
-            $manuscript->save();
+                // Notify reviewers
+                $reviewers = $manuscript->reviews()->whereNotIn('status', ['completed', 'declined'])->get();
+                foreach ($reviewers as $review) {
+                    $review->reviewer->notify(new ManuscriptWithdrawn($manuscript, $reason, 'Author'));
+                }
 
-            // Send notification to editor and reviewers
-            $editor = $manuscript->getEditor();
-            if ($editor) {
-                $editor->notify(new ManuscriptWithdrawn($manuscript, $reason, auth()->user?->name ?? 'Author'));
-            }
-
-            // Notify reviewers
-            $reviewers = $manuscript->reviews()->whereNotIn('status', ['completed', 'declined'])->get();
-            foreach ($reviewers as $review) {
-                $review->reviewer->notify(new ManuscriptWithdrawn($manuscript, $reason, 'Author'));
-            }
-
-            DB::commit();
-
-            return true;
+                return true;
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             \Log::error('Failed to withdraw manuscript: '.$e->getMessage());
 
             return false;

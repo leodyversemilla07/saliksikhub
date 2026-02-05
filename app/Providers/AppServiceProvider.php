@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Manuscript;
+use App\Models\Publication;
 use App\Observers\ManuscriptObserver;
+use App\Observers\PublicationObserver;
 use App\Policies\ManuscriptPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
@@ -35,8 +37,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Manuscript::observe(ManuscriptObserver::class);
+        Publication::observe(PublicationObserver::class);
 
         // Register policies
         Gate::policy(Manuscript::class, ManuscriptPolicy::class);
     }
 }
+
