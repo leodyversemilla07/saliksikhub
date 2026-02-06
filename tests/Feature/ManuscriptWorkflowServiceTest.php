@@ -131,7 +131,7 @@ describe('makeEditorialDecision', function () {
 
         expect($decision)->not->toBeNull();
         expect($this->manuscript->fresh()->status)->toBe(ManuscriptStatus::MINOR_REVISION_REQUIRED);
-        expect($decision->revision_deadline)->toBe($deadline);
+        expect($decision->revision_deadline->toDateString())->toBe($deadline->toDateString());
     });
 
     it('can request major revision', function () {

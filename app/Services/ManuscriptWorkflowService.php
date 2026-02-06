@@ -267,8 +267,14 @@ class ManuscriptWorkflowService
                 $manuscript->save();
 
                 // Send notification to production team
-                $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
-                Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
+                try {
+                    $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
+                    Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
+                } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                    // Fallback if production_editor role doesn't exist yet
+                    $productionTeam = User::role(['managing_editor'])->get();
+                    Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
+                }
 
                 return true;
             });

@@ -27,12 +27,12 @@ class EditorialDecision extends Model
         'decision_type' => DecisionType::class,
     ];
 
-    // Status constants
-    public const STATUS_PENDING = 'pending';
+    // Status constants (must match DB enum values: 'Pending', 'Finalized', 'Archived')
+    public const STATUS_PENDING = 'Pending';
 
-    public const STATUS_FINALIZED = 'finalized';
+    public const STATUS_FINALIZED = 'Finalized';
 
-    public const STATUS_ARCHIVED = 'archived';
+    public const STATUS_ARCHIVED = 'Archived';
 
     public const STATUSES = [
         self::STATUS_PENDING => 'Pending',
