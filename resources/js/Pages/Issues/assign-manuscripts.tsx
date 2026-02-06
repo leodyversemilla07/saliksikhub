@@ -61,18 +61,9 @@ export default function AssignManuscripts({ issue, availableManuscripts }: Assig
         // Ensure form data is up to date before submission
         setData('data.manuscript_ids', selectedManuscripts);
 
-        console.log('Submitting manuscripts:', selectedManuscripts);
-
         post(issuesRoutes.assignManuscripts.url({ id: issue.id }), {
             onSuccess: () => {
-                console.log('Manuscripts assigned successfully');
                 router.visit(issuesRoutes.show.url({ id: issue.id }));
-            },
-            onError: (errors) => {
-                console.error('Error assigning manuscripts:', errors);
-            },
-            onFinish: () => {
-                console.log('Form submission completed');
             }
         });
     };

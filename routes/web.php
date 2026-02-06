@@ -115,6 +115,10 @@ Route::middleware(['journal'])->group(function () {
             Route::get('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'showPublicationForm'])->name('editor.manuscripts.prepare_publication_form');
             Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
+            // Initial screening routes
+            Route::get('/editor/manuscripts/{manuscript}/initial-screening', [\App\Http\Controllers\InitialScreeningController::class, 'show'])->name('editor.manuscripts.initial_screening');
+            Route::post('/editor/manuscripts/{manuscript}/initial-screening', [\App\Http\Controllers\InitialScreeningController::class, 'update'])->name('editor.manuscripts.initial_screening.update');
+
             // Review assignment routes
             Route::get('/editor/manuscripts/{manuscript}/assign-reviewers', [EditorController::class, 'showAssignReviewers'])->name('editor.manuscripts.assign_reviewers');
             Route::post('/editor/manuscripts/{manuscript}/assign-reviewers', [EditorController::class, 'assignReviewers'])->name('editor.manuscripts.assign_reviewers.store');

@@ -371,14 +371,23 @@ class StatisticsService
     }
 
     /**
-     * Detect country from IP address
-     * TODO: Implement with GeoIP2 library (maxmind/geoip2)
+     * Detect country from IP address using MaxMind GeoIP2 if available
      */
     protected function detectCountry(string $ipAddress): ?string
     {
-        // Placeholder - would use GeoIP2\Database\Reader
-        // For now, return null
-        return null;
+        try {
+            $dbPath = storage_path('app/geoip/GeoLite2-Country.mmdb');
+            if (!file_exists($dbPath)) {
+                return null;
+            }
+
+            $reader = new \GeoIp2\Database\Reader($dbPath);
+            $record = $reader->country($ipAddress);
+
+            return $record->country->isoCode;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**

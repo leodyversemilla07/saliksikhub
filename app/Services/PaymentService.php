@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Manuscript;
 use App\Models\Payment;
 use App\Models\Subscription;
+use App\Notifications\PaymentConfirmation;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -452,8 +453,12 @@ class PaymentService
                 break;
         }
 
-        // TODO: Send payment confirmation email
-        // TODO: Generate and send receipt
+        // Send payment confirmation email and receipt
+        $payment->load('payable');
+        $user = $payment->user ?? \App\Models\User::find($payment->user_id);
+        if ($user) {
+            $user->notify(new PaymentConfirmation($payment));
+        }
     }
 
     /**

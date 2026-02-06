@@ -303,7 +303,6 @@ export default function Edit({ issue }: EditProps) {
                                                                 alt="Cover image preview"
                                                                 className="w-full h-80 object-cover rounded-lg border border-gray-300"
                                                                 onError={() => {
-                                                                    console.log('Image failed to load:', coverImagePreview || `/storage/${issue.cover_image}`);
                                                                     setHasExistingImage(false);
                                                                     setCoverImagePreview(null);
                                                                 }}
@@ -317,10 +316,7 @@ export default function Edit({ issue }: EditProps) {
                                                                 >
                                                                     <X className="h-4 w-4" />
                                                                 </Button>
-                                                                {/* Debug info - remove in production */}
-                                                                <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs p-1 rounded">
-                                                                    {coverImagePreview ? 'New' : 'Existing'}: {issue.cover_image || 'No image'}
-                                                                </div>
+
                                                             </div>
                                                         ) : (
                                                             <label

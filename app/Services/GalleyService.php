@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Galley;
+use App\Models\ManuscriptStatistic;
 use App\Models\Publication;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -161,8 +162,18 @@ class GalleyService
         $galley->increment('download_count');
         $galley->update(['last_downloaded_at' => now()]);
 
-        // TODO: Record in manuscript_statistics for COUNTER compliance
-        // This will be implemented in Phase 7
+        if ($galley->publication && $galley->publication->manuscript_id) {
+            ManuscriptStatistic::create([
+                'manuscript_id' => $galley->publication->manuscript_id,
+                'galley_id' => $galley->id,
+                'metric_type' => 'request',
+                'accessed_at' => now(),
+                'session_id' => session()->getId(),
+                'ip_address' => $ipAddress ? hash('sha256', $ipAddress . config('app.key')) : null,
+                'user_agent' => request()->userAgent(),
+                'country_code' => null,
+            ]);
+        }
     }
 
     /**
@@ -220,10 +231,51 @@ class GalleyService
             throw new InvalidArgumentException('Source galley must be XML format');
         }
 
-        // TODO: Implement XSLT transformation from JATS XML to HTML
-        // This requires XSLT processor and JATS to HTML stylesheets
-        // For now, return null to indicate not implemented
-        return null;
+        $xmlContent = Storage::disk('s3')->get($xmlGalley->file_path);
+        if (!$xmlContent) {
+            return null;
+        }
+
+        $xslPath = resource_path('xsl/jats-to-html.xsl');
+        if (!file_exists($xslPath)) {
+            // Fallback: basic XML-to-HTML conversion without XSLT stylesheet
+            $xml = new \DOMDocument();
+            $xml->loadXML($xmlContent);
+
+            $body = $xml->getElementsByTagName('body')->item(0);
+            $htmlContent = $body ? $xml->saveHTML($body) : '<p>Unable to render XML content.</p>';
+        } else {
+            $xml = new \DOMDocument();
+            $xml->loadXML($xmlContent);
+
+            $xsl = new \DOMDocument();
+            $xsl->load($xslPath);
+
+            $processor = new \XSLTProcessor();
+            $processor->importStyleSheet($xsl);
+
+            $htmlContent = $processor->transformToXml($xml);
+            if ($htmlContent === false) {
+                return null;
+            }
+        }
+
+        $filename = Str::slug($xmlGalley->label) . '-html-' . time() . '.html';
+        $path = "galleys/{$xmlGalley->publication->manuscript_id}/{$xmlGalley->publication_id}/{$filename}";
+
+        Storage::disk('s3')->put($path, $htmlContent, 'public');
+
+        $sequence = $xmlGalley->publication->galleys()->max('sequence') + 1;
+
+        return $xmlGalley->publication->galleys()->create([
+            'label' => $xmlGalley->label . ' (HTML)',
+            'locale' => $xmlGalley->locale,
+            'file_path' => $path,
+            'file_size' => strlen($htmlContent),
+            'mime_type' => 'text/html',
+            'sequence' => $sequence,
+            'is_approved' => false,
+        ]);
     }
 
     /**

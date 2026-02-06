@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\User;
+use App\Notifications\SubscriptionRenewalReminder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -252,9 +253,12 @@ class SubscriptionService
      */
     public function sendRenewalReminder(Subscription $subscription): void
     {
-        // TODO: Send email notification
-        // This would integrate with Laravel's notification system
-        
+        $subscription->load(['user', 'type']);
+
+        if ($subscription->user) {
+            $subscription->user->notify(new SubscriptionRenewalReminder($subscription));
+        }
+
         $subscription->update([
             'renewal_reminder_sent_at' => now(),
         ]);

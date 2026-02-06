@@ -147,7 +147,6 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
         if (!manuscriptToCopyEdit) return;
 
         setIsLoading(true);
-        console.log('Starting copy editing for manuscript:', manuscriptToCopyEdit);
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -169,8 +168,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                 }
                 return response.json();
             })
-            .then(data => {
-                console.log('Success:', data);
+            .then(() => {
                 window.location.href = editor.indexManuscripts.url();
             })
             .catch(error => {
@@ -209,11 +207,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             manuscript_file: uploadFile
         }, {
             forceFormData: true, // Ensure FormData is used
-            onProgress: (progress) => {
-                console.log('Upload progress:', progress);
-            },
             onSuccess: () => {
-                console.log('Upload successful');
                 window.location.href = editor.indexManuscripts.url();
             },
             onError: (errors) => {
