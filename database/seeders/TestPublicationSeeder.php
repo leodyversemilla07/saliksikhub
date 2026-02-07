@@ -57,26 +57,27 @@ class TestPublicationSeeder extends Seeder
         // Create manuscript author
         ManuscriptAuthor::create([
             'manuscript_id' => $manuscript->id,
-            'full_name' => 'Dr. Test Author',
-            'first_name' => 'Test',
-            'last_name' => 'Author',
-            'email' => 'test.author@example.com',
-            'affiliation' => 'Test University, Department of Computer Science',
-            'orcid' => '0000-0001-2345-6789',
-            'order' => 1,
+            'user_id' => $author->id,
+            'author_order' => 1,
             'is_corresponding' => true,
         ]);
 
         // Add co-author
+        $coAuthor = User::firstOrCreate(
+            ['email' => 'jane.smith@example.com'],
+            [
+                'firstname' => 'Jane',
+                'lastname' => 'Smith',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+                'role' => 'author',
+            ]
+        );
+
         ManuscriptAuthor::create([
             'manuscript_id' => $manuscript->id,
-            'full_name' => 'Dr. Jane Smith',
-            'first_name' => 'Jane',
-            'last_name' => 'Smith',
-            'email' => 'jane.smith@example.com',
-            'affiliation' => 'Research Institute of Technology',
-            'orcid' => '0000-0002-3456-7890',
-            'order' => 2,
+            'user_id' => $coAuthor->id,
+            'author_order' => 2,
             'is_corresponding' => false,
         ]);
 
@@ -108,14 +109,15 @@ class TestPublicationSeeder extends Seeder
             'doi' => '10.12345/test.2026.001',
             'doiable_type' => Publication::class,
             'doiable_id' => $publication->id,
-            'status' => 'registered',
+            'prefix' => '10.12345',
+            'suffix' => 'test.2026.001',
+            'status' => 'deposited',
             'registration_agency' => 'crossref',
             'registered_at' => now(),
         ]);
 
         $this->command->info('Test publication created successfully!');
-        $this->command->info('Publication ID: ' . $publication->id);
-        $this->command->info('Test JATS XML at: /api/jats/publications/' . $publication->id);
+        $this->command->info('Publication ID: '.$publication->id);
+        $this->command->info('Test JATS XML at: /api/jats/publications/'.$publication->id);
     }
 }
-

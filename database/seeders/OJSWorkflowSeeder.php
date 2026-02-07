@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Manuscript;
-use App\Models\Publication;
 use App\Models\DOI;
 use App\Models\Galley;
-use App\Models\SubscriptionType;
-use App\Models\Subscription;
+use App\Models\Manuscript;
 use App\Models\Payment;
+use App\Models\Publication;
+use App\Models\Subscription;
+use App\Models\SubscriptionType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -48,54 +48,46 @@ class OJSWorkflowSeeder extends Seeder
             [
                 'name' => 'Individual - Annual',
                 'description' => 'Annual subscription for individual users',
-                'price' => 99.00,
+                'cost' => 99.00,
                 'currency' => 'USD',
                 'duration_months' => 12,
-                'features' => [
-                    'Full access to all published articles',
-                    'Email alerts for new issues',
-                    'Download rights',
-                ],
+                'subscription_type' => 'individual',
+                'format_online' => true,
+                'format_print' => false,
                 'is_active' => true,
             ],
             [
                 'name' => 'Institutional - Annual',
                 'description' => 'Annual subscription for institutions with IP range access',
-                'price' => 499.00,
+                'cost' => 499.00,
                 'currency' => 'USD',
                 'duration_months' => 12,
-                'features' => [
-                    'Unlimited users via IP authentication',
-                    'Full access to all published articles',
-                    'Usage statistics (COUNTER compliant)',
-                    'SUSHI API access',
-                    'Priority support',
-                ],
+                'subscription_type' => 'institutional',
+                'format_online' => true,
+                'format_print' => true,
+                'concurrent_users' => 25,
                 'is_active' => true,
             ],
             [
                 'name' => 'Individual - Monthly',
                 'description' => 'Monthly subscription for individual users',
-                'price' => 9.99,
+                'cost' => 9.99,
                 'currency' => 'USD',
                 'duration_months' => 1,
-                'features' => [
-                    'Full access to all published articles',
-                    'Email alerts for new issues',
-                ],
+                'subscription_type' => 'individual',
+                'format_online' => true,
+                'format_print' => false,
                 'is_active' => true,
             ],
             [
                 'name' => 'Student - Annual',
                 'description' => 'Discounted annual subscription for students',
-                'price' => 49.00,
+                'cost' => 49.00,
                 'currency' => 'USD',
                 'duration_months' => 12,
-                'features' => [
-                    'Full access to all published articles',
-                    'Email alerts for new issues',
-                    'Requires student verification',
-                ],
+                'subscription_type' => 'individual',
+                'format_online' => true,
+                'format_print' => false,
                 'is_active' => true,
             ],
         ];
@@ -107,7 +99,7 @@ class OJSWorkflowSeeder extends Seeder
             );
         }
 
-        $this->command->info('Created ' . count($types) . ' subscription types.');
+        $this->command->info('Created '.count($types).' subscription types.');
     }
 
     /**
@@ -124,6 +116,7 @@ class OJSWorkflowSeeder extends Seeder
 
         if ($manuscripts->isEmpty()) {
             $this->command->warn('No accepted/published manuscripts found. Skipping publication seeding.');
+
             return;
         }
 
@@ -146,7 +139,7 @@ class OJSWorkflowSeeder extends Seeder
                 'date_published' => now()->subMonths(rand(1, 12)),
                 'access_status' => $this->randomAccessStatus(),
                 'url_path' => $manuscript->slug,
-                'locale' => 'en',
+                'language' => 'en',
             ]);
 
             // Update manuscript's current publication
@@ -168,12 +161,12 @@ class OJSWorkflowSeeder extends Seeder
     protected function createDOI(Publication $publication, Manuscript $manuscript): void
     {
         $prefix = config('services.crossref.doi_prefix', '10.00000');
-        $suffix = strtolower(config('app.name', 'journal')) . '.v' . $publication->version_major . 'i' . $publication->version_minor . '.' . $manuscript->id;
-        
+        $suffix = strtolower(config('app.name', 'journal')).'.v'.$publication->version_major.'i'.$publication->version_minor.'.'.$manuscript->id;
+
         DOI::create([
             'doiable_type' => Publication::class,
             'doiable_id' => $publication->id,
-            'doi' => $prefix . '/' . $suffix,
+            'doi' => $prefix.'/'.$suffix,
             'prefix' => $prefix,
             'suffix' => $suffix,
             'status' => 'deposited',
@@ -197,7 +190,7 @@ class OJSWorkflowSeeder extends Seeder
                 'publication_id' => $publication->id,
                 'label' => $galleyType['label'],
                 'locale' => $galleyType['locale'],
-                'file_path' => 'galleys/' . $publication->manuscript_id . '/' . $publication->id . '/' . Str::slug($galleyType['label']) . '-sample.pdf',
+                'file_path' => 'galleys/'.$publication->manuscript_id.'/'.$publication->id.'/'.Str::slug($galleyType['label']).'-sample.pdf',
                 'file_size' => rand(100000, 5000000), // 100KB to 5MB
                 'mime_type' => $galleyType['mime_type'],
                 'sequence' => $index + 1,
@@ -216,9 +209,10 @@ class OJSWorkflowSeeder extends Seeder
         $this->command->info('Creating sample subscriptions...');
 
         $types = SubscriptionType::where('is_active', true)->get();
-        
+
         if ($types->isEmpty()) {
             $this->command->warn('No subscription types found. Skipping subscription seeding.');
+
             return;
         }
 
@@ -227,30 +221,31 @@ class OJSWorkflowSeeder extends Seeder
 
         if ($users->isEmpty()) {
             $this->command->warn('No users found. Skipping subscription seeding.');
+
             return;
         }
 
         foreach ($users as $index => $user) {
             $type = $types->random();
-            
+
             // Determine subscription status
             $statuses = ['active', 'active', 'active', 'expired'];
             $status = $statuses[array_rand($statuses)];
-            
+
             $startDate = now()->subMonths(rand(1, 6));
-            $endDate = $status === 'active' 
+            $endDate = $status === 'active'
                 ? now()->addMonths(rand(1, 6))
                 : now()->subDays(rand(1, 30));
 
             $subscription = Subscription::create([
                 'subscription_type_id' => $type->id,
                 'user_id' => $user->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
+                'date_start' => $startDate,
+                'date_end' => $endDate,
                 'status' => $status,
                 'auto_renew' => rand(0, 1),
-                'ip_ranges' => $type->name === 'Institutional - Annual' 
-                    ? ['192.168.' . ($index + 1) . '.0/24']
+                'ip_ranges' => $type->name === 'Institutional - Annual'
+                    ? ['192.168.'.($index + 1).'.0/24']
                     : null,
             ]);
 
@@ -267,9 +262,10 @@ class OJSWorkflowSeeder extends Seeder
 
         // Get some manuscripts for submission fees
         $manuscripts = Manuscript::limit(3)->get();
-        
+
         if ($manuscripts->isEmpty()) {
             $this->command->warn('No manuscripts found. Skipping payment seeding.');
+
             return;
         }
 
@@ -280,15 +276,16 @@ class OJSWorkflowSeeder extends Seeder
             // Create submission fee payment
             Payment::create([
                 'user_id' => $manuscript->user_id,
-                'payable_type' => Manuscript::class,
-                'payable_id' => $manuscript->id,
+                'manuscript_id' => $manuscript->id,
                 'amount' => 50.00,
                 'currency' => 'USD',
-                'type' => 'submission_fee',
+                'payment_type' => 'submission_fee',
                 'status' => $statuses[array_rand($statuses)],
-                'gateway' => $gateways[array_rand($gateways)],
-                'transaction_id' => 'TXN-' . strtoupper(Str::random(12)) . '-' . time(),
-                'gateway_transaction_id' => 'pi_' . strtoupper(Str::random(24)),
+                'payment_gateway' => $gateways[array_rand($gateways)],
+                'transaction_id' => 'TXN-'.strtoupper(Str::random(12)).'-'.time(),
+                'gateway_response' => json_encode([
+                    'gateway_transaction_id' => 'pi_'.strtoupper(Str::random(24)),
+                ]),
                 'paid_at' => now()->subDays(rand(1, 60)),
             ]);
 
@@ -297,20 +294,24 @@ class OJSWorkflowSeeder extends Seeder
 
         // Create subscription payments
         $subscriptions = Subscription::where('status', 'active')->limit(2)->get();
-        
+
         foreach ($subscriptions as $subscription) {
             Payment::create([
                 'user_id' => $subscription->user_id,
-                'payable_type' => Subscription::class,
-                'payable_id' => $subscription->id,
-                'amount' => $subscription->type->price,
-                'currency' => $subscription->type->currency,
-                'type' => 'subscription',
+                'amount' => $subscription->subscriptionType->cost,
+                'currency' => $subscription->subscriptionType->currency,
+                'payment_type' => 'subscription_fee',
                 'status' => 'completed',
-                'gateway' => $gateways[array_rand($gateways)],
-                'transaction_id' => 'TXN-' . strtoupper(Str::random(12)) . '-' . time(),
-                'gateway_transaction_id' => 'pi_' . strtoupper(Str::random(24)),
-                'paid_at' => $subscription->start_date,
+                'payment_gateway' => $gateways[array_rand($gateways)],
+                'transaction_id' => 'TXN-'.strtoupper(Str::random(12)).'-'.time(),
+                'gateway_response' => json_encode([
+                    'gateway_transaction_id' => 'pi_'.strtoupper(Str::random(24)),
+                ]),
+                'metadata' => [
+                    'subscription_id' => $subscription->id,
+                    'subscription_type_id' => $subscription->subscription_type_id,
+                ],
+                'paid_at' => $subscription->date_start,
             ]);
         }
     }
@@ -321,6 +322,7 @@ class OJSWorkflowSeeder extends Seeder
     protected function randomAccessStatus(): string
     {
         $statuses = ['open', 'open', 'subscription', 'embargo'];
+
         return $statuses[array_rand($statuses)];
     }
 }

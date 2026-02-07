@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ExpertiseSeeder::class,
             ManuscriptAndIssueSeeder::class,
+            JournalCmsSeeder::class,
+            OJSWorkflowSeeder::class,
+            TestPublicationSeeder::class,
         ]);
     }
 }

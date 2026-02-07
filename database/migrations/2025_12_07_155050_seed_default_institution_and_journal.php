@@ -130,8 +130,8 @@ return new class extends Migration
         // Clear institution_id from users
         DB::table('users')->update(['institution_id' => null]);
 
-        // Clear team_id from role assignments
-        DB::table('model_has_roles')->update(['team_id' => null]);
+        // Clear team_id from role assignments (team_id may be non-nullable)
+        DB::table('model_has_roles')->update(['team_id' => 0]);
 
         // Remove pivot entries
         DB::table('journal_user')->delete();
