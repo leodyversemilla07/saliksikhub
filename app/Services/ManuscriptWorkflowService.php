@@ -22,6 +22,7 @@ use App\Notifications\ManuscriptWithdrawn;
 use App\Notifications\ProductionAssigned;
 use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\ManuscriptApproved;
+use App\Core\Plugin\Hook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
@@ -41,14 +42,20 @@ class ManuscriptWorkflowService
                 $manuscript->status = ManuscriptStatus::SUBMITTED;
                 $manuscript->save();
 
+                // Fire action hook before notification
+                Hook::doAction('manuscript.submitted.before_notification', $manuscript);
+
                 // Send notification to managing editors and editor-in-chief
                 $managingEditors = User::role(['managing_editor', 'editor_in_chief'])->get();
                 Notification::send($managingEditors, new ManuscriptSubmitted($manuscript));
 
+                // Fire action hook after successful submission
+                Hook::doAction('manuscript.submitted', $manuscript);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to submit manuscript: '.$e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to submit manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -61,6 +68,9 @@ class ManuscriptWorkflowService
     {
         try {
             return DB::transaction(function () use ($manuscript, $passesScreening, $comments) {
+                // Fire action hook before screening
+                Hook::doAction('manuscript.screening.before', $manuscript, $passesScreening, $comments);
+
                 if ($passesScreening) {
                     $manuscript->status = ManuscriptStatus::AWAITING_REVIEWER_SELECTION;
                     
@@ -90,10 +100,13 @@ class ManuscriptWorkflowService
                     $manuscript->author->notify(new ManuscriptStatusChanged($manuscript, $previousStatus, $newStatus));
                 }
 
+                // Fire action hook after screening
+                Hook::doAction('manuscript.screened', $manuscript, $passesScreening);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to screen manuscript: '.$e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to screen manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -374,6 +387,9 @@ class ManuscriptWorkflowService
     ): bool {
         try {
             return DB::transaction(function () use ($manuscript, $doi, $issueId, $onlineFirst) {
+                // Fire action hook before publication
+                Hook::doAction('manuscript.publishing.before', $manuscript, $doi, $issueId, $onlineFirst);
+
                 $manuscript->status = $onlineFirst
                     ? ManuscriptStatus::PUBLISHED_ONLINE_FIRST
                     : ManuscriptStatus::PUBLISHED;
@@ -394,10 +410,13 @@ class ManuscriptWorkflowService
                 // Submit metadata to indexing services
                 $this->publicationService->submitToIndexingDatabases($manuscript);
 
+                // Fire action hook after publication
+                Hook::doAction('manuscript.published', $manuscript);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to publish manuscript: '.$e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to publish manuscript: '.$e->getMessage());
 
             return false;
         }
