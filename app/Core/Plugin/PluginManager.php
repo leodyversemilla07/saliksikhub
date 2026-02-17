@@ -327,8 +327,11 @@ class PluginManager
         );
 
         foreach ($iterator as $item) {
-            $relativePath = str_replace($source . '/', '', $item->getPathname());
-            $destPath = $destination . '/' . $relativePath;
+            // Get relative path properly for both Windows and Unix
+            $relativePath = substr($item->getPathname(), strlen($source));
+            $relativePath = ltrim($relativePath, '/\\'); // Remove leading slashes
+            $destPath = $destination . DIRECTORY_SEPARATOR . $relativePath;
+            
             if ($item->isDir()) {
                 if (!is_dir($destPath)) {
                     mkdir($destPath, 0755, true);
