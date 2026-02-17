@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\JournalController as AdminJournalController;
 use App\Http\Controllers\Admin\JournalSettingsController;
+use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\IssueController;
@@ -286,6 +287,20 @@ Route::middleware(['journal'])->group(function () {
             Route::post('journals/{journal}/cms/theme/favicon', [\App\Http\Controllers\Admin\JournalThemeController::class, 'uploadFavicon'])->name('journals.cms.theme.favicon');
             Route::post('journals/{journal}/cms/theme/reset', [\App\Http\Controllers\Admin\JournalThemeController::class, 'reset'])->name('journals.cms.theme.reset');
             Route::get('journals/{journal}/cms/theme/preview.css', [\App\Http\Controllers\Admin\JournalThemeController::class, 'preview'])->name('journals.cms.theme.preview');
+
+            // Plugin Management
+            Route::get('plugins', [\App\Http\Controllers\Admin\PluginController::class, 'index'])->name('plugins.index');
+            Route::get('plugins/{plugin}', [\App\Http\Controllers\Admin\PluginController::class, 'show'])->name('plugins.show');
+            Route::post('plugins/install', [\App\Http\Controllers\Admin\PluginController::class, 'install'])->name('plugins.install');
+            Route::post('plugins/upload', [\App\Http\Controllers\Admin\PluginController::class, 'upload'])->name('plugins.upload');
+            Route::post('plugins/{plugin}/enable', [\App\Http\Controllers\Admin\PluginController::class, 'enable'])->name('plugins.enable');
+            Route::post('plugins/{plugin}/disable', [\App\Http\Controllers\Admin\PluginController::class, 'disable'])->name('plugins.disable');
+            Route::post('plugins/{plugin}/enable-for-journal', [\App\Http\Controllers\Admin\PluginController::class, 'enableForJournal'])->name('plugins.enable-for-journal');
+            Route::post('plugins/{plugin}/disable-for-journal', [\App\Http\Controllers\Admin\PluginController::class, 'disableForJournal'])->name('plugins.disable-for-journal');
+            Route::get('plugins/{plugin}/settings', [\App\Http\Controllers\Admin\PluginController::class, 'settings'])->name('plugins.settings');
+            Route::post('plugins/{plugin}/settings', [\App\Http\Controllers\Admin\PluginController::class, 'updateSettings'])->name('plugins.settings.update');
+            Route::delete('plugins/{plugin}', [\App\Http\Controllers\Admin\PluginController::class, 'destroy'])->name('plugins.destroy');
+            Route::post('plugins/refresh', [\App\Http\Controllers\Admin\PluginController::class, 'refresh'])->name('plugins.refresh');
         });
 
         // Reviewers group

@@ -1,0 +1,16 @@
+{
+    "name": "announcement-banner",
+    "displayName": "Announcement Banner",
+    "version": "1.0.0",
+    "author": "Saliksikhub Team",
+    "description": "Display customizable announcement banners on journal pages",
+    "isGlobal": false,
+    "hasSettings": true,
+    "defaultSettings": {
+        "enabled": false,
+        "message": "Welcome to our journal!",
+        "type": "info",
+        "position": "top",
+        "dismissible": true
+    }
+}
