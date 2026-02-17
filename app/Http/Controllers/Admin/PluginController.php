@@ -218,14 +218,20 @@ class PluginController extends Controller
     public function updateSettings(Request $request, Plugin $plugin): RedirectResponse
     {
         $request->validate([
-            'settings' => 'required|array',
+            'settings' => 'required',
             'journal_id' => 'nullable|exists:journals,id',
         ]);
 
         try {
+            // Handle both JSON string and array input
+            $settings = $request->input('settings');
+            if (is_string($settings)) {
+                $settings = json_decode($settings, true);
+            }
+
             $this->pluginManager->updateSettings(
                 $plugin,
-                $request->input('settings'),
+                $settings,
                 $request->input('journal_id')
             );
             

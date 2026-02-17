@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -27,6 +27,7 @@ const navigationMap = {
     super_admin: [
         { href: admin.institutions.index.url(), label: 'Institutions', icon: Building2 },
         { href: admin.journals.index.url(), label: 'Journals', icon: BookOpen },
+        { href: '/admin/plugins', label: 'Plugins', icon: Puzzle },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
     managing_editor: [
