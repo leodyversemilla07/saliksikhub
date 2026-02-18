@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\DecisionType;
 use App\ManuscriptStatus;
-use App\ReviewStatus;
-use App\Models\CopyrightAgreement;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
-use App\Models\ManuscriptIndexing;
-use App\Models\ProofCorrection;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\LanguageEditorAssigned;
+use App\Notifications\ManuscriptApproved;
 use App\Notifications\ManuscriptDecision;
 use App\Notifications\ManuscriptReadyForReview;
 use App\Notifications\ManuscriptRevisionSubmitted;
@@ -20,10 +19,9 @@ use App\Notifications\ManuscriptStatusChanged;
 use App\Notifications\ManuscriptSubmitted;
 use App\Notifications\ManuscriptWithdrawn;
 use App\Notifications\ProductionAssigned;
-use App\Notifications\AuthorApprovalRequired;
-use App\Notifications\ManuscriptApproved;
-use App\Core\Plugin\Hook;
+use App\ReviewStatus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class ManuscriptWorkflowService
@@ -55,7 +53,7 @@ class ManuscriptWorkflowService
                 return true;
             });
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to submit manuscript: '.$e->getMessage());
+            Log::error('Failed to submit manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -73,7 +71,7 @@ class ManuscriptWorkflowService
 
                 if ($passesScreening) {
                     $manuscript->status = ManuscriptStatus::AWAITING_REVIEWER_SELECTION;
-                    
+
                     // Notify editors that manuscript is ready for review
                     $editors = User::role(['managing_editor', 'editor_in_chief', 'associate_editor'])->get();
                     Notification::send($editors, new ManuscriptReadyForReview($manuscript));
@@ -106,7 +104,7 @@ class ManuscriptWorkflowService
                 return true;
             });
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to screen manuscript: '.$e->getMessage());
+            Log::error('Failed to screen manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -150,10 +148,13 @@ class ManuscriptWorkflowService
                     }
                 }
 
+                // Fire action hook after reviewers assigned
+                Hook::doAction('manuscript.reviewers_assigned', $manuscript, $reviewerIds, $reviewRound);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to assign reviewers: '.$e->getMessage());
+            Log::error('Failed to assign reviewers: '.$e->getMessage());
 
             return false;
         }
@@ -194,10 +195,13 @@ class ManuscriptWorkflowService
                     $manuscript->author->notify(new ManuscriptDecision($manuscript, $decision));
                 }
 
+                // Fire action hook after editorial decision
+                Hook::doAction('manuscript.editorial_decision', $manuscript, $decision, $decisionType);
+
                 return $decision;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to make editorial decision: '.$e->getMessage());
+            Log::error('Failed to make editorial decision: '.$e->getMessage());
 
             return null;
         }
@@ -230,10 +234,13 @@ class ManuscriptWorkflowService
                     $editor->notify(new ManuscriptRevisionSubmitted($manuscript));
                 }
 
+                // Fire action hook after revision submitted
+                Hook::doAction('manuscript.revision_submitted', $manuscript, $responseToReviewers);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to submit revision: '.$e->getMessage());
+            Log::error('Failed to submit revision: '.$e->getMessage());
 
             return false;
         }
@@ -250,7 +257,7 @@ class ManuscriptWorkflowService
 
                 if ($languageEditorId) {
                     $manuscript->editor_id = $languageEditorId;
-                    
+
                     // Send notification to language editor
                     $languageEditor = User::find($languageEditorId);
                     if ($languageEditor) {
@@ -260,10 +267,13 @@ class ManuscriptWorkflowService
 
                 $manuscript->save();
 
+                // Fire action hook after copyediting started
+                Hook::doAction('manuscript.copyediting_started', $manuscript, $languageEditorId);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to start copyediting: '.$e->getMessage());
+            Log::error('Failed to start copyediting: '.$e->getMessage());
 
             return false;
         }
@@ -289,10 +299,13 @@ class ManuscriptWorkflowService
                     Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
                 }
 
+                // Fire action hook after typesetting started
+                Hook::doAction('manuscript.typesetting_started', $manuscript);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to start typesetting: '.$e->getMessage());
+            Log::error('Failed to start typesetting: '.$e->getMessage());
 
             return false;
         }
@@ -313,10 +326,13 @@ class ManuscriptWorkflowService
                     $manuscript->author->notify(new AuthorApprovalRequired($manuscript));
                 }
 
+                // Fire action hook after author approval requested
+                Hook::doAction('manuscript.author_approval_requested', $manuscript);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to request author approval: '.$e->getMessage());
+            Log::error('Failed to request author approval: '.$e->getMessage());
 
             return false;
         }
@@ -367,10 +383,13 @@ class ManuscriptWorkflowService
                     ));
                 }
 
+                // Fire action hook after author approval processed
+                Hook::doAction('manuscript.author_approval_processed', $manuscript, $approved, $comments);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to process author approval: '.$e->getMessage());
+            Log::error('Failed to process author approval: '.$e->getMessage());
 
             return false;
         }
@@ -416,7 +435,7 @@ class ManuscriptWorkflowService
                 return true;
             });
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to publish manuscript: '.$e->getMessage());
+            Log::error('Failed to publish manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -449,10 +468,13 @@ class ManuscriptWorkflowService
                     $review->reviewer->notify(new ManuscriptWithdrawn($manuscript, $reason, 'Author'));
                 }
 
+                // Fire action hook after manuscript withdrawn
+                Hook::doAction('manuscript.withdrawn', $manuscript, $reason);
+
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Failed to withdraw manuscript: '.$e->getMessage());
+            Log::error('Failed to withdraw manuscript: '.$e->getMessage());
 
             return false;
         }
@@ -469,7 +491,7 @@ class ManuscriptWorkflowService
             $query->where('editor_id', $editorId);
         }
 
-        return [
+        $stats = [
             'total_submissions' => $query->count(),
             'under_screening' => (clone $query)->where('status', ManuscriptStatus::UNDER_SCREENING)->count(),
             'in_review' => (clone $query)->where('status', ManuscriptStatus::IN_REVIEW)->count(),
@@ -488,5 +510,8 @@ class ManuscriptWorkflowService
                 ManuscriptStatus::DESK_REJECTED,
             ])->count(),
         ];
+
+        // Allow plugins to add custom workflow statistics
+        return Hook::applyFilters('manuscript.workflow_statistics', $stats, $editorId);
     }
 }

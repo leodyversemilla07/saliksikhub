@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\Models\Galley;
 use App\Models\ManuscriptStatistic;
 use App\Models\Publication;
@@ -46,7 +47,7 @@ class GalleyService
 
         // Generate file path
         $extension = $file->getClientOriginalExtension();
-        $filename = Str::slug($label) . '-' . time() . '.' . $extension;
+        $filename = Str::slug($label).'-'.time().'.'.$extension;
         $path = "galleys/{$publication->manuscript_id}/{$publication->id}/{$filename}";
 
         // Upload to storage
@@ -75,6 +76,9 @@ class GalleyService
             'is_approved' => false,
         ]);
 
+        // Fire action hook after galley uploaded
+        Hook::doAction('galley.uploaded', $galley, $publication);
+
         return $galley;
     }
 
@@ -98,7 +102,7 @@ class GalleyService
 
             // Upload new file
             $extension = $file->getClientOriginalExtension();
-            $filename = Str::slug($data['label'] ?? $galley->label) . '-' . time() . '.' . $extension;
+            $filename = Str::slug($data['label'] ?? $galley->label).'-'.time().'.'.$extension;
             $path = "galleys/{$galley->publication->manuscript_id}/{$galley->publication_id}/{$filename}";
 
             $filePath = Storage::disk('s3')->putFileAs(
@@ -123,6 +127,9 @@ class GalleyService
      */
     public function deleteGalley(Galley $galley): bool
     {
+        // Fire action hook before galley deletion
+        Hook::doAction('galley.deleting', $galley);
+
         // Delete file from storage
         Storage::disk('s3')->delete($galley->file_path);
 
@@ -138,6 +145,9 @@ class GalleyService
         $galley->update([
             'is_approved' => true,
         ]);
+
+        // Fire action hook after galley approved
+        Hook::doAction('galley.approved', $galley);
 
         return $galley;
     }
@@ -169,11 +179,14 @@ class GalleyService
                 'metric_type' => 'request',
                 'accessed_at' => now(),
                 'session_id' => session()->getId(),
-                'ip_address' => $ipAddress ? hash('sha256', $ipAddress . config('app.key')) : null,
+                'ip_address' => $ipAddress ? hash('sha256', $ipAddress.config('app.key')) : null,
                 'user_agent' => request()->userAgent(),
                 'country_code' => null,
             ]);
         }
+
+        // Fire action hook after download recorded
+        Hook::doAction('galley.downloaded', $galley, $ipAddress);
     }
 
     /**
@@ -227,31 +240,31 @@ class GalleyService
      */
     public function generateHtmlFromXml(Galley $xmlGalley): ?Galley
     {
-        if (!in_array($xmlGalley->mime_type, ['application/xml', 'text/xml'])) {
+        if (! in_array($xmlGalley->mime_type, ['application/xml', 'text/xml'])) {
             throw new InvalidArgumentException('Source galley must be XML format');
         }
 
         $xmlContent = Storage::disk('s3')->get($xmlGalley->file_path);
-        if (!$xmlContent) {
+        if (! $xmlContent) {
             return null;
         }
 
         $xslPath = resource_path('xsl/jats-to-html.xsl');
-        if (!file_exists($xslPath)) {
+        if (! file_exists($xslPath)) {
             // Fallback: basic XML-to-HTML conversion without XSLT stylesheet
-            $xml = new \DOMDocument();
+            $xml = new \DOMDocument;
             $xml->loadXML($xmlContent);
 
             $body = $xml->getElementsByTagName('body')->item(0);
             $htmlContent = $body ? $xml->saveHTML($body) : '<p>Unable to render XML content.</p>';
         } else {
-            $xml = new \DOMDocument();
+            $xml = new \DOMDocument;
             $xml->loadXML($xmlContent);
 
-            $xsl = new \DOMDocument();
+            $xsl = new \DOMDocument;
             $xsl->load($xslPath);
 
-            $processor = new \XSLTProcessor();
+            $processor = new \XSLTProcessor;
             $processor->importStyleSheet($xsl);
 
             $htmlContent = $processor->transformToXml($xml);
@@ -260,7 +273,7 @@ class GalleyService
             }
         }
 
-        $filename = Str::slug($xmlGalley->label) . '-html-' . time() . '.html';
+        $filename = Str::slug($xmlGalley->label).'-html-'.time().'.html';
         $path = "galleys/{$xmlGalley->publication->manuscript_id}/{$xmlGalley->publication_id}/{$filename}";
 
         Storage::disk('s3')->put($path, $htmlContent, 'public');
@@ -268,7 +281,7 @@ class GalleyService
         $sequence = $xmlGalley->publication->galleys()->max('sequence') + 1;
 
         return $xmlGalley->publication->galleys()->create([
-            'label' => $xmlGalley->label . ' (HTML)',
+            'label' => $xmlGalley->label.' (HTML)',
             'locale' => $xmlGalley->locale,
             'file_path' => $path,
             'file_size' => strlen($htmlContent),
@@ -304,25 +317,29 @@ class GalleyService
         $extension = strtolower($file->getClientOriginalExtension());
         $mimeType = $file->getMimeType();
 
-        if (!in_array($extension, $this->allowedExtensions)) {
+        // Allow plugins to extend allowed file types
+        $allowedExtensions = Hook::applyFilters('galley.allowed_extensions', $this->allowedExtensions);
+        $allowedMimeTypes = Hook::applyFilters('galley.allowed_mime_types', $this->allowedMimeTypes);
+
+        if (! in_array($extension, $allowedExtensions)) {
             throw new InvalidArgumentException(
-                "File extension '{$extension}' is not allowed. Allowed: " . 
-                implode(', ', $this->allowedExtensions)
+                "File extension '{$extension}' is not allowed. Allowed: ".
+                implode(', ', $allowedExtensions)
             );
         }
 
-        if (!in_array($mimeType, $this->allowedMimeTypes)) {
+        if (! in_array($mimeType, $allowedMimeTypes)) {
             throw new InvalidArgumentException(
-                "MIME type '{$mimeType}' is not allowed. Allowed: " . 
-                implode(', ', $this->allowedMimeTypes)
+                "MIME type '{$mimeType}' is not allowed. Allowed: ".
+                implode(', ', $allowedMimeTypes)
             );
         }
 
-        // Check file size (max 50MB)
-        $maxSize = 50 * 1024 * 1024; // 50MB in bytes
+        // Allow plugins to modify max file size
+        $maxSize = Hook::applyFilters('galley.max_file_size', 50 * 1024 * 1024);
         if ($file->getSize() > $maxSize) {
             throw new InvalidArgumentException(
-                "File size exceeds maximum allowed size of 50MB"
+                'File size exceeds maximum allowed size of 50MB'
             );
         }
     }
@@ -334,12 +351,12 @@ class GalleyService
     {
         $bytes = $galley->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**

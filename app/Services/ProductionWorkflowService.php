@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\Models\Manuscript;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,9 @@ class ProductionWorkflowService
 
             $manuscript->update($updateData);
 
+            // Fire action hook after copyediting started
+            Hook::doAction('production.copyediting_started', $manuscript, $copyeditorId);
+
             Log::info("Copyediting started for manuscript {$manuscript->id}");
 
             return true;
@@ -49,6 +53,9 @@ class ProductionWorkflowService
 
             $manuscript->update($updateData);
 
+            // Fire action hook after copyediting completed
+            Hook::doAction('production.copyediting_completed', $manuscript);
+
             Log::info("Copyediting completed for manuscript {$manuscript->id}");
 
             return true;
@@ -61,7 +68,7 @@ class ProductionWorkflowService
     public function startTypesetting(Manuscript $manuscript, ?int $layoutEditorId = null): bool
     {
         // Ensure copyediting is completed
-        if ($manuscript->production_stage !== 'copyediting' || !$manuscript->copyediting_completed_at) {
+        if ($manuscript->production_stage !== 'copyediting' || ! $manuscript->copyediting_completed_at) {
             throw new \Exception('Cannot start typesetting before copyediting is completed');
         }
 
@@ -76,6 +83,9 @@ class ProductionWorkflowService
             }
 
             $manuscript->update($updateData);
+
+            // Fire action hook after typesetting started
+            Hook::doAction('production.typesetting_started', $manuscript, $layoutEditorId);
 
             Log::info("Typesetting started for manuscript {$manuscript->id}");
 
@@ -93,6 +103,9 @@ class ProductionWorkflowService
                 'typesetting_completed_at' => now(),
             ]);
 
+            // Fire action hook after typesetting completed
+            Hook::doAction('production.typesetting_completed', $manuscript);
+
             Log::info("Typesetting completed for manuscript {$manuscript->id}");
 
             return true;
@@ -105,7 +118,7 @@ class ProductionWorkflowService
     public function startProofing(Manuscript $manuscript): bool
     {
         // Ensure typesetting is completed
-        if ($manuscript->production_stage !== 'typesetting' || !$manuscript->typesetting_completed_at) {
+        if ($manuscript->production_stage !== 'typesetting' || ! $manuscript->typesetting_completed_at) {
             throw new \Exception('Cannot start proofing before typesetting is completed');
         }
 
@@ -114,6 +127,9 @@ class ProductionWorkflowService
                 'production_stage' => 'proofing',
                 'proofing_started_at' => now(),
             ]);
+
+            // Fire action hook after proofing started
+            Hook::doAction('production.proofing_started', $manuscript);
 
             Log::info("Proofing started for manuscript {$manuscript->id}");
 
@@ -131,6 +147,9 @@ class ProductionWorkflowService
                 'production_stage' => 'ready',
                 'proofing_completed_at' => now(),
             ]);
+
+            // Fire action hook after proofing completed
+            Hook::doAction('production.proofing_completed', $manuscript);
 
             Log::info("Proofing completed for manuscript {$manuscript->id}");
 
@@ -155,6 +174,9 @@ class ProductionWorkflowService
                 'published_at' => now(),
             ]);
 
+            // Fire action hook after manuscript published via production
+            Hook::doAction('production.published', $manuscript);
+
             Log::info("Manuscript {$manuscript->id} marked as published");
 
             return true;
@@ -168,8 +190,8 @@ class ProductionWorkflowService
     {
         // Verify user has copyeditor role
         $copyeditor = User::find($copyeditorId);
-        
-        if (!$copyeditor) {
+
+        if (! $copyeditor) {
             throw new \Exception('Copyeditor not found');
         }
 
@@ -183,8 +205,8 @@ class ProductionWorkflowService
     {
         // Verify user has layout editor role
         $layoutEditor = User::find($layoutEditorId);
-        
-        if (!$layoutEditor) {
+
+        if (! $layoutEditor) {
             throw new \Exception('Layout editor not found');
         }
 
@@ -207,7 +229,7 @@ class ProductionWorkflowService
      */
     public function getProductionStats(): array
     {
-        return [
+        $stats = [
             'none' => Manuscript::where('production_stage', 'none')->count(),
             'copyediting' => Manuscript::where('production_stage', 'copyediting')->count(),
             'typesetting' => Manuscript::where('production_stage', 'typesetting')->count(),
@@ -215,6 +237,9 @@ class ProductionWorkflowService
             'ready' => Manuscript::where('production_stage', 'ready')->count(),
             'published' => Manuscript::where('production_stage', 'published')->count(),
         ];
+
+        // Allow plugins to add custom production statistics
+        return Hook::applyFilters('production.statistics', $stats);
     }
 
     /**
@@ -274,8 +299,8 @@ class ProductionWorkflowService
     public function revertToStage(Manuscript $manuscript, string $stage): bool
     {
         $validStages = ['none', 'copyediting', 'typesetting', 'proofing', 'ready'];
-        
-        if (!in_array($stage, $validStages)) {
+
+        if (! in_array($stage, $validStages)) {
             throw new \Exception('Invalid production stage');
         }
 
@@ -299,6 +324,9 @@ class ProductionWorkflowService
             }
 
             $manuscript->update($updateData);
+
+            // Fire action hook after stage reverted
+            Hook::doAction('production.stage_reverted', $manuscript, $stage);
 
             Log::info("Manuscript {$manuscript->id} reverted to stage: {$stage}");
 

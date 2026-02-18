@@ -9,8 +9,7 @@ uses()->group('plugins');
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->admin = User::factory()->create();
-    $this->admin->assignRole('super_admin');
+    $this->admin = User::factory()->create(['role' => 'super_admin']);
 });
 
 describe('Plugin Admin Routes', function () {
@@ -60,7 +59,7 @@ describe('Plugin Admin Routes', function () {
             ->post("/admin/plugins/{$plugin->id}/enable");
 
         $response->assertRedirect();
-        
+
         $plugin->refresh();
         expect($plugin->enabled)->toBeTrue();
     });
@@ -78,7 +77,7 @@ describe('Plugin Admin Routes', function () {
             ->post("/admin/plugins/{$plugin->id}/disable");
 
         $response->assertRedirect();
-        
+
         $plugin->refresh();
         expect($plugin->enabled)->toBeFalse();
     });
@@ -100,7 +99,7 @@ describe('Plugin Admin Routes', function () {
             ]);
 
         $response->assertRedirect();
-        
+
         expect($plugin->isActiveForJournal($journal->id))->toBeTrue();
     });
 
@@ -119,7 +118,7 @@ describe('Plugin Admin Routes', function () {
             ]);
 
         $response->assertRedirect();
-        
+
         $plugin->refresh();
         expect($plugin->settings)->toBe(['key' => 'new_value', 'other' => 'data']);
     });

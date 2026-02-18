@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\Models\Manuscript;
 use App\Models\Payment;
 use App\Models\Subscription;
@@ -80,7 +81,7 @@ class PaymentService
     public function processWithStripe(Payment $payment, array $paymentData): array
     {
         $stripeKey = config('services.stripe.secret') ?? '';
-        
+
         if (empty($stripeKey)) {
             throw new \Exception('Stripe is not configured');
         }
@@ -88,7 +89,7 @@ class PaymentService
         try {
             // Create Stripe payment intent
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $stripeKey,
+                'Authorization' => 'Bearer '.$stripeKey,
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ])->asForm()->post('https://api.stripe.com/v1/payment_intents', [
                 'amount' => (int) ($payment->amount * 100), // Convert to cents
@@ -103,8 +104,8 @@ class PaymentService
                 'return_url' => route('payments.return'),
             ]);
 
-            if (!$response->successful()) {
-                throw new \Exception('Stripe payment failed: ' . $response->body());
+            if (! $response->successful()) {
+                throw new \Exception('Stripe payment failed: '.$response->body());
             }
 
             $result = $response->json();
@@ -130,7 +131,7 @@ class PaymentService
             // Mark as completed if successful
             if ($result['status'] === 'succeeded') {
                 $this->markAsCompleted($payment, $result['id']);
-                
+
                 return [
                     'success' => true,
                     'payment_id' => $payment->id,
@@ -146,7 +147,7 @@ class PaymentService
 
         } catch (\Exception $e) {
             $this->markAsFailed($payment, $e->getMessage());
-            
+
             throw $e;
         }
     }
@@ -159,12 +160,12 @@ class PaymentService
         $clientId = config('services.paypal.client_id') ?? '';
         $secret = config('services.paypal.secret') ?? '';
         $mode = config('services.paypal.mode', 'sandbox');
-        
+
         if (empty($clientId) || empty($secret)) {
             throw new \Exception('PayPal is not configured');
         }
 
-        $baseUrl = $mode === 'live' 
+        $baseUrl = $mode === 'live'
             ? 'https://api-m.paypal.com'
             : 'https://api-m.sandbox.paypal.com';
 
@@ -176,7 +177,7 @@ class PaymentService
                     'grant_type' => 'client_credentials',
                 ]);
 
-            if (!$tokenResponse->successful()) {
+            if (! $tokenResponse->successful()) {
                 throw new \Exception('PayPal authentication failed');
             }
 
@@ -202,8 +203,8 @@ class PaymentService
                     ],
                 ]);
 
-            if (!$orderResponse->successful()) {
-                throw new \Exception('PayPal order creation failed: ' . $orderResponse->body());
+            if (! $orderResponse->successful()) {
+                throw new \Exception('PayPal order creation failed: '.$orderResponse->body());
             }
 
             $order = $orderResponse->json();
@@ -229,7 +230,7 @@ class PaymentService
 
         } catch (\Exception $e) {
             $this->markAsFailed($payment, $e->getMessage());
-            
+
             throw $e;
         }
     }
@@ -242,8 +243,8 @@ class PaymentService
         $clientId = config('services.paypal.client_id') ?? '';
         $secret = config('services.paypal.secret') ?? '';
         $mode = config('services.paypal.mode', 'sandbox');
-        
-        $baseUrl = $mode === 'live' 
+
+        $baseUrl = $mode === 'live'
             ? 'https://api-m.paypal.com'
             : 'https://api-m.sandbox.paypal.com';
 
@@ -261,8 +262,8 @@ class PaymentService
             $captureResponse = Http::withToken($accessToken)
                 ->post("{$baseUrl}/v2/checkout/orders/{$orderId}/capture");
 
-            if (!$captureResponse->successful()) {
-                throw new \Exception('PayPal capture failed: ' . $captureResponse->body());
+            if (! $captureResponse->successful()) {
+                throw new \Exception('PayPal capture failed: '.$captureResponse->body());
             }
 
             $result = $captureResponse->json();
@@ -276,7 +277,7 @@ class PaymentService
             if ($result['status'] === 'COMPLETED') {
                 $captureId = $result['purchase_units'][0]['payments']['captures'][0]['id'] ?? null;
                 $this->markAsCompleted($payment, $captureId);
-                
+
                 return [
                     'success' => true,
                     'payment_id' => $payment->id,
@@ -292,7 +293,7 @@ class PaymentService
 
         } catch (\Exception $e) {
             $this->markAsFailed($payment, $e->getMessage());
-            
+
             throw $e;
         }
     }
@@ -311,6 +312,9 @@ class PaymentService
         // Trigger any post-payment actions
         $this->handlePostPaymentActions($payment);
 
+        // Fire action hook after payment completed
+        Hook::doAction('payment.completed', $payment);
+
         return $payment;
     }
 
@@ -326,6 +330,9 @@ class PaymentService
                 'failed_at' => now()->toIso8601String(),
             ]),
         ]);
+
+        // Fire action hook after payment failed
+        Hook::doAction('payment.failed', $payment, $errorMessage);
 
         return $payment;
     }
@@ -360,10 +367,13 @@ class PaymentService
                 'refunded_at' => now(),
             ]);
 
+            // Fire action hook after payment refunded
+            Hook::doAction('payment.refunded', $payment, $refundAmount, $reason);
+
             return $payment;
 
         } catch (\Exception $e) {
-            throw new \Exception('Refund failed: ' . $e->getMessage());
+            throw new \Exception('Refund failed: '.$e->getMessage());
         }
     }
 
@@ -375,15 +385,15 @@ class PaymentService
         $stripeKey = config('services.stripe.secret') ?? '';
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $stripeKey,
+            'Authorization' => 'Bearer '.$stripeKey,
         ])->asForm()->post('https://api.stripe.com/v1/refunds', [
             'payment_intent' => $payment->gateway_transaction_id,
             'amount' => (int) ($amount * 100),
             'reason' => $reason ?? 'requested_by_customer',
         ]);
 
-        if (!$response->successful()) {
-            throw new \Exception('Stripe refund failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Stripe refund failed: '.$response->body());
         }
     }
 
@@ -395,8 +405,8 @@ class PaymentService
         $clientId = config('services.paypal.client_id') ?? '';
         $secret = config('services.paypal.secret') ?? '';
         $mode = config('services.paypal.mode', 'sandbox');
-        
-        $baseUrl = $mode === 'live' 
+
+        $baseUrl = $mode === 'live'
             ? 'https://api-m.paypal.com'
             : 'https://api-m.sandbox.paypal.com';
 
@@ -419,8 +429,8 @@ class PaymentService
                 'note_to_payer' => $reason ?? 'Refund processed',
             ]);
 
-        if (!$response->successful()) {
-            throw new \Exception('PayPal refund failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('PayPal refund failed: '.$response->body());
         }
     }
 
@@ -466,7 +476,7 @@ class PaymentService
      */
     protected function generateTransactionId(): string
     {
-        return 'TXN-' . strtoupper(Str::random(12)) . '-' . time();
+        return 'TXN-'.strtoupper(Str::random(12)).'-'.time();
     }
 
     /**
@@ -474,12 +484,15 @@ class PaymentService
      */
     public function getPaymentStats(): array
     {
-        return [
+        $stats = [
             'total_revenue' => Payment::where('status', 'completed')->sum('amount'),
             'pending_payments' => Payment::where('status', 'pending')->count(),
             'completed_payments' => Payment::where('status', 'completed')->count(),
             'failed_payments' => Payment::where('status', 'failed')->count(),
             'refunded_amount' => Payment::where('status', 'refunded')->sum('refunded_amount'),
         ];
+
+        // Allow plugins to add custom payment statistics
+        return Hook::applyFilters('payment.statistics', $stats);
     }
 }

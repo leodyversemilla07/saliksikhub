@@ -2,13 +2,15 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\Models\Manuscript;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\ReviewExtensionRequested;
 use App\ReviewRecommendation;
 use App\ReviewStatus;
-use App\Notifications\ReviewExtensionRequested;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReviewService
 {
@@ -39,9 +41,12 @@ class ReviewService
             // Send review invitation email
             $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
 
+            // Fire action hook after reviewer invitation
+            Hook::doAction('review.invited', $review, $manuscript, $reviewer);
+
             return $review;
         } catch (\Exception $e) {
-            \Log::error('Failed to invite reviewer: '.$e->getMessage());
+            Log::error('Failed to invite reviewer: '.$e->getMessage());
 
             return null;
         }
@@ -66,12 +71,15 @@ class ReviewService
                 $manuscript->editor->notify(new \App\Notifications\ReviewAccepted($review));
             }
 
+            // Fire action hook after review acceptance
+            Hook::doAction('review.accepted', $review, $manuscript);
+
             DB::commit();
 
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Failed to accept review invitation: '.$e->getMessage());
+            Log::error('Failed to accept review invitation: '.$e->getMessage());
 
             return false;
         }
@@ -96,12 +104,15 @@ class ReviewService
                 $manuscript->editor->notify(new \App\Notifications\ReviewDeclined($review, $reason));
             }
 
+            // Fire action hook after review decline
+            Hook::doAction('review.declined', $review, $manuscript, $reason);
+
             DB::commit();
 
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Failed to decline review invitation: '.$e->getMessage());
+            Log::error('Failed to decline review invitation: '.$e->getMessage());
 
             return false;
         }
@@ -144,6 +155,9 @@ class ReviewService
 
             // Notify editor about completed review
             $manuscript = $review->manuscript;
+
+            // Fire action hook after review submission
+            Hook::doAction('review.submitted', $review, $manuscript, $recommendation);
             if ($manuscript->editor) {
                 $manuscript->editor->notify(new \App\Notifications\ReviewSubmitted($review));
             }
@@ -151,7 +165,7 @@ class ReviewService
             // Check if all reviews are completed and notify if so
             $activeReviews = $manuscript->activeReviews()->count();
             if ($activeReviews === 0) {
-                \Log::info('All reviews completed for manuscript: '.$manuscript->id);
+                Log::info('All reviews completed for manuscript: '.$manuscript->id);
                 // Could send additional notification here
             }
 
@@ -160,7 +174,7 @@ class ReviewService
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Failed to submit review: '.$e->getMessage());
+            Log::error('Failed to submit review: '.$e->getMessage());
 
             return false;
         }
@@ -180,14 +194,17 @@ class ReviewService
             // Send reminder notification
             $review->reviewer->notify(new \App\Notifications\ReviewReminder($review));
 
-            \Log::info('Review reminder sent', [
+            // Fire action hook after reminder sent
+            Hook::doAction('review.reminder_sent', $review);
+
+            Log::info('Review reminder sent', [
                 'review_id' => $review->id,
                 'reviewer_id' => $review->reviewer_id,
             ]);
 
             return true;
         } catch (\Exception $e) {
-            \Log::error('Failed to send review reminder: '.$e->getMessage());
+            Log::error('Failed to send review reminder: '.$e->getMessage());
 
             return false;
         }
@@ -272,9 +289,12 @@ class ReviewService
         });
 
         // Sort by relevance score desc, then by completed reviews desc
-        return $scoredReviewers->sortByDesc(function ($reviewer) {
+        $result = $scoredReviewers->sortByDesc(function ($reviewer) {
             return $reviewer->relevance_score * 1000 + $reviewer->completedReviews()->count();
         })->take($limit);
+
+        // Allow plugins to filter/reorder suitable reviewers
+        return Hook::applyFilters('review.suitable_reviewers', $result, $manuscript);
     }
 
     /**
@@ -288,7 +308,7 @@ class ReviewService
             $query->where('manuscript_id', $manuscriptId);
         }
 
-        return [
+        $stats = [
             'total_reviews' => $query->count(),
             'pending_invitations' => (clone $query)->where('status', ReviewStatus::INVITED)->count(),
             'accepted' => (clone $query)->where('status', ReviewStatus::ACCEPTED)->count(),
@@ -297,6 +317,9 @@ class ReviewService
             'declined' => (clone $query)->where('status', ReviewStatus::DECLINED)->count(),
             'overdue' => (clone $query)->overdue()->count(),
         ];
+
+        // Allow plugins to add custom review statistics
+        return Hook::applyFilters('review.statistics', $stats, $manuscriptId);
     }
 
     /**
@@ -319,12 +342,15 @@ class ReviewService
                 $editor->notify(new ReviewExtensionRequested($review, $newDueDate, $reason));
             }
 
+            // Fire action hook after extension request
+            Hook::doAction('review.extension_requested', $review, $newDueDate, $reason);
+
             DB::commit();
 
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Failed to request review extension: '.$e->getMessage());
+            Log::error('Failed to request review extension: '.$e->getMessage());
 
             return false;
         }
@@ -350,12 +376,15 @@ class ReviewService
                 $oldReview->due_date
             );
 
+            // Fire action hook after review reassignment
+            Hook::doAction('review.reassigned', $oldReview, $newReview, $newReviewer);
+
             DB::commit();
 
             return $newReview;
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Failed to reassign review: '.$e->getMessage());
+            Log::error('Failed to reassign review: '.$e->getMessage());
 
             return null;
         }
