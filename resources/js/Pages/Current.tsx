@@ -1,11 +1,10 @@
-import Footer from '@/components/site-footer';
-import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { FileText, Eye, Calendar, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import PublicLayout from '@/layouts/public-layout';
 
 interface Article {
     id: number;
@@ -38,15 +37,11 @@ interface CurrentPageProps extends PageProps {
     currentIssue: CurrentIssue | null;
 }
 
-export default function Current({ auth, currentIssue }: CurrentPageProps) {
+export default function Current({ currentIssue }: CurrentPageProps) {
     // If no current issue is available, show a message
     if (!currentIssue) {
         return (
-            <div className="flex flex-col min-h-screen bg-background">
-                <Head title="Current Issue - Daluyang Dunong MinSU Research Journal" />
-                <Header auth={auth} />
-
-                <main className="grow">
+            <PublicLayout title="Current Issue - Daluyang Dunong MinSU Research Journal">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="text-center py-16">
                             <Card className="max-w-md mx-auto">
@@ -65,19 +60,12 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
                             </Card>
                         </div>
                     </div>
-                </main>
-
-                <Footer />
-            </div>
+            </PublicLayout>
         );
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`} />
-            <Header auth={auth} />
-
-            <main className="grow">
+        <PublicLayout title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -166,10 +154,7 @@ export default function Current({ auth, currentIssue }: CurrentPageProps) {
                         </div>
                     </div>
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }
 

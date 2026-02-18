@@ -1,17 +1,15 @@
 import { useState, FormEventHandler } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import Breadcrumb from '@/components/breadcrumb';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
-import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { home } from '@/routes';
 import password from '@/routes/password';
+import PublicLayout from '@/layouts/public-layout';
 
-export default function ConfirmPassword({ auth }: PageProps) {
+export default function ConfirmPassword() {
     const [showPassword, setShowPassword] = useState(false);
 
     const breadcrumbItems = [
@@ -31,31 +29,28 @@ export default function ConfirmPassword({ auth }: PageProps) {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-            <Head title="Confirm Password | Daluyang Dunong" />
-            <Header auth={auth} />
-
-            <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
+        <PublicLayout title="Confirm Password">
+            <div className="flex-grow bg-muted flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                     <Breadcrumb items={breadcrumbItems} />
                     <div className="mb-8 text-left">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-12">
                             Confirm Password
                         </h1>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-muted-foreground">
                             Please confirm your password to continue.
                         </p>
                     </div>
 
                     <form onSubmit={submit} className="space-y-6 text-left">
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password *</Label>
+                            <Label htmlFor="password" className="text-foreground">Password *</Label>
                             <div className="relative w-96">
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className={`w-full pr-10 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
+                                    className={`w-full pr-10 rounded-md ${errors.password ? 'border-destructive' : ''}`}
                                     placeholder="••••••••"
                                     onChange={(e) => setData('password', e.target.value)}
                                     autoFocus
@@ -67,23 +62,21 @@ export default function ConfirmPassword({ auth }: PageProps) {
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     ) : (
-                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     )}
                                 </button>
                             </div>
-                            {errors.password && <p className="text-sm text-red-500 dark:text-red-400">{errors.password}</p>}
+                            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                         </div>
 
-                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white" disabled={processing}>
+                        <Button type="submit" disabled={processing}>
                             {processing ? 'Confirming...' : 'Confirm Password'}
                         </Button>
                     </form>
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+            </div>
+        </PublicLayout>
     );
 }

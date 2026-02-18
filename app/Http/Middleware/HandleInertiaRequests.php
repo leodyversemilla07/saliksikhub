@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'logo_path' => $journal->logo_path,
                 'logo_url' => $journal->logo_path ? asset('storage/'.$journal->logo_path) : null,
                 'settings' => $journal->settings,
+                'theme_settings' => $journal->merged_theme_settings,
             ] : null,
             'currentInstitution' => $institution ? [
                 'id' => $institution->id,

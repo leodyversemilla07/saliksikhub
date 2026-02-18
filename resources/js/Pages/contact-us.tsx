@@ -1,18 +1,12 @@
-import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, MapPin, Phone, Clock, Users, MessageSquare } from 'lucide-react';
+import PublicLayout from '@/layouts/public-layout';
 
-export default function ContactUs({ auth }: PageProps) {
+export default function ContactUs() {
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title="Contact Us | Daluyang Dunong" />
-            <Header auth={auth} />
-
-            <main className="grow">
+        <PublicLayout title="Contact Us | Daluyang Dunong">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                     <div className="text-center">
                         <h1 className="font-serif text-4xl font-bold text-oxford-blue mb-2">
@@ -149,8 +143,6 @@ export default function ContactUs({ auth }: PageProps) {
                         </CardContent>
                     </Card>
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

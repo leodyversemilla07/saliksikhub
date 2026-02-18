@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
 import { Search, FileText, Users, Calendar, ExternalLink, Home, ChevronRight, SortAsc, SortDesc, Download, SlidersHorizontal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import PublicLayout from '@/layouts/public-layout';
 
 interface SearchResult {
     id: number;
@@ -35,7 +34,7 @@ interface SearchResultsProps extends PageProps {
     query: string;
 }
 
-export default function SearchResults({ auth, results, query }: SearchResultsProps) {
+export default function SearchResults({ results, query }: SearchResultsProps) {
     const [sortBy, setSortBy] = useState('relevance');
     const [sortOrder, setSortOrder] = useState('desc');
     const [showFilters, setShowFilters] = useState(false);
@@ -137,9 +136,7 @@ export default function SearchResults({ auth, results, query }: SearchResultsPro
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Header auth={auth} />
-            <main className="grow">
+        <PublicLayout title={`Search: ${query}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
@@ -412,8 +409,6 @@ export default function SearchResults({ auth, results, query }: SearchResultsPro
                         </Card>
                     )}
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

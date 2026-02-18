@@ -1,7 +1,5 @@
-import Footer from '@/components/site-footer';
-import Header from '@/components/site-header';
 import { PageProps, JournalSettings } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     CheckCircle, FileText, Users, Clock, BookOpen,
     Calendar, ArrowRight, Download, Info, CheckSquare,
@@ -10,6 +8,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import PublicLayout from '@/layouts/public-layout';
 
 interface ResourceCardProps {
     title: string;
@@ -39,7 +38,7 @@ function ResourceCard({ title, description, fileType, fileSize }: ResourceCardPr
     );
 }
 
-export default function Submissions({ auth }: PageProps) {
+export default function Submissions() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
 
     const journalName = currentJournal?.name ?? 'Research Journal';
@@ -317,11 +316,7 @@ export default function Submissions({ auth }: PageProps) {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title={`Submission Guidelines | ${journalName}`} />
-            <Header auth={auth} />
-
-            <main className="grow">
+        <PublicLayout title={`Submission Guidelines | ${journalName}`}>
                 {/* Hero Section */}
                 <section className="relative overflow-hidden bg-gradient-to-br from-parchment/30 to-background py-16 lg:py-24">
                     <div className="absolute inset-0 -z-10">
@@ -791,8 +786,6 @@ export default function Submissions({ auth }: PageProps) {
                         </section>
                     </div>
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

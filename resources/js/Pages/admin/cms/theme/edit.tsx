@@ -22,22 +22,26 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Palette, Type, Layout, Image, RotateCcw, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Palette, Type, Layout, Image, RotateCcw, Save, Eye, Upload } from 'lucide-react';
 import admin from '@/routes/admin';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 interface ThemeSettings {
     colors: {
         primary: string;
+        primary_foreground: string;
         secondary: string;
+        secondary_foreground: string;
         accent: string;
         background: string;
-        text: string;
-        link: string;
+        foreground: string;
+        muted: string;
+        muted_foreground: string;
+        border: string;
     };
     typography: {
         heading_font: string;
-        body_font: string;
+        font_family: string;
         base_size: string;
     };
     layout: {
@@ -46,9 +50,9 @@ interface ThemeSettings {
         footer_style: string;
     };
     branding: {
-        logo_url: string | null;
-        favicon_url: string | null;
+        show_institution_logo: boolean;
         show_journal_name: boolean;
+        favicon: string | null;
     };
 }
 
@@ -67,7 +71,8 @@ interface Props {
 }
 
 export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles, footerStyles }: Props) {
-    const [previewMode, setPreviewMode] = useState(false);
+    const faviconInputRef = useRef<HTMLInputElement>(null);
+    const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
 
     const breadcrumbItems = [
         { label: 'Admin', href: admin.institutions.index.url() },
@@ -89,6 +94,22 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
         });
     };
 
+    const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        setFaviconPreview(URL.createObjectURL(file));
+
+        const formData = new FormData();
+        formData.append('favicon', file);
+
+        router.post(`/admin/journals/${journal.id}/cms/theme/favicon`, formData, {
+            preserveScroll: true,
+        });
+    };
+
     const updateNestedData = (
         category: keyof ThemeSettings,
         key: string,
@@ -104,12 +125,16 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
     };
 
     const colorInputs = [
-        { key: 'primary', label: 'Primary Color', description: 'Main brand color, buttons, links' },
-        { key: 'secondary', label: 'Secondary Color', description: 'Supporting color for accents' },
-        { key: 'accent', label: 'Accent Color', description: 'Highlights and call-to-action' },
-        { key: 'background', label: 'Background Color', description: 'Page background' },
-        { key: 'text', label: 'Text Color', description: 'Main body text' },
-        { key: 'link', label: 'Link Color', description: 'Hyperlinks and clickable text' },
+        { key: 'primary', label: 'Primary Color', description: 'Main brand color for buttons and accents' },
+        { key: 'primary_foreground', label: 'Primary Foreground', description: 'Text color on primary backgrounds' },
+        { key: 'secondary', label: 'Secondary Color', description: 'Supporting color for secondary elements' },
+        { key: 'secondary_foreground', label: 'Secondary Foreground', description: 'Text color on secondary backgrounds' },
+        { key: 'accent', label: 'Accent Color', description: 'Highlights and call-to-action elements' },
+        { key: 'background', label: 'Background', description: 'Page background color' },
+        { key: 'foreground', label: 'Foreground', description: 'Main body text color' },
+        { key: 'muted', label: 'Muted Background', description: 'Subtle backgrounds for cards and sections' },
+        { key: 'muted_foreground', label: 'Muted Foreground', description: 'Text color for secondary/muted content' },
+        { key: 'border', label: 'Border Color', description: 'Borders and dividers' },
     ];
 
     return (
@@ -183,7 +208,7 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                                 <Label htmlFor={`color-${color.key}`}>{color.label}</Label>
                                                 <div className="flex gap-2">
                                                     <div
-                                                        className="w-10 h-10 rounded-md border cursor-pointer"
+                                                        className="w-10 h-10 rounded-md border cursor-pointer flex-shrink-0"
                                                         style={{ backgroundColor: data.colors[color.key as keyof typeof data.colors] }}
                                                     >
                                                         <input
@@ -245,8 +270,8 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                         <div className="space-y-2">
                                             <Label htmlFor="body-font">Body Font</Label>
                                             <Select
-                                                value={data.typography.body_font}
-                                                onValueChange={(value) => updateNestedData('typography', 'body_font', value)}
+                                                value={data.typography.font_family}
+                                                onValueChange={(value) => updateNestedData('typography', 'font_family', value)}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue />
@@ -361,35 +386,54 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                         Branding
                                     </CardTitle>
                                     <CardDescription>
-                                        Logo and favicon settings
+                                        Favicon and display settings
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="logo-url">Logo URL</Label>
-                                            <Input
-                                                id="logo-url"
-                                                value={data.branding.logo_url || ''}
-                                                onChange={(e) => updateNestedData('branding', 'logo_url', e.target.value)}
-                                                placeholder="https://example.com/logo.png"
-                                            />
+                                            <Label>Favicon</Label>
+                                            <div className="flex items-center gap-4">
+                                                {(faviconPreview || data.branding.favicon) && (
+                                                    <img
+                                                        src={faviconPreview || `/storage/${data.branding.favicon}`}
+                                                        alt="Favicon preview"
+                                                        className="w-8 h-8 rounded border"
+                                                    />
+                                                )}
+                                                <input
+                                                    ref={faviconInputRef}
+                                                    type="file"
+                                                    accept=".ico,.png,.svg"
+                                                    onChange={handleFaviconUpload}
+                                                    className="hidden"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => faviconInputRef.current?.click()}
+                                                >
+                                                    <Upload className="mr-2 h-4 w-4" />
+                                                    Upload Favicon
+                                                </Button>
+                                            </div>
                                             <p className="text-xs text-muted-foreground">
-                                                URL to your journal logo image
+                                                Accepted formats: .ico, .png, .svg (max 512KB)
                                             </p>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="favicon-url">Favicon URL</Label>
-                                            <Input
-                                                id="favicon-url"
-                                                value={data.branding.favicon_url || ''}
-                                                onChange={(e) => updateNestedData('branding', 'favicon_url', e.target.value)}
-                                                placeholder="https://example.com/favicon.ico"
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id="show-institution-logo"
+                                                checked={data.branding.show_institution_logo}
+                                                onChange={(e) => updateNestedData('branding', 'show_institution_logo', e.target.checked)}
+                                                className="rounded"
                                             />
-                                            <p className="text-xs text-muted-foreground">
-                                                URL to your favicon (browser tab icon)
-                                            </p>
+                                            <Label htmlFor="show-institution-logo">
+                                                Show institution logo in header
+                                            </Label>
                                         </div>
 
                                         <div className="flex items-center gap-2">
@@ -425,13 +469,18 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                             className="p-4"
                                             style={{ backgroundColor: data.colors.primary }}
                                         >
-                                            <span className="text-white font-semibold text-sm">Header</span>
+                                            <span
+                                                className="font-semibold text-sm"
+                                                style={{ color: data.colors.primary_foreground }}
+                                            >
+                                                Header
+                                            </span>
                                         </div>
                                         <div className="p-4 space-y-2">
                                             <h3
                                                 className="font-bold"
                                                 style={{
-                                                    color: data.colors.text,
+                                                    color: data.colors.foreground,
                                                     fontFamily: data.typography.heading_font,
                                                 }}
                                             >
@@ -440,30 +489,34 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                             <p
                                                 className="text-sm"
                                                 style={{
-                                                    color: data.colors.text,
-                                                    fontFamily: data.typography.body_font,
+                                                    color: data.colors.foreground,
+                                                    fontFamily: data.typography.font_family,
                                                 }}
                                             >
                                                 This is sample body text to preview your typography settings.
                                             </p>
-                                            <a
-                                                href="#"
-                                                className="text-sm underline"
-                                                style={{ color: data.colors.link }}
-                                                onClick={(e) => e.preventDefault()}
+                                            <p
+                                                className="text-xs"
+                                                style={{ color: data.colors.muted_foreground }}
                                             >
-                                                Sample Link
-                                            </a>
+                                                This is muted/secondary text.
+                                            </p>
                                             <div className="flex gap-2 pt-2">
                                                 <span
-                                                    className="px-3 py-1 rounded text-white text-xs"
-                                                    style={{ backgroundColor: data.colors.primary }}
+                                                    className="px-3 py-1 rounded text-xs"
+                                                    style={{
+                                                        backgroundColor: data.colors.primary,
+                                                        color: data.colors.primary_foreground,
+                                                    }}
                                                 >
                                                     Primary
                                                 </span>
                                                 <span
-                                                    className="px-3 py-1 rounded text-white text-xs"
-                                                    style={{ backgroundColor: data.colors.secondary }}
+                                                    className="px-3 py-1 rounded text-xs"
+                                                    style={{
+                                                        backgroundColor: data.colors.secondary,
+                                                        color: data.colors.secondary_foreground,
+                                                    }}
                                                 >
                                                     Secondary
                                                 </span>
@@ -473,6 +526,16 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                                 >
                                                     Accent
                                                 </span>
+                                            </div>
+                                            <div
+                                                className="mt-2 p-2 rounded text-xs"
+                                                style={{
+                                                    backgroundColor: data.colors.muted,
+                                                    color: data.colors.muted_foreground,
+                                                    border: `1px solid ${data.colors.border}`,
+                                                }}
+                                            >
+                                                Muted section with border
                                             </div>
                                         </div>
                                     </div>
@@ -524,16 +587,16 @@ export default function ThemeEdit({ journal, themeSettings, fonts, headerStyles,
                                 </CardHeader>
                                 <CardContent className="text-xs text-muted-foreground space-y-2">
                                     <p>
-                                        • Use contrasting colors for better readability
+                                        Use contrasting colors between background and foreground for readability.
                                     </p>
                                     <p>
-                                        • Test your colors in both light and dark environments
+                                        Primary foreground should be readable on primary color backgrounds.
                                     </p>
                                     <p>
-                                        • Consider accessibility when choosing color combinations
+                                        Consider accessibility when choosing color combinations (WCAG 2.1 AA contrast ratios).
                                     </p>
                                     <p>
-                                        • Use web-safe fonts for consistent display
+                                        Changes apply to all public-facing pages of this journal.
                                     </p>
                                 </CardContent>
                             </Card>

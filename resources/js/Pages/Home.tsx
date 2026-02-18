@@ -1,7 +1,5 @@
 import { PageProps } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
+import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, FilePlus2, BookOpen, Users, Award, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -10,8 +8,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
+import PublicLayout from '@/layouts/public-layout';
 
-export default function Home({ auth }: PageProps) {
+export default function Home() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     
     const pageTitle = currentJournal?.name 
@@ -23,11 +22,7 @@ export default function Home({ auth }: PageProps) {
         ?? 'Streamline your scholarly publishing workflow with our comprehensive platform. From manuscript submission to publication, we\'ve got you covered with cutting-edge tools and intuitive interfaces.';
 
     return (
-        <div className="flex flex-col min-h-screen bg-background transition-colors duration-300">
-            <Head title={pageTitle} />
-            <Header auth={auth} />
-
-            <main className="grow">
+        <PublicLayout title={pageTitle}>
 {/* Hero Section - Scholarly Style */}
                 <section className="relative isolate overflow-hidden bg-card border-b border-border">
                     <div className="mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8 lg:py-32">
@@ -256,8 +251,6 @@ export default function Home({ auth }: PageProps) {
                 </section>
 
 
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

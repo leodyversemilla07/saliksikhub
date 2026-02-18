@@ -1,8 +1,6 @@
 import { useState, FormEventHandler } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import Breadcrumb from '@/components/breadcrumb';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,11 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from 'lucide-react';
 import { home } from '@/routes';
 import password from '@/routes/password';
+import PublicLayout from '@/layouts/public-layout';
 
 export default function ResetPassword({
     token,
     email,
-    auth
 }: {
     token: string;
     email: string;
@@ -42,42 +40,39 @@ export default function ResetPassword({
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-            <Head title="Reset Password | Daluyang Dunong" />
-            <Header auth={auth} />
-
-            <main className="flex-grow bg-gray-100 dark:bg-gray-900 flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
+        <PublicLayout title="Reset Password">
+            <div className="flex-grow bg-muted flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                     <Breadcrumb items={breadcrumbItems} />
                     <div className="mb-8 text-left">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-12">
                             Reset Password
                         </h1>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-2 text-sm text-muted-foreground">
                             Required fields are marked with an asterisk (*).
                         </p>
                     </div>
                     <form onSubmit={submit} className="space-y-6 text-left">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email Address</Label>
+                            <Label htmlFor="email" className="text-foreground">Email Address</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={data.email}
-                                className="w-96 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed rounded-md"
+                                className="w-96 bg-muted text-muted-foreground cursor-not-allowed rounded-md"
                                 readOnly
                             />
-                            {errors.email && <p className="text-sm text-red-500 dark:text-red-400">{errors.email}</p>}
+                            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">New Password *</Label>
+                            <Label htmlFor="password" className="text-foreground">New Password *</Label>
                             <div className="relative w-96">
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className={`w-full pr-10 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password ? 'border-red-500 dark:border-red-400' : ''}`}
+                                    className={`w-full pr-10 rounded-md ${errors.password ? 'border-destructive' : ''}`}
                                     placeholder="••••••••"
                                     onChange={(e) => setData('password', e.target.value)}
                                     autoFocus
@@ -89,23 +84,23 @@ export default function ResetPassword({
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     ) : (
-                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     )}
                                 </button>
                             </div>
-                            {errors.password && <p className="text-sm text-red-500 dark:text-red-400">{errors.password}</p>}
+                            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password_confirmation" className="text-gray-700 dark:text-gray-300">Confirm New Password *</Label>
+                            <Label htmlFor="password_confirmation" className="text-foreground">Confirm New Password *</Label>
                             <div className="relative w-96">
                                 <Input
                                     id="password_confirmation"
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     value={data.password_confirmation}
-                                    className={`w-full pr-10 border-gray-300 dark:border-gray-600 focus:border-[#18652c] focus:ring-[#18652c] dark:focus:border-[#3fb65e] dark:focus:ring-[#3fb65e] rounded-md dark:bg-gray-700 dark:text-white ${errors.password_confirmation ? 'border-red-500 dark:border-red-400' : ''}`}
+                                    className={`w-full pr-10 rounded-md ${errors.password_confirmation ? 'border-destructive' : ''}`}
                                     placeholder="••••••••"
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
                                     required
@@ -116,23 +111,21 @@ export default function ResetPassword({
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 >
                                     {showConfirmPassword ? (
-                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     ) : (
-                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                     )}
                                 </button>
                             </div>
-                            {errors.password_confirmation && <p className="text-sm text-red-500 dark:text-red-400">{errors.password_confirmation}</p>}
+                            {errors.password_confirmation && <p className="text-sm text-destructive">{errors.password_confirmation}</p>}
                         </div>
 
-                        <Button type="submit" className="w-auto bg-[#18652c] hover:bg-[#18652c]/90 text-white" disabled={processing}>
+                        <Button type="submit" disabled={processing}>
                             {processing ? 'Processing...' : 'Reset Password'}
                         </Button>
                     </form>
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+            </div>
+        </PublicLayout>
     );
 }

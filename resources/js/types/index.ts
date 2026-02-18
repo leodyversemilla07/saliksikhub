@@ -47,6 +47,44 @@ export interface Institution {
     settings?: Record<string, unknown> | null;
 }
 
+export interface ThemeColors {
+    primary: string;
+    primary_foreground: string;
+    secondary: string;
+    secondary_foreground: string;
+    accent: string;
+    background: string;
+    foreground: string;
+    muted: string;
+    muted_foreground: string;
+    border: string;
+}
+
+export interface ThemeTypography {
+    font_family: string;
+    heading_font: string;
+    base_size: string;
+}
+
+export interface ThemeLayout {
+    header_style: 'default' | 'centered' | 'minimal';
+    footer_style: 'default' | 'minimal' | 'expanded';
+    max_width: string;
+}
+
+export interface ThemeBranding {
+    show_institution_logo: boolean;
+    show_journal_name: boolean;
+    favicon: string | null;
+}
+
+export interface ThemeSettings {
+    colors: ThemeColors;
+    typography: ThemeTypography;
+    layout: ThemeLayout;
+    branding: ThemeBranding;
+}
+
 export interface Journal {
     id: number;
     name: string;
@@ -58,6 +96,7 @@ export interface Journal {
     logo_path?: string | null;
     logo_url?: string | null;
     settings?: JournalSettings | null;
+    theme_settings?: ThemeSettings | null;
 }
 
 export interface JournalSettings {

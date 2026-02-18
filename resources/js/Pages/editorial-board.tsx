@@ -1,12 +1,10 @@
-import Footer from '@/components/site-footer';
-import Header from '@/components/site-header';
 import { PageProps } from '@/types';
 import { Mail, ExternalLink, Users, Award, BookOpen } from "lucide-react";
-import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import PublicLayout from '@/layouts/public-layout';
 
 interface BoardMember {
     name: string
@@ -194,12 +192,9 @@ const boardCategories: EditorialCategory[] = [
     }
 ];
 
-export default function EditorialBoard({ auth }: PageProps) {
+export default function EditorialBoard() {
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title="Editorial Board | Daluyang Dunong" />
-            <Header auth={auth} />
-            <main className="flex-grow">
+        <PublicLayout title="Editorial Board | Daluyang Dunong">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-12">
@@ -399,8 +394,6 @@ export default function EditorialBoard({ auth }: PageProps) {
                         ))}
                     </div>
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

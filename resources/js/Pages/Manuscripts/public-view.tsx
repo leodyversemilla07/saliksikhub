@@ -1,10 +1,8 @@
-import Footer from '@/components/site-footer';
-import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
 import { FileText, Calendar, Users, Hash, MapPin } from 'lucide-react';
 import Breadcrumb from '@/components/breadcrumb';
 import { toast } from 'sonner';
+import PublicLayout from '@/layouts/public-layout';
 
 interface Manuscript {
     id: number;
@@ -25,12 +23,9 @@ interface PublicViewProps extends PageProps {
     manuscript: Manuscript;
 }
 
-export default function PublicView({ auth, manuscript }: PublicViewProps) {
+export default function PublicView({ manuscript }: PublicViewProps) {
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-            <Head title={`${manuscript.title} - Daluyang Dunong MinSU Research Journal`} />
-            <Header auth={auth} />
-            <main className="flex-grow">
+        <PublicLayout title={`${manuscript.title} - Daluyang Dunong MinSU Research Journal`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Breadcrumb
                         items={[
@@ -216,9 +211,6 @@ export default function PublicView({ auth, manuscript }: PublicViewProps) {
                         </div>
                     </div>
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

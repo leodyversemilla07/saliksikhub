@@ -1,18 +1,14 @@
-import { Head, Link } from '@inertiajs/react';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
+import { Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Megaphone, Users, Settings, Award, BookOpen } from 'lucide-react';
+import PublicLayout from '@/layouts/public-layout';
 
-export default function Announcements({ auth }: PageProps) {
+export default function Announcements() {
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title="Announcements | Daluyang Dunong" />
-            <Header auth={auth} />
-            <main className="flex-grow">
+        <PublicLayout title="Announcements | Daluyang Dunong">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -264,9 +260,6 @@ export default function Announcements({ auth }: PageProps) {
                         </Card>
                     </div>
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

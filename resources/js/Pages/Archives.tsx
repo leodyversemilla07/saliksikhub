@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import Header from '@/components/site-header';
-import Footer from '@/components/site-footer';
 import { Calendar, Archive, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PublicLayout from '@/layouts/public-layout';
 
 interface JournalArticle {
     id: number;
@@ -39,7 +38,7 @@ interface VolumeYear {
     }[];
 }
 
-export default function Archives({ auth }: PageProps) {
+export default function Archives() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
@@ -103,10 +102,7 @@ export default function Archives({ auth }: PageProps) {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title="Archives | Daluyang Dunong" />
-            <Header auth={auth} />
-            <main className="grow">
+        <PublicLayout title="Archives | Daluyang Dunong">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -357,8 +353,6 @@ export default function Archives({ auth }: PageProps) {
                         </CardContent>
                     </Card>
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }

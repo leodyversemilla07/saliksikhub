@@ -1,12 +1,11 @@
-import Footer from '@/components/site-footer';
-import Header from '@/components/site-header';
 import { PageProps } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { BookOpen, Target, Eye, Star, Unlock, Users, BookCopy, Globe, ShieldCheck, LifeBuoy } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import PublicLayout from '@/layouts/public-layout';
 
-export default function AboutJournal({ auth }: PageProps) {
+export default function AboutJournal() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     
     const journalName = currentJournal?.name ?? 'Research Journal';
@@ -23,10 +22,7 @@ export default function AboutJournal({ auth }: PageProps) {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <Head title={`About the Journal | ${journalName}`} />
-            <Header auth={auth} />
-            <main className="grow">
+        <PublicLayout title={`About the Journal | ${journalName}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -257,8 +253,6 @@ export default function AboutJournal({ auth }: PageProps) {
                         </Card>
                     </div>
                 </div>
-            </main>
-            <Footer />
-        </div>
+        </PublicLayout>
     );
 }
