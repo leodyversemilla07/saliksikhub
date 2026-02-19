@@ -1,10 +1,13 @@
 {
-    "name": "laravel/laravel",
+    "name": "saliksikhub/saliksikhub",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "An open-source, self-hosted academic journal management platform.",
     "keywords": [
         "laravel",
-        "framework"
+        "journal",
+        "open-access",
+        "publishing",
+        "research"
     ],
     "license": "MIT",
     "require": {

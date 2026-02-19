@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             JournalCmsSeeder::class,
             OJSWorkflowSeeder::class,
             TestPublicationSeeder::class,
+            AnnouncementSeeder::class,
         ]);
     }
 }

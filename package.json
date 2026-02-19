@@ -1,4 +1,7 @@
 {
+    "name": "saliksikhub",
+    "version": "1.0.0",
+    "description": "An open-source, self-hosted academic journal management platform.",
     "private": true,
     "type": "module",
     "scripts": {
