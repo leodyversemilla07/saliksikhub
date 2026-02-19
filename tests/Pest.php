@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Middleware\EnsureInstalled;
 use App\Models\Institution;
 use App\Models\Journal;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -47,6 +48,9 @@ expect()->extend('toBeOne', function () {
 
 beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
+
+    // Mark platform as installed so EnsureInstalled middleware doesn't redirect
+    EnsureInstalled::markInstalled();
 
     // Set up default journal context for all tests
     $institution = Institution::factory()->create([

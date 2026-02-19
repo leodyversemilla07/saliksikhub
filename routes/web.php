@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PlatformSettingsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\ManuscriptController;
@@ -19,6 +20,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Installation wizard routes (outside journal middleware — no journal exists yet)
+Route::get('/install', [InstallController::class, 'index'])->name('install');
+Route::post('/install', [InstallController::class, 'store'])->name('install.store');
 
 // All routes are wrapped with journal middleware to set the current journal context
 Route::middleware(['journal'])->group(function () {

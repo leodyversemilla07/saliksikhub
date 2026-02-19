@@ -32,7 +32,12 @@ class HandleInertiaRequests extends Middleware
     {
         $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
         $institution = app()->bound('currentInstitution') ? app('currentInstitution') : null;
-        $platformSettings = PlatformSetting::instance();
+
+        try {
+            $platformSettings = PlatformSetting::instance();
+        } catch (\Exception $e) {
+            $platformSettings = null;
+        }
 
         return [
             ...parent::share($request),
@@ -40,14 +45,14 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'roles' => $request->user() ? $request->user()->role : null,
             ],
-            'platformSettings' => [
+            'platformSettings' => $platformSettings ? [
                 'platform_name' => $platformSettings->platform_name,
                 'platform_tagline' => $platformSettings->platform_tagline,
                 'platform_description' => $platformSettings->platform_description,
                 'logo_url' => $platformSettings->logo_url,
                 'favicon_url' => $platformSettings->favicon_url,
                 'admin_email' => $platformSettings->admin_email,
-            ],
+            ] : null,
             'currentJournal' => $journal ? [
                 'id' => $journal->id,
                 'name' => $journal->name,

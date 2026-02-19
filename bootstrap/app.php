@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\EnsureInstalled::class,
             \App\Http\Middleware\SlugRedirectMiddleware::class,
             \App\Http\Middleware\TeamsPermission::class,
             \App\Http\Middleware\TrackManuscriptStatistics::class,
