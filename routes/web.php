@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementContro
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\JournalController as AdminJournalController;
 use App\Http\Controllers\Admin\JournalSettingsController;
+use App\Http\Controllers\Admin\JournalUserController;
 use App\Http\Controllers\Admin\PlatformSettingsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthorController;
@@ -254,6 +255,15 @@ Route::middleware(['journal'])->group(function () {
 
             // Announcement management
             Route::resource('announcements', AdminAnnouncementController::class)->except(['show']);
+
+            // Journal-User management
+            Route::get('journal-users', [JournalUserController::class, 'index'])->name('journal-users.index');
+            Route::get('journal-users/create', [JournalUserController::class, 'create'])->name('journal-users.create');
+            Route::post('journal-users', [JournalUserController::class, 'store'])->name('journal-users.store');
+            Route::get('journal-users/{pivotId}/edit', [JournalUserController::class, 'edit'])->name('journal-users.edit');
+            Route::put('journal-users/{pivotId}', [JournalUserController::class, 'update'])->name('journal-users.update');
+            Route::delete('journal-users/{pivotId}', [JournalUserController::class, 'destroy'])->name('journal-users.destroy');
+            Route::post('journal-users/{pivotId}/toggle-status', [JournalUserController::class, 'toggleStatus'])->name('journal-users.toggle-status');
 
             // Journal management
             Route::resource('journals', AdminJournalController::class);

@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle, Megaphone, Settings } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle, Megaphone, Settings, Users } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -28,6 +28,7 @@ const navigationMap = {
         { href: admin.institutions.index.url(), label: 'Institutions', icon: Building2 },
         { href: admin.journals.index.url(), label: 'Journals', icon: BookOpen },
         { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+        { href: '/admin/journal-users', label: 'Journal Users', icon: Users },
         { href: '/admin/plugins', label: 'Plugins', icon: Puzzle },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
         { href: '/admin/platform-settings', label: 'Platform Settings', icon: Settings },
@@ -37,6 +38,7 @@ const navigationMap = {
         { href: editor.indexManuscripts.url(), label: 'Submitted Manuscripts', icon: FileText },
         { href: issues.index.url(), label: 'Journal Issues', icon: AlertCircle },
         { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+        { href: '/admin/journal-users', label: 'Journal Users', icon: Users },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
     editor_in_chief: [
@@ -44,6 +46,7 @@ const navigationMap = {
         { href: editor.indexManuscripts.url(), label: 'Submitted Manuscripts', icon: FileText },
         { href: issues.index.url(), label: 'Journal Issues', icon: AlertCircle },
         { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+        { href: '/admin/journal-users', label: 'Journal Users', icon: Users },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
     associate_editor: [
