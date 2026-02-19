@@ -164,7 +164,10 @@ describe('submitRevision', function () {
     });
 
     it('tracks revision history correctly', function () {
-        $this->manuscript->update(['status' => ManuscriptStatus::MAJOR_REVISION_REQUIRED]);
+        $this->manuscript->update([
+            'status' => ManuscriptStatus::MAJOR_REVISION_REQUIRED,
+            'revision_history' => null,
+        ]);
 
         $this->workflowService->submitRevision($this->manuscript, 'Major revisions done.');
 

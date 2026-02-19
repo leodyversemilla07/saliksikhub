@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Manuscript;
 use App\Models\ManuscriptStatistic;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class StatisticsService
 {
@@ -118,7 +118,7 @@ class StatisticsService
             );
 
         // Monthly aggregation
-        $monthStr = $date->format('Y-m') . '-01';
+        $monthStr = $date->format('Y-m').'-01';
         DB::table('manuscript_statistics_aggregated')
             ->updateOrInsert(
                 [
@@ -134,7 +134,7 @@ class StatisticsService
             );
 
         // Yearly aggregation
-        $yearStr = $date->format('Y') . '-01-01';
+        $yearStr = $date->format('Y').'-01-01';
         DB::table('manuscript_statistics_aggregated')
             ->updateOrInsert(
                 [
@@ -181,8 +181,8 @@ class StatisticsService
 
         foreach ($stats as $stat) {
             $dateLabel = $this->formatDateLabel($stat->date, $periodType);
-            
-            if (!in_array($dateLabel, $labels)) {
+
+            if (! in_array($dateLabel, $labels)) {
                 $labels[] = $dateLabel;
             }
 
@@ -235,6 +235,7 @@ class StatisticsService
 
         return $stats->map(function ($stat) use ($manuscripts) {
             $manuscript = $manuscripts->get($stat->manuscript_id);
+
             return [
                 'manuscript_id' => $stat->manuscript_id,
                 'title' => $manuscript?->title ?? 'Unknown',
@@ -280,9 +281,9 @@ class StatisticsService
      * Get COUNTER 5 compliant report (TR_J1 - Journal Requests)
      */
     public function getCounterReport(
-        string $reportType = 'TR_J1',
         Carbon $startDate,
-        Carbon $endDate
+        Carbon $endDate,
+        string $reportType = 'TR_J1'
     ): array {
         // TR_J1: Journal Requests (requests only)
         if ($reportType === 'TR_J1') {
@@ -308,6 +309,7 @@ class StatisticsService
                 ],
                 'items' => $stats->map(function ($stat) use ($manuscripts) {
                     $manuscript = $manuscripts->get($stat->manuscript_id);
+
                     return [
                         'manuscript_id' => $stat->manuscript_id,
                         'title' => $manuscript?->title ?? 'Unknown',
@@ -347,6 +349,7 @@ class StatisticsService
                 ],
                 'items' => $stats->map(function ($stat) use ($manuscripts) {
                     $manuscript = $manuscripts->get($stat->manuscript_id);
+
                     return [
                         'manuscript_id' => $stat->manuscript_id,
                         'title' => $manuscript?->title ?? 'Unknown',
@@ -367,7 +370,7 @@ class StatisticsService
     protected function hashIpAddress(string $ipAddress): string
     {
         // Hash with salt for anonymization while still allowing session tracking
-        return hash('sha256', $ipAddress . config('app.key'));
+        return hash('sha256', $ipAddress.config('app.key'));
     }
 
     /**
@@ -377,7 +380,7 @@ class StatisticsService
     {
         try {
             $dbPath = storage_path('app/geoip/GeoLite2-Country.mmdb');
-            if (!file_exists($dbPath)) {
+            if (! file_exists($dbPath)) {
                 return null;
             }
 

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GalleyController extends Controller
@@ -183,7 +182,7 @@ class GalleyController extends Controller
         $url = $this->galleyService->getDownloadUrl($galley);
 
         // Stream from S3
-        return Storage::disk('s3')->download($galley->file_path, $galley->label . '.' . pathinfo($galley->file_path, PATHINFO_EXTENSION));
+        return Storage::disk('s3')->download($galley->file_path, $galley->label.'.'.pathinfo($galley->file_path, PATHINFO_EXTENSION));
     }
 
     /**

@@ -23,11 +23,11 @@ class StatisticsController extends Controller
         $this->authorize('viewAny', Manuscript::class);
 
         $periodType = $request->input('period', 'monthly');
-        $startDate = $request->input('start_date') 
-            ? Carbon::parse($request->input('start_date')) 
+        $startDate = $request->input('start_date')
+            ? Carbon::parse($request->input('start_date'))
             : now()->subMonths(12);
-        $endDate = $request->input('end_date') 
-            ? Carbon::parse($request->input('end_date')) 
+        $endDate = $request->input('end_date')
+            ? Carbon::parse($request->input('end_date'))
             : now();
 
         // Get top manuscripts
@@ -62,11 +62,11 @@ class StatisticsController extends Controller
         $this->authorize('view', $manuscript);
 
         $periodType = $request->input('period', 'monthly');
-        $startDate = $request->input('start_date') 
-            ? Carbon::parse($request->input('start_date')) 
+        $startDate = $request->input('start_date')
+            ? Carbon::parse($request->input('start_date'))
             : now()->subMonths(12);
-        $endDate = $request->input('end_date') 
-            ? Carbon::parse($request->input('end_date')) 
+        $endDate = $request->input('end_date')
+            ? Carbon::parse($request->input('end_date'))
             : now();
 
         // Get manuscript stats
@@ -116,9 +116,9 @@ class StatisticsController extends Controller
         ]);
 
         $report = $this->statisticsService->getCounterReport(
-            $validated['report_type'],
             Carbon::parse($validated['start_date']),
-            Carbon::parse($validated['end_date'])
+            Carbon::parse($validated['end_date']),
+            $validated['report_type']
         );
 
         return response()->json($report);
@@ -132,11 +132,11 @@ class StatisticsController extends Controller
         $this->authorize('view', $manuscript);
 
         $periodType = $request->input('period', 'monthly');
-        $startDate = $request->input('start_date') 
-            ? Carbon::parse($request->input('start_date')) 
+        $startDate = $request->input('start_date')
+            ? Carbon::parse($request->input('start_date'))
             : now()->subMonths(12);
-        $endDate = $request->input('end_date') 
-            ? Carbon::parse($request->input('end_date')) 
+        $endDate = $request->input('end_date')
+            ? Carbon::parse($request->input('end_date'))
             : now();
 
         $stats = $this->statisticsService->getManuscriptStats(
@@ -154,7 +154,7 @@ class StatisticsController extends Controller
             $csv .= "\"{$label}\",{$investigations},{$requests}\n";
         }
 
-        $filename = "manuscript-{$manuscript->id}-statistics-" . now()->format('Y-m-d') . ".csv";
+        $filename = "manuscript-{$manuscript->id}-statistics-".now()->format('Y-m-d').'.csv';
 
         return response($csv, 200, [
             'Content-Type' => 'text/csv',
@@ -170,11 +170,11 @@ class StatisticsController extends Controller
         $this->authorize('view', $manuscript);
 
         $periodType = $request->input('period', 'monthly');
-        $startDate = $request->input('start_date') 
-            ? Carbon::parse($request->input('start_date')) 
+        $startDate = $request->input('start_date')
+            ? Carbon::parse($request->input('start_date'))
             : now()->subMonths(12);
-        $endDate = $request->input('end_date') 
-            ? Carbon::parse($request->input('end_date')) 
+        $endDate = $request->input('end_date')
+            ? Carbon::parse($request->input('end_date'))
             : now();
 
         $stats = $this->statisticsService->getManuscriptStats(

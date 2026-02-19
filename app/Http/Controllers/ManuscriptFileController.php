@@ -7,6 +7,7 @@ use App\Models\Manuscript;
 use App\Models\ManuscriptFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -73,7 +74,7 @@ class ManuscriptFileController extends Controller
 
             return back()->with('success', $fileType->label().' uploaded successfully.');
         } catch (\Exception $e) {
-            \Log::error('File upload failed: '.$e->getMessage());
+            Log::error('File upload failed: '.$e->getMessage());
 
             return back()->with('error', 'Failed to upload file. Please try again.');
         }
@@ -123,7 +124,7 @@ class ManuscriptFileController extends Controller
 
             return back()->with('success', 'File deleted successfully.');
         } catch (\Exception $e) {
-            \Log::error('File deletion failed: '.$e->getMessage());
+            Log::error('File deletion failed: '.$e->getMessage());
 
             return back()->with('error', 'Failed to delete file.');
         }
@@ -138,6 +139,7 @@ class ManuscriptFileController extends Controller
         $this->authorize('view', $manuscript);
 
         $files = $manuscript->files()
+            ->with('uploader')
             ->latest()
             ->get()
             ->map(function ($file) {

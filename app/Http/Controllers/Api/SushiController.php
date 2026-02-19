@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 /**
  * SUSHI API Controller
  * Implements COUNTER 5 SUSHI (Standardized Usage Statistics Harvesting Initiative)
- * 
+ *
  * @see https://www.projectcounter.org/code-of-practice-five-sections/sushi-protocol/
  */
 class SushiController extends Controller
@@ -25,13 +25,13 @@ class SushiController extends Controller
     /**
      * SUSHI Status Endpoint
      * Returns service status and alerts
-     * 
+     *
      * @see https://app.swaggerhub.com/apis/COUNTER/counter-sushi_5_0_api/1.0.0#/default/getStatus
      */
     public function status(Request $request): JsonResponse
     {
         return response()->json([
-            'Description' => 'COUNTER SUSHI API for ' . config('app.name'),
+            'Description' => 'COUNTER SUSHI API for '.config('app.name'),
             'Service_Active' => true,
             'Registry_URL' => config('services.sushi.registry_url', ''),
             'Note' => 'Service is operating normally',
@@ -87,8 +87,8 @@ class SushiController extends Controller
     /**
      * Generate COUNTER Report
      * Returns usage statistics in COUNTER 5 JSON format
-     * 
-     * @param string $report Report type (tr_j1, tr_j4, ir)
+     *
+     * @param  string  $report  Report type (tr_j1, tr_j4, ir)
      */
     public function report(Request $request, string $report): JsonResponse
     {
@@ -112,7 +112,7 @@ class SushiController extends Controller
         }
 
         // Verify API key
-        if (!$this->verifyApiKey($request->input('api_key'))) {
+        if (! $this->verifyApiKey($request->input('api_key'))) {
             return $this->errorResponse(
                 2000,
                 'Invalid API Key',
@@ -126,18 +126,18 @@ class SushiController extends Controller
 
         // Generate report based on type
         $reportType = strtoupper($report);
-        
+
         try {
             switch ($reportType) {
                 case 'TR_J1':
                     return $this->generateTrJ1Report($startDate, $endDate, $request);
-                    
+
                 case 'TR_J4':
                     return $this->generateTrJ4Report($startDate, $endDate, $request);
-                    
+
                 case 'IR':
                     return $this->generateIrReport($startDate, $endDate, $request);
-                    
+
                 default:
                     return $this->errorResponse(
                         3020,
@@ -150,7 +150,7 @@ class SushiController extends Controller
             return $this->errorResponse(
                 3000,
                 'Service Not Available',
-                'An error occurred generating the report: ' . $e->getMessage(),
+                'An error occurred generating the report: '.$e->getMessage(),
                 500
             );
         }
@@ -161,7 +161,7 @@ class SushiController extends Controller
      */
     protected function generateTrJ1Report(Carbon $startDate, Carbon $endDate, Request $request): JsonResponse
     {
-        $reportData = $this->statisticsService->getCounterReport('TR_J1', $startDate, $endDate);
+        $reportData = $this->statisticsService->getCounterReport($startDate, $endDate, 'TR_J1');
 
         $items = collect($reportData['items'])->map(function ($item) use ($startDate, $endDate) {
             return [
@@ -208,7 +208,7 @@ class SushiController extends Controller
      */
     protected function generateTrJ4Report(Carbon $startDate, Carbon $endDate, Request $request): JsonResponse
     {
-        $reportData = $this->statisticsService->getCounterReport('TR_J4', $startDate, $endDate);
+        $reportData = $this->statisticsService->getCounterReport($startDate, $endDate, 'TR_J4');
 
         $items = collect($reportData['items'])->map(function ($item) use ($startDate, $endDate) {
             return [
@@ -355,7 +355,7 @@ class SushiController extends Controller
             'Report_Attributes' => [],
             'Exceptions' => [],
             'Created' => now()->toIso8601String(),
-            'Created_By' => config('app.name') . ' SUSHI API',
+            'Created_By' => config('app.name').' SUSHI API',
         ];
     }
 
@@ -364,12 +364,10 @@ class SushiController extends Controller
      */
     protected function verifyApiKey(string $apiKey): bool
     {
-        // Check against configured SUSHI API keys
         $validKeys = config('services.sushi.api_keys', []);
-        
+
         if (empty($validKeys)) {
-            // If no keys configured, allow any key (for development)
-            return true;
+            return false;
         }
 
         return in_array($apiKey, $validKeys);

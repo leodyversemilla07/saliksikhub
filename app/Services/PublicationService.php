@@ -6,7 +6,6 @@ use App\Models\CopyrightAgreement;
 use App\Models\Manuscript;
 use App\Models\ManuscriptIndexing;
 use App\Models\ProofCorrection;
-use App\Models\User;
 use App\Notifications\AuthorApprovalRequired;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -150,6 +149,7 @@ class PublicationService
                 // Skip if already indexed
                 if ($indexing->isIndexed()) {
                     $results[$database] = 'already_indexed';
+
                     continue;
                 }
 
@@ -267,7 +267,7 @@ class PublicationService
 
             return true;
         } catch (\Exception $e) {
-            Log::error("CrossRef submission failed: ".$e->getMessage());
+            Log::error('CrossRef submission failed: '.$e->getMessage());
 
             return false;
         }

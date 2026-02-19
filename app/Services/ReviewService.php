@@ -279,18 +279,19 @@ class ReviewService
                 }
             }
 
-            // Add score for completed reviews (experience)
-            $completedReviews = $reviewer->completedReviews()->count();
-            $score += min($completedReviews, 10); // Cap experience bonus
+            // Add score for completed reviews (experience) — count cached on the model to avoid duplicate queries
+            $completedReviewsCount = $reviewer->completedReviews()->count();
+            $reviewer->completed_reviews_count = $completedReviewsCount;
+            $score += min($completedReviewsCount, 10); // Cap experience bonus
 
             $reviewer->relevance_score = $score;
 
             return $reviewer;
         });
 
-        // Sort by relevance score desc, then by completed reviews desc
+        // Sort by relevance score desc, then by completed reviews desc (reuse cached count)
         $result = $scoredReviewers->sortByDesc(function ($reviewer) {
-            return $reviewer->relevance_score * 1000 + $reviewer->completedReviews()->count();
+            return $reviewer->relevance_score * 1000 + $reviewer->completed_reviews_count;
         })->take($limit);
 
         // Allow plugins to filter/reorder suitable reviewers

@@ -160,7 +160,7 @@ export default function EditJournal({ journal, institutions }: Props) {
                                             id="name"
                                             value={data.name}
                                             onChange={(e) => setData('name', e.target.value)}
-                                            placeholder="e.g., Mindoro Research Journal"
+                                            placeholder="e.g., Research Journal"
                                         />
                                         {errors.name && (
                                             <p className="text-sm text-destructive">{errors.name}</p>

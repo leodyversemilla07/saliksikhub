@@ -24,7 +24,7 @@ class SubscriptionService
         ?array $ipRanges = null
     ): Subscription {
         // Calculate end date if not provided
-        if (!$endDate) {
+        if (! $endDate) {
             $endDate = $this->calculateEndDate($startDate, $type->duration_months);
         }
 
@@ -45,12 +45,12 @@ class SubscriptionService
     public function renewSubscription(Subscription $subscription, ?int $durationMonths = null): Subscription
     {
         $duration = $durationMonths ?? $subscription->type->duration_months;
-        
+
         // Calculate new dates
-        $startDate = $subscription->end_date->isFuture() 
-            ? $subscription->end_date->addDay() 
+        $startDate = $subscription->end_date->isFuture()
+            ? $subscription->end_date->addDay()
             : now();
-        
+
         $endDate = $this->calculateEndDate($startDate, $duration);
 
         $subscription->update([
@@ -127,13 +127,13 @@ class SubscriptionService
         }
 
         // Check if subscription is within valid dates
-        if (!$subscription->isActive()) {
+        if (! $subscription->isActive()) {
             return false;
         }
 
         // Check IP ranges
         $ipRanges = $subscription->ip_ranges;
-        
+
         if (empty($ipRanges)) {
             return false; // No IP ranges configured
         }
@@ -154,24 +154,24 @@ class SubscriptionService
     {
         // Handle CIDR notation (e.g., 192.168.1.0/24)
         if (strpos($range, '/') !== false) {
-            list($subnet, $bits) = explode('/', $range);
-            
-            $ip_long = ip2long($ip);
-            $subnet_long = ip2long($subnet);
+            [$subnet, $bits] = explode('/', $range);
+
+            $ipLong = ip2long($ip);
+            $subnetLong = ip2long($subnet);
             $mask = -1 << (32 - $bits);
-            
-            return ($ip_long & $mask) === ($subnet_long & $mask);
+
+            return ($ipLong & $mask) === ($subnetLong & $mask);
         }
 
         // Handle range (e.g., 192.168.1.1-192.168.1.255)
         if (strpos($range, '-') !== false) {
-            list($start, $end) = explode('-', $range);
-            
-            $ip_long = ip2long($ip);
-            $start_long = ip2long(trim($start));
-            $end_long = ip2long(trim($end));
-            
-            return ($ip_long >= $start_long && $ip_long <= $end_long);
+            [$start, $end] = explode('-', $range);
+
+            $ipLong = ip2long($ip);
+            $startLong = ip2long(trim($start));
+            $endLong = ip2long(trim($end));
+
+            return $ipLong >= $startLong && $ipLong <= $endLong;
         }
 
         // Handle single IP
@@ -184,13 +184,13 @@ class SubscriptionService
     public function addIpRange(Subscription $subscription, string $ipRange): Subscription
     {
         // Validate IP range format
-        if (!$this->isValidIpRange($ipRange)) {
+        if (! $this->isValidIpRange($ipRange)) {
             throw new InvalidArgumentException('Invalid IP range format');
         }
 
         $ipRanges = $subscription->ip_ranges ?? [];
-        
-        if (!in_array($ipRange, $ipRanges)) {
+
+        if (! in_array($ipRange, $ipRanges)) {
             $ipRanges[] = $ipRange;
             $subscription->update(['ip_ranges' => $ipRanges]);
         }
@@ -204,9 +204,9 @@ class SubscriptionService
     public function removeIpRange(Subscription $subscription, string $ipRange): Subscription
     {
         $ipRanges = $subscription->ip_ranges ?? [];
-        
-        $ipRanges = array_values(array_filter($ipRanges, fn($range) => $range !== $ipRange));
-        
+
+        $ipRanges = array_values(array_filter($ipRanges, fn ($range) => $range !== $ipRange));
+
         $subscription->update(['ip_ranges' => $ipRanges]);
 
         return $subscription;
@@ -219,14 +219,16 @@ class SubscriptionService
     {
         // CIDR notation
         if (strpos($range, '/') !== false) {
-            list($ip, $bits) = explode('/', $range);
+            [$ip, $bits] = explode('/', $range);
+
             return filter_var($ip, FILTER_VALIDATE_IP) !== false && is_numeric($bits) && $bits >= 0 && $bits <= 32;
         }
 
         // Range notation
         if (strpos($range, '-') !== false) {
-            list($start, $end) = explode('-', $range);
-            return filter_var(trim($start), FILTER_VALIDATE_IP) !== false && 
+            [$start, $end] = explode('-', $range);
+
+            return filter_var(trim($start), FILTER_VALIDATE_IP) !== false &&
                    filter_var(trim($end), FILTER_VALIDATE_IP) !== false;
         }
 
@@ -269,11 +271,11 @@ class SubscriptionService
      */
     public function processAutoRenewal(Subscription $subscription): bool
     {
-        if (!$subscription->auto_renew) {
+        if (! $subscription->auto_renew) {
             return false;
         }
 
-        if (!$subscription->isExpiringSoon(7)) {
+        if (! $subscription->isExpiringSoon(7)) {
             return false;
         }
 

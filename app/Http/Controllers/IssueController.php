@@ -572,7 +572,7 @@ class IssueController extends Controller
                     'citations' => 0,
                     'downloads' => 0,
                     'category' => $manuscript->category ?: 'Research Article',
-                    'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
+                    'institution' => $manuscript->author->affiliation ?? '',
                 ];
             });
 

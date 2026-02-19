@@ -100,7 +100,7 @@ export default function EditInstitution({ institution }: Props) {
                                         id="name"
                                         value={data.name}
                                         onChange={(e) => setData('name', e.target.value)}
-                                        placeholder="e.g., Mindoro State University"
+                                        placeholder="e.g., State University"
                                     />
                                     {errors.name && (
                                         <p className="text-sm text-destructive">{errors.name}</p>
@@ -113,7 +113,7 @@ export default function EditInstitution({ institution }: Props) {
                                         id="abbreviation"
                                         value={data.abbreviation}
                                         onChange={(e) => setData('abbreviation', e.target.value)}
-                                        placeholder="e.g., MinSU"
+                                        placeholder="e.g., SU"
                                     />
                                     {errors.abbreviation && (
                                         <p className="text-sm text-destructive">{errors.abbreviation}</p>
@@ -126,7 +126,7 @@ export default function EditInstitution({ institution }: Props) {
                                         id="domain"
                                         value={data.domain}
                                         onChange={(e) => setData('domain', e.target.value)}
-                                        placeholder="e.g., minsu.edu.ph"
+                                        placeholder="e.g., university.edu"
                                     />
                                     <p className="text-xs text-muted-foreground">
                                         The domain used to identify this institution's journals
@@ -168,7 +168,7 @@ export default function EditInstitution({ institution }: Props) {
                                             type="email"
                                             value={data.contact_email}
                                             onChange={(e) => setData('contact_email', e.target.value)}
-                                            placeholder="e.g., info@minsu.edu.ph"
+                                            placeholder="e.g., info@university.edu"
                                         />
                                         {errors.contact_email && (
                                             <p className="text-sm text-destructive">{errors.contact_email}</p>
@@ -182,7 +182,7 @@ export default function EditInstitution({ institution }: Props) {
                                             type="url"
                                             value={data.website}
                                             onChange={(e) => setData('website', e.target.value)}
-                                            placeholder="e.g., https://www.minsu.edu.ph"
+                                            placeholder="e.g., https://www.university.edu"
                                         />
                                         {errors.website && (
                                             <p className="text-sm text-destructive">{errors.website}</p>
