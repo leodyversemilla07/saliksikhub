@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\JournalController as AdminJournalController;
 use App\Http\Controllers\Admin\JournalSettingsController;
-use App\Http\Controllers\Admin\PluginController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\IssueController;
@@ -28,7 +29,8 @@ Route::middleware(['journal'])->group(function () {
     Route::inertia('/submissions', 'submissions')->name('submissions');
     Route::inertia('/archives', 'archives')->name('archives');
     Route::inertia('/editorial-board', 'editorial-board')->name('editorial-board');
-    Route::inertia('/announcements', 'announcements')->name('announcements');
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements');
+    Route::get('/announcements/{announcement:slug}', [AnnouncementController::class, 'show'])->name('announcements.show');
     Route::inertia('/about/aims-scope', 'about-aims-scope')->name('about-aims-scope');
     Route::inertia('/about/journal', 'about-journal')->name('about-journal');
     Route::inertia('/contact', 'contact-us')->name('contact-us');
@@ -146,7 +148,7 @@ Route::middleware(['journal'])->group(function () {
                 Route::post('/batch-assign', [\App\Http\Controllers\DOIController::class, 'batchAssign'])->name('batch-assign');
                 Route::post('/batch-register', [\App\Http\Controllers\DOIController::class, 'batchRegister'])->name('batch-register');
             });
-            
+
             Route::prefix('/dois')->name('dois.')->group(function () {
                 Route::post('/{doi}/register', [\App\Http\Controllers\DOIController::class, 'register'])->name('register');
                 Route::post('/{doi}/check-status', [\App\Http\Controllers\DOIController::class, 'checkStatus'])->name('check-status');
@@ -171,18 +173,18 @@ Route::middleware(['journal'])->group(function () {
             Route::prefix('/production')->name('production.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\ProductionWorkflowController::class, 'index'])->name('dashboard');
                 Route::get('/manuscripts/{manuscript}', [\App\Http\Controllers\ProductionWorkflowController::class, 'show'])->name('show');
-                
+
                 Route::post('/manuscripts/{manuscript}/copyediting/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startCopyediting'])->name('copyediting.start');
                 Route::post('/manuscripts/{manuscript}/copyediting/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeCopyediting'])->name('copyediting.complete');
                 Route::post('/manuscripts/{manuscript}/copyeditor/assign', [\App\Http\Controllers\ProductionWorkflowController::class, 'assignCopyeditor'])->name('copyeditor.assign');
-                
+
                 Route::post('/manuscripts/{manuscript}/typesetting/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startTypesetting'])->name('typesetting.start');
                 Route::post('/manuscripts/{manuscript}/typesetting/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeTypesetting'])->name('typesetting.complete');
                 Route::post('/manuscripts/{manuscript}/layout-editor/assign', [\App\Http\Controllers\ProductionWorkflowController::class, 'assignLayoutEditor'])->name('layout-editor.assign');
-                
+
                 Route::post('/manuscripts/{manuscript}/proofing/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startProofing'])->name('proofing.start');
                 Route::post('/manuscripts/{manuscript}/proofing/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeProofing'])->name('proofing.complete');
-                
+
                 Route::post('/manuscripts/{manuscript}/publish', [\App\Http\Controllers\ProductionWorkflowController::class, 'publish'])->name('publish');
                 Route::post('/manuscripts/{manuscript}/revert', [\App\Http\Controllers\ProductionWorkflowController::class, 'revertStage'])->name('revert');
             });
@@ -200,13 +202,13 @@ Route::middleware(['journal'])->group(function () {
             Route::prefix('/payments')->name('payments.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
                 Route::get('/{payment}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('show');
-                
+
                 Route::get('/manuscripts/{manuscript}/submission-fee', [\App\Http\Controllers\PaymentController::class, 'submissionFee'])->name('submission-fee');
                 Route::post('/manuscripts/{manuscript}/submission-fee', [\App\Http\Controllers\PaymentController::class, 'processSubmissionFee'])->name('submission-fee.process');
-                
+
                 Route::get('/manuscripts/{manuscript}/publication-charge', [\App\Http\Controllers\PaymentController::class, 'publicationCharge'])->name('publication-charge');
                 Route::post('/manuscripts/{manuscript}/publication-charge', [\App\Http\Controllers\PaymentController::class, 'processPublicationCharge'])->name('publication-charge.process');
-                
+
                 Route::post('/{payment}/refund', [\App\Http\Controllers\PaymentController::class, 'refund'])->name('refund');
             });
 
@@ -216,15 +218,15 @@ Route::middleware(['journal'])->group(function () {
                 Route::get('/create', [\App\Http\Controllers\SubscriptionController::class, 'create'])->name('create');
                 Route::post('/', [\App\Http\Controllers\SubscriptionController::class, 'store'])->name('store');
                 Route::get('/{subscription}', [\App\Http\Controllers\SubscriptionController::class, 'show'])->name('show');
-                
+
                 Route::post('/{subscription}/renew', [\App\Http\Controllers\SubscriptionController::class, 'renew'])->name('renew');
                 Route::post('/{subscription}/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('cancel');
                 Route::post('/{subscription}/suspend', [\App\Http\Controllers\SubscriptionController::class, 'suspend'])->name('suspend');
                 Route::post('/{subscription}/reactivate', [\App\Http\Controllers\SubscriptionController::class, 'reactivate'])->name('reactivate');
-                
+
                 Route::post('/{subscription}/ip-ranges/add', [\App\Http\Controllers\SubscriptionController::class, 'addIpRange'])->name('ip-ranges.add');
                 Route::post('/{subscription}/ip-ranges/remove', [\App\Http\Controllers\SubscriptionController::class, 'removeIpRange'])->name('ip-ranges.remove');
-                
+
                 // Subscription types management
                 Route::get('/types/manage', [\App\Http\Controllers\SubscriptionController::class, 'types'])->name('types');
                 Route::post('/types', [\App\Http\Controllers\SubscriptionController::class, 'storeType'])->name('types.store');
@@ -248,6 +250,9 @@ Route::middleware(['journal'])->group(function () {
         Route::middleware(['user_role:super_admin|managing_editor|editor_in_chief'])->prefix('admin')->name('admin.')->group(function () {
             // Institution management
             Route::resource('institutions', InstitutionController::class);
+
+            // Announcement management
+            Route::resource('announcements', AdminAnnouncementController::class)->except(['show']);
 
             // Journal management
             Route::resource('journals', AdminJournalController::class);

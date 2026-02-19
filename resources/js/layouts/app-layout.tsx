@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle, Megaphone } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -27,6 +27,7 @@ const navigationMap = {
     super_admin: [
         { href: admin.institutions.index.url(), label: 'Institutions', icon: Building2 },
         { href: admin.journals.index.url(), label: 'Journals', icon: BookOpen },
+        { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
         { href: '/admin/plugins', label: 'Plugins', icon: Puzzle },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
@@ -34,12 +35,14 @@ const navigationMap = {
         { href: editor.dashboard.url(), label: 'Dashboard', icon: LayoutDashboard },
         { href: editor.indexManuscripts.url(), label: 'Submitted Manuscripts', icon: FileText },
         { href: issues.index.url(), label: 'Journal Issues', icon: AlertCircle },
+        { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
     editor_in_chief: [
         { href: editor.dashboard.url(), label: 'Dashboard', icon: LayoutDashboard },
         { href: editor.indexManuscripts.url(), label: 'Submitted Manuscripts', icon: FileText },
         { href: issues.index.url(), label: 'Journal Issues', icon: AlertCircle },
+        { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
     ],
     associate_editor: [
