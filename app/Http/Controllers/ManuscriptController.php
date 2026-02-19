@@ -163,7 +163,7 @@ class ManuscriptController extends Controller
                     'issue' => $manuscript->issue,
                     'page_range' => $manuscript->page_range,
                     'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
-                    'institution' => $manuscript->user->affiliation ?? 'Mindoro State University',
+                    'institution' => $manuscript->user->affiliation ?? '',
                 ],
             ]);
         } catch (Exception $e) {

@@ -275,7 +275,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-lg font-bold text-foreground leading-tight">
-                                    {currentJournal?.abbreviation ?? currentJournal?.name ?? currentInstitution?.abbreviation ?? currentInstitution?.name ?? 'Saliksikhub'}
+                                    {currentJournal?.abbreviation ?? currentJournal?.name ?? currentInstitution?.abbreviation ?? currentInstitution?.name ?? 'Research Journal'}
                                 </h1>
                                 <p className="text-xs text-muted-foreground">
                                     {currentJournal?.settings?.tagline ?? 'Research Journal Management System'}

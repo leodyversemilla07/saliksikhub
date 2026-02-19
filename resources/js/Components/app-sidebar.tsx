@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import ApplicationLogo from '@/components/application-logo';
+import JournalSwitcher from '@/components/journal-switcher';
 import { NavUser } from './nav-user';
 import {
     Sidebar,
@@ -7,12 +8,14 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { User, UserRole } from '@/types';
+import { User, UserRole, PageProps } from '@/types';
 
 interface SidebarLinkType {
     href: string;
@@ -31,6 +34,9 @@ export function AppSidebar({
     user,
     navigationMap
 }: AppSidebarProps) {
+    const { currentJournal } = usePage<PageProps>().props;
+    const platformName = currentJournal?.abbreviation ?? currentJournal?.name ?? 'Research Platform';
+
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -38,11 +44,11 @@ export function AppSidebar({
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href="/">
-                                <div className="bg-green-600 text-white flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                                     <ApplicationLogo />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">SaliksikHub</span>
+                                    <span className="truncate font-medium">{platformName}</span>
                                     <span className="truncate text-xs text-muted-foreground">Research Platform</span>
                                 </div>
                             </Link>
@@ -53,6 +59,16 @@ export function AppSidebar({
 
             <SidebarContent>
                 <SidebarGroup>
+                    <SidebarGroupLabel>Journal</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <JournalSwitcher className="w-full" />
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarSeparator />
+
+                <SidebarGroup>
+                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {navigationMap[user.role]?.map((link: SidebarLinkType) => {

@@ -2,6 +2,7 @@ import { PageProps } from '@/types';
 import { FileText, Calendar, Users, Hash, MapPin } from 'lucide-react';
 import Breadcrumb from '@/components/breadcrumb';
 import { toast } from 'sonner';
+import { usePage } from '@inertiajs/react';
 import PublicLayout from '@/layouts/public-layout';
 
 interface Manuscript {
@@ -24,8 +25,11 @@ interface PublicViewProps extends PageProps {
 }
 
 export default function PublicView({ manuscript }: PublicViewProps) {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+
     return (
-        <PublicLayout title={`${manuscript.title} - Daluyang Dunong MinSU Research Journal`}>
+        <PublicLayout title={`${manuscript.title} - ${journalName}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Breadcrumb
                         items={[
@@ -102,7 +106,7 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                                 href={manuscript.pdfUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-[#18652c] dark:text-[#3fb65e] hover:underline"
+                                                className="text-primary hover:underline"
                                             >
                                                 download it here
                                             </a>.
@@ -158,7 +162,7 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                                     href={`https://doi.org/${manuscript.doi}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-[#18652c] dark:text-[#3fb65e] hover:underline break-all"
+                                                    className="text-primary hover:underline break-all"
                                                 >
                                                     {manuscript.doi}
                                                 </a>
@@ -173,7 +177,7 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                     <div className="bg-white dark:bg-gray-700 rounded border p-4">
                                         <p className="text-xs text-gray-700 dark:text-gray-300 font-mono leading-relaxed">
                                             {manuscript.authors.join(', ')} ({manuscript.publication_date ? new Date(manuscript.publication_date).getFullYear() : 'n.d.'}).
-                                            {manuscript.title}. <em>Daluyang Dunong MinSU Research Journal</em>
+                                            {manuscript.title}. <em>{journalName}</em>
                                             {manuscript.volume && manuscript.issue && `, ${manuscript.volume}(${manuscript.issue})`}
                                             {manuscript.page_range && `, ${manuscript.page_range}`}
                                             {manuscript.doi && `. https://doi.org/${manuscript.doi}`}.
@@ -182,7 +186,7 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                     <button
                                         onClick={() => {
                                             navigator.clipboard.writeText(
-                                                `${manuscript.authors.join(', ')} (${manuscript.publication_date ? new Date(manuscript.publication_date).getFullYear() : 'n.d.'}). ${manuscript.title}. Daluyang Dunong MinSU Research Journal${manuscript.volume && manuscript.issue ? `, ${manuscript.volume}(${manuscript.issue})` : ''}${manuscript.page_range ? `, ${manuscript.page_range}` : ''}${manuscript.doi ? `. https://doi.org/${manuscript.doi}` : ''}.`
+                                                `${manuscript.authors.join(', ')} (${manuscript.publication_date ? new Date(manuscript.publication_date).getFullYear() : 'n.d.'}). ${manuscript.title}. ${journalName}${manuscript.volume && manuscript.issue ? `, ${manuscript.volume}(${manuscript.issue})` : ''}${manuscript.page_range ? `, ${manuscript.page_range}` : ''}${manuscript.doi ? `. https://doi.org/${manuscript.doi}` : ''}.`
                                             );
                                             toast.success('Citation copied to clipboard!');
                                         }}
@@ -200,7 +204,7 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                             href={manuscript.pdfUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-[#18652c] hover:bg-[#145024] dark:bg-[#3fb65e] dark:hover:bg-[#35a051] text-white text-sm font-medium rounded-md transition-colors duration-300"
+                                            className="w-full inline-flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-md transition-colors duration-300"
                                         >
                                             <FileText className="w-4 h-4 mr-2" />
                                             Download PDF

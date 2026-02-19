@@ -45,6 +45,8 @@ class CreateNewUser implements CreatesNewUsers
             'review_requests' => ['boolean'],
         ])->validate();
 
+        $role = $input['role'] ?? 'author';
+
         $user = User::create([
             'firstname' => $input['firstname'],
             'lastname' => $input['lastname'],
@@ -54,15 +56,24 @@ class CreateNewUser implements CreatesNewUsers
             'country' => $input['country'] ?? null,
             'orcid_id' => $input['orcid_id'] ?? null,
             'password' => Hash::make($input['password']),
-            'role' => $input['role'] ?? 'author',
+            'role' => $role,
             'data_collection' => $input['data_collection'] ?? false,
             'notifications' => $input['notifications'] ?? true,
             'review_requests' => $input['review_requests'] ?? true,
         ]);
 
-        // Assign role if provided, default to 'author'
-        $role = $input['role'] ?? 'author';
+        // Assign Spatie role
         $user->assignRole($role);
+
+        // Attach user to the current journal if available
+        $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
+        if ($journal) {
+            $user->journals()->attach($journal->id, [
+                'role' => $role,
+                'is_active' => true,
+                'assigned_at' => now(),
+            ]);
+        }
 
         return $user;
     }

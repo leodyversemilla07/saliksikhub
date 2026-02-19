@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Calendar, Archive, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +39,8 @@ interface VolumeYear {
 }
 
 export default function Archives() {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
@@ -59,7 +61,7 @@ export default function Archives() {
                             id: 1,
                             volume: 22,
                             issue: 2,
-                            title: "DDMRJ Special Issue on the International Conference on Research, Innovation, and Investment (ICRII) 2024",
+                            title: "Special Issue on the International Conference on Research, Innovation, and Investment (ICRII) 2024",
                             description: "Vol. 22 No. S1 (2024)",
                             coverImageUrl: "/images/journal-cover.webp",
                             publicationDate: "2024",
@@ -102,7 +104,7 @@ export default function Archives() {
     ];
 
     return (
-        <PublicLayout title="Archives | Daluyang Dunong">
+        <PublicLayout title={`Archives | ${journalName}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">

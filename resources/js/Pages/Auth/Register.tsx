@@ -1,4 +1,5 @@
-import { Head, Form, Link } from '@inertiajs/react';
+import { Head, Form, Link, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,21 +7,25 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/c
 import { home, login as loginRoute, register as registerRoute } from '@/routes';
 
 export default function Register() {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalLogo = currentJournal?.logo_url ?? '/images/logo.png';
+
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-            <Head title="Create Account | Daluyang Dunong" />
+            <Head title={`Create Account | ${journalName}`} />
 
             <div className="flex w-full max-w-sm flex-col gap-6">
                 {/* Logo/Brand */}
                 <Link href={home.url()} className="flex items-center gap-2 self-center font-medium">
                     <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
                         <img
-                            src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                            src={journalLogo}
                             className="size-8 object-contain"
-                            alt="Daluyang Dunong"
+                            alt={journalName}
                         />
                     </div>
-                    Daluyang Dunong
+                    {journalName}
                 </Link>
 
                 {/* Registration Card */}

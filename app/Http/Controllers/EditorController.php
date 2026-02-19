@@ -25,31 +25,44 @@ class EditorController extends Controller
      */
     public function index()
     {
+        $journal = app('currentJournal');
+
         // Get date ranges
         $currentMonth = now();
         $lastMonth = now()->subMonth();
 
-        // Basic metrics with trends
-        $totalManuscripts = Manuscript::count();
+        // Base query scoped to current journal
+        $manuscriptQuery = fn () => Manuscript::query()
+            ->when($journal, fn ($q) => $q->where('journal_id', $journal->id));
 
-        $newSubmissions = Manuscript::whereMonth('created_at', $currentMonth->month)
+        // Basic metrics with trends
+        $totalManuscripts = $manuscriptQuery()->count();
+
+        $newSubmissions = $manuscriptQuery()->whereMonth('created_at', $currentMonth->month)
             ->whereYear('created_at', $currentMonth->year)
             ->count();
-        $newSubmissionsLastMonth = Manuscript::whereMonth('created_at', $lastMonth->month)
+        $newSubmissionsLastMonth = $manuscriptQuery()->whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
             ->count();
 
-        $publishedArticles = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
+        $publishedArticles = $manuscriptQuery()->where('status', ManuscriptStatus::PUBLISHED)
             ->whereMonth('created_at', $currentMonth->month)
             ->whereYear('created_at', $currentMonth->year)
             ->count();
-        $publishedLastMonth = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
+        $publishedLastMonth = $manuscriptQuery()->where('status', ManuscriptStatus::PUBLISHED)
             ->whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
             ->count();
 
-        // Active reviewers (users with any editor role)
-        $activeReviewers = User::role(['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor'])->count();
+        // Active reviewers scoped to journal
+        $activeReviewers = $journal
+            ? $journal->users()->wherePivotIn('role', ['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor'])->count()
+            : User::role(['managing_editor', 'editor_in_chief', 'associate_editor', 'language_editor'])->count();
+
+        // Total users for this journal
+        $totalUsers = $journal
+            ? $journal->users()->count()
+            : User::count();
 
         // Calculate trends
         $submissionsTrend = $newSubmissionsLastMonth > 0
@@ -78,16 +91,16 @@ class EditorController extends Controller
             'Dec' => 12,
         ];
         foreach ($months as $monthName => $monthNum) {
-            $submissions = Manuscript::whereMonth('created_at', $monthNum)
+            $submissions = $manuscriptQuery()->whereMonth('created_at', $monthNum)
                 ->whereYear('created_at', $year)
                 ->count();
 
-            $published = Manuscript::where('status', ManuscriptStatus::PUBLISHED)
+            $published = $manuscriptQuery()->where('status', ManuscriptStatus::PUBLISHED)
                 ->whereMonth('created_at', $monthNum)
                 ->whereYear('created_at', $year)
                 ->count();
 
-            $rejected = Manuscript::where('status', ManuscriptStatus::REJECTED)
+            $rejected = $manuscriptQuery()->where('status', ManuscriptStatus::REJECTED)
                 ->whereMonth('created_at', $monthNum)
                 ->whereYear('created_at', $year)
                 ->count();
@@ -104,12 +117,12 @@ class EditorController extends Controller
         $statusDistribution = [
             [
                 'name' => 'Under Review',
-                'value' => Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)->count(),
+                'value' => $manuscriptQuery()->where('status', ManuscriptStatus::UNDER_REVIEW)->count(),
                 'color' => '#3B82F6',
             ],
             [
                 'name' => 'Needs Revision',
-                'value' => Manuscript::whereIn('status', [
+                'value' => $manuscriptQuery()->whereIn('status', [
                     ManuscriptStatus::MINOR_REVISION_REQUIRED,
                     ManuscriptStatus::MAJOR_REVISION_REQUIRED,
                 ])->count(),
@@ -117,12 +130,12 @@ class EditorController extends Controller
             ],
             [
                 'name' => 'Ready for Decision',
-                'value' => Manuscript::where('status', ManuscriptStatus::SUBMITTED)->count(),
+                'value' => $manuscriptQuery()->where('status', ManuscriptStatus::SUBMITTED)->count(),
                 'color' => '#10B981',
             ],
             [
                 'name' => 'In Production',
-                'value' => Manuscript::whereIn('status', [
+                'value' => $manuscriptQuery()->whereIn('status', [
                     ManuscriptStatus::ACCEPTED,
                     ManuscriptStatus::IN_COPYEDITING,
                     ManuscriptStatus::AWAITING_AUTHOR_APPROVAL,
@@ -136,7 +149,7 @@ class EditorController extends Controller
         $revisionRounds = [
             [
                 'name' => 'No Revision',
-                'value' => Manuscript::where('status', ManuscriptStatus::ACCEPTED)
+                'value' => $manuscriptQuery()->where('status', ManuscriptStatus::ACCEPTED)
                     ->orWhere('status', ManuscriptStatus::PUBLISHED)
                     ->whereNull('revision_history')
                     ->count(),
@@ -144,21 +157,21 @@ class EditorController extends Controller
             ],
             [
                 'name' => '1 Round',
-                'value' => Manuscript::whereNotNull('revision_history')
+                'value' => $manuscriptQuery()->whereNotNull('revision_history')
                     ->whereRaw('JSON_LENGTH(revision_history) = 1')
                     ->count(),
                 'color' => '#3B82F6',
             ],
             [
                 'name' => '2 Rounds',
-                'value' => Manuscript::whereNotNull('revision_history')
+                'value' => $manuscriptQuery()->whereNotNull('revision_history')
                     ->whereRaw('JSON_LENGTH(revision_history) = 2')
                     ->count(),
                 'color' => '#F59E0B',
             ],
             [
                 'name' => '3+ Rounds',
-                'value' => Manuscript::whereNotNull('revision_history')
+                'value' => $manuscriptQuery()->whereNotNull('revision_history')
                     ->whereRaw('JSON_LENGTH(revision_history) >= 3')
                     ->count(),
                 'color' => '#EF4444',
@@ -166,7 +179,7 @@ class EditorController extends Controller
         ];
 
         // Recent submissions (last 10)
-        $recentSubmissions = Manuscript::with('author')
+        $recentSubmissions = $manuscriptQuery()->with('author')
             ->latest('created_at')
             ->take(10)
             ->get()
@@ -182,7 +195,7 @@ class EditorController extends Controller
             });
 
         // Overdue reviews
-        $overdueReviews = Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)
+        $overdueReviews = $manuscriptQuery()->where('status', ManuscriptStatus::UNDER_REVIEW)
             ->where('created_at', '<', now()->subDays(30))
             ->count();
 
@@ -197,7 +210,7 @@ class EditorController extends Controller
         }
 
         // Pending decisions
-        $pendingDecisions = Manuscript::whereIn('status', [
+        $pendingDecisions = $manuscriptQuery()->whereIn('status', [
             ManuscriptStatus::SUBMITTED,
             ManuscriptStatus::UNDER_REVIEW,
         ])->count();
@@ -240,7 +253,7 @@ class EditorController extends Controller
                 ],
                 [
                     'title' => 'Total Users',
-                    'value' => (string) User::count(),
+                    'value' => (string) $totalUsers,
                     'trend' => 'up',
                     'percentage' => '',
                     'description' => 'Total registered users',
@@ -253,8 +266,8 @@ class EditorController extends Controller
             'recentSubmissions' => $recentSubmissions,
             'stats' => [
                 'total_manuscripts' => $totalManuscripts,
-                'pending_reviews' => Manuscript::where('status', ManuscriptStatus::SUBMITTED)->count(),
-                'pending_decisions' => Manuscript::whereNull('decision_date')->count(),
+                'pending_reviews' => $manuscriptQuery()->where('status', ManuscriptStatus::SUBMITTED)->count(),
+                'pending_decisions' => $manuscriptQuery()->whereNull('decision_date')->count(),
             ],
         ];
 
@@ -268,8 +281,12 @@ class EditorController extends Controller
      */
     public function indexManuscripts()
     {
+        $journal = app('currentJournal');
+
         return Inertia::render('editor/index', [
-            'manuscripts' => Manuscript::with('author')
+            'manuscripts' => Manuscript::query()
+                ->when($journal, fn ($q) => $q->where('journal_id', $journal->id))
+                ->with('author')
                 ->latest()
                 ->get(),
         ]);

@@ -16,9 +16,11 @@ class UserController extends Controller
 {
     /**
      * Returns a paginated list of users, excluding the current user, with optional role and search filters.
+     * Scoped to the current journal when available.
      */
     public function index(Request $request)
     {
+        $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
 
         $pageSizeRaw = $request->input('per_page', 6);
         $role = $request->input('role');
@@ -26,43 +28,14 @@ class UserController extends Controller
 
         $pageSize = ($pageSizeRaw === 'all') ? -1 : (is_numeric($pageSizeRaw) ? (int) $pageSizeRaw : $pageSizeRaw);
 
-        $query = User::where('id', '!=', Auth::id())
-            ->orderBy('created_at', 'desc');
-
-        if ($role && $role !== 'all') {
-            $query->where('role', $role);
-        }
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('firstname', 'like', "%{$search}%")
-                    ->orWhere('lastname', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('country', 'like', "%{$search}%")
-                    ->orWhere('affiliation', 'like', "%{$search}%");
-            });
-        }
-
-        if ($pageSize === -1 || $pageSize === 'all') {
-            $allUsers = $query->get();
-            $total = $allUsers->count();
-            $currentPage = 1;
-            $paginator = new LengthAwarePaginator(
-                $allUsers,
-                $total,
-                $total > 0 ? $total : 1,
-                $currentPage,
-                [
-                    'path' => $request->url(),
-                    'query' => $request->query(),
-                ]
-            );
+        // Scope users to current journal if available
+        if ($journal) {
+            $query = User::whereHas('journals', fn ($q) => $q->where('journals.id', $journal->id))
+                ->where('id', '!=', Auth::id())
+                ->orderBy('created_at', 'desc');
         } else {
-            if (! is_numeric($pageSize) || $pageSize < 1 || $pageSize > 100) {
-                $pageSize = 10;
-            }
-            $paginator = $query->paginate($pageSize)->withQueryString();
+            $query = User::where('id', '!=', Auth::id())
+                ->orderBy('created_at', 'desc');
         }
 
         if ($role && $role !== 'all') {
@@ -132,6 +105,7 @@ class UserController extends Controller
 
     /**
      * Creates a new user in the database and assigns the selected role.
+     * Also attaches the user to the current journal if available.
      */
     public function store(StoreRequest $request)
     {
@@ -147,6 +121,16 @@ class UserController extends Controller
             'role' => $validated['role'],
         ]);
         $user->assignRole($validated['role']);
+
+        // Attach user to current journal
+        $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
+        if ($journal) {
+            $user->journals()->attach($journal->id, [
+                'role' => $validated['role'],
+                'is_active' => true,
+                'assigned_at' => now(),
+            ]);
+        }
 
         return redirect()->back()->with('success', 'User created successfully');
     }

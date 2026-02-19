@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +7,11 @@ import { Calendar, Megaphone, Users, Settings, Award, BookOpen } from 'lucide-re
 import PublicLayout from '@/layouts/public-layout';
 
 export default function Announcements() {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+
     return (
-        <PublicLayout title="Announcements | Daluyang Dunong">
+        <PublicLayout title={`Announcements | ${journalName}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -16,7 +19,7 @@ export default function Announcements() {
                             Announcements
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Stay updated with the latest news, events, and updates from Daluyang Dunong.
+                            Stay updated with the latest news, events, and updates from {journalName}.
                         </p>
                     </div>                    <div className="space-y-6">
                         {/* Featured Announcement */}
@@ -225,7 +228,7 @@ export default function Announcements() {
                                 </div>
                                 <CardTitle className="text-xl">Milestone Achievement: 1000+ Published Articles</CardTitle>
                                 <CardDescription>
-                                    We're proud to announce that Daluyang Dunong has reached a significant milestone with over 1,000 published 
+                                    We're proud to announce that {journalName} has reached a significant milestone with over 1,000 published 
                                     research articles! This achievement reflects our commitment to advancing agricultural science and supporting 
                                     researchers worldwide.
                                 </CardDescription>

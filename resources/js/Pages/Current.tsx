@@ -1,5 +1,5 @@
 import { PageProps } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { FileText, Eye, Calendar, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -38,10 +38,13 @@ interface CurrentPageProps extends PageProps {
 }
 
 export default function Current({ currentIssue }: CurrentPageProps) {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+
     // If no current issue is available, show a message
     if (!currentIssue) {
         return (
-            <PublicLayout title="Current Issue - Daluyang Dunong MinSU Research Journal">
+            <PublicLayout title={`Current Issue - ${journalName}`}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="text-center py-16">
                             <Card className="max-w-md mx-auto">
@@ -65,7 +68,7 @@ export default function Current({ currentIssue }: CurrentPageProps) {
     }
 
     return (
-        <PublicLayout title={`${currentIssue.fullTitle} - Daluyang Dunong MinSU Research Journal`}>
+        <PublicLayout title={`${currentIssue.fullTitle} - ${journalName}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Page Header */}
                     <div className="mb-8">

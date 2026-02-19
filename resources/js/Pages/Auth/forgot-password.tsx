@@ -1,5 +1,6 @@
 import { FormEventHandler } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,10 @@ import { home, login as loginRoute } from '@/routes';
 import password from '@/routes/password';
 
 export default function ForgotPassword({ status }: { status?: string }) {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalLogo = currentJournal?.logo_url ?? '/images/logo.png';
+
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         email: '',
     });
@@ -25,16 +30,16 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <Head title="Reset Password | Daluyang Dunong" />
+            <Head title={`Reset Password | ${journalName}`} />
 
             <div className="max-w-md w-full">
                 <Card className="shadow-xl animate-in fade-in-50 duration-500">
                     <CardHeader className="text-center space-y-4">
                         <Link href={home.url()} className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center group hover:scale-105 transition-transform duration-200">
                             <img
-                                src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                                src={journalLogo}
                                 className="w-12 h-12 object-contain"
-                                alt="Research Journal Manager"
+                                alt={journalName}
                             />
                         </Link>
                         <div>

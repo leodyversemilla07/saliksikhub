@@ -63,9 +63,9 @@ const authorResources = [
 ];
 
 const socialLinks = [
-    { name: 'Facebook', icon: FaFacebook, href: 'https://www.facebook.com/DaluyangDunong' },
-    { name: 'Twitter', icon: FaXTwitter, href: 'https://www.x.com/DaluyangDunong' },
-    { name: 'LinkedIn', icon: FaLinkedin, href: 'https://www.linkedin.com/company/daluyang-dunong' },
+    { name: 'Facebook', icon: FaFacebook, href: '#' },
+    { name: 'Twitter', icon: FaXTwitter, href: '#' },
+    { name: 'LinkedIn', icon: FaLinkedin, href: '#' },
     { name: 'ORCID', icon: FaOrcid, href: '#' },
 ];
 
@@ -73,13 +73,13 @@ export default function Footer() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     const currentYear = new Date().getFullYear();
 
-    const journalName = currentJournal?.name || 'Saliksikhub';
+    const journalName = currentJournal?.name || 'Research Journal';
     const journalDescription = currentJournal?.description || 'A peer-reviewed, open-access journal dedicated to publishing high-quality research across multiple disciplines. Committed to advancing knowledge and fostering academic excellence.';
-    const journalLogo = currentJournal?.logo_url || 'https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png';
-    const institutionName = currentInstitution?.name || 'Mindoro State University';
-    const institutionAddress = currentInstitution?.address || 'Calapan City, Oriental Mindoro\nPhilippines';
-    const contactEmail = currentInstitution?.contact_email || 'journal@minsu.edu.ph';
-    const contactPhone = currentInstitution?.contact_phone || currentInstitution?.settings?.contact_phone || '+63 (43) 286-XXXX';
+    const journalLogo = currentJournal?.logo_url || '/images/logo.png';
+    const institutionName = currentInstitution?.name || 'Institution';
+    const institutionAddress = currentInstitution?.address || '';
+    const contactEmail = currentInstitution?.contact_email || '';
+    const contactPhone = currentInstitution?.contact_phone || currentInstitution?.settings?.contact_phone || '';
 
     // Check if settings has specific values if needed, otherwise use defaults
     const issn = currentJournal?.issn || currentInstitution?.settings?.issn || '2024-XXXX';
@@ -205,28 +205,34 @@ export default function Footer() {
                         </h3>
 
                         <div className="space-y-4 mb-8">
-                            <div className="flex items-start gap-3">
-                                <LuMapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                <div className="text-sm text-muted-foreground whitespace-pre-line">
-                                    {institutionName}<br />
-                                    {institutionAddress}
+                            {institutionName && (
+                                <div className="flex items-start gap-3">
+                                    <LuMapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                                    <div className="text-sm text-muted-foreground whitespace-pre-line">
+                                        {institutionName}
+                                        {institutionAddress && <><br />{institutionAddress}</>}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <LuMail className="h-5 w-5 text-primary shrink-0" />
-                                <a
-                                    href={`mailto:${contactEmail}`}
-                                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    {contactEmail}
-                                </a>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <LuPhone className="h-5 w-5 text-primary shrink-0" />
-                                <span className="text-sm text-muted-foreground">
-                                    {contactPhone}
-                                </span>
-                            </div>
+                            )}
+                            {contactEmail && (
+                                <div className="flex items-center gap-3">
+                                    <LuMail className="h-5 w-5 text-primary shrink-0" />
+                                    <a
+                                        href={`mailto:${contactEmail}`}
+                                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {contactEmail}
+                                    </a>
+                                </div>
+                            )}
+                            {contactPhone && (
+                                <div className="flex items-center gap-3">
+                                    <LuPhone className="h-5 w-5 text-primary shrink-0" />
+                                    <span className="text-sm text-muted-foreground">
+                                        {contactPhone}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Newsletter */}
@@ -282,7 +288,7 @@ export default function Footer() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                            <span>© {currentYear} {institutionName}. All rights reserved.</span>
+                            <span>&copy; {currentYear} {journalName}. All rights reserved.</span>
                             <span className="hidden sm:inline">•</span>
                             <span>Powered by Saliksikhub</span>
                         </div>

@@ -587,7 +587,7 @@ class IssueController extends Controller
             'volume' => $currentIssue->volume_number,
             'number' => $currentIssue->issue_number,
             'year' => $currentIssue->publication_date->year,
-            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.'): DDMRJ - Current Issue',
+            'fullTitle' => "Vol. {$currentIssue->volume_number} No. {$currentIssue->issue_number} (".$currentIssue->publication_date->year.') - Current Issue',
             'specialIssueTitle' => $currentIssue->issue_title,
             'publicationDate' => $currentIssue->publication_date->toDateString(),
             'coverImageUrl' => $coverImageUrl,
@@ -650,7 +650,7 @@ class IssueController extends Controller
                         'citations' => 0,
                         'downloads' => 0,
                         'category' => $manuscript->category ?: 'Research Article',
-                        'institution' => $manuscript->author->affiliation ?? 'Mindoro State University',
+                        'institution' => $manuscript->author->affiliation ?? '',
                     ];
                 });
 

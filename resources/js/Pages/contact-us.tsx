@@ -1,19 +1,28 @@
 import { PageProps } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, MapPin, Phone, Clock, Users, MessageSquare } from 'lucide-react';
 import PublicLayout from '@/layouts/public-layout';
 
 export default function ContactUs() {
+    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalAbbreviation = currentJournal?.abbreviation ?? '';
+    const institutionName = currentInstitution?.name ?? 'Institution';
+    const institutionAddress = currentInstitution?.address ?? '';
+    const contactEmail = currentInstitution?.contact_email ?? currentJournal?.settings?.contact_email as string ?? '';
+    const contactPhone = currentInstitution?.contact_phone ?? '';
+
     return (
-        <PublicLayout title="Contact Us | Daluyang Dunong">
+        <PublicLayout title={`Contact Us | ${journalName}`}>
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                     <div className="text-center">
                         <h1 className="font-serif text-4xl font-bold text-oxford-blue mb-2">
                             Contact Us
                         </h1>
                         <p className="text-lg text-muted-foreground mb-8">
-                            Get in touch with the Daluyang Dunong editorial team
+                            Get in touch with the {journalName} editorial team
                         </p>
                     </div>
 
@@ -27,50 +36,54 @@ export default function ContactUs() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="flex items-start gap-4">
-                                    <MapPin className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="font-semibold text-card-foreground mb-1">Mailing Address</h3>
-                                        <p className="text-muted-foreground leading-relaxed">
-                                            Mindoro State University, Main Campus<br />
-                                            Victoria, Oriental Mindoro<br />
-                                            Philippines
-                                        </p>
+                                {institutionAddress && (
+                                    <div className="flex items-start gap-4">
+                                        <MapPin className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="font-semibold text-card-foreground mb-1">Mailing Address</h3>
+                                            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                                                {institutionName}<br />
+                                                {institutionAddress}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
-                                <div className="flex items-start gap-4">
-                                    <Mail className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="font-semibold text-card-foreground mb-1">Email Address</h3>
-                                        <p className="text-muted-foreground">
-                                            <a
-                                                href="mailto:contact@ddmrj.minsu.edu.ph"
-                                                className="text-primary hover:text-primary/80 transition-colors"
-                                            >
-                                                contact@ddmrj.minsu.edu.ph
-                                            </a>
-                                        </p>
+                                {contactEmail && (
+                                    <div className="flex items-start gap-4">
+                                        <Mail className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="font-semibold text-card-foreground mb-1">Email Address</h3>
+                                            <p className="text-muted-foreground">
+                                                <a
+                                                    href={`mailto:${contactEmail}`}
+                                                    className="text-primary hover:text-primary/80 transition-colors"
+                                                >
+                                                    {contactEmail}
+                                                </a>
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
-                                <div className="flex items-start gap-4">
-                                    <Phone className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="font-semibold text-card-foreground mb-1">Phone</h3>
-                                        <p className="text-muted-foreground">
-                                            +63 (43) 288-3156
-                                        </p>
+                                {contactPhone && (
+                                    <div className="flex items-start gap-4">
+                                        <Phone className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
+                                        <div>
+                                            <h3 className="font-semibold text-card-foreground mb-1">Phone</h3>
+                                            <p className="text-muted-foreground">
+                                                {contactPhone}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 <div className="flex items-start gap-4">
                                     <Clock className="h-6 w-6 text-oxford-blue shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-semibold text-card-foreground mb-1">Office Hours</h3>
                                         <p className="text-muted-foreground">
-                                            Monday - Friday: 8:00 AM - 5:00 PM<br />
-                                            Philippine Standard Time (PST)
+                                            Monday - Friday: 8:00 AM - 5:00 PM
                                         </p>
                                     </div>
                                 </div>
@@ -92,7 +105,7 @@ export default function ContactUs() {
                                         <p className="text-muted-foreground text-sm leading-relaxed mb-2">
                                             For manuscript submissions and author inquiries
                                         </p>
-                                        <Badge variant="secondary">submissions@ddmrj.minsu.edu.ph</Badge>
+                                        {contactEmail && <Badge variant="secondary">{contactEmail}</Badge>}
                                     </div>
 
                                     <div>
@@ -100,7 +113,7 @@ export default function ContactUs() {
                                         <p className="text-muted-foreground text-sm leading-relaxed mb-2">
                                             For editorial policies and review process questions
                                         </p>
-                                        <Badge variant="secondary">editorial@ddmrj.minsu.edu.ph</Badge>
+                                        {contactEmail && <Badge variant="secondary">{contactEmail}</Badge>}
                                     </div>
 
                                     <div>
@@ -108,7 +121,7 @@ export default function ContactUs() {
                                         <p className="text-muted-foreground text-sm leading-relaxed mb-2">
                                             For website and submission system issues
                                         </p>
-                                        <Badge variant="secondary">support@ddmrj.minsu.edu.ph</Badge>
+                                        {contactEmail && <Badge variant="secondary">{contactEmail}</Badge>}
                                     </div>
 
                                     <div>
@@ -116,7 +129,7 @@ export default function ContactUs() {
                                         <p className="text-muted-foreground text-sm leading-relaxed mb-2">
                                             For general inquiries and partnership opportunities
                                         </p>
-                                        <Badge variant="secondary">info@ddmrj.minsu.edu.ph</Badge>
+                                        {contactEmail && <Badge variant="secondary">{contactEmail}</Badge>}
                                     </div>
                                 </div>
                             </CardContent>

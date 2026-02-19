@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,10 @@ import password from '@/routes/password';
 import { FormEventHandler } from 'react';
 
 export default function Login({ status, canResetPassword }: PageProps<{ status?: string, canResetPassword: boolean }>) {
+    const { currentJournal } = usePage<PageProps>().props;
+    const journalName = currentJournal?.name ?? 'Research Journal';
+    const journalLogo = currentJournal?.logo_url ?? '/images/logo.png';
+
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         email: '',
         password: '',
@@ -23,19 +27,19 @@ export default function Login({ status, canResetPassword }: PageProps<{ status?:
 
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-            <Head title="Login | Daluyang Dunong" />
+            <Head title={`Login | ${journalName}`} />
 
             <div className="flex w-full max-w-sm flex-col gap-6">
                 {/* Logo/Brand */}
                 <Link href={home()} className="flex items-center gap-2 self-center font-medium">
                     <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
                         <img
-                            src="https://www.daluyangdunong.minsu.edu.ph/img/mrj1.3083946c.png"
+                            src={journalLogo}
                             className="size-8 object-contain"
-                            alt="Daluyang Dunong"
+                            alt={journalName}
                         />
                     </div>
-                    Daluyang Dunong
+                    {journalName}
                 </Link>
 
                 {/* Status Alert */}

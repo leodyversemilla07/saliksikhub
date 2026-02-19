@@ -168,7 +168,7 @@ export default function AboutJournal() {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    DDMRJ serves as a primary multidisciplinary channel for disseminating high-quality original research and scholarly communications. It aims to nurture vibrant academic dialogue, encourage cross-disciplinary approaches, and advance knowledge addressing issues of local, national (Philippines), and global significance, ensuring impact and rigor through robust peer review.
+                                    {journalAbbreviation} serves as a primary multidisciplinary channel for disseminating high-quality original research and scholarly communications. It aims to nurture vibrant academic dialogue, encourage cross-disciplinary approaches, and advance knowledge addressing issues of local, national, and global significance, ensuring impact and rigor through robust peer review.
                                 </p>
                             </CardContent>
                         </Card>
@@ -186,7 +186,7 @@ export default function AboutJournal() {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                                    Daluyang Dunong welcomes submissions of original research articles, review papers, and case studies that fall within its broad multidisciplinary mandate. The journal is particularly interested in contributions addressing, but not limited to, the following key thematic areas:
+                                    {journalName} welcomes submissions of original research articles, review papers, and case studies that fall within its broad multidisciplinary mandate. The journal is particularly interested in contributions addressing, but not limited to, the following key thematic areas:
                                 </p>
                                 <div className="space-y-4">
                                     {[
