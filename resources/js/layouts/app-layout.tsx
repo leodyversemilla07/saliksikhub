@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { NotificationDropdown } from '@/components/notification-dropdown';
-import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle, Megaphone } from 'lucide-react';
+import { Moon, Sun, FileText, FilePlus, UserCheck, LayoutDashboard, AlertCircle, Building2, BookOpen, Puzzle, Megaphone, Settings } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -30,6 +30,7 @@ const navigationMap = {
         { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
         { href: '/admin/plugins', label: 'Plugins', icon: Puzzle },
         { href: users.index.url(), label: 'User Management', icon: UserCheck },
+        { href: '/admin/platform-settings', label: 'Platform Settings', icon: Settings },
     ],
     managing_editor: [
         { href: editor.dashboard.url(), label: 'Dashboard', icon: LayoutDashboard },

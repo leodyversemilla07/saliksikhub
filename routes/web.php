@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementContro
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\JournalController as AdminJournalController;
 use App\Http\Controllers\Admin\JournalSettingsController;
+use App\Http\Controllers\Admin\PlatformSettingsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\EditorController;
@@ -292,6 +293,15 @@ Route::middleware(['journal'])->group(function () {
             Route::post('journals/{journal}/cms/theme/favicon', [\App\Http\Controllers\Admin\JournalThemeController::class, 'uploadFavicon'])->name('journals.cms.theme.favicon');
             Route::post('journals/{journal}/cms/theme/reset', [\App\Http\Controllers\Admin\JournalThemeController::class, 'reset'])->name('journals.cms.theme.reset');
             Route::get('journals/{journal}/cms/theme/preview.css', [\App\Http\Controllers\Admin\JournalThemeController::class, 'preview'])->name('journals.cms.theme.preview');
+
+            // Platform Settings (super_admin only)
+            Route::middleware(['user_role:super_admin'])->group(function () {
+                Route::get('platform-settings', [PlatformSettingsController::class, 'edit'])->name('platform-settings.edit');
+                Route::put('platform-settings', [PlatformSettingsController::class, 'update'])->name('platform-settings.update');
+                Route::delete('platform-settings/logo', [PlatformSettingsController::class, 'removeLogo'])->name('platform-settings.remove-logo');
+                Route::delete('platform-settings/favicon', [PlatformSettingsController::class, 'removeFavicon'])->name('platform-settings.remove-favicon');
+                Route::post('platform-settings/reset', [PlatformSettingsController::class, 'reset'])->name('platform-settings.reset');
+            });
 
             // Plugin Management
             Route::get('plugins', [\App\Http\Controllers\Admin\PluginController::class, 'index'])->name('plugins.index');

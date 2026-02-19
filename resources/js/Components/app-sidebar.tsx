@@ -34,8 +34,9 @@ export function AppSidebar({
     user,
     navigationMap
 }: AppSidebarProps) {
-    const { currentJournal } = usePage<PageProps>().props;
-    const platformName = currentJournal?.abbreviation ?? currentJournal?.name ?? 'Research Platform';
+    const { currentJournal, platformSettings } = usePage<PageProps>().props;
+    const platformName = currentJournal?.abbreviation ?? currentJournal?.name ?? platformSettings?.platform_name ?? 'Research Platform';
+    const platformTagline = platformSettings?.platform_tagline ?? 'Research Platform';
 
     return (
         <Sidebar collapsible="icon">
@@ -49,7 +50,7 @@ export function AppSidebar({
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">{platformName}</span>
-                                    <span className="truncate text-xs text-muted-foreground">Research Platform</span>
+                                    <span className="truncate text-xs text-muted-foreground">{platformTagline}</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>

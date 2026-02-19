@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PlatformSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -31,12 +32,21 @@ class HandleInertiaRequests extends Middleware
     {
         $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
         $institution = app()->bound('currentInstitution') ? app('currentInstitution') : null;
+        $platformSettings = PlatformSetting::instance();
 
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
                 'roles' => $request->user() ? $request->user()->role : null,
+            ],
+            'platformSettings' => [
+                'platform_name' => $platformSettings->platform_name,
+                'platform_tagline' => $platformSettings->platform_tagline,
+                'platform_description' => $platformSettings->platform_description,
+                'logo_url' => $platformSettings->logo_url,
+                'favicon_url' => $platformSettings->favicon_url,
+                'admin_email' => $platformSettings->admin_email,
             ],
             'currentJournal' => $journal ? [
                 'id' => $journal->id,

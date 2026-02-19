@@ -112,12 +112,24 @@ export interface JournalSettings {
     [key: string]: unknown;
 }
 
+// Platform settings types
+
+export interface PlatformSettings {
+    platform_name: string;
+    platform_tagline?: string | null;
+    platform_description?: string | null;
+    logo_url?: string | null;
+    favicon_url?: string | null;
+    admin_email?: string | null;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     auth: {
         user: User;
     };
+    platformSettings?: PlatformSettings | null;
     currentJournal?: Journal | null;
     currentInstitution?: Institution | null;
 };
