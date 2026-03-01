@@ -12,11 +12,11 @@ class ReviewExtensionRequested extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $review;
+    protected Review $review;
 
-    protected $newDueDate;
+    protected \DateTime $newDueDate;
 
-    protected $reason;
+    protected string $reason;
 
     public function __construct(Review $review, \DateTime $newDueDate, string $reason)
     {
@@ -25,7 +25,7 @@ class ReviewExtensionRequested extends Notification implements ShouldQueue
         $this->reason = $reason;
     }
 
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         $channels = ['database'];
 
@@ -36,16 +36,18 @@ class ReviewExtensionRequested extends Notification implements ShouldQueue
         return $channels;
     }
 
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         $manuscript = $this->review->manuscript;
+        $notifiableName = trim(($notifiable->firstname ?? '').' '.($notifiable->lastname ?? ''));
+        $reviewerName = trim(($this->review->reviewer->firstname ?? '').' '.($this->review->reviewer->lastname ?? ''));
 
         return (new MailMessage)
             ->subject('Review Extension Requested: '.$manuscript->title)
-            ->greeting('Hello '.$notifiable->name.',')
+            ->greeting('Hello '.$notifiableName.',')
             ->line('A reviewer has requested an extension for their review.')
             ->line('**Manuscript:** '.$manuscript->title)
-            ->line('**Reviewer:** '.$this->review->reviewer->name)
+            ->line('**Reviewer:** '.$reviewerName)
             ->line('**Original Due Date:** '.$this->review->due_date->format('F j, Y'))
             ->line('**Requested New Due Date:** '.$this->newDueDate->format('F j, Y'))
             ->line('**Reason:**')
@@ -54,18 +56,19 @@ class ReviewExtensionRequested extends Notification implements ShouldQueue
             ->line('Please review and approve or decline this extension request.');
     }
 
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         $manuscript = $this->review->manuscript;
+        $reviewerName = trim(($this->review->reviewer->firstname ?? '').' '.($this->review->reviewer->lastname ?? ''));
 
         return [
             'review_id' => $this->review->id,
             'manuscript_id' => $manuscript->id,
             'manuscript_title' => $manuscript->title,
             'reviewer_id' => $this->review->reviewer_id,
-            'new_due_date' => $this->newDueDate->toDateString(),
+            'new_due_date' => $this->newDueDate->format('Y-m-d'),
             'reason' => $this->reason,
-            'message' => 'Review extension requested for "'.$manuscript->title.'" by '.$this->review->reviewer->name,
+            'message' => 'Review extension requested for "'.$manuscript->title.'" by '.$reviewerName,
             'type' => 'review_extension_requested',
         ];
     }

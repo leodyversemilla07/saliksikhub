@@ -1,9 +1,11 @@
 <?php
 
 use App\FileType;
+use App\Http\Middleware\EnsureInstalled;
 use App\Models\Manuscript;
 use App\Models\ManuscriptFile;
 use App\Models\User;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -12,11 +14,13 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Storage::fake('manuscripts');
+    $this->withoutMiddleware(EnsureEmailIsVerified::class);
+    EnsureInstalled::markInstalled();
 
-    $this->author = User::factory()->create();
+    $this->author = User::factory()->create(['role' => 'author']);
     $this->author->assignRole('author');
 
-    $this->editor = User::factory()->create();
+    $this->editor = User::factory()->create(['role' => 'associate_editor']);
     $this->editor->assignRole('associate_editor');
 
     $this->manuscript = Manuscript::factory()->create([
@@ -120,7 +124,7 @@ test('editor can download manuscript files', function () {
 });
 
 test('unauthorized user cannot download files', function () {
-    $otherUser = User::factory()->create();
+    $otherUser = User::factory()->create(['role' => 'author']);
 
     $file = ManuscriptFile::factory()->create([
         'manuscript_id' => $this->manuscript->id,

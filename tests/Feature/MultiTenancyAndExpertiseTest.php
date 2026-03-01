@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\EnsureInstalled;
 use App\Models\Expertise;
 use App\Models\Journal;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Services\ReviewService;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -14,6 +16,14 @@ use Tests\TestCase;
 class MultiTenancyAndExpertiseTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutMiddleware(EnsureEmailIsVerified::class);
+        EnsureInstalled::markInstalled();
+    }
 
     public function test_submissions_page_loads_with_journal_context()
     {
@@ -56,15 +66,15 @@ class MultiTenancyAndExpertiseTest extends TestCase
         $journal = Journal::factory()->create();
 
         // 2. Create Reviewers with Journal context (team_id)
-        $aiReviewer = User::factory()->create(['firstname' => 'AI', 'lastname' => 'Expert']);
+        $aiReviewer = User::factory()->create(['firstname' => 'AI', 'lastname' => 'Expert', 'role' => 'reviewer']);
         $aiReviewer->assignRole('reviewer', $journal->id); // Providing team/journal ID
         $aiReviewer->expertises()->attach($aiExpertise);
 
-        $bioReviewer = User::factory()->create(['firstname' => 'Bio', 'lastname' => 'Expert']);
+        $bioReviewer = User::factory()->create(['firstname' => 'Bio', 'lastname' => 'Expert', 'role' => 'reviewer']);
         $bioReviewer->assignRole('reviewer', $journal->id);
         $bioReviewer->expertises()->attach($bioExpertise);
 
-        $generalReviewer = User::factory()->create(['firstname' => 'General', 'lastname' => 'Reviewer']);
+        $generalReviewer = User::factory()->create(['firstname' => 'General', 'lastname' => 'Reviewer', 'role' => 'reviewer']);
         $generalReviewer->assignRole('reviewer', $journal->id);
 
         // 3. Create Manuscript with AI keywords
@@ -105,7 +115,7 @@ class MultiTenancyAndExpertiseTest extends TestCase
         $journal = Journal::factory()->create();
 
         // Create an editor
-        $editor = User::factory()->create();
+        $editor = User::factory()->create(['role' => 'managing_editor']);
         $editor->assignRole('managing_editor', $journal->id);
 
         // Create a manuscript
@@ -118,12 +128,12 @@ class MultiTenancyAndExpertiseTest extends TestCase
 
         // Create a reviewer with expertise
         $expertise = Expertise::create(['name' => 'Computer Science', 'slug' => 'cs']);
-        $reviewer = User::factory()->create(['firstname' => 'John', 'lastname' => 'Doe']);
+        $reviewer = User::factory()->create(['firstname' => 'John', 'lastname' => 'Doe', 'role' => 'reviewer']);
         $reviewer->assignRole('reviewer', $journal->id);
         $reviewer->expertises()->attach($expertise);
 
         // Mock the currentJournal in the container
-        app()->bind('currentJournal', fn() => $journal);
+        app()->bind('currentJournal', fn () => $journal);
 
         // Act as editor
         $response = $this->actingAs($editor)->get(route('editor.manuscripts.assign_reviewers', $manuscript->id));

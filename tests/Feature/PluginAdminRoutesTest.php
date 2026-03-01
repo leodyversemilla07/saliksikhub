@@ -124,7 +124,7 @@ describe('Plugin Admin Routes', function () {
     });
 
     it('prevents non-admin access', function () {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'author']);
         $user->assignRole('author');
 
         $response = $this->actingAs($user)

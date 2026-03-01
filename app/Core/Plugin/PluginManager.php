@@ -5,7 +5,6 @@ namespace App\Core\Plugin;
 use App\Core\Plugin\Contracts\PluginInterface;
 use App\Models\Journal;
 use App\Models\Plugin;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -30,14 +29,17 @@ class PluginManager
      */
     public function __construct()
     {
-        $this->pluginsPath = storage_path('plugins');
+        $this->pluginsPath = app()->environment('testing')
+            ? storage_path('framework/testing/plugins')
+            : storage_path('plugins');
     }
 
     /**
      * Install a plugin from a directory or zip file.
      *
-     * @param string $source Path to plugin directory or zip file
+     * @param  string  $source  Path to plugin directory or zip file
      * @return Plugin|null The installed plugin model
+     *
      * @throws RuntimeException
      */
     public function install(string $source): ?Plugin
@@ -49,7 +51,7 @@ class PluginManager
 
         // Validate plugin structure
         $pluginJson = $this->getPluginJson($source);
-        if (!$pluginJson) {
+        if (! $pluginJson) {
             throw new RuntimeException('Invalid plugin: plugin.json not found');
         }
 
@@ -60,6 +62,7 @@ class PluginManager
             if ($existing->version !== $pluginJson['version']) {
                 return $this->update($existing, $source, $pluginJson);
             }
+
             return $existing;
         }
 
@@ -88,7 +91,7 @@ class PluginManager
     protected function update(Plugin $plugin, string $source, array $pluginJson): Plugin
     {
         // Backup old version
-        $backupPath = $plugin->path . '_backup_' . time();
+        $backupPath = $plugin->path.'_backup_'.time();
         rename($plugin->path, $backupPath);
 
         try {
@@ -152,7 +155,7 @@ class PluginManager
         } else {
             // Enable for specific journal
             $plugin->journals()->syncWithoutDetaching([
-                $journalId => ['enabled' => true]
+                $journalId => ['enabled' => true],
             ]);
         }
 
@@ -229,7 +232,7 @@ class PluginManager
                 $this->loadedPlugins[$plugin->name] = $instance;
             }
         } catch (\Exception $e) {
-            Log::error("Failed to load plugin {$plugin->name}: " . $e->getMessage());
+            Log::error("Failed to load plugin {$plugin->name}: ".$e->getMessage());
         }
     }
 
@@ -239,18 +242,18 @@ class PluginManager
     protected function instantiatePlugin(Plugin $plugin): ?PluginInterface
     {
         $pluginJson = $this->getPluginJson($plugin->path);
-        if (!$pluginJson) {
+        if (! $pluginJson) {
             return null;
         }
 
         // Find the main plugin class
-        $finder = new Finder();
+        $finder = new Finder;
         $finder->files()->in($plugin->path)->name('*Plugin.php')->depth(0);
 
         foreach ($finder as $file) {
             $className = $this->getClassFromFile($file->getRealPath());
             if ($className && class_exists($className)) {
-                $instance = new $className();
+                $instance = new $className;
                 if ($instance instanceof PluginInterface) {
                     return $instance;
                 }
@@ -265,12 +268,13 @@ class PluginManager
      */
     protected function getPluginJson(string $path): ?array
     {
-        $jsonPath = $path . '/plugin.json';
-        if (!file_exists($jsonPath)) {
+        $jsonPath = $path.'/plugin.json';
+        if (! file_exists($jsonPath)) {
             return null;
         }
 
         $content = file_get_contents($jsonPath);
+
         return json_decode($content, true);
     }
 
@@ -279,8 +283,8 @@ class PluginManager
      */
     protected function extractZip(string $zipPath): string
     {
-        $extractPath = sys_get_temp_dir() . '/plugin_' . uniqid();
-        $zip = new \ZipArchive();
+        $extractPath = sys_get_temp_dir().'/plugin_'.uniqid();
+        $zip = new \ZipArchive;
 
         if ($zip->open($zipPath) !== true) {
             throw new RuntimeException('Failed to open zip file');
@@ -297,9 +301,9 @@ class PluginManager
      */
     protected function copyToPluginsDirectory(string $source, string $name): string
     {
-        $destination = $this->pluginsPath . '/' . $name;
+        $destination = $this->pluginsPath.'/'.$name;
 
-        if (!is_dir($this->pluginsPath)) {
+        if (! is_dir($this->pluginsPath)) {
             mkdir($this->pluginsPath, 0755, true);
         }
 
@@ -317,7 +321,7 @@ class PluginManager
      */
     protected function copyDirectory(string $source, string $destination): void
     {
-        if (!is_dir($destination)) {
+        if (! is_dir($destination)) {
             mkdir($destination, 0755, true);
         }
 
@@ -330,10 +334,10 @@ class PluginManager
             // Get relative path properly for both Windows and Unix
             $relativePath = substr($item->getPathname(), strlen($source));
             $relativePath = ltrim($relativePath, '/\\'); // Remove leading slashes
-            $destPath = $destination . DIRECTORY_SEPARATOR . $relativePath;
-            
+            $destPath = $destination.DIRECTORY_SEPARATOR.$relativePath;
+
             if ($item->isDir()) {
-                if (!is_dir($destPath)) {
+                if (! is_dir($destPath)) {
                     mkdir($destPath, 0755, true);
                 }
             } else {
@@ -347,7 +351,7 @@ class PluginManager
      */
     protected function removeDirectory(string $path): void
     {
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return;
         }
 
@@ -386,7 +390,7 @@ class PluginManager
             $class = $matches[1];
         }
 
-        return $namespace ? $namespace . '\\' . $class : $class;
+        return $namespace ? $namespace.'\\'.$class : $class;
     }
 
     /**
