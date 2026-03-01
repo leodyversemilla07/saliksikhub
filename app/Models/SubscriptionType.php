@@ -77,6 +77,22 @@ class SubscriptionType extends Model
     }
 
     /**
+     * Backward-compatible accessor alias.
+     */
+    public function getPriceAttribute(): ?string
+    {
+        return $this->attributes['cost'] ?? null;
+    }
+
+    /**
+     * Backward-compatible mutator alias.
+     */
+    public function setPriceAttribute(float|int|string|null $value): void
+    {
+        $this->attributes['cost'] = $value;
+    }
+
+    /**
      * Scope to get only active subscription types.
      */
     public function scopeActive($query)

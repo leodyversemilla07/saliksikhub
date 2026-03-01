@@ -31,8 +31,8 @@ class SubscriptionService
         return Subscription::create([
             'subscription_type_id' => $type->id,
             'user_id' => $user->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
+            'date_start' => $startDate,
+            'date_end' => $endDate,
             'status' => 'active',
             'auto_renew' => $autoRenew,
             'ip_ranges' => $ipRanges,
@@ -44,18 +44,18 @@ class SubscriptionService
      */
     public function renewSubscription(Subscription $subscription, ?int $durationMonths = null): Subscription
     {
-        $duration = $durationMonths ?? $subscription->type->duration_months;
+        $duration = $durationMonths ?? $subscription->subscriptionType->duration_months;
 
         // Calculate new dates
-        $startDate = $subscription->end_date->isFuture()
-            ? $subscription->end_date->addDay()
+        $startDate = $subscription->date_end->isFuture()
+            ? $subscription->date_end->addDay()
             : now();
 
         $endDate = $this->calculateEndDate($startDate, $duration);
 
         $subscription->update([
-            'start_date' => $startDate,
-            'end_date' => $endDate,
+            'date_start' => $startDate,
+            'date_end' => $endDate,
             'status' => 'active',
             'renewal_reminder_sent_at' => null,
         ]);
@@ -71,7 +71,7 @@ class SubscriptionService
         if ($immediate) {
             $subscription->update([
                 'status' => 'cancelled',
-                'end_date' => now(),
+                'date_end' => now(),
             ]);
         } else {
             // Cancel at end of period
@@ -105,7 +105,7 @@ class SubscriptionService
             throw new InvalidArgumentException('Only suspended subscriptions can be reactivated');
         }
 
-        if ($subscription->end_date->isPast()) {
+        if ($subscription->date_end->isPast()) {
             throw new InvalidArgumentException('Cannot reactivate expired subscription. Please renew instead.');
         }
 
@@ -244,9 +244,9 @@ class SubscriptionService
         $expiryDate = now()->addDays($daysBeforeExpiry);
 
         return Subscription::where('status', 'active')
-            ->whereBetween('end_date', [now(), $expiryDate])
+            ->whereBetween('date_end', [now(), $expiryDate])
             ->whereNull('renewal_reminder_sent_at')
-            ->with(['user', 'type'])
+            ->with(['user', 'subscriptionType'])
             ->get();
     }
 
@@ -255,7 +255,7 @@ class SubscriptionService
      */
     public function sendRenewalReminder(Subscription $subscription): void
     {
-        $subscription->load(['user', 'type']);
+        $subscription->load(['user', 'subscriptionType']);
 
         if ($subscription->user) {
             $subscription->user->notify(new SubscriptionRenewalReminder($subscription));
@@ -281,7 +281,7 @@ class SubscriptionService
 
         try {
             // Get payment amount
-            $amount = $subscription->type->price;
+            $amount = (float) $subscription->subscriptionType->cost;
 
             // Create payment (would integrate with PaymentService)
             // $payment = app(PaymentService::class)->createSubscriptionPayment(
@@ -307,7 +307,7 @@ class SubscriptionService
     public function expireSubscriptions(): int
     {
         $expired = Subscription::where('status', 'active')
-            ->where('end_date', '<', now())
+            ->where('date_end', '<', now())
             ->update(['status' => 'expired']);
 
         return $expired;
@@ -333,7 +333,7 @@ class SubscriptionService
 
         $revenue = Subscription::where('status', 'active')
             ->join('subscription_types', 'subscriptions.subscription_type_id', '=', 'subscription_types.id')
-            ->sum('subscription_types.price');
+            ->sum('subscription_types.cost');
 
         return [
             'active' => $stats['active'] ?? 0,
@@ -354,10 +354,9 @@ class SubscriptionService
         return SubscriptionType::create([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
-            'price' => $data['price'],
+            'cost' => $data['price'],
             'currency' => $data['currency'] ?? 'USD',
             'duration_months' => $data['duration_months'],
-            'features' => $data['features'] ?? null,
             'is_active' => $data['is_active'] ?? true,
         ]);
     }
@@ -367,6 +366,12 @@ class SubscriptionService
      */
     public function updateSubscriptionType(SubscriptionType $type, array $data): SubscriptionType
     {
+        if (array_key_exists('price', $data)) {
+            $data['cost'] = $data['price'];
+            unset($data['price']);
+        }
+        unset($data['features']);
+
         $type->update(array_filter($data));
 
         return $type->fresh();

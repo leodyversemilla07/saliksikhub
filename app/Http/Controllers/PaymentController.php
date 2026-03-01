@@ -22,7 +22,7 @@ class PaymentController extends Controller
     {
         $this->authorize('viewAny', Payment::class);
 
-        $query = Payment::with(['user', 'payable'])
+        $query = Payment::with(['user', 'manuscript', 'subscription'])
             ->orderBy('created_at', 'desc');
 
         // Filter by status
@@ -32,7 +32,7 @@ class PaymentController extends Controller
 
         // Filter by type
         if ($request->has('type')) {
-            $query->where('type', $request->input('type'));
+            $query->where('payment_type', $request->input('type'));
         }
 
         $payments = $query->paginate(20);
@@ -53,7 +53,7 @@ class PaymentController extends Controller
     {
         $this->authorize('view', $payment);
 
-        $payment->load(['user', 'payable']);
+        $payment->load(['user', 'manuscript', 'subscription']);
 
         return Inertia::render('payments/show', [
             'payment' => [
@@ -61,9 +61,9 @@ class PaymentController extends Controller
                 'transaction_id' => $payment->transaction_id,
                 'amount' => $payment->amount,
                 'currency' => $payment->currency,
-                'type' => $payment->type,
+                'type' => $payment->payment_type,
                 'status' => $payment->status,
-                'gateway' => $payment->gateway,
+                'gateway' => $payment->payment_gateway,
                 'gateway_transaction_id' => $payment->gateway_transaction_id,
                 'paid_at' => $payment->paid_at,
                 'refunded_amount' => $payment->refunded_amount,
@@ -87,9 +87,8 @@ class PaymentController extends Controller
         $this->authorize('update', $manuscript);
 
         // Check if already paid
-        $existingPayment = Payment::where('payable_type', Manuscript::class)
-            ->where('payable_id', $manuscript->id)
-            ->where('type', 'submission_fee')
+        $existingPayment = Payment::where('manuscript_id', $manuscript->id)
+            ->where('payment_type', 'submission_fee')
             ->where('status', 'completed')
             ->first();
 
@@ -180,9 +179,8 @@ class PaymentController extends Controller
         $this->authorize('update', $manuscript);
 
         // Check if already paid
-        $existingPayment = Payment::where('payable_type', Manuscript::class)
-            ->where('payable_id', $manuscript->id)
-            ->where('type', 'publication_charge')
+        $existingPayment = Payment::where('manuscript_id', $manuscript->id)
+            ->where('payment_type', 'publication_charge')
             ->where('status', 'completed')
             ->first();
 
@@ -268,7 +266,7 @@ class PaymentController extends Controller
             $orderId = $request->input('token');
             
             $payment = Payment::where('gateway_transaction_id', $orderId)
-                ->where('gateway', 'paypal')
+                ->where('payment_gateway', 'paypal')
                 ->firstOrFail();
 
             try {
@@ -296,7 +294,7 @@ class PaymentController extends Controller
             $paymentIntentId = $request->input('payment_intent');
             
             $payment = Payment::where('gateway_transaction_id', $paymentIntentId)
-                ->where('gateway', 'stripe')
+                ->where('payment_gateway', 'stripe')
                 ->firstOrFail();
 
             return redirect()
@@ -398,22 +396,22 @@ class PaymentController extends Controller
      */
     protected function formatPayable(Payment $payment): ?array
     {
-        if (!$payment->payable) {
-            return null;
-        }
-
-        if ($payment->payable instanceof Manuscript) {
+        if ($payment->manuscript instanceof Manuscript) {
             return [
                 'type' => 'manuscript',
-                'id' => $payment->payable->id,
-                'title' => $payment->payable->title,
-                'slug' => $payment->payable->slug,
+                'id' => $payment->manuscript->id,
+                'title' => $payment->manuscript->title,
+                'slug' => $payment->manuscript->slug,
             ];
         }
 
-        return [
-            'type' => class_basename($payment->payable),
-            'id' => $payment->payable->id,
-        ];
+        if ($payment->subscription) {
+            return [
+                'type' => 'subscription',
+                'id' => $payment->subscription->id,
+            ];
+        }
+
+        return null;
     }
 }

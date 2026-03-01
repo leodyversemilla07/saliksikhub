@@ -43,6 +43,7 @@ return new class extends Migration
             // Payment gateway details
             $table->string('payment_gateway')->nullable();  // stripe, paypal, etc.
             $table->string('transaction_id')->unique()->nullable();
+            $table->string('gateway_transaction_id')->nullable();
             $table->text('gateway_response')->nullable();
             
             // Payment method
@@ -50,6 +51,7 @@ return new class extends Migration
             
             // Dates
             $table->timestamp('paid_at')->nullable();
+            $table->decimal('refunded_amount', 10, 2)->nullable();
             $table->timestamp('refunded_at')->nullable();
             $table->timestamp('expires_at')->nullable();  // For pending payments
             
@@ -66,6 +68,7 @@ return new class extends Migration
             $table->index('payment_type');
             $table->index('status');
             $table->index('transaction_id');
+            $table->index('gateway_transaction_id');
             $table->index('paid_at');
         });
     }

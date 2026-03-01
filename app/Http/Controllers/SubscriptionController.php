@@ -22,7 +22,7 @@ class SubscriptionController extends Controller
     {
         $this->authorize('viewAny', Subscription::class);
 
-        $query = Subscription::with(['user', 'type'])
+        $query = Subscription::with(['user', 'subscriptionType'])
             ->orderBy('created_at', 'desc');
 
         // Filter by status
@@ -48,32 +48,32 @@ class SubscriptionController extends Controller
     {
         $this->authorize('view', $subscription);
 
-        $subscription->load(['user', 'type', 'payment']);
+        $subscription->load(['user', 'subscriptionType', 'payment']);
 
         return Inertia::render('subscriptions/show', [
             'subscription' => [
                 'id' => $subscription->id,
                 'status' => $subscription->status,
-                'start_date' => $subscription->start_date,
-                'end_date' => $subscription->end_date,
+                'start_date' => $subscription->date_start,
+                'end_date' => $subscription->date_end,
                 'auto_renew' => $subscription->auto_renew,
                 'ip_ranges' => $subscription->ip_ranges,
                 'renewal_reminder_sent_at' => $subscription->renewal_reminder_sent_at,
                 'created_at' => $subscription->created_at,
                 'is_active' => $subscription->isActive(),
-                'days_until_expiry' => $subscription->daysUntilExpiry(),
+                'days_until_expiry' => $subscription->daysUntilExpiration(),
                 'user' => [
                     'id' => $subscription->user->id,
                     'name' => $subscription->user->name,
                     'email' => $subscription->user->email,
                 ],
                 'type' => [
-                    'id' => $subscription->type->id,
-                    'name' => $subscription->type->name,
-                    'description' => $subscription->type->description,
-                    'price' => $subscription->type->price,
-                    'currency' => $subscription->type->currency,
-                    'duration_months' => $subscription->type->duration_months,
+                    'id' => $subscription->subscriptionType->id,
+                    'name' => $subscription->subscriptionType->name,
+                    'description' => $subscription->subscriptionType->description,
+                    'price' => $subscription->subscriptionType->cost,
+                    'currency' => $subscription->subscriptionType->currency,
+                    'duration_months' => $subscription->subscriptionType->duration_months,
                 ],
             ],
         ]);
@@ -263,7 +263,6 @@ class SubscriptionController extends Controller
             'price' => 'required|numeric|min:0',
             'currency' => 'required|string|size:3',
             'duration_months' => 'required|integer|min:1',
-            'features' => 'nullable|array',
             'is_active' => 'boolean',
         ]);
 
@@ -287,7 +286,6 @@ class SubscriptionController extends Controller
             'price' => 'sometimes|numeric|min:0',
             'currency' => 'sometimes|string|size:3',
             'duration_months' => 'sometimes|integer|min:1',
-            'features' => 'nullable|array',
             'is_active' => 'boolean',
         ]);
 

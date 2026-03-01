@@ -62,7 +62,7 @@ class ProcessSubscriptions extends Command
             $this->info('Processing auto-renewals...');
             $autoRenewSubscriptions = \App\Models\Subscription::where('status', 'active')
                 ->where('auto_renew', true)
-                ->whereDate('end_date', '<=', now()->addDays(7))
+                ->whereDate('date_end', '<=', now()->addDays(7))
                 ->get();
 
             $renewed = 0;

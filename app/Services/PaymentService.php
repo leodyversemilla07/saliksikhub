@@ -23,11 +23,10 @@ class PaymentService
     ): Payment {
         return Payment::create([
             'user_id' => $userId,
-            'payable_type' => Manuscript::class,
-            'payable_id' => $manuscript->id,
+            'manuscript_id' => $manuscript->id,
             'amount' => $amount,
             'currency' => $currency,
-            'type' => 'submission_fee',
+            'payment_type' => 'submission_fee',
             'status' => 'pending',
             'transaction_id' => $this->generateTransactionId(),
         ]);
@@ -44,11 +43,10 @@ class PaymentService
     ): Payment {
         return Payment::create([
             'user_id' => $userId,
-            'payable_type' => Manuscript::class,
-            'payable_id' => $manuscript->id,
+            'manuscript_id' => $manuscript->id,
             'amount' => $amount,
             'currency' => $currency,
-            'type' => 'publication_charge',
+            'payment_type' => 'publication_charge',
             'status' => 'pending',
             'transaction_id' => $this->generateTransactionId(),
         ]);
@@ -63,16 +61,20 @@ class PaymentService
         float $amount,
         string $currency = 'USD'
     ): Payment {
-        return Payment::create([
+        $payment = Payment::create([
             'user_id' => $userId,
-            'payable_type' => Subscription::class,
-            'payable_id' => $subscription->id,
             'amount' => $amount,
             'currency' => $currency,
-            'type' => 'subscription',
+            'payment_type' => 'subscription_fee',
             'status' => 'pending',
             'transaction_id' => $this->generateTransactionId(),
         ]);
+
+        $subscription->update([
+            'payment_id' => $payment->id,
+        ]);
+
+        return $payment;
     }
 
     /**
@@ -99,7 +101,7 @@ class PaymentService
                 'metadata' => [
                     'payment_id' => $payment->id,
                     'transaction_id' => $payment->transaction_id,
-                    'type' => $payment->type,
+                    'type' => $payment->payment_type,
                 ],
                 'return_url' => route('payments.return'),
             ]);
@@ -113,7 +115,7 @@ class PaymentService
             // Update payment record
             $payment->update([
                 'status' => 'processing',
-                'gateway' => 'stripe',
+                'payment_gateway' => 'stripe',
                 'gateway_transaction_id' => $result['id'],
                 'gateway_response' => json_encode($result),
             ]);
@@ -194,7 +196,7 @@ class PaymentService
                                 'currency_code' => $payment->currency,
                                 'value' => number_format($payment->amount, 2, '.', ''),
                             ],
-                            'description' => ucfirst(str_replace('_', ' ', $payment->type)),
+                            'description' => ucfirst(str_replace('_', ' ', $payment->payment_type)),
                         ],
                     ],
                     'application_context' => [
@@ -212,7 +214,7 @@ class PaymentService
             // Update payment record
             $payment->update([
                 'status' => 'processing',
-                'gateway' => 'paypal',
+                'payment_gateway' => 'paypal',
                 'gateway_transaction_id' => $order['id'],
                 'gateway_response' => json_encode($order),
             ]);
@@ -353,9 +355,9 @@ class PaymentService
         }
 
         try {
-            if ($payment->gateway === 'stripe') {
+            if ($payment->payment_gateway === 'stripe') {
                 $this->refundStripePayment($payment, $refundAmount, $reason);
-            } elseif ($payment->gateway === 'paypal') {
+            } elseif ($payment->payment_gateway === 'paypal') {
                 $this->refundPayPalPayment($payment, $refundAmount, $reason);
             } else {
                 throw new \Exception('Unsupported payment gateway for refunds');
@@ -439,32 +441,23 @@ class PaymentService
      */
     protected function handlePostPaymentActions(Payment $payment): void
     {
-        // Update payable status based on payment type
-        switch ($payment->type) {
+        // Update related model status based on payment type.
+        switch ($payment->payment_type) {
             case 'submission_fee':
-                // Mark manuscript as submission fee paid
-                if ($payment->payable instanceof Manuscript) {
-                    // Could add a flag to manuscripts table if needed
-                }
                 break;
 
             case 'publication_charge':
-                // Mark manuscript as publication charge paid
-                if ($payment->payable instanceof Manuscript) {
-                    // Could trigger automatic publication workflow
-                }
                 break;
 
-            case 'subscription':
-                // Activate subscription
-                if ($payment->payable instanceof Subscription) {
-                    $payment->payable->update(['status' => 'active']);
+            case 'subscription_fee':
+                if ($payment->subscription) {
+                    $payment->subscription->update(['status' => 'active']);
                 }
                 break;
         }
 
-        // Send payment confirmation email and receipt
-        $payment->load('payable');
+        // Send payment confirmation email and receipt.
+        $payment->load(['manuscript', 'subscription']);
         $user = $payment->user ?? \App\Models\User::find($payment->user_id);
         if ($user) {
             $user->notify(new PaymentConfirmation($payment));

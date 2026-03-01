@@ -43,6 +43,14 @@ class Subscription extends Model
     }
 
     /**
+     * Backward-compatible relation alias.
+     */
+    public function type(): BelongsTo
+    {
+        return $this->subscriptionType();
+    }
+
+    /**
      * Get the user (for individual subscriptions).
      */
     public function user(): BelongsTo
@@ -102,9 +110,26 @@ class Subscription extends Model
     }
 
     /**
+     * Backward-compatible method alias.
+     */
+    public function daysUntilExpiry(): int
+    {
+        return $this->daysUntilExpiration();
+    }
+
+    /**
+     * Backward-compatible method alias.
+     */
+    public function isExpiringSoon(int $days = 30): bool
+    {
+        return $this->date_end->diffInDays(today()) <= $days
+            && ! $this->isExpired();
+    }
+
+    /**
      * Renew subscription.
      */
-    public function renew(int $months = null): bool
+    public function renew(?int $months = null): bool
     {
         $months = $months ?? $this->subscriptionType->duration_months;
         
@@ -208,5 +233,37 @@ class Subscription extends Model
                 $q->whereNull('renewal_reminder_sent_at')
                     ->orWhere('renewal_reminder_sent_at', '<', today()->subDays(7));
             });
+    }
+
+    /**
+     * Backward-compatible accessor alias.
+     */
+    public function getStartDateAttribute(): ?Carbon
+    {
+        return $this->date_start;
+    }
+
+    /**
+     * Backward-compatible mutator alias.
+     */
+    public function setStartDateAttribute(Carbon|string|null $value): void
+    {
+        $this->attributes['date_start'] = $value;
+    }
+
+    /**
+     * Backward-compatible accessor alias.
+     */
+    public function getEndDateAttribute(): ?Carbon
+    {
+        return $this->date_end;
+    }
+
+    /**
+     * Backward-compatible mutator alias.
+     */
+    public function setEndDateAttribute(Carbon|string|null $value): void
+    {
+        $this->attributes['date_end'] = $value;
     }
 }

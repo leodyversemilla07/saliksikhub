@@ -139,7 +139,8 @@ class Publication extends Model
         if ($this->url_path) {
             return url($this->url_path);
         }
-        return route('manuscripts.show', $this->manuscript->slug ?? $this->manuscript_id);
+
+        return route('manuscripts.public.show', $this->manuscript->slug ?? $this->manuscript_id);
     }
 
     /**

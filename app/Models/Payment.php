@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
 {
@@ -21,6 +22,8 @@ class Payment extends Model
         'transaction_id',
         'gateway_response',
         'payment_method',
+        'gateway_transaction_id',
+        'refunded_amount',
         'paid_at',
         'refunded_at',
         'expires_at',
@@ -31,6 +34,7 @@ class Payment extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'refunded_amount' => 'decimal:2',
         'paid_at' => 'datetime',
         'refunded_at' => 'datetime',
         'expires_at' => 'datetime',
@@ -51,6 +55,14 @@ class Payment extends Model
     public function manuscript(): BelongsTo
     {
         return $this->belongsTo(Manuscript::class);
+    }
+
+    /**
+     * Get the subscription this payment is associated with (if applicable).
+     */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class);
     }
 
     /**
@@ -96,7 +108,7 @@ class Payment extends Model
     /**
      * Mark payment as completed.
      */
-    public function markAsCompleted(string $transactionId = null, string $gatewayResponse = null): bool
+    public function markAsCompleted(?string $transactionId = null, ?string $gatewayResponse = null): bool
     {
         $this->status = 'completed';
         $this->paid_at = now();
@@ -115,7 +127,7 @@ class Payment extends Model
     /**
      * Mark payment as failed.
      */
-    public function markAsFailed(string $gatewayResponse = null): bool
+    public function markAsFailed(?string $gatewayResponse = null): bool
     {
         $this->status = 'failed';
         
@@ -129,7 +141,7 @@ class Payment extends Model
     /**
      * Refund payment.
      */
-    public function refund(string $reason = null): bool
+    public function refund(?string $reason = null): bool
     {
         if (!$this->isCompleted()) {
             return false;
@@ -227,6 +239,46 @@ class Payment extends Model
      */
     public function scopeByType($query, string $type)
     {
+        if ($type === 'subscription') {
+            $type = 'subscription_fee';
+        }
+
         return $query->where('payment_type', $type);
+    }
+
+    /**
+     * Legacy alias for payment_type.
+     */
+    public function getTypeAttribute(): ?string
+    {
+        return $this->attributes['payment_type'] ?? null;
+    }
+
+    /**
+     * Legacy alias mutator for payment_type.
+     */
+    public function setTypeAttribute(?string $value): void
+    {
+        if ($value === 'subscription') {
+            $value = 'subscription_fee';
+        }
+
+        $this->attributes['payment_type'] = $value;
+    }
+
+    /**
+     * Legacy alias for payment_gateway.
+     */
+    public function getGatewayAttribute(): ?string
+    {
+        return $this->attributes['payment_gateway'] ?? null;
+    }
+
+    /**
+     * Legacy alias mutator for payment_gateway.
+     */
+    public function setGatewayAttribute(?string $value): void
+    {
+        $this->attributes['payment_gateway'] = $value;
     }
 }
