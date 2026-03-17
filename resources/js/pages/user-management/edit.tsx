@@ -1,17 +1,23 @@
-import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
+import { getData } from 'country-list';
+import React, { useEffect } from 'react';
 import { toast } from 'sonner';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { User, UserRole } from '@/types';
-import InputError from '@/components/input-error';
-import { getData } from 'country-list';
 import { dashboard } from '@/routes';
 import users from '@/routes/users';
+import type { User, UserRole } from '@/types';
 
 interface EditUserProps {
     user: User;
@@ -28,7 +34,11 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
     const breadcrumbItems = [
         { label: 'Dashboard', href: dashboard.url() },
         { label: 'User Management', href: users.index.url() },
-        { label: `${user.firstname} ${user.lastname}`, href: users.edit.url({ user: user.id }), current: true },
+        {
+            label: `${user.firstname} ${user.lastname}`,
+            href: users.edit.url({ user: user.id }),
+            current: true,
+        },
     ];
 
     type FormData = {
@@ -54,7 +64,7 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
         password_confirmation: '',
         role: user.role || '',
         affiliation: user.affiliation || '',
-        country: user.country || ''
+        country: user.country || '',
     });
 
     useEffect(() => {
@@ -68,12 +78,15 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
             password_confirmation: '',
             role: user.role || '',
             affiliation: user.affiliation || '',
-            country: user.country || ''
+            country: user.country || '',
         });
         reset();
     }, [user, setData, reset]);
 
-    const countries: Country[] = getData().map(({ code, name }) => ({ code, name }));
+    const countries: Country[] = getData().map(({ code, name }) => ({
+        code,
+        name,
+    }));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -92,102 +105,163 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
         e.preventDefault();
         put(users.update.url({ user: user.id }), {
             onSuccess: () => {
-                toast("User has been successfully updated.");
+                toast('User has been successfully updated.');
             },
             onError: () => {
-                toast("Failed to update user information.");
+                toast('Failed to update user information.');
             },
-            preserveScroll: true
+            preserveScroll: true,
         });
     };
 
     return (
         <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title="Edit User" />
-            <div className="max-w-lg mx-auto p-8 rounded-xl shadow-lg bg-background text-foreground">
-                <h1 className="text-3xl font-bold text-center mb-2">Edit User Account</h1>
-                <p className="text-center text-muted-foreground mb-6">Update user profile information, role, and optionally change password</p>
+            <div className="mx-auto max-w-lg rounded-xl bg-background p-8 text-foreground shadow-lg">
+                <h1 className="mb-2 text-center text-3xl font-bold">
+                    Edit User Account
+                </h1>
+                <p className="mb-6 text-center text-muted-foreground">
+                    Update user profile information, role, and optionally change
+                    password
+                </p>
                 <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-5">
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-firstname" className="font-medium text-foreground">First Name</Label>
+                            <Label
+                                htmlFor="edit-firstname"
+                                className="font-medium text-foreground"
+                            >
+                                First Name
+                            </Label>
                             <Input
                                 id="edit-firstname"
                                 name="firstname"
                                 value={data.firstname}
                                 onChange={handleChange}
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.firstname} className="mt-1" />
+                            <InputError
+                                message={errors.firstname}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-lastname" className="font-medium text-foreground">Last Name</Label>
+                            <Label
+                                htmlFor="edit-lastname"
+                                className="font-medium text-foreground"
+                            >
+                                Last Name
+                            </Label>
                             <Input
                                 id="edit-lastname"
                                 name="lastname"
                                 value={data.lastname}
                                 onChange={handleChange}
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.lastname} className="mt-1" />
+                            <InputError
+                                message={errors.lastname}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-username" className="font-medium text-foreground">Username</Label>
+                            <Label
+                                htmlFor="edit-username"
+                                className="font-medium text-foreground"
+                            >
+                                Username
+                            </Label>
                             <Input
                                 id="edit-username"
                                 name="username"
                                 value={data.username}
                                 onChange={handleChange}
                                 placeholder="Enter username"
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.username} className="mt-1" />
+                            <InputError
+                                message={errors.username}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-email" className="font-medium text-foreground">Email Address</Label>
+                            <Label
+                                htmlFor="edit-email"
+                                className="font-medium text-foreground"
+                            >
+                                Email Address
+                            </Label>
                             <Input
                                 id="edit-email"
                                 name="email"
                                 type="email"
                                 value={data.email}
                                 onChange={handleChange}
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.email} className="mt-1" />
+                            <InputError
+                                message={errors.email}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-affiliation" className="font-medium text-foreground">Affiliation (Optional)</Label>
+                            <Label
+                                htmlFor="edit-affiliation"
+                                className="font-medium text-foreground"
+                            >
+                                Affiliation (Optional)
+                            </Label>
                             <Input
                                 id="edit-affiliation"
                                 name="affiliation"
                                 value={data.affiliation}
                                 onChange={handleChange}
                                 placeholder="University, organization, etc."
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.affiliation} className="mt-1" />
+                            <InputError
+                                message={errors.affiliation}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-country" className="font-medium text-foreground">Country (Optional)</Label>
+                            <Label
+                                htmlFor="edit-country"
+                                className="font-medium text-foreground"
+                            >
+                                Country (Optional)
+                            </Label>
                             <Select
                                 value={data.country}
                                 onValueChange={handleCountryChange}
                             >
-                                <SelectTrigger className="w-full bg-background text-foreground border">
+                                <SelectTrigger className="w-full border bg-background text-foreground">
                                     <SelectValue placeholder="Select a country" />
                                 </SelectTrigger>
-                                <SelectContent className="w-full bg-background text-foreground border max-h-60">
+                                <SelectContent className="max-h-60 w-full border bg-background text-foreground">
                                     {countries.map((country) => (
-                                        <SelectItem key={country.code} value={country.name}>
+                                        <SelectItem
+                                            key={country.code}
+                                            value={country.name}
+                                        >
                                             {country.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={errors.country} className="mt-1" />
+                            <InputError
+                                message={errors.country}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-password" className="font-medium text-foreground">Password</Label>
+                            <Label
+                                htmlFor="edit-password"
+                                className="font-medium text-foreground"
+                            >
+                                Password
+                            </Label>
                             <Input
                                 id="edit-password"
                                 name="password"
@@ -195,12 +269,20 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
                                 placeholder="Enter new password (optional)"
                                 value={data.password}
                                 onChange={handleChange}
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
-                            <InputError message={errors.password} className="mt-1" />
+                            <InputError
+                                message={errors.password}
+                                className="mt-1"
+                            />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-password_confirmation" className="font-medium text-foreground">Confirm Password</Label>
+                            <Label
+                                htmlFor="edit-password_confirmation"
+                                className="font-medium text-foreground"
+                            >
+                                Confirm Password
+                            </Label>
                             <Input
                                 id="edit-password_confirmation"
                                 name="password_confirmation"
@@ -208,34 +290,46 @@ export default function EditUser({ user, errors, roles }: EditUserProps) {
                                 placeholder="Confirm new password"
                                 value={data.password_confirmation}
                                 onChange={handleChange}
-                                className="bg-background text-foreground border"
+                                className="border bg-background text-foreground"
                             />
                         </div>
                         <div className="grid w-full items-center gap-2">
-                            <Label htmlFor="edit-role" className="font-medium text-foreground">Role</Label>
+                            <Label
+                                htmlFor="edit-role"
+                                className="font-medium text-foreground"
+                            >
+                                Role
+                            </Label>
                             <Select
                                 value={data.role}
                                 onValueChange={handleRoleChange}
                             >
-                                <SelectTrigger className="w-full bg-background text-foreground border">
+                                <SelectTrigger className="w-full border bg-background text-foreground">
                                     <SelectValue placeholder="Select role" />
                                 </SelectTrigger>
-                                <SelectContent className="w-full bg-background text-foreground border">
-                                    {roles.map(role => (
+                                <SelectContent className="w-full border bg-background text-foreground">
+                                    {roles.map((role) => (
                                         <SelectItem key={role} value={role}>
-                                            {role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                                            {role
+                                                .replace(/_/g, ' ')
+                                                .replace(/\b\w/g, (c) =>
+                                                    c.toUpperCase(),
+                                                )}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={errors.role} className="mt-1" />
+                            <InputError
+                                message={errors.role}
+                                className="mt-1"
+                            />
                         </div>
                     </div>
-                    <div className="flex justify-center gap-4 mt-8">
+                    <div className="mt-8 flex justify-center gap-4">
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="px-6 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                            className="rounded-md bg-primary px-6 py-2 text-primary-foreground hover:bg-primary/90"
                         >
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>

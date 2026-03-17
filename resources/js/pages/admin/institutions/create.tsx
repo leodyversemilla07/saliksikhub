@@ -1,14 +1,21 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, Building2 } from 'lucide-react';
+import type { FormEventHandler} from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Building2 } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import admin from '@/routes/admin';
 
 export default function CreateInstitution() {
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -32,6 +39,7 @@ export default function CreateInstitution() {
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('logo', file);
             setLogoPreview(URL.createObjectURL(file));
@@ -57,7 +65,9 @@ export default function CreateInstitution() {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Create Institution</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            Create Institution
+                        </h1>
                         <p className="text-muted-foreground">
                             Add a new institution to the system
                         </p>
@@ -75,28 +85,43 @@ export default function CreateInstitution() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Institution Name *</Label>
+                                    <Label htmlFor="name">
+                                        Institution Name *
+                                    </Label>
                                     <Input
                                         id="name"
                                         value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
                                         placeholder="e.g., State University"
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-destructive">{errors.name}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.name}
+                                        </p>
                                     )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="abbreviation">Abbreviation</Label>
+                                    <Label htmlFor="abbreviation">
+                                        Abbreviation
+                                    </Label>
                                     <Input
                                         id="abbreviation"
                                         value={data.abbreviation}
-                                        onChange={(e) => setData('abbreviation', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'abbreviation',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g., SU"
                                     />
                                     {errors.abbreviation && (
-                                        <p className="text-sm text-destructive">{errors.abbreviation}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.abbreviation}
+                                        </p>
                                     )}
                                 </div>
 
@@ -105,14 +130,19 @@ export default function CreateInstitution() {
                                     <Input
                                         id="domain"
                                         value={data.domain}
-                                        onChange={(e) => setData('domain', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('domain', e.target.value)
+                                        }
                                         placeholder="e.g., university.edu"
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        The domain used to identify this institution's journals
+                                        The domain used to identify this
+                                        institution's journals
                                     </p>
                                     {errors.domain && (
-                                        <p className="text-sm text-destructive">{errors.domain}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.domain}
+                                        </p>
                                     )}
                                 </div>
 
@@ -121,12 +151,16 @@ export default function CreateInstitution() {
                                     <Textarea
                                         id="address"
                                         value={data.address}
-                                        onChange={(e) => setData('address', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('address', e.target.value)
+                                        }
                                         placeholder="Enter institution address"
                                         rows={3}
                                     />
                                     {errors.address && (
-                                        <p className="text-sm text-destructive">{errors.address}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.address}
+                                        </p>
                                     )}
                                 </div>
                             </CardContent>
@@ -142,16 +176,25 @@ export default function CreateInstitution() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="contact_email">Contact Email</Label>
+                                        <Label htmlFor="contact_email">
+                                            Contact Email
+                                        </Label>
                                         <Input
                                             id="contact_email"
                                             type="email"
                                             value={data.contact_email}
-                                            onChange={(e) => setData('contact_email', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'contact_email',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g., info@university.edu"
                                         />
                                         {errors.contact_email && (
-                                            <p className="text-sm text-destructive">{errors.contact_email}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.contact_email}
+                                            </p>
                                         )}
                                     </div>
 
@@ -161,11 +204,18 @@ export default function CreateInstitution() {
                                             id="website"
                                             type="url"
                                             value={data.website}
-                                            onChange={(e) => setData('website', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'website',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g., https://www.university.edu"
                                         />
                                         {errors.website && (
-                                            <p className="text-sm text-destructive">{errors.website}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.website}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -186,10 +236,10 @@ export default function CreateInstitution() {
                                                 <img
                                                     src={logoPreview}
                                                     alt="Logo preview"
-                                                    className="h-16 w-16 rounded object-contain border"
+                                                    className="h-16 w-16 rounded border object-contain"
                                                 />
                                             ) : (
-                                                <div className="h-16 w-16 rounded border-2 border-dashed flex items-center justify-center">
+                                                <div className="flex h-16 w-16 items-center justify-center rounded border-2 border-dashed">
                                                     <Building2 className="h-6 w-6 text-muted-foreground" />
                                                 </div>
                                             )}
@@ -201,13 +251,16 @@ export default function CreateInstitution() {
                                                     onChange={handleLogoChange}
                                                     className="cursor-pointer"
                                                 />
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Max 2MB. Recommended: 200x200px
+                                                <p className="mt-1 text-xs text-muted-foreground">
+                                                    Max 2MB. Recommended:
+                                                    200x200px
                                                 </p>
                                             </div>
                                         </div>
                                         {errors.logo && (
-                                            <p className="text-sm text-destructive">{errors.logo}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.logo}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -220,15 +273,20 @@ export default function CreateInstitution() {
                                 <CardContent>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="is_active">Active</Label>
+                                            <Label htmlFor="is_active">
+                                                Active
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Only active institutions can have active journals
+                                                Only active institutions can
+                                                have active journals
                                             </p>
                                         </div>
                                         <Switch
                                             id="is_active"
                                             checked={data.is_active}
-                                            onCheckedChange={(checked) => setData('is_active', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_active', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>
@@ -236,7 +294,7 @@ export default function CreateInstitution() {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 mt-6">
+                    <div className="mt-6 flex justify-end gap-4">
                         <Button variant="outline" asChild>
                             <Link href="/admin/institutions">Cancel</Link>
                         </Button>

@@ -1,9 +1,5 @@
-import React from 'react';
 import { Head } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Link } from '@inertiajs/react';
 import {
     FileText,
     CheckCircle,
@@ -12,8 +8,9 @@ import {
     Plus,
     Eye,
     Calendar,
-    BarChart3
+    BarChart3,
 } from 'lucide-react';
+import React from 'react';
 import {
     AreaChart,
     Area,
@@ -24,9 +21,12 @@ import {
     ResponsiveContainer,
     PieChart,
     Pie,
-    Cell
+    Cell,
 } from 'recharts';
-import { Link } from '@inertiajs/react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
 
 interface Manuscript {
     id: number;
@@ -52,64 +52,80 @@ interface AuthorDashboardProps {
 }
 
 const statusColors = {
-    'draft': 'bg-gray-100 text-gray-800',
-    'submitted': 'bg-prussian-blue/10 text-prussian-blue',
-    'under_review': 'bg-amber/10 text-amber-dark',
-    'minor_revision_required': 'bg-amber/20 text-amber-dark',
-    'major_revision_required': 'bg-burgundy/10 text-burgundy',
-    'accepted': 'bg-forest-green/10 text-forest-green',
-    'rejected': 'bg-crimson/10 text-crimson',
-    'published': 'bg-oxford-blue/10 text-oxford-blue',
-    'ready_for_publication': 'bg-prussian-blue/10 text-prussian-blue',
-    'awaiting_author_approval': 'bg-parchment text-oxford-blue',
+    draft: 'bg-gray-100 text-gray-800',
+    submitted: 'bg-prussian-blue/10 text-prussian-blue',
+    under_review: 'bg-amber/10 text-amber-dark',
+    minor_revision_required: 'bg-amber/20 text-amber-dark',
+    major_revision_required: 'bg-burgundy/10 text-burgundy',
+    accepted: 'bg-forest-green/10 text-forest-green',
+    rejected: 'bg-crimson/10 text-crimson',
+    published: 'bg-oxford-blue/10 text-oxford-blue',
+    ready_for_publication: 'bg-prussian-blue/10 text-prussian-blue',
+    awaiting_author_approval: 'bg-parchment text-oxford-blue',
 };
 
 const statusLabels = {
-    'draft': 'Draft',
-    'submitted': 'Submitted',
-    'under_review': 'Under Review',
-    'minor_revision_required': 'Minor Revision',
-    'major_revision_required': 'Major Revision',
-    'accepted': 'Accepted',
-    'rejected': 'Rejected',
-    'published': 'Published',
-    'ready_for_publication': 'Ready for Publication',
-    'awaiting_author_approval': 'Awaiting Approval',
+    draft: 'Draft',
+    submitted: 'Submitted',
+    under_review: 'Under Review',
+    minor_revision_required: 'Minor Revision',
+    major_revision_required: 'Major Revision',
+    accepted: 'Accepted',
+    rejected: 'Rejected',
+    published: 'Published',
+    ready_for_publication: 'Ready for Publication',
+    awaiting_author_approval: 'Awaiting Approval',
 };
 
-export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: AuthorDashboardProps) {
+export default function AuthorDashboard({
+    manuscripts,
+    monthlySubmissionData,
+}: AuthorDashboardProps) {
     // Calculate statistics
     const totalSubmissions = manuscripts.length;
-    const publishedCount = manuscripts.filter(m => m.status === 'published').length;
-    const underReviewCount = manuscripts.filter(m => m.status === 'under_review').length;
-    const revisionCount = manuscripts.filter(m => ['minor_revision_required', 'major_revision_required'].includes(m.status)).length;
+    const publishedCount = manuscripts.filter(
+        (m) => m.status === 'published',
+    ).length;
+    const underReviewCount = manuscripts.filter(
+        (m) => m.status === 'under_review',
+    ).length;
+    const revisionCount = manuscripts.filter((m) =>
+        ['minor_revision_required', 'major_revision_required'].includes(
+            m.status,
+        ),
+    ).length;
 
     // Status distribution for pie chart
     const statusDistribution = Object.entries(
-        manuscripts.reduce((acc, manuscript) => {
-            const status = manuscript.status;
-            acc[status] = (acc[status] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>)
+        manuscripts.reduce(
+            (acc, manuscript) => {
+                const status = manuscript.status;
+                acc[status] = (acc[status] || 0) + 1;
+
+                return acc;
+            },
+            {} as Record<string, number>,
+        ),
     ).map(([status, count]) => ({
         name: statusLabels[status as keyof typeof statusLabels] || status,
         value: count,
-        color: getStatusColor(status)
+        color: getStatusColor(status),
     }));
 
     function getStatusColor(status: string): string {
         const colors = {
-            'draft': '#6B7280',
-            'submitted': '#3B82F6',
-            'under_review': '#F59E0B',
-            'minor_revision_required': '#F97316',
-            'major_revision_required': '#EF4444',
-            'accepted': '#10B981',
-            'rejected': '#EF4444',
-            'published': '#8B5CF6',
-            'ready_for_publication': '#6366F1',
-            'awaiting_author_approval': '#06B6D4',
+            draft: '#6B7280',
+            submitted: '#3B82F6',
+            under_review: '#F59E0B',
+            minor_revision_required: '#F97316',
+            major_revision_required: '#EF4444',
+            accepted: '#10B981',
+            rejected: '#EF4444',
+            published: '#8B5CF6',
+            ready_for_publication: '#6366F1',
+            awaiting_author_approval: '#06B6D4',
         };
+
         return colors[status as keyof typeof colors] || '#6B7280';
     }
 
@@ -118,8 +134,8 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: "#",
-        }
+            href: '#',
+        },
     ];
 
     return (
@@ -130,28 +146,35 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                 {/* Welcome Section */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-serif text-3xl font-bold text-oxford-blue">Author Dashboard</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Track your manuscript submissions and review progress
+                        <h1 className="text-oxford-blue font-serif text-3xl font-bold">
+                            Author Dashboard
+                        </h1>
+                        <p className="mt-1 text-muted-foreground">
+                            Track your manuscript submissions and review
+                            progress
                         </p>
                     </div>
                     <Button asChild>
                         <Link href="/author/manuscripts/create">
-                            <Plus className="h-4 w-4 mr-2" />
+                            <Plus className="mr-2 h-4 w-4" />
                             New Submission
                         </Link>
                     </Button>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Total Submissions</CardTitle>
+                            <CardTitle className="text-sm font-medium tracking-wide uppercase">
+                                Total Submissions
+                            </CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="font-serif text-2xl font-bold">{totalSubmissions}</div>
+                            <div className="font-serif text-2xl font-bold">
+                                {totalSubmissions}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 All time submissions
                             </p>
@@ -160,11 +183,15 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Published</CardTitle>
+                            <CardTitle className="text-sm font-medium tracking-wide uppercase">
+                                Published
+                            </CardTitle>
                             <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="font-serif text-2xl font-bold text-forest-green">{publishedCount}</div>
+                            <div className="text-forest-green font-serif text-2xl font-bold">
+                                {publishedCount}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 Successfully published
                             </p>
@@ -173,11 +200,15 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Under Review</CardTitle>
+                            <CardTitle className="text-sm font-medium tracking-wide uppercase">
+                                Under Review
+                            </CardTitle>
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="font-serif text-2xl font-bold text-amber">{underReviewCount}</div>
+                            <div className="text-amber font-serif text-2xl font-bold">
+                                {underReviewCount}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 Currently being reviewed
                             </p>
@@ -186,11 +217,15 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium uppercase tracking-wide">Revisions Needed</CardTitle>
+                            <CardTitle className="text-sm font-medium tracking-wide uppercase">
+                                Revisions Needed
+                            </CardTitle>
                             <XCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="font-serif text-2xl font-bold text-burgundy">{revisionCount}</div>
+                            <div className="text-burgundy font-serif text-2xl font-bold">
+                                {revisionCount}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 Require your attention
                             </p>
@@ -199,7 +234,7 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                 </div>
 
                 {/* Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     {/* Submission Trends */}
                     <Card>
                         <CardHeader>
@@ -241,7 +276,9 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                     {/* Status Distribution */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Manuscript Status Distribution</CardTitle>
+                            <CardTitle>
+                                Manuscript Status Distribution
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={300}>
@@ -251,14 +288,21 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                        label={({ name, percent }) =>
+                                            `${name} ${(percent * 100).toFixed(0)}%`
+                                        }
                                         outerRadius={80}
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {statusDistribution.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
+                                        {statusDistribution.map(
+                                            (entry, index) => (
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={entry.color}
+                                                />
+                                            ),
+                                        )}
                                     </Pie>
                                     <Tooltip />
                                 </PieChart>
@@ -276,7 +320,7 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                         </CardTitle>
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/author/manuscripts/index">
-                                <Eye className="h-4 w-4 mr-2" />
+                                <Eye className="mr-2 h-4 w-4" />
                                 View All
                             </Link>
                         </Button>
@@ -285,25 +329,49 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                         {recentManuscripts.length > 0 ? (
                             <div className="space-y-4">
                                 {recentManuscripts.map((manuscript) => (
-                                    <div key={manuscript.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                    <div
+                                        key={manuscript.id}
+                                        className="flex items-center justify-between rounded-lg border p-4"
+                                    >
                                         <div className="flex-1">
-                                            <h3 className="font-medium text-foreground">{manuscript.title}</h3>
-                                            <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                                            <h3 className="font-medium text-foreground">
+                                                {manuscript.title}
+                                            </h3>
+                                            <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="h-3 w-3" />
-                                                    {new Date(manuscript.created_at).toLocaleDateString()}
+                                                    {new Date(
+                                                        manuscript.created_at,
+                                                    ).toLocaleDateString()}
                                                 </span>
                                                 {manuscript.journal && (
-                                                    <span>{manuscript.journal}</span>
+                                                    <span>
+                                                        {manuscript.journal}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <Badge className={statusColors[manuscript.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}>
-                                                {statusLabels[manuscript.status as keyof typeof statusLabels] || manuscript.status}
+                                            <Badge
+                                                className={
+                                                    statusColors[
+                                                        manuscript.status as keyof typeof statusColors
+                                                    ] ||
+                                                    'bg-gray-100 text-gray-800'
+                                                }
+                                            >
+                                                {statusLabels[
+                                                    manuscript.status as keyof typeof statusLabels
+                                                ] || manuscript.status}
                                             </Badge>
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/author/manuscripts/${manuscript.id}`}>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                asChild
+                                            >
+                                                <Link
+                                                    href={`/author/manuscripts/${manuscript.id}`}
+                                                >
                                                     View
                                                 </Link>
                                             </Button>
@@ -312,15 +380,18 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-8">
-                                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-muted-foreground mb-2">No manuscripts yet</h3>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Start your first submission to see your progress here.
+                            <div className="py-8 text-center">
+                                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <h3 className="mb-2 text-lg font-medium text-muted-foreground">
+                                    No manuscripts yet
+                                </h3>
+                                <p className="mb-4 text-sm text-muted-foreground">
+                                    Start your first submission to see your
+                                    progress here.
                                 </p>
                                 <Button asChild>
                                     <Link href="/author/manuscripts/create">
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="mr-2 h-4 w-4" />
                                         Create Your First Manuscript
                                     </Link>
                                 </Button>
@@ -331,4 +402,4 @@ export default function AuthorDashboard({ manuscripts, monthlySubmissionData }: 
             </div>
         </AppLayout>
     );
-};
+}

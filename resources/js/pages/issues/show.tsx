@@ -1,19 +1,4 @@
-import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import {
     Edit,
     BookOpen,
@@ -27,8 +12,23 @@ import {
     Archive,
     Eye,
     Plus,
-    Trash2
+    Trash2,
 } from 'lucide-react';
+import { useState } from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import issuesRoutes from '@/routes/issues';
@@ -120,16 +120,24 @@ const getStatusLabel = (status: string) => {
 };
 
 export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
-    const [unassigningManuscript, setUnassigningManuscript] = useState<number | null>(null);
+    const [unassigningManuscript, setUnassigningManuscript] = useState<
+        number | null
+    >(null);
     const [showUnassignDialog, setShowUnassignDialog] = useState(false);
-    const [manuscriptToUnassign, setManuscriptToUnassign] = useState<Manuscript | null>(null);
+    const [manuscriptToUnassign, setManuscriptToUnassign] =
+        useState<Manuscript | null>(null);
 
     const handleUnassignManuscript = () => {
-        if (!manuscriptToUnassign) return;
+        if (!manuscriptToUnassign) {
+return;
+}
 
         setUnassigningManuscript(manuscriptToUnassign.id);
         router.delete(
-            issuesRoutes.manuscripts.unassign.url({ issue: issue.id, manuscript: manuscriptToUnassign.id }),
+            issuesRoutes.manuscripts.unassign.url({
+                issue: issue.id,
+                manuscript: manuscriptToUnassign.id,
+            }),
             {
                 onSuccess: () => {
                     setUnassigningManuscript(null);
@@ -139,9 +147,11 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                 onError: (errors) => {
                     setUnassigningManuscript(null);
                     console.error('Error removing manuscript:', errors);
-                    alert('Failed to remove manuscript from issue. Please try again.');
-                }
-            }
+                    alert(
+                        'Failed to remove manuscript from issue. Please try again.',
+                    );
+                },
+            },
         );
     };
 
@@ -157,74 +167,92 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
         {
             label: `Vol. ${issue.volume_number}, Issue ${issue.issue_number}`,
             href: issuesRoutes.show.url({ id: issue.id }),
-        }
-    ];    
-    
+        },
+    ];
+
     return (
         <AppLayout breadcrumbItems={breadcrumbItems}>
-            <Head title={`Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`} />
+            <Head
+                title={`Journal Issue - Vol. ${issue.volume_number}, Issue ${issue.issue_number}`}
+            />
 
             <div className="py-12">
-                <div className="w-full px-4 sm:px-6 lg:px-8 space-y-6">                    
-                    
+                <div className="w-full space-y-6 px-4 sm:px-6 lg:px-8">
                     {/* Header Card */}
                     <Card>
                         <CardHeader>
-                            <div className="flex justify-between items-start">
+                            <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                    <CardTitle className="text-2xl flex items-center gap-3">
+                                    <CardTitle className="flex items-center gap-3 text-2xl">
                                         <BookOpen className="h-8 w-8 text-blue-600" />
-                                        Volume {issue.volume_number}, Issue {issue.issue_number}
+                                        Volume {issue.volume_number}, Issue{' '}
+                                        {issue.issue_number}
                                         {issue.issue_title && (
-                                            <span className="text-gray-600">- {issue.issue_title}</span>
+                                            <span className="text-gray-600">
+                                                - {issue.issue_title}
+                                            </span>
                                         )}
                                     </CardTitle>
-                                    <div className="flex items-center gap-4 mt-3">
-                                        <Badge className={getStatusColor(issue.status)}>
+                                    <div className="mt-3 flex items-center gap-4">
+                                        <Badge
+                                            className={getStatusColor(
+                                                issue.status,
+                                            )}
+                                        >
                                             {getStatusIcon(issue.status)}
-                                            <span className="ml-1">{getStatusLabel(issue.status)}</span>
+                                            <span className="ml-1">
+                                                {getStatusLabel(issue.status)}
+                                            </span>
                                         </Badge>
                                         {issue.theme && (
-                                            <Badge variant="outline" className="flex items-center gap-1">
+                                            <Badge
+                                                variant="outline"
+                                                className="flex items-center gap-1"
+                                            >
                                                 <Lightbulb className="h-3 w-3" />
                                                 {issue.theme}
                                             </Badge>
                                         )}
                                     </div>
                                 </div>
-                                
+
                                 {/* Cover Image */}
                                 {coverImageUrl && (
                                     <div className="ml-6">
                                         <img
                                             src={coverImageUrl}
                                             alt={`Cover for Volume ${issue.volume_number}, Issue ${issue.issue_number}`}
-                                            className="w-32 h-40 object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+                                            className="h-40 w-32 rounded-lg border border-gray-200 object-cover shadow-md dark:border-gray-700"
                                             onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
+                                                e.currentTarget.style.display =
+                                                    'none';
                                             }}
                                         />
                                     </div>
                                 )}
-                                
-                                <div className="flex space-x-2 ml-4">
-                                    <Link href={issuesRoutes.edit.url({ id: issue.id })}>
+
+                                <div className="ml-4 flex space-x-2">
+                                    <Link
+                                        href={issuesRoutes.edit.url({
+                                            id: issue.id,
+                                        })}
+                                    >
                                         <Button variant="outline">
-                                            <Edit className="h-4 w-4 mr-2" />
+                                            <Edit className="mr-2 h-4 w-4" />
                                             Edit
                                         </Button>
-                                    </Link>     
+                                    </Link>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {issue.description && (
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                                    <h3 className="mb-2 flex items-center gap-2 text-lg font-semibold">
                                         <FileText className="h-5 w-5" />
                                         Description
                                     </h3>
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <p className="leading-relaxed text-gray-700 dark:text-gray-300">
                                         {issue.description}
                                     </p>
                                 </div>
@@ -233,16 +261,19 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                             <Separator />
 
                             {/* Issue Details Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 <div className="flex items-center gap-3">
                                     <Calendar className="h-5 w-5 text-blue-600" />
                                     <div>
-                                        <p className="text-sm font-medium">Publication Date</p>
+                                        <p className="text-sm font-medium">
+                                            Publication Date
+                                        </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
                                             {issue.publication_date
-                                                ? new Date(issue.publication_date).toLocaleDateString()
-                                                : 'Not set'
-                                            }
+                                                ? new Date(
+                                                      issue.publication_date,
+                                                  ).toLocaleDateString()
+                                                : 'Not set'}
                                         </p>
                                     </div>
                                 </div>
@@ -250,7 +281,9 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 <div className="flex items-center gap-3">
                                     <User className="h-5 w-5 text-green-600" />
                                     <div>
-                                        <p className="text-sm font-medium">Created by</p>
+                                        <p className="text-sm font-medium">
+                                            Created by
+                                        </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
                                             {issue.user.name}
                                         </p>
@@ -261,12 +294,14 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                     <div className="flex items-center gap-3">
                                         <Globe className="h-5 w-5 text-purple-600" />
                                         <div>
-                                            <p className="text-sm font-medium">DOI</p>
+                                            <p className="text-sm font-medium">
+                                                DOI
+                                            </p>
                                             <a
                                                 href={`https://doi.org/${issue.doi}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-sm text-blue-600 hover:text-blue-800 underline"
+                                                className="text-sm text-blue-600 underline hover:text-blue-800"
                                             >
                                                 {issue.doi}
                                             </a>
@@ -277,9 +312,13 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 <div className="flex items-center gap-3">
                                     <Clock className="h-5 w-5 text-gray-600" />
                                     <div>
-                                        <p className="text-sm font-medium">Created</p>
+                                        <p className="text-sm font-medium">
+                                            Created
+                                        </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            {new Date(issue.created_at).toLocaleDateString()}
+                                            {new Date(
+                                                issue.created_at,
+                                            ).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
@@ -287,7 +326,9 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 <div className="flex items-center gap-3">
                                     <Hash className="h-5 w-5 text-gray-600" />
                                     <div>
-                                        <p className="text-sm font-medium">Manuscripts</p>
+                                        <p className="text-sm font-medium">
+                                            Manuscripts
+                                        </p>
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
                                             {manuscripts.length} assigned
                                         </p>
@@ -299,11 +340,11 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                 <>
                                     <Separator />
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                                        <h3 className="mb-2 flex items-center gap-2 text-lg font-semibold">
                                             <FileText className="h-5 w-5" />
                                             Editorial Note
                                         </h3>
-                                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
                                             <p className="text-amber-800 dark:text-amber-200">
                                                 {issue.editorial_note}
                                             </p>
@@ -317,16 +358,23 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                     {/* Manuscripts Card */}
                     <Card>
                         <CardHeader>
-                            <div className="flex justify-between items-center">
+                            <div className="flex items-center justify-between">
                                 <CardTitle className="flex items-center gap-2">
                                     <FileText className="h-6 w-6" />
                                     Assigned Manuscripts ({manuscripts.length})
-                                </CardTitle>                                <Button
+                                </CardTitle>{' '}
+                                <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => router.visit(issuesRoutes.assignManuscripts.url({ id: issue.id }))}
+                                    onClick={() =>
+                                        router.visit(
+                                            issuesRoutes.assignManuscripts.url({
+                                                id: issue.id,
+                                            }),
+                                        )
+                                    }
                                 >
-                                    <Plus className="h-4 w-4 mr-2" />
+                                    <Plus className="mr-2 h-4 w-4" />
                                     Assign Manuscripts
                                 </Button>
                             </div>
@@ -337,16 +385,18 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                     {manuscripts.map((manuscript) => (
                                         <div
                                             key={manuscript.id}
-                                            className="flex items-center justify-between p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-md"
+                                            className="flex items-center justify-between rounded-lg border border-gray-200 p-6 transition-all duration-200 hover:bg-gray-50 hover:shadow-md dark:border-gray-700 dark:hover:bg-gray-800"
                                         >
                                             <div className="flex-1">
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">
                                                     {manuscript.title}
                                                 </h4>
-                                                <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                                <div className="mt-1 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                                                     <span className="flex items-center gap-1">
                                                         <Hash className="h-3 w-3" />
-                                                        {manuscript.manuscript_id}
+                                                        {
+                                                            manuscript.manuscript_id
+                                                        }
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <User className="h-3 w-3" />
@@ -354,10 +404,17 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="h-3 w-3" />
-                                                        {new Date(manuscript.created_at).toLocaleDateString()}
+                                                        {new Date(
+                                                            manuscript.created_at,
+                                                        ).toLocaleDateString()}
                                                     </span>
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {manuscript.status.replace('_', ' ').toUpperCase()}
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        {manuscript.status
+                                                            .replace('_', ' ')
+                                                            .toUpperCase()}
                                                     </Badge>
                                                 </div>
                                             </div>
@@ -367,13 +424,21 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                                     size="sm"
                                                     className="text-red-500 hover:text-red-700"
                                                     title="Remove from Issue"
-                                                    disabled={unassigningManuscript === manuscript.id}
+                                                    disabled={
+                                                        unassigningManuscript ===
+                                                        manuscript.id
+                                                    }
                                                     onClick={() => {
-                                                        setManuscriptToUnassign(manuscript);
-                                                        setShowUnassignDialog(true);
+                                                        setManuscriptToUnassign(
+                                                            manuscript,
+                                                        );
+                                                        setShowUnassignDialog(
+                                                            true,
+                                                        );
                                                     }}
                                                 >
-                                                    {unassigningManuscript === manuscript.id ? (
+                                                    {unassigningManuscript ===
+                                                    manuscript.id ? (
                                                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                                     ) : (
                                                         <Trash2 className="h-4 w-4" />
@@ -384,18 +449,26 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12">
-                                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                <div className="py-12 text-center">
+                                    <FileText className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
                                         No manuscripts assigned
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                        This journal issue doesn't have any manuscripts assigned yet.
-                                    </p>                                    <Button
+                                    <p className="mb-4 text-gray-600 dark:text-gray-400">
+                                        This journal issue doesn't have any
+                                        manuscripts assigned yet.
+                                    </p>{' '}
+                                    <Button
                                         variant="outline"
-                                        onClick={() => router.visit(issuesRoutes.assignManuscripts.url({ id: issue.id }))}
+                                        onClick={() =>
+                                            router.visit(
+                                                issuesRoutes.assignManuscripts.url(
+                                                    { id: issue.id },
+                                                ),
+                                            )
+                                        }
                                     >
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="mr-2 h-4 w-4" />
                                         Assign Manuscripts
                                     </Button>
                                 </div>
@@ -406,15 +479,19 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
             </div>
 
             {/* Unassign Manuscript Confirmation Dialog */}
-            <AlertDialog open={showUnassignDialog} onOpenChange={setShowUnassignDialog}>
+            <AlertDialog
+                open={showUnassignDialog}
+                onOpenChange={setShowUnassignDialog}
+            >
                 <AlertDialogContent className="max-w-md">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-lg font-semibold text-red-600">
                             Remove Manuscript from Issue
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-sm text-gray-600 dark:text-gray-400">
-                            Are you sure you want to remove "{manuscriptToUnassign?.title}" from this journal issue?
-                            This action cannot be undone.
+                            Are you sure you want to remove "
+                            {manuscriptToUnassign?.title}" from this journal
+                            issue? This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="gap-2">
@@ -429,7 +506,7 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleUnassignManuscript}
-                            className="bg-red-600 hover:bg-red-700 text-white text-sm"
+                            className="bg-red-600 text-sm text-white hover:bg-red-700"
                             disabled={unassigningManuscript !== null}
                         >
                             {unassigningManuscript !== null ? (

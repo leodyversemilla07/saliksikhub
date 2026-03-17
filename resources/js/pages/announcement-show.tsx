@@ -1,10 +1,10 @@
 import { Link, usePage } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Calendar, ArrowLeft, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, ArrowLeft, User } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 
 interface Announcement {
     id: number;
@@ -38,9 +38,11 @@ const typeLabels: Record<string, string> = {
 
 const typeBadgeClasses: Record<string, string> = {
     general: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    call_for_papers: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    call_for_papers:
+        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     event: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    maintenance: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    maintenance:
+        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     policy: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
 };
 
@@ -49,7 +51,10 @@ export default function AnnouncementShow({ announcement }: Props) {
     const journalName = currentJournal?.name ?? 'Research Journal';
 
     const formatDate = (dateString: string | null) => {
-        if (!dateString) return '';
+        if (!dateString) {
+return '';
+}
+
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -59,12 +64,12 @@ export default function AnnouncementShow({ announcement }: Props) {
 
     return (
         <PublicLayout title={`${announcement.title} | ${journalName}`}>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Back link */}
                 <div className="mb-6">
                     <Button variant="ghost" asChild>
                         <Link href="/announcements">
-                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Announcements
                         </Link>
                     </Button>
@@ -74,31 +79,41 @@ export default function AnnouncementShow({ announcement }: Props) {
                     <CardContent className="p-8">
                         {/* Header */}
                         <div className="mb-6">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Badge variant="secondary" className={typeBadgeClasses[announcement.type] || typeBadgeClasses.general}>
-                                    {typeLabels[announcement.type] || announcement.type}
+                            <div className="mb-4 flex items-center gap-3">
+                                <Badge
+                                    variant="secondary"
+                                    className={
+                                        typeBadgeClasses[announcement.type] ||
+                                        typeBadgeClasses.general
+                                    }
+                                >
+                                    {typeLabels[announcement.type] ||
+                                        announcement.type}
                                 </Badge>
                                 {announcement.is_pinned && (
-                                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                                    <Badge
+                                        variant="secondary"
+                                        className="bg-primary text-primary-foreground"
+                                    >
                                         Pinned
                                     </Badge>
                                 )}
                             </div>
 
-                            <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+                            <h1 className="mb-4 font-serif text-3xl font-bold text-foreground md:text-4xl">
                                 {announcement.title}
                             </h1>
 
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 {announcement.published_at && (
                                     <span className="flex items-center">
-                                        <Calendar className="h-4 w-4 mr-1" />
+                                        <Calendar className="mr-1 h-4 w-4" />
                                         {formatDate(announcement.published_at)}
                                     </span>
                                 )}
                                 {announcement.author && (
                                     <span className="flex items-center">
-                                        <User className="h-4 w-4 mr-1" />
+                                        <User className="mr-1 h-4 w-4" />
                                         {announcement.author.name}
                                     </span>
                                 )}
@@ -115,9 +130,10 @@ export default function AnnouncementShow({ announcement }: Props) {
 
                         {/* Expiry notice */}
                         {announcement.expires_at && (
-                            <div className="mt-8 p-4 rounded-lg bg-muted">
+                            <div className="mt-8 rounded-lg bg-muted p-4">
                                 <p className="text-sm text-muted-foreground">
-                                    This announcement is valid until {formatDate(announcement.expires_at)}.
+                                    This announcement is valid until{' '}
+                                    {formatDate(announcement.expires_at)}.
                                 </p>
                             </div>
                         )}

@@ -1,10 +1,22 @@
 import { Head, Form, Link, usePage } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+    FieldError,
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { home, login as loginRoute, register as registerRoute } from '@/routes';
+import type { PageProps } from '@/types';
 
 export default function Register() {
     const { currentJournal } = usePage<PageProps>().props;
@@ -12,13 +24,16 @@ export default function Register() {
     const journalLogo = currentJournal?.logo_url ?? '/images/logo.png';
 
     return (
-        <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
             <Head title={`Create Account | ${journalName}`} />
 
             <div className="flex w-full max-w-sm flex-col gap-6">
                 {/* Logo/Brand */}
-                <Link href={home.url()} className="flex items-center gap-2 self-center font-medium">
-                    <div className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-md">
+                <Link
+                    href={home.url()}
+                    className="flex items-center gap-2 self-center font-medium"
+                >
+                    <div className="flex size-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
                         <img
                             src={journalLogo}
                             className="size-8 object-contain"
@@ -31,14 +46,16 @@ export default function Register() {
                 {/* Registration Card */}
                 <Card>
                     <CardHeader className="text-center">
-                        <CardTitle className="font-serif text-xl text-oxford-blue">Create your account</CardTitle>
+                        <CardTitle className="text-oxford-blue font-serif text-xl">
+                            Create your account
+                        </CardTitle>
                         <CardDescription>
                             Enter your information below to create your account
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Form 
-                            action={registerRoute.url()} 
+                        <Form
+                            action={registerRoute.url()}
                             method="post"
                             resetOnSuccess
                         >
@@ -46,8 +63,12 @@ export default function Register() {
                                 <FieldGroup>
                                     {/* Name Fields */}
                                     <Field className="grid grid-cols-2 gap-4">
-                                        <Field data-invalid={!!errors.firstname}>
-                                            <FieldLabel htmlFor="firstname">First Name</FieldLabel>
+                                        <Field
+                                            data-invalid={!!errors.firstname}
+                                        >
+                                            <FieldLabel htmlFor="firstname">
+                                                First Name
+                                            </FieldLabel>
                                             <Input
                                                 id="firstname"
                                                 name="firstname"
@@ -55,17 +76,25 @@ export default function Register() {
                                                 placeholder="John"
                                                 onChange={() => {
                                                     if (errors.firstname) {
-                                                        clearErrors('firstname');
+                                                        clearErrors(
+                                                            'firstname',
+                                                        );
                                                     }
                                                 }}
                                                 required
                                                 autoComplete="given-name"
                                             />
-                                            {errors.firstname && <FieldError>{errors.firstname}</FieldError>}
+                                            {errors.firstname && (
+                                                <FieldError>
+                                                    {errors.firstname}
+                                                </FieldError>
+                                            )}
                                         </Field>
 
                                         <Field data-invalid={!!errors.lastname}>
-                                            <FieldLabel htmlFor="lastname">Last Name</FieldLabel>
+                                            <FieldLabel htmlFor="lastname">
+                                                Last Name
+                                            </FieldLabel>
                                             <Input
                                                 id="lastname"
                                                 name="lastname"
@@ -78,13 +107,19 @@ export default function Register() {
                                                 }}
                                                 autoComplete="family-name"
                                             />
-                                            {errors.lastname && <FieldError>{errors.lastname}</FieldError>}
+                                            {errors.lastname && (
+                                                <FieldError>
+                                                    {errors.lastname}
+                                                </FieldError>
+                                            )}
                                         </Field>
                                     </Field>
 
                                     {/* Email */}
                                     <Field data-invalid={!!errors.email}>
-                                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                                        <FieldLabel htmlFor="email">
+                                            Email
+                                        </FieldLabel>
                                         <Input
                                             id="email"
                                             name="email"
@@ -98,12 +133,18 @@ export default function Register() {
                                             required
                                             autoComplete="email"
                                         />
-                                        {errors.email && <FieldError>{errors.email}</FieldError>}
+                                        {errors.email && (
+                                            <FieldError>
+                                                {errors.email}
+                                            </FieldError>
+                                        )}
                                     </Field>
 
                                     {/* Username */}
                                     <Field data-invalid={!!errors.username}>
-                                        <FieldLabel htmlFor="username">Username</FieldLabel>
+                                        <FieldLabel htmlFor="username">
+                                            Username
+                                        </FieldLabel>
                                         <Input
                                             id="username"
                                             name="username"
@@ -117,13 +158,19 @@ export default function Register() {
                                             required
                                             autoComplete="username"
                                         />
-                                        {errors.username && <FieldError>{errors.username}</FieldError>}
+                                        {errors.username && (
+                                            <FieldError>
+                                                {errors.username}
+                                            </FieldError>
+                                        )}
                                     </Field>
 
                                     {/* Password Fields */}
                                     <Field className="grid grid-cols-2 gap-4">
                                         <Field data-invalid={!!errors.password}>
-                                            <FieldLabel htmlFor="password">Password</FieldLabel>
+                                            <FieldLabel htmlFor="password">
+                                                Password
+                                            </FieldLabel>
                                             <Input
                                                 id="password"
                                                 name="password"
@@ -136,10 +183,18 @@ export default function Register() {
                                                 required
                                                 autoComplete="new-password"
                                             />
-                                            {errors.password && <FieldError>{errors.password}</FieldError>}
+                                            {errors.password && (
+                                                <FieldError>
+                                                    {errors.password}
+                                                </FieldError>
+                                            )}
                                         </Field>
 
-                                        <Field data-invalid={!!errors.password_confirmation}>
+                                        <Field
+                                            data-invalid={
+                                                !!errors.password_confirmation
+                                            }
+                                        >
                                             <FieldLabel htmlFor="password_confirmation">
                                                 Confirm Password
                                             </FieldLabel>
@@ -148,29 +203,44 @@ export default function Register() {
                                                 name="password_confirmation"
                                                 type="password"
                                                 onChange={() => {
-                                                    if (errors.password_confirmation) {
-                                                        clearErrors('password_confirmation');
+                                                    if (
+                                                        errors.password_confirmation
+                                                    ) {
+                                                        clearErrors(
+                                                            'password_confirmation',
+                                                        );
                                                     }
                                                 }}
                                                 required
                                                 autoComplete="new-password"
                                             />
-                                            {errors.password_confirmation && <FieldError>{errors.password_confirmation}</FieldError>}
+                                            {errors.password_confirmation && (
+                                                <FieldError>
+                                                    {
+                                                        errors.password_confirmation
+                                                    }
+                                                </FieldError>
+                                            )}
                                         </Field>
                                     </Field>
 
                                     {/* Submit Button */}
                                     <Field>
-                                        <Button 
-                                            type="submit" 
+                                        <Button
+                                            type="submit"
                                             className="w-full"
                                             disabled={processing}
                                         >
-                                            {processing ? 'Creating account...' : 'Create Account'}
+                                            {processing
+                                                ? 'Creating account...'
+                                                : 'Create Account'}
                                         </Button>
                                         <FieldDescription className="text-center">
                                             Already have an account?{' '}
-                                            <Link href={loginRoute.url()} className="underline underline-offset-4">
+                                            <Link
+                                                href={loginRoute.url()}
+                                                className="underline underline-offset-4"
+                                            >
                                                 Sign in
                                             </Link>
                                         </FieldDescription>

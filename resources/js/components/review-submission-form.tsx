@@ -1,23 +1,27 @@
-import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Rating } from '@/components/rating';
-import { Separator } from '@/components/ui/separator';
+import { AlertCircle, CheckCircle2, Info, Send, Save } from 'lucide-react';
+import { useState } from 'react';
 import { FileUpload } from '@/components/file-upload';
-import { 
-    AlertCircle, 
-    CheckCircle2, 
-    Info, 
-    Send,
-    Save
-} from 'lucide-react';
-import type { ReviewFormData, ReviewRecommendation, RecommendationOption } from '@/types';
+import { Rating } from '@/components/rating';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import reviewer from '@/routes/reviewer';
+import type {
+    ReviewFormData,
+    ReviewRecommendation,
+    RecommendationOption,
+} from '@/types';
 
 interface ReviewSubmissionFormProps {
     reviewId: number;
@@ -62,23 +66,24 @@ export function ReviewSubmissionForm({
     initialData,
 }: ReviewSubmissionFormProps) {
     const [characterCount, setCharacterCount] = useState(
-        initialData?.author_comments?.length || 0
+        initialData?.author_comments?.length || 0,
     );
 
-    const { data, setData, post, processing, errors, isDirty } = useForm<ReviewFormData>({
-        recommendation: initialData?.recommendation || '',
-        author_comments: initialData?.author_comments || '',
-        confidential_comments: initialData?.confidential_comments || '',
-        quality_rating: initialData?.quality_rating || 5,
-        originality_rating: initialData?.originality_rating || 5,
-        methodology_rating: initialData?.methodology_rating || 5,
-        significance_rating: initialData?.significance_rating || 5,
-        annotated_file: null,
-    });
+    const { data, setData, post, processing, errors, isDirty } =
+        useForm<ReviewFormData>({
+            recommendation: initialData?.recommendation || '',
+            author_comments: initialData?.author_comments || '',
+            confidential_comments: initialData?.confidential_comments || '',
+            quality_rating: initialData?.quality_rating || 5,
+            originality_rating: initialData?.originality_rating || 5,
+            methodology_rating: initialData?.methodology_rating || 5,
+            significance_rating: initialData?.significance_rating || 5,
+            annotated_file: null,
+        });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         post(reviewer.reviews.submit.url({ id: reviewId }), {
             onSuccess: () => {
                 onSuccess?.();
@@ -118,29 +123,39 @@ export function ReviewSubmissionForm({
                 <CardContent>
                     <RadioGroup
                         value={data.recommendation}
-                        onValueChange={(value) => setData('recommendation', value as ReviewRecommendation)}
+                        onValueChange={(value) =>
+                            setData(
+                                'recommendation',
+                                value as ReviewRecommendation,
+                            )
+                        }
                     >
                         <div className="space-y-3">
                             {recommendationOptions.map((option) => (
                                 <div key={option.value}>
                                     <div className="flex items-start space-x-3">
-                                        <RadioGroupItem 
-                                            value={option.value} 
+                                        <RadioGroupItem
+                                            value={option.value}
                                             id={option.value}
                                             className="mt-1"
                                         />
                                         <div className="flex-1">
-                                            <Label 
+                                            <Label
                                                 htmlFor={option.value}
                                                 className="cursor-pointer"
                                             >
-                                                <div className={`p-3 rounded-lg border-2 transition-colors ${
-                                                    data.recommendation === option.value 
-                                                        ? option.color 
-                                                        : 'border-gray-200 hover:border-gray-300'
-                                                }`}>
-                                                    <div className="font-semibold">{option.label}</div>
-                                                    <div className="text-sm text-gray-600 mt-1">
+                                                <div
+                                                    className={`rounded-lg border-2 p-3 transition-colors ${
+                                                        data.recommendation ===
+                                                        option.value
+                                                            ? option.color
+                                                            : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                                >
+                                                    <div className="font-semibold">
+                                                        {option.label}
+                                                    </div>
+                                                    <div className="mt-1 text-sm text-gray-600">
                                                         {option.description}
                                                     </div>
                                                 </div>
@@ -154,7 +169,9 @@ export function ReviewSubmissionForm({
                     {errors.recommendation && (
                         <Alert variant="destructive" className="mt-4">
                             <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{errors.recommendation}</AlertDescription>
+                            <AlertDescription>
+                                {errors.recommendation}
+                            </AlertDescription>
                         </Alert>
                     )}
                 </CardContent>
@@ -173,27 +190,37 @@ export function ReviewSubmissionForm({
                         <Label htmlFor="quality">Quality of Work</Label>
                         <Rating
                             value={data.quality_rating}
-                            onChange={(value) => setData('quality_rating', value)}
+                            onChange={(value) =>
+                                setData('quality_rating', value)
+                            }
                             max={10}
                             size="lg"
                         />
                         {errors.quality_rating && (
-                            <p className="text-sm text-red-500">{errors.quality_rating}</p>
+                            <p className="text-sm text-red-500">
+                                {errors.quality_rating}
+                            </p>
                         )}
                     </div>
 
                     <Separator />
 
                     <div className="space-y-2">
-                        <Label htmlFor="originality">Originality & Novelty</Label>
+                        <Label htmlFor="originality">
+                            Originality & Novelty
+                        </Label>
                         <Rating
                             value={data.originality_rating}
-                            onChange={(value) => setData('originality_rating', value)}
+                            onChange={(value) =>
+                                setData('originality_rating', value)
+                            }
                             max={10}
                             size="lg"
                         />
                         {errors.originality_rating && (
-                            <p className="text-sm text-red-500">{errors.originality_rating}</p>
+                            <p className="text-sm text-red-500">
+                                {errors.originality_rating}
+                            </p>
                         )}
                     </div>
 
@@ -203,27 +230,37 @@ export function ReviewSubmissionForm({
                         <Label htmlFor="methodology">Methodology & Rigor</Label>
                         <Rating
                             value={data.methodology_rating}
-                            onChange={(value) => setData('methodology_rating', value)}
+                            onChange={(value) =>
+                                setData('methodology_rating', value)
+                            }
                             max={10}
                             size="lg"
                         />
                         {errors.methodology_rating && (
-                            <p className="text-sm text-red-500">{errors.methodology_rating}</p>
+                            <p className="text-sm text-red-500">
+                                {errors.methodology_rating}
+                            </p>
                         )}
                     </div>
 
                     <Separator />
 
                     <div className="space-y-2">
-                        <Label htmlFor="significance">Significance & Impact</Label>
+                        <Label htmlFor="significance">
+                            Significance & Impact
+                        </Label>
                         <Rating
                             value={data.significance_rating}
-                            onChange={(value) => setData('significance_rating', value)}
+                            onChange={(value) =>
+                                setData('significance_rating', value)
+                            }
                             max={10}
                             size="lg"
                         />
                         {errors.significance_rating && (
-                            <p className="text-sm text-red-500">{errors.significance_rating}</p>
+                            <p className="text-sm text-red-500">
+                                {errors.significance_rating}
+                            </p>
                         )}
                     </div>
                 </CardContent>
@@ -234,8 +271,9 @@ export function ReviewSubmissionForm({
                 <CardHeader>
                     <CardTitle>Comments to Author</CardTitle>
                     <CardDescription>
-                        Provide detailed feedback that will be shared with the author
-                        <span className="text-red-500 ml-1">*</span>
+                        Provide detailed feedback that will be shared with the
+                        author
+                        <span className="ml-1 text-red-500">*</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -251,7 +289,13 @@ export function ReviewSubmissionForm({
                             className="min-h-[200px]"
                         />
                         <div className="flex justify-between text-sm">
-                            <span className={characterCount < 100 ? 'text-red-500' : 'text-gray-500'}>
+                            <span
+                                className={
+                                    characterCount < 100
+                                        ? 'text-red-500'
+                                        : 'text-gray-500'
+                                }
+                            >
                                 Minimum 100 characters required
                             </span>
                             <span className="text-gray-500">
@@ -261,7 +305,9 @@ export function ReviewSubmissionForm({
                         {errors.author_comments && (
                             <Alert variant="destructive">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertDescription>{errors.author_comments}</AlertDescription>
+                                <AlertDescription>
+                                    {errors.author_comments}
+                                </AlertDescription>
                             </Alert>
                         )}
                     </div>
@@ -269,7 +315,8 @@ export function ReviewSubmissionForm({
                     <Alert>
                         <Info className="h-4 w-4" />
                         <AlertDescription>
-                            These comments will be shared with the author. Be constructive and professional.
+                            These comments will be shared with the author. Be
+                            constructive and professional.
                         </AlertDescription>
                     </Alert>
                 </CardContent>
@@ -287,7 +334,9 @@ export function ReviewSubmissionForm({
                     <Textarea
                         id="confidential_comments"
                         value={data.confidential_comments}
-                        onChange={(e) => setData('confidential_comments', e.target.value)}
+                        onChange={(e) =>
+                            setData('confidential_comments', e.target.value)
+                        }
                         placeholder="Any additional comments or concerns for the editor only..."
                         className="min-h-[100px]"
                     />
@@ -295,21 +344,18 @@ export function ReviewSubmissionForm({
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 justify-end">
+            <div className="flex justify-end gap-4">
                 <Button
                     type="button"
                     variant="outline"
                     onClick={handleSaveDraft}
                     disabled={processing || !isDirty}
                 >
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="mr-2 h-4 w-4" />
                     Save Draft
                 </Button>
-                <Button
-                    type="submit"
-                    disabled={processing || !isFormValid()}
-                >
-                    <Send className="h-4 w-4 mr-2" />
+                <Button type="submit" disabled={processing || !isFormValid()}>
+                    <Send className="mr-2 h-4 w-4" />
                     Submit Review
                 </Button>
             </div>
@@ -319,14 +365,31 @@ export function ReviewSubmissionForm({
                 <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                        <p className="font-semibold mb-2">Please complete the following:</p>
-                        <ul className="list-disc list-inside space-y-1 text-sm">
-                            {!data.recommendation && <li>Select a recommendation</li>}
-                            {data.author_comments.length < 100 && <li>Write at least 100 characters in comments to author</li>}
-                            {data.quality_rating === 0 && <li>Rate quality of work</li>}
-                            {data.originality_rating === 0 && <li>Rate originality & novelty</li>}
-                            {data.methodology_rating === 0 && <li>Rate methodology & rigor</li>}
-                            {data.significance_rating === 0 && <li>Rate significance & impact</li>}
+                        <p className="mb-2 font-semibold">
+                            Please complete the following:
+                        </p>
+                        <ul className="list-inside list-disc space-y-1 text-sm">
+                            {!data.recommendation && (
+                                <li>Select a recommendation</li>
+                            )}
+                            {data.author_comments.length < 100 && (
+                                <li>
+                                    Write at least 100 characters in comments to
+                                    author
+                                </li>
+                            )}
+                            {data.quality_rating === 0 && (
+                                <li>Rate quality of work</li>
+                            )}
+                            {data.originality_rating === 0 && (
+                                <li>Rate originality & novelty</li>
+                            )}
+                            {data.methodology_rating === 0 && (
+                                <li>Rate methodology & rigor</li>
+                            )}
+                            {data.significance_rating === 0 && (
+                                <li>Rate significance & impact</li>
+                            )}
                         </ul>
                     </AlertDescription>
                 </Alert>

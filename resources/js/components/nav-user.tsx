@@ -1,9 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ChevronsUpDown, LogOut, User } from 'lucide-react';
-import {
-    Avatar,
-    AvatarFallback,
-} from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,11 +14,11 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
-    useSidebar
+    useSidebar,
 } from '@/components/ui/sidebar';
-import { User as UserType } from '@/types';
-import profile from '@/routes/profile';
 import { logout } from '@/routes';
+import profile from '@/routes/profile';
+import type { User as UserType } from '@/types';
 
 interface NavUserProps {
     user: UserType;
@@ -48,7 +45,8 @@ export function NavUser({ user }: NavUserProps) {
     const { isMobile } = useSidebar();
 
     // Memoize computed values for performance
-    const initials = `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`.toUpperCase();
+    const initials =
+        `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`.toUpperCase();
     const fullName = `${user.firstname} ${user.lastname}`;
 
     return (
@@ -67,15 +65,33 @@ export function NavUser({ user }: NavUserProps) {
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium" title={fullName}>{fullName}</span>
-                                <span className="truncate text-xs text-muted-foreground" title={user.role && ROLE_LABELS[user.role as UserRole] ? ROLE_LABELS[user.role as UserRole] : user.role}>{user.role && ROLE_LABELS[user.role as UserRole] ? ROLE_LABELS[user.role as UserRole] : user.role}</span>
+                                <span
+                                    className="truncate font-medium"
+                                    title={fullName}
+                                >
+                                    {fullName}
+                                </span>
+                                <span
+                                    className="truncate text-xs text-muted-foreground"
+                                    title={
+                                        user.role &&
+                                        ROLE_LABELS[user.role as UserRole]
+                                            ? ROLE_LABELS[user.role as UserRole]
+                                            : user.role
+                                    }
+                                >
+                                    {user.role &&
+                                    ROLE_LABELS[user.role as UserRole]
+                                        ? ROLE_LABELS[user.role as UserRole]
+                                        : user.role}
+                                </span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                        side={isMobile ? "bottom" : "right"}
+                        side={isMobile ? 'bottom' : 'right'}
                         align="end"
                         sideOffset={4}
                     >
@@ -87,15 +103,25 @@ export function NavUser({ user }: NavUserProps) {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium" title={fullName}>{fullName}</span>
-                                    <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+                                    <span
+                                        className="truncate font-medium"
+                                        title={fullName}
+                                    >
+                                        {fullName}
+                                    </span>
+                                    <span className="truncate text-xs text-muted-foreground">
+                                        {user.email}
+                                    </span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link href={profile.edit.url()} className="cursor-pointer">
+                                <Link
+                                    href={profile.edit.url()}
+                                    className="cursor-pointer"
+                                >
                                     <User className="mr-2 size-4" />
                                     Profile Settings
                                 </Link>
@@ -107,7 +133,7 @@ export function NavUser({ user }: NavUserProps) {
                                 href={logout.url()}
                                 method="post"
                                 as="button"
-                                className="w-full cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center"
+                                className="flex w-full cursor-pointer items-center text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                             >
                                 <LogOut className="mr-2 size-4" />
                                 <span className="ml-2">Sign Out</span>

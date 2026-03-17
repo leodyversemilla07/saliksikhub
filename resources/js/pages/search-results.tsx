@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Search, FileText, Users, Calendar, ExternalLink, Home, ChevronRight, SortAsc, SortDesc, Download, SlidersHorizontal } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+    Search,
+    FileText,
+    Users,
+    Calendar,
+    ExternalLink,
+    Home,
+    ChevronRight,
+    SortAsc,
+    SortDesc,
+    Download,
+    SlidersHorizontal,
+} from 'lucide-react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 
 interface SearchResult {
     id: number;
@@ -42,7 +64,9 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
     const [volumeFilter, setVolumeFilter] = useState('all');
 
     // Get unique volumes for filtering
-    const availableVolumes = [...new Set(results.data.map(r => r.volume).filter(v => v !== null))].sort((a, b) => b - a);
+    const availableVolumes = [
+        ...new Set(results.data.map((r) => r.volume).filter((v) => v !== null)),
+    ].sort((a, b) => b - a);
 
     // Filter and sort results
     const filteredAndSortedResults = React.useMemo(() => {
@@ -52,6 +76,7 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
         if (dateFilter !== 'all') {
             const now = new Date();
             const filterDate = new Date();
+
             switch (dateFilter) {
                 case 'last_year':
                     filterDate.setFullYear(now.getFullYear() - 1);
@@ -63,14 +88,19 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                     filterDate.setFullYear(now.getFullYear() - 5);
                     break;
             }
-            filtered = filtered.filter(result =>
-                result.publication_date && new Date(result.publication_date) >= filterDate
+
+            filtered = filtered.filter(
+                (result) =>
+                    result.publication_date &&
+                    new Date(result.publication_date) >= filterDate,
             );
         }
 
         // Apply volume filter
         if (volumeFilter !== 'all') {
-            filtered = filtered.filter(result => result.volume === parseInt(volumeFilter));
+            filtered = filtered.filter(
+                (result) => result.volume === parseInt(volumeFilter),
+            );
         }
 
         // Apply sorting
@@ -80,14 +110,19 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
             switch (sortBy) {
                 case 'date':
                     if (a.publication_date && b.publication_date) {
-                        comparison = new Date(a.publication_date).getTime() - new Date(b.publication_date).getTime();
+                        comparison =
+                            new Date(a.publication_date).getTime() -
+                            new Date(b.publication_date).getTime();
                     }
+
                     break;
                 case 'title':
                     comparison = a.title.localeCompare(b.title);
                     break;
                 case 'authors':
-                    comparison = a.authors.join(', ').localeCompare(b.authors.join(', '));
+                    comparison = a.authors
+                        .join(', ')
+                        .localeCompare(b.authors.join(', '));
                     break;
                 case 'relevance':
                 default:
@@ -112,23 +147,38 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
 
     const exportResults = () => {
         const csvContent = [
-            ['Title', 'Authors', 'Publication Date', 'Volume', 'Issue', 'DOI', 'Keywords'].join(','),
-            ...filteredAndSortedResults.map(result => [
-                `"${result.title.replace(/"/g, '""')}"`,
-                `"${result.authors.join('; ').replace(/"/g, '""')}"`,
-                result.publication_date || '',
-                result.volume || '',
-                result.issue || '',
-                result.doi || '',
-                `"${result.keywords.join('; ').replace(/"/g, '""')}"`
-            ].join(','))
+            [
+                'Title',
+                'Authors',
+                'Publication Date',
+                'Volume',
+                'Issue',
+                'DOI',
+                'Keywords',
+            ].join(','),
+            ...filteredAndSortedResults.map((result) =>
+                [
+                    `"${result.title.replace(/"/g, '""')}"`,
+                    `"${result.authors.join('; ').replace(/"/g, '""')}"`,
+                    result.publication_date || '',
+                    result.volume || '',
+                    result.issue || '',
+                    result.doi || '',
+                    `"${result.keywords.join('; ').replace(/"/g, '""')}"`,
+                ].join(','),
+            ),
         ].join('\n');
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], {
+            type: 'text/csv;charset=utf-8;',
+        });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `search_results_${query.replace(/\s+/g, '_')}.csv`);
+        link.setAttribute(
+            'download',
+            `search_results_${query.replace(/\s+/g, '_')}.csv`,
+        );
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -137,231 +187,313 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
 
     return (
         <PublicLayout title={`Search: ${query}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Breadcrumbs */}
-                    <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-                        <Link href="/" className="hover:text-foreground flex items-center gap-1">
-                            <Home className="h-4 w-4" />
-                            Home
-                        </Link>
-                        <ChevronRight className="h-4 w-4" />
-                        <Link href="/archives" className="hover:text-foreground">
-                            Archives
-                        </Link>
-                        <ChevronRight className="h-4 w-4" />
-                        <span className="text-foreground">Search Results</span>
-                    </nav>
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                {/* Breadcrumbs */}
+                <nav className="mb-6 flex items-center space-x-2 text-sm text-muted-foreground">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-1 hover:text-foreground"
+                    >
+                        <Home className="h-4 w-4" />
+                        Home
+                    </Link>
+                    <ChevronRight className="h-4 w-4" />
+                    <Link href="/archives" className="hover:text-foreground">
+                        Archives
+                    </Link>
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="text-foreground">Search Results</span>
+                </nav>
 
-                    {/* Page Header */}
-                    <div className="mb-8">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Search className="h-8 w-8 text-primary" />
-                            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                                Search Results
-                            </h1>
-                        </div>
-                        <p className="text-lg text-muted-foreground">
-                            Found {filteredAndSortedResults.length} result{filteredAndSortedResults.length !== 1 ? 's' : ''} for "{query}"
-                        </p>
-                        <div className="mt-4 flex items-center gap-4">
-                            <Link href="/archives" className="text-primary hover:underline">
-                                ← Back to Archives
-                            </Link>
-                            {filteredAndSortedResults.length > 0 && (
-                                <Button variant="outline" size="sm" onClick={exportResults}>
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Export Results
-                                </Button>
-                            )}
-                        </div>
+                {/* Page Header */}
+                <div className="mb-8">
+                    <div className="mb-4 flex items-center gap-3">
+                        <Search className="h-8 w-8 text-primary" />
+                        <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+                            Search Results
+                        </h1>
                     </div>
+                    <p className="text-lg text-muted-foreground">
+                        Found {filteredAndSortedResults.length} result
+                        {filteredAndSortedResults.length !== 1 ? 's' : ''} for "
+                        {query}"
+                    </p>
+                    <div className="mt-4 flex items-center gap-4">
+                        <Link
+                            href="/archives"
+                            className="text-primary hover:underline"
+                        >
+                            ← Back to Archives
+                        </Link>
+                        {filteredAndSortedResults.length > 0 && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={exportResults}
+                            >
+                                <Download className="mr-2 h-4 w-4" />
+                                Export Results
+                            </Button>
+                        )}
+                    </div>
+                </div>
 
-                    {/* Filters and Sorting */}
-                    <div className="mb-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-4">
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-[140px]">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="relevance">Relevance</SelectItem>
-                                        <SelectItem value="date">Date</SelectItem>
-                                        <SelectItem value="title">Title</SelectItem>
-                                        <SelectItem value="authors">Authors</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleSortChange(sortBy)}
-                                >
-                                    {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                {/* Filters and Sorting */}
+                <div className="mb-6">
+                    <div className="mb-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Select value={sortBy} onValueChange={setSortBy}>
+                                <SelectTrigger className="w-[140px]">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="relevance">
+                                        Relevance
+                                    </SelectItem>
+                                    <SelectItem value="date">Date</SelectItem>
+                                    <SelectItem value="title">Title</SelectItem>
+                                    <SelectItem value="authors">
+                                        Authors
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSortChange(sortBy)}
+                            >
+                                {sortOrder === 'asc' ? (
+                                    <SortAsc className="h-4 w-4" />
+                                ) : (
+                                    <SortDesc className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
+                        <Collapsible
+                            open={showFilters}
+                            onOpenChange={setShowFilters}
+                        >
+                            <CollapsibleTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                    Filters
                                 </Button>
-                            </div>
-                            <Collapsible open={showFilters} onOpenChange={setShowFilters}>
-                                <CollapsibleTrigger asChild>
-                                    <Button variant="outline" size="sm">
-                                        <SlidersHorizontal className="h-4 w-4 mr-2" />
-                                        Filters
-                                    </Button>
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="mt-4 p-4 border rounded-lg bg-card">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="date-filter">Publication Date</Label>
-                                            <Select value={dateFilter} onValueChange={setDateFilter}>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All Dates</SelectItem>
-                                                    <SelectItem value="last_year">Last Year</SelectItem>
-                                                    <SelectItem value="last_2_years">Last 2 Years</SelectItem>
-                                                    <SelectItem value="last_5_years">Last 5 Years</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="volume-filter">Volume</Label>
-                                            <Select value={volumeFilter} onValueChange={setVolumeFilter}>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">All Volumes</SelectItem>
-                                                    {availableVolumes.map(volume => (
-                                                        <SelectItem key={volume} value={volume.toString()}>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="mt-4 rounded-lg border bg-card p-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="date-filter">
+                                            Publication Date
+                                        </Label>
+                                        <Select
+                                            value={dateFilter}
+                                            onValueChange={setDateFilter}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">
+                                                    All Dates
+                                                </SelectItem>
+                                                <SelectItem value="last_year">
+                                                    Last Year
+                                                </SelectItem>
+                                                <SelectItem value="last_2_years">
+                                                    Last 2 Years
+                                                </SelectItem>
+                                                <SelectItem value="last_5_years">
+                                                    Last 5 Years
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="volume-filter">
+                                            Volume
+                                        </Label>
+                                        <Select
+                                            value={volumeFilter}
+                                            onValueChange={setVolumeFilter}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">
+                                                    All Volumes
+                                                </SelectItem>
+                                                {availableVolumes.map(
+                                                    (volume) => (
+                                                        <SelectItem
+                                                            key={volume}
+                                                            value={volume.toString()}
+                                                        >
                                                             Volume {volume}
                                                         </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                                    ),
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                    {(dateFilter !== 'all' || volumeFilter !== 'all') && (
-                                        <div className="mt-4 flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setDateFilter('all');
-                                                    setVolumeFilter('all');
-                                                }}
-                                            >
-                                                Clear Filters
-                                            </Button>
-                                        </div>
-                                    )}
-                                </CollapsibleContent>
-                            </Collapsible>
-                        </div>
+                                </div>
+                                {(dateFilter !== 'all' ||
+                                    volumeFilter !== 'all') && (
+                                    <div className="mt-4 flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                setDateFilter('all');
+                                                setVolumeFilter('all');
+                                            }}
+                                        >
+                                            Clear Filters
+                                        </Button>
+                                    </div>
+                                )}
+                            </CollapsibleContent>
+                        </Collapsible>
                     </div>
+                </div>
 
-                    {/* Results */}
-                    {filteredAndSortedResults.length > 0 ? (
-                        <div className="space-y-6">
-                            {filteredAndSortedResults.map((result) => (
-                                <Card key={result.id} className="hover:shadow-md transition-shadow">
-                                    <CardContent className="p-6">
-                                        <div className="space-y-4">
-                                            {/* Title */}
-                                            <div>
-                                                <Link
-                                                    href={`/manuscripts/${result.slug}`}
-                                                    className="text-xl font-semibold text-primary hover:underline block"
-                                                >
-                                                    {result.title}
-                                                </Link>
-                                            </div>
+                {/* Results */}
+                {filteredAndSortedResults.length > 0 ? (
+                    <div className="space-y-6">
+                        {filteredAndSortedResults.map((result) => (
+                            <Card
+                                key={result.id}
+                                className="transition-shadow hover:shadow-md"
+                            >
+                                <CardContent className="p-6">
+                                    <div className="space-y-4">
+                                        {/* Title */}
+                                        <div>
+                                            <Link
+                                                href={`/manuscripts/${result.slug}`}
+                                                className="block text-xl font-semibold text-primary hover:underline"
+                                            >
+                                                {result.title}
+                                            </Link>
+                                        </div>
 
-                                            {/* Authors */}
+                                        {/* Authors */}
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Users className="h-4 w-4" />
+                                            <span>
+                                                {result.authors.join(', ')}
+                                            </span>
+                                        </div>
+
+                                        {/* Publication Info */}
+                                        {result.publication_date && (
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Users className="h-4 w-4" />
-                                                <span>{result.authors.join(', ')}</span>
-                                            </div>
-
-                                            {/* Publication Info */}
-                                            {result.publication_date && (
-                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                    <Calendar className="h-4 w-4" />
-                                                    <span>{result.publication_date}</span>
-                                                    {result.volume && result.issue && (
-                                                        <Badge variant="outline" className="ml-2">
-                                                            Vol. {result.volume} No. {result.issue}
+                                                <Calendar className="h-4 w-4" />
+                                                <span>
+                                                    {result.publication_date}
+                                                </span>
+                                                {result.volume &&
+                                                    result.issue && (
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="ml-2"
+                                                        >
+                                                            Vol. {result.volume}{' '}
+                                                            No. {result.issue}
                                                         </Badge>
                                                     )}
-                                                </div>
-                                            )}
+                                            </div>
+                                        )}
 
-                                            {/* Abstract */}
-                                            <p className="text-muted-foreground line-clamp-3">
-                                                {result.abstract}
-                                            </p>
+                                        {/* Abstract */}
+                                        <p className="line-clamp-3 text-muted-foreground">
+                                            {result.abstract}
+                                        </p>
 
-                                            {/* Keywords */}
-                                            {result.keywords.length > 0 && (
-                                                <div className="flex flex-wrap gap-2">
-                                                    {result.keywords.slice(0, 5).map((keyword, index) => (
-                                                        <Badge key={index} variant="secondary" className="text-xs">
+                                        {/* Keywords */}
+                                        {result.keywords.length > 0 && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {result.keywords
+                                                    .slice(0, 5)
+                                                    .map((keyword, index) => (
+                                                        <Badge
+                                                            key={index}
+                                                            variant="secondary"
+                                                            className="text-xs"
+                                                        >
                                                             {keyword}
                                                         </Badge>
                                                     ))}
-                                                    {result.keywords.length > 5 && (
-                                                        <Badge variant="secondary" className="text-xs">
-                                                            +{result.keywords.length - 5} more
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Actions */}
-                                            <div className="flex items-center gap-3 pt-2">
-                                                <Link
-                                                    href={`/manuscripts/${result.slug}`}
-                                                    className="inline-flex items-center gap-2 text-primary hover:underline"
-                                                >
-                                                    <FileText className="h-4 w-4" />
-                                                    Read Article
-                                                </Link>
-                                                {result.doi && (
-                                                    <a
-                                                        href={`https://doi.org/${result.doi}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-2 text-primary hover:underline"
+                                                {result.keywords.length > 5 && (
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="text-xs"
                                                     >
-                                                        <ExternalLink className="h-4 w-4" />
-                                                        DOI: {result.doi}
-                                                    </a>
+                                                        +
+                                                        {result.keywords
+                                                            .length - 5}{' '}
+                                                        more
+                                                    </Badge>
                                                 )}
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-
-                            {/* Pagination */}
-                            {results.last_page > 1 && (
-                                <div className="flex justify-center mt-8">
-                                    <div className="flex gap-2">
-                                        {results.current_page > 1 && (
-                                            <Link
-                                                href={`/search?q=${encodeURIComponent(query)}&page=${results.current_page - 1}`}
-                                                className="px-4 py-2 border border-border rounded-md hover:bg-accent transition-colors"
-                                            >
-                                                Previous
-                                            </Link>
                                         )}
 
-                                        {Array.from({ length: Math.min(5, results.last_page) }, (_, i) => {
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-3 pt-2">
+                                            <Link
+                                                href={`/manuscripts/${result.slug}`}
+                                                className="inline-flex items-center gap-2 text-primary hover:underline"
+                                            >
+                                                <FileText className="h-4 w-4" />
+                                                Read Article
+                                            </Link>
+                                            {result.doi && (
+                                                <a
+                                                    href={`https://doi.org/${result.doi}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                                                >
+                                                    <ExternalLink className="h-4 w-4" />
+                                                    DOI: {result.doi}
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+
+                        {/* Pagination */}
+                        {results.last_page > 1 && (
+                            <div className="mt-8 flex justify-center">
+                                <div className="flex gap-2">
+                                    {results.current_page > 1 && (
+                                        <Link
+                                            href={`/search?q=${encodeURIComponent(query)}&page=${results.current_page - 1}`}
+                                            className="rounded-md border border-border px-4 py-2 transition-colors hover:bg-accent"
+                                        >
+                                            Previous
+                                        </Link>
+                                    )}
+
+                                    {Array.from(
+                                        {
+                                            length: Math.min(
+                                                5,
+                                                results.last_page,
+                                            ),
+                                        },
+                                        (_, i) => {
                                             const page = i + 1;
+
                                             return (
                                                 <Link
                                                     key={page}
                                                     href={`/search?q=${encodeURIComponent(query)}&page=${page}`}
-                                                    className={`px-4 py-2 border border-border rounded-md transition-colors ${
-                                                        page === results.current_page
+                                                    className={`rounded-md border border-border px-4 py-2 transition-colors ${
+                                                        page ===
+                                                        results.current_page
                                                             ? 'bg-primary text-primary-foreground'
                                                             : 'hover:bg-accent'
                                                     }`}
@@ -369,46 +501,51 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                                                     {page}
                                                 </Link>
                                             );
-                                        })}
+                                        },
+                                    )}
 
-                                        {results.current_page < results.last_page && (
-                                            <Link
-                                                href={`/search?q=${encodeURIComponent(query)}&page=${results.current_page + 1}`}
-                                                className="px-4 py-2 border border-border rounded-md hover:bg-accent transition-colors"
-                                            >
-                                                Next
-                                            </Link>
-                                        )}
-                                    </div>
+                                    {results.current_page <
+                                        results.last_page && (
+                                        <Link
+                                            href={`/search?q=${encodeURIComponent(query)}&page=${results.current_page + 1}`}
+                                            className="rounded-md border border-border px-4 py-2 transition-colors hover:bg-accent"
+                                        >
+                                            Next
+                                        </Link>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    ) : (
-                        <Card>
-                            <CardContent className="text-center py-12">
-                                <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-foreground mb-2">
-                                    No results found
-                                </h3>
-                                <p className="text-muted-foreground mb-6">
-                                    {results.data.length === 0
-                                        ? `We couldn't find any published manuscripts matching "${query}".`
-                                        : `No results match your current filters. Try adjusting your filters or search terms.`
-                                    }
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <Card>
+                        <CardContent className="py-12 text-center">
+                            <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                            <h3 className="mb-2 text-lg font-medium text-foreground">
+                                No results found
+                            </h3>
+                            <p className="mb-6 text-muted-foreground">
+                                {results.data.length === 0
+                                    ? `We couldn't find any published manuscripts matching "${query}".`
+                                    : `No results match your current filters. Try adjusting your filters or search terms.`}
+                            </p>
+                            <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">
+                                    Try searching with different keywords or
+                                    check your spelling.
                                 </p>
-                                <div className="space-y-2">
-                                    <p className="text-sm text-muted-foreground">
-                                        Try searching with different keywords or check your spelling.
-                                    </p>
-                                    <Link href="/archives" className="inline-flex items-center gap-2 text-primary hover:underline">
-                                        <Search className="h-4 w-4" />
-                                        Search again
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
+                                <Link
+                                    href="/archives"
+                                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                                >
+                                    <Search className="h-4 w-4" />
+                                    Search again
+                                </Link>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </PublicLayout>
     );
 }

@@ -1,18 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { BookOpen, Plus, Pencil, Trash2, Building2, Power, FileText, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+    BookOpen,
+    Plus,
+    Pencil,
+    Trash2,
+    Building2,
+    Power,
+    FileText,
+    Settings,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,6 +22,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
+import admin from '@/routes/admin';
 
 interface Institution {
     id: number;
@@ -65,9 +76,13 @@ export default function JournalsIndex({ journals }: Props) {
     };
 
     const handleToggleStatus = (journal: Journal) => {
-        router.post(`/admin/journals/${journal.id}/toggle-status`, {}, {
-            preserveScroll: true,
-        });
+        router.post(
+            `/admin/journals/${journal.id}/toggle-status`,
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const breadcrumbItems = [
@@ -80,16 +95,18 @@ export default function JournalsIndex({ journals }: Props) {
             <Head title="Journals Management" />
 
             <div className="space-y-6">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-serif text-2xl font-bold tracking-tight text-oxford-blue">Journals</h1>
+                        <h1 className="text-oxford-blue font-serif text-2xl font-bold tracking-tight">
+                            Journals
+                        </h1>
                         <p className="text-muted-foreground">
                             Manage journals in the research journal system
                         </p>
                     </div>
                     <Button asChild>
                         <Link href="/admin/journals/create">
-                            <Plus className="h-4 w-4 mr-2" />
+                            <Plus className="mr-2 h-4 w-4" />
                             Add Journal
                         </Link>
                     </Button>
@@ -104,15 +121,17 @@ export default function JournalsIndex({ journals }: Props) {
                     </CardHeader>
                     <CardContent>
                         {journals.data.length === 0 ? (
-                            <div className="text-center py-12">
-                                <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-medium">No journals yet</h3>
-                                <p className="text-muted-foreground mb-4">
+                            <div className="py-12 text-center">
+                                <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <h3 className="text-lg font-medium">
+                                    No journals yet
+                                </h3>
+                                <p className="mb-4 text-muted-foreground">
                                     Get started by creating your first journal.
                                 </p>
                                 <Button asChild>
                                     <Link href="/admin/journals/create">
-                                        <Plus className="h-4 w-4 mr-2" />
+                                        <Plus className="mr-2 h-4 w-4" />
                                         Add Journal
                                     </Link>
                                 </Button>
@@ -127,7 +146,9 @@ export default function JournalsIndex({ journals }: Props) {
                                             <TableHead>ISSN</TableHead>
                                             <TableHead>Manuscripts</TableHead>
                                             <TableHead>Status</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
+                                            <TableHead className="text-right">
+                                                Actions
+                                            </TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -138,19 +159,25 @@ export default function JournalsIndex({ journals }: Props) {
                                                         {journal.logo_path ? (
                                                             <img
                                                                 src={`/storage/${journal.logo_path}`}
-                                                                alt={journal.name}
+                                                                alt={
+                                                                    journal.name
+                                                                }
                                                                 className="h-10 w-10 rounded object-contain"
                                                             />
                                                         ) : (
-                                                            <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
+                                                            <div className="flex h-10 w-10 items-center justify-center rounded bg-muted">
                                                                 <BookOpen className="h-5 w-5 text-muted-foreground" />
                                                             </div>
                                                         )}
                                                         <div>
-                                                            <div className="font-medium">{journal.name}</div>
+                                                            <div className="font-medium">
+                                                                {journal.name}
+                                                            </div>
                                                             {journal.abbreviation && (
                                                                 <div className="text-sm text-muted-foreground">
-                                                                    {journal.abbreviation}
+                                                                    {
+                                                                        journal.abbreviation
+                                                                    }
                                                                 </div>
                                                             )}
                                                         </div>
@@ -160,33 +187,55 @@ export default function JournalsIndex({ journals }: Props) {
                                                     <div className="flex items-center gap-2">
                                                         <Building2 className="h-4 w-4 text-muted-foreground" />
                                                         <span>
-                                                            {journal.institution.abbreviation || journal.institution.name}
+                                                            {journal.institution
+                                                                .abbreviation ||
+                                                                journal
+                                                                    .institution
+                                                                    .name}
                                                         </span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     {journal.issn ? (
                                                         <div className="text-sm">
-                                                            <div>Print: {journal.issn}</div>
+                                                            <div>
+                                                                Print:{' '}
+                                                                {journal.issn}
+                                                            </div>
                                                             {journal.eissn && (
                                                                 <div className="text-muted-foreground">
-                                                                    Online: {journal.eissn}
+                                                                    Online:{' '}
+                                                                    {
+                                                                        journal.eissn
+                                                                    }
                                                                 </div>
                                                             )}
                                                         </div>
                                                     ) : (
-                                                        <span className="text-muted-foreground">-</span>
+                                                        <span className="text-muted-foreground">
+                                                            -
+                                                        </span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge variant="secondary">
-                                                        <FileText className="h-3 w-3 mr-1" />
-                                                        {journal.manuscripts_count}
+                                                        <FileText className="mr-1 h-3 w-3" />
+                                                        {
+                                                            journal.manuscripts_count
+                                                        }
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant={journal.is_active ? 'default' : 'secondary'}>
-                                                        {journal.is_active ? 'Active' : 'Inactive'}
+                                                    <Badge
+                                                        variant={
+                                                            journal.is_active
+                                                                ? 'default'
+                                                                : 'secondary'
+                                                        }
+                                                    >
+                                                        {journal.is_active
+                                                            ? 'Active'
+                                                            : 'Inactive'}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">
@@ -194,44 +243,92 @@ export default function JournalsIndex({ journals }: Props) {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            onClick={() => handleToggleStatus(journal)}
-                                                            title={journal.is_active ? 'Deactivate' : 'Activate'}
+                                                            onClick={() =>
+                                                                handleToggleStatus(
+                                                                    journal,
+                                                                )
+                                                            }
+                                                            title={
+                                                                journal.is_active
+                                                                    ? 'Deactivate'
+                                                                    : 'Activate'
+                                                            }
                                                         >
-                                                            <Power className={`h-4 w-4 ${journal.is_active ? 'text-green-500' : 'text-muted-foreground'}`} />
+                                                            <Power
+                                                                className={`h-4 w-4 ${journal.is_active ? 'text-green-500' : 'text-muted-foreground'}`}
+                                                            />
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" asChild title="Settings">
-                                                            <Link href={`/admin/journals/${journal.id}/settings`}>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            asChild
+                                                            title="Settings"
+                                                        >
+                                                            <Link
+                                                                href={`/admin/journals/${journal.id}/settings`}
+                                                            >
                                                                 <Settings className="h-4 w-4" />
                                                             </Link>
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" asChild title="Edit">
-                                                            <Link href={`/admin/journals/${journal.id}/edit`}>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            asChild
+                                                            title="Edit"
+                                                        >
+                                                            <Link
+                                                                href={`/admin/journals/${journal.id}/edit`}
+                                                            >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Link>
                                                         </Button>
                                                         <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
                                                                     className="text-destructive hover:text-destructive"
-                                                                    disabled={journal.manuscripts_count > 0}
+                                                                    disabled={
+                                                                        journal.manuscripts_count >
+                                                                        0
+                                                                    }
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
                                                                 </Button>
                                                             </AlertDialogTrigger>
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
-                                                                    <AlertDialogTitle>Delete Journal</AlertDialogTitle>
+                                                                    <AlertDialogTitle>
+                                                                        Delete
+                                                                        Journal
+                                                                    </AlertDialogTitle>
                                                                     <AlertDialogDescription>
-                                                                        Are you sure you want to delete "{journal.name}"?
-                                                                        This action cannot be undone.
+                                                                        Are you
+                                                                        sure you
+                                                                        want to
+                                                                        delete "
+                                                                        {
+                                                                            journal.name
+                                                                        }
+                                                                        "? This
+                                                                        action
+                                                                        cannot
+                                                                        be
+                                                                        undone.
                                                                     </AlertDialogDescription>
                                                                 </AlertDialogHeader>
                                                                 <AlertDialogFooter>
-                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogCancel>
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
                                                                     <AlertDialogAction
-                                                                        onClick={() => handleDelete(journal)}
+                                                                        onClick={() =>
+                                                                            handleDelete(
+                                                                                journal,
+                                                                            )
+                                                                        }
                                                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                                                     >
                                                                         Delete
@@ -248,50 +345,81 @@ export default function JournalsIndex({ journals }: Props) {
                                 <div className="mt-4">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm text-muted-foreground">
-                                            Page {journals.current_page} of {journals.last_page}
+                                            Page {journals.current_page} of{' '}
+                                            {journals.last_page}
                                         </p>
                                         <div className="flex items-center gap-2">
-                                            {journals.links.map((link, index) => {
-                                                if (index === 0) {
-                                                    return (
-                                                        <Button
-                                                            key="prev"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            disabled={!link.url}
-                                                            asChild={!!link.url}
-                                                        >
-                                                            {link.url ? (
-                                                                <Link href={link.url} preserveScroll>
-                                                                    <ChevronLeft className="h-4 w-4" />
-                                                                </Link>
-                                                            ) : (
-                                                                <span><ChevronLeft className="h-4 w-4" /></span>
-                                                            )}
-                                                        </Button>
-                                                    );
-                                                }
-                                                if (index === journals.links.length - 1) {
-                                                    return (
-                                                        <Button
-                                                            key="next"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            disabled={!link.url}
-                                                            asChild={!!link.url}
-                                                        >
-                                                            {link.url ? (
-                                                                <Link href={link.url} preserveScroll>
-                                                                    <ChevronRight className="h-4 w-4" />
-                                                                </Link>
-                                                            ) : (
-                                                                <span><ChevronRight className="h-4 w-4" /></span>
-                                                            )}
-                                                        </Button>
-                                                    );
-                                                }
-                                                return null;
-                                            })}
+                                            {journals.links.map(
+                                                (link, index) => {
+                                                    if (index === 0) {
+                                                        return (
+                                                            <Button
+                                                                key="prev"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                disabled={
+                                                                    !link.url
+                                                                }
+                                                                asChild={
+                                                                    !!link.url
+                                                                }
+                                                            >
+                                                                {link.url ? (
+                                                                    <Link
+                                                                        href={
+                                                                            link.url
+                                                                        }
+                                                                        preserveScroll
+                                                                    >
+                                                                        <ChevronLeft className="h-4 w-4" />
+                                                                    </Link>
+                                                                ) : (
+                                                                    <span>
+                                                                        <ChevronLeft className="h-4 w-4" />
+                                                                    </span>
+                                                                )}
+                                                            </Button>
+                                                        );
+                                                    }
+
+                                                    if (
+                                                        index ===
+                                                        journals.links.length -
+                                                            1
+                                                    ) {
+                                                        return (
+                                                            <Button
+                                                                key="next"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                disabled={
+                                                                    !link.url
+                                                                }
+                                                                asChild={
+                                                                    !!link.url
+                                                                }
+                                                            >
+                                                                {link.url ? (
+                                                                    <Link
+                                                                        href={
+                                                                            link.url
+                                                                        }
+                                                                        preserveScroll
+                                                                    >
+                                                                        <ChevronRight className="h-4 w-4" />
+                                                                    </Link>
+                                                                ) : (
+                                                                    <span>
+                                                                        <ChevronRight className="h-4 w-4" />
+                                                                    </span>
+                                                                )}
+                                                            </Button>
+                                                        );
+                                                    }
+
+                                                    return null;
+                                                },
+                                            )}
                                         </div>
                                     </div>
                                 </div>

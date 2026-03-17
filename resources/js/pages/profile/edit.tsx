@@ -1,10 +1,10 @@
+import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { cn } from '@/lib/utils';
+import type { PageProps } from '@/types';
 import UpdatePasswordForm from './partials/password';
 import UpdateProfileInformationForm from './partials/profile';
-import { cn } from '@/lib/utils';
 
 export default function Edit({
     mustVerifyEmail,
@@ -30,12 +30,12 @@ export default function Edit({
         {
             name: 'Profile',
             section: 'profile',
-            current: activeSection === 'profile'
+            current: activeSection === 'profile',
         },
         {
             name: 'Password',
             section: 'password',
-            current: activeSection === 'password'
+            current: activeSection === 'password',
         },
     ];
 
@@ -62,7 +62,7 @@ export default function Edit({
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-serif text-2xl font-semibold text-oxford-blue">
+                    <h1 className="text-oxford-blue font-serif text-2xl font-semibold">
                         Settings
                     </h1>
                     <p className="text-muted-foreground">
@@ -74,18 +74,20 @@ export default function Edit({
                 <div className="flex gap-6">
                     {/* Navigation */}
                     <div className="w-64 flex-shrink-0">
-                        <div className="bg-card rounded-lg p-1">
+                        <div className="rounded-lg bg-card p-1">
                             <nav className="space-y-1">
                                 {navigationItems.map((item) => {
                                     return (
                                         <button
                                             key={item.name}
-                                            onClick={() => setActiveSection(item.section)}
+                                            onClick={() =>
+                                                setActiveSection(item.section)
+                                            }
                                             className={cn(
-                                                'flex items-center px-3 py-2 text-sm font-medium rounded-md w-full text-left transition-colors',
+                                                'flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium transition-colors',
                                                 item.current
                                                     ? 'bg-oxford-blue text-white'
-                                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                                             )}
                                         >
                                             {item.name}
@@ -98,9 +100,7 @@ export default function Edit({
 
                     {/* Content Area */}
                     <div className="flex-1">
-                        <div className="p-4">
-                            {renderContent()}
-                        </div>
+                        <div className="p-4">{renderContent()}</div>
                     </div>
                 </div>
             </div>

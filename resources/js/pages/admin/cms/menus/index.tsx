@@ -1,12 +1,17 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import {
+    ArrowLeft,
+    GripVertical,
+    MoreHorizontal,
+    Plus,
+    Pencil,
+    Trash2,
+    ExternalLink,
+    Menu,
+    MoveUp,
+    MoveDown,
+} from 'lucide-react';
+import { useState } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,6 +22,15 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -33,9 +47,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, GripVertical, MoreHorizontal, Plus, Pencil, Trash2, ExternalLink, Menu, MoveUp, MoveDown } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
-import { useState } from 'react';
 
 interface Page {
     id: number;
@@ -70,13 +87,18 @@ interface Props {
 
 export default function MenusIndex({ journal, menuItems, pages }: Props) {
     const [showAddMenu, setShowAddMenu] = useState(false);
-    const [editingMenuItem, setEditingMenuItem] = useState<MenuItem | null>(null);
+    const [editingMenuItem, setEditingMenuItem] = useState<MenuItem | null>(
+        null,
+    );
     const [deletingMenuId, setDeletingMenuId] = useState<number | null>(null);
 
     const breadcrumbItems = [
         { label: 'Admin', href: admin.institutions.index.url() },
         { label: 'Journals', href: admin.journals.index.url() },
-        { label: journal.name, href: admin.journals.edit.url({ journal: journal.id }) },
+        {
+            label: journal.name,
+            href: admin.journals.edit.url({ journal: journal.id }),
+        },
         { label: 'CMS - Menus' },
     ];
 
@@ -111,14 +133,21 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
 
     const handleEditSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!editingMenuItem) return;
-        editForm.put(`/admin/journals/${journal.id}/cms/menus/${editingMenuItem.id}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setEditingMenuItem(null);
-                editForm.reset();
+
+        if (!editingMenuItem) {
+return;
+}
+
+        editForm.put(
+            `/admin/journals/${journal.id}/cms/menus/${editingMenuItem.id}`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setEditingMenuItem(null);
+                    editForm.reset();
+                },
             },
-        });
+        );
     };
 
     const handleDelete = (menuId: number) => {
@@ -129,7 +158,8 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
     };
 
     const handleMoveMenu = (menuId: number, direction: 'up' | 'down') => {
-        const currentIndex = menuItems.findIndex(m => m.id === menuId);
+        const currentIndex = menuItems.findIndex((m) => m.id === menuId);
+
         if (
             (direction === 'up' && currentIndex === 0) ||
             (direction === 'down' && currentIndex === menuItems.length - 1)
@@ -137,16 +167,21 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
             return;
         }
 
-        const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        const newIndex =
+            direction === 'up' ? currentIndex - 1 : currentIndex + 1;
         const newOrder = [...menuItems];
         const [removed] = newOrder.splice(currentIndex, 1);
         newOrder.splice(newIndex, 0, removed);
 
-        router.put(`/admin/journals/${journal.id}/cms/menus/reorder`, {
-            menus: newOrder.map((m, i) => ({ id: m.id, order: i })),
-        }, {
-            preserveScroll: true,
-        });
+        router.put(
+            `/admin/journals/${journal.id}/cms/menus/reorder`,
+            {
+                menus: newOrder.map((m, i) => ({ id: m.id, order: i })),
+            },
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const openEditDialog = (menuItem: MenuItem) => {
@@ -161,8 +196,12 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
         });
     };
 
-    const headerItems = menuItems.filter(m => m.location === 'header' || m.location === 'both');
-    const footerItems = menuItems.filter(m => m.location === 'footer' || m.location === 'both');
+    const headerItems = menuItems.filter(
+        (m) => m.location === 'header' || m.location === 'both',
+    );
+    const footerItems = menuItems.filter(
+        (m) => m.location === 'footer' || m.location === 'both',
+    );
 
     return (
         <AppLayout breadcrumbItems={breadcrumbItems}>
@@ -173,13 +212,21 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" asChild>
-                            <Link href={admin.journals.edit.url({ journal: journal.id })}>
+                            <Link
+                                href={admin.journals.edit.url({
+                                    journal: journal.id,
+                                })}
+                            >
                                 <ArrowLeft className="h-4 w-4" />
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Menu Management</h1>
-                            <p className="text-muted-foreground">{journal.name}</p>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                Menu Management
+                            </h1>
+                            <p className="text-muted-foreground">
+                                {journal.name}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -191,9 +238,7 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                             Pages
                         </Link>
                     </Button>
-                    <Button variant="default">
-                        Menus
-                    </Button>
+                    <Button variant="default">Menus</Button>
                     <Button variant="outline" asChild>
                         <Link href={`/admin/journals/${journal.id}/cms/theme`}>
                             Theme
@@ -214,7 +259,10 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     Navigation items displayed in the header
                                 </CardDescription>
                             </div>
-                            <Dialog open={showAddMenu} onOpenChange={setShowAddMenu}>
+                            <Dialog
+                                open={showAddMenu}
+                                onOpenChange={setShowAddMenu}
+                            >
                                 <DialogTrigger asChild>
                                     <Button size="sm">
                                         <Plus className="mr-2 h-4 w-4" />
@@ -224,36 +272,63 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                 <DialogContent>
                                     <form onSubmit={handleAddSubmit}>
                                         <DialogHeader>
-                                            <DialogTitle>Add Menu Item</DialogTitle>
+                                            <DialogTitle>
+                                                Add Menu Item
+                                            </DialogTitle>
                                             <DialogDescription>
-                                                Add a new item to the navigation menu
+                                                Add a new item to the navigation
+                                                menu
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="space-y-4 py-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="add-label">Label</Label>
+                                                <Label htmlFor="add-label">
+                                                    Label
+                                                </Label>
                                                 <Input
                                                     id="add-label"
                                                     value={addForm.data.label}
-                                                    onChange={(e) => addForm.setData('label', e.target.value)}
+                                                    onChange={(e) =>
+                                                        addForm.setData(
+                                                            'label',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     placeholder="Menu item label"
                                                 />
                                                 {addForm.errors.label && (
-                                                    <p className="text-sm text-destructive">{addForm.errors.label}</p>
+                                                    <p className="text-sm text-destructive">
+                                                        {addForm.errors.label}
+                                                    </p>
                                                 )}
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label htmlFor="add-page">Link to Page</Label>
+                                                <Label htmlFor="add-page">
+                                                    Link to Page
+                                                </Label>
                                                 <select
                                                     id="add-page"
                                                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                    value={addForm.data.journal_page_id}
-                                                    onChange={(e) => addForm.setData('journal_page_id', e.target.value)}
+                                                    value={
+                                                        addForm.data
+                                                            .journal_page_id
+                                                    }
+                                                    onChange={(e) =>
+                                                        addForm.setData(
+                                                            'journal_page_id',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                 >
-                                                    <option value="">Select a page (optional)</option>
+                                                    <option value="">
+                                                        Select a page (optional)
+                                                    </option>
                                                     {pages.map((page) => (
-                                                        <option key={page.id} value={page.id}>
+                                                        <option
+                                                            key={page.id}
+                                                            value={page.id}
+                                                        >
                                                             {page.title}
                                                         </option>
                                                     ))}
@@ -261,29 +336,52 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label htmlFor="add-url">Or Custom URL</Label>
+                                                <Label htmlFor="add-url">
+                                                    Or Custom URL
+                                                </Label>
                                                 <Input
                                                     id="add-url"
                                                     value={addForm.data.url}
-                                                    onChange={(e) => addForm.setData('url', e.target.value)}
+                                                    onChange={(e) =>
+                                                        addForm.setData(
+                                                            'url',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     placeholder="https://..."
                                                 />
                                                 <p className="text-xs text-muted-foreground">
-                                                    Leave empty if linking to a page
+                                                    Leave empty if linking to a
+                                                    page
                                                 </p>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label htmlFor="add-location">Location</Label>
+                                                <Label htmlFor="add-location">
+                                                    Location
+                                                </Label>
                                                 <select
                                                     id="add-location"
                                                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                    value={addForm.data.location}
-                                                    onChange={(e) => addForm.setData('location', e.target.value)}
+                                                    value={
+                                                        addForm.data.location
+                                                    }
+                                                    onChange={(e) =>
+                                                        addForm.setData(
+                                                            'location',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                 >
-                                                    <option value="header">Header Only</option>
-                                                    <option value="footer">Footer Only</option>
-                                                    <option value="both">Both</option>
+                                                    <option value="header">
+                                                        Header Only
+                                                    </option>
+                                                    <option value="footer">
+                                                        Footer Only
+                                                    </option>
+                                                    <option value="both">
+                                                        Both
+                                                    </option>
                                                 </select>
                                             </div>
 
@@ -291,27 +389,62 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                                 <div className="flex items-center gap-2">
                                                     <Switch
                                                         id="add-active"
-                                                        checked={addForm.data.is_active}
-                                                        onCheckedChange={(checked) => addForm.setData('is_active', checked)}
+                                                        checked={
+                                                            addForm.data
+                                                                .is_active
+                                                        }
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            addForm.setData(
+                                                                'is_active',
+                                                                checked,
+                                                            )
+                                                        }
                                                     />
-                                                    <Label htmlFor="add-active">Active</Label>
+                                                    <Label htmlFor="add-active">
+                                                        Active
+                                                    </Label>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Switch
                                                         id="add-new-tab"
-                                                        checked={addForm.data.open_in_new_tab}
-                                                        onCheckedChange={(checked) => addForm.setData('open_in_new_tab', checked)}
+                                                        checked={
+                                                            addForm.data
+                                                                .open_in_new_tab
+                                                        }
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            addForm.setData(
+                                                                'open_in_new_tab',
+                                                                checked,
+                                                            )
+                                                        }
                                                     />
-                                                    <Label htmlFor="add-new-tab">Open in new tab</Label>
+                                                    <Label htmlFor="add-new-tab">
+                                                        Open in new tab
+                                                    </Label>
                                                 </div>
                                             </div>
                                         </div>
                                         <DialogFooter>
-                                            <Button type="button" variant="outline" onClick={() => setShowAddMenu(false)}>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() =>
+                                                    setShowAddMenu(false)
+                                                }
+                                            >
                                                 Cancel
                                             </Button>
-                                            <Button type="submit" disabled={addForm.processing}>
-                                                {addForm.processing ? 'Adding...' : 'Add Item'}
+                                            <Button
+                                                type="submit"
+                                                disabled={addForm.processing}
+                                            >
+                                                {addForm.processing
+                                                    ? 'Adding...'
+                                                    : 'Add Item'}
                                             </Button>
                                         </DialogFooter>
                                     </form>
@@ -320,7 +453,7 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                         </CardHeader>
                         <CardContent>
                             {headerItems.length === 0 ? (
-                                <div className="text-center py-8 text-muted-foreground">
+                                <div className="py-8 text-center text-muted-foreground">
                                     <p>No header menu items yet.</p>
                                 </div>
                             ) : (
@@ -328,33 +461,55 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     {headerItems.map((item, index) => (
                                         <div
                                             key={item.id}
-                                            className={`flex items-center gap-3 p-3 rounded-lg border ${
-                                                item.is_active ? 'bg-background' : 'bg-muted/50'
+                                            className={`flex items-center gap-3 rounded-lg border p-3 ${
+                                                item.is_active
+                                                    ? 'bg-background'
+                                                    : 'bg-muted/50'
                                             }`}
                                         >
-                                            <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
-                                            <div className="flex-1 min-w-0">
+                                            <GripVertical className="h-5 w-5 cursor-grab text-muted-foreground" />
+                                            <div className="min-w-0 flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-medium truncate">{item.label}</span>
+                                                    <span className="truncate font-medium">
+                                                        {item.label}
+                                                    </span>
                                                     {item.open_in_new_tab && (
                                                         <ExternalLink className="h-3 w-3 text-muted-foreground" />
                                                     )}
                                                     {!item.is_active && (
-                                                        <Badge variant="outline" className="text-xs">Inactive</Badge>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-xs"
+                                                        >
+                                                            Inactive
+                                                        </Badge>
                                                     )}
-                                                    {item.location === 'both' && (
-                                                        <Badge variant="secondary" className="text-xs">Header + Footer</Badge>
+                                                    {item.location ===
+                                                        'both' && (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="text-xs"
+                                                        >
+                                                            Header + Footer
+                                                        </Badge>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {item.page ? item.page.title : item.url}
+                                                <p className="truncate text-xs text-muted-foreground">
+                                                    {item.page
+                                                        ? item.page.title
+                                                        : item.url}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => handleMoveMenu(item.id, 'up')}
+                                                    onClick={() =>
+                                                        handleMoveMenu(
+                                                            item.id,
+                                                            'up',
+                                                        )
+                                                    }
                                                     disabled={index === 0}
                                                 >
                                                     <MoveUp className="h-4 w-4" />
@@ -362,26 +517,49 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => handleMoveMenu(item.id, 'down')}
-                                                    disabled={index === headerItems.length - 1}
+                                                    onClick={() =>
+                                                        handleMoveMenu(
+                                                            item.id,
+                                                            'down',
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        index ===
+                                                        headerItems.length - 1
+                                                    }
                                                 >
                                                     <MoveDown className="h-4 w-4" />
                                                 </Button>
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon">
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
                                                             <MoreHorizontal className="h-4 w-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onClick={() => openEditDialog(item)}>
+                                                        <DropdownMenuItem
+                                                            onClick={() =>
+                                                                openEditDialog(
+                                                                    item,
+                                                                )
+                                                            }
+                                                        >
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem
                                                             className="text-destructive"
-                                                            onClick={() => setDeletingMenuId(item.id)}
+                                                            onClick={() =>
+                                                                setDeletingMenuId(
+                                                                    item.id,
+                                                                )
+                                                            }
                                                         >
                                                             <Trash2 className="mr-2 h-4 w-4" />
                                                             Delete
@@ -409,31 +587,45 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                         </CardHeader>
                         <CardContent>
                             {footerItems.length === 0 ? (
-                                <div className="text-center py-8 text-muted-foreground">
+                                <div className="py-8 text-center text-muted-foreground">
                                     <p>No footer menu items yet.</p>
-                                    <p className="text-xs mt-1">Add items with "Footer Only" or "Both" location</p>
+                                    <p className="mt-1 text-xs">
+                                        Add items with "Footer Only" or "Both"
+                                        location
+                                    </p>
                                 </div>
                             ) : (
                                 <div className="space-y-2">
                                     {footerItems.map((item) => (
                                         <div
                                             key={item.id}
-                                            className={`flex items-center gap-3 p-3 rounded-lg border ${
-                                                item.is_active ? 'bg-background' : 'bg-muted/50'
+                                            className={`flex items-center gap-3 rounded-lg border p-3 ${
+                                                item.is_active
+                                                    ? 'bg-background'
+                                                    : 'bg-muted/50'
                                             }`}
                                         >
-                                            <div className="flex-1 min-w-0">
+                                            <div className="min-w-0 flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-medium truncate">{item.label}</span>
+                                                    <span className="truncate font-medium">
+                                                        {item.label}
+                                                    </span>
                                                     {item.open_in_new_tab && (
                                                         <ExternalLink className="h-3 w-3 text-muted-foreground" />
                                                     )}
                                                     {!item.is_active && (
-                                                        <Badge variant="outline" className="text-xs">Inactive</Badge>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-xs"
+                                                        >
+                                                            Inactive
+                                                        </Badge>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {item.page ? item.page.title : item.url}
+                                                <p className="truncate text-xs text-muted-foreground">
+                                                    {item.page
+                                                        ? item.page.title
+                                                        : item.url}
                                                 </p>
                                             </div>
                                         </div>
@@ -446,7 +638,10 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
             </div>
 
             {/* Edit Menu Dialog */}
-            <Dialog open={editingMenuItem !== null} onOpenChange={() => setEditingMenuItem(null)}>
+            <Dialog
+                open={editingMenuItem !== null}
+                onOpenChange={() => setEditingMenuItem(null)}
+            >
                 <DialogContent>
                     <form onSubmit={handleEditSubmit}>
                         <DialogHeader>
@@ -461,7 +656,12 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                 <Input
                                     id="edit-label"
                                     value={editForm.data.label}
-                                    onChange={(e) => editForm.setData('label', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'label',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
 
@@ -471,9 +671,16 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     id="edit-page"
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editForm.data.journal_page_id}
-                                    onChange={(e) => editForm.setData('journal_page_id', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'journal_page_id',
+                                            e.target.value,
+                                        )
+                                    }
                                 >
-                                    <option value="">Select a page (optional)</option>
+                                    <option value="">
+                                        Select a page (optional)
+                                    </option>
                                     {pages.map((page) => (
                                         <option key={page.id} value={page.id}>
                                             {page.title}
@@ -487,7 +694,9 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                 <Input
                                     id="edit-url"
                                     value={editForm.data.url}
-                                    onChange={(e) => editForm.setData('url', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData('url', e.target.value)
+                                    }
                                     placeholder="https://..."
                                 />
                             </div>
@@ -498,7 +707,12 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     id="edit-location"
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                     value={editForm.data.location}
-                                    onChange={(e) => editForm.setData('location', e.target.value)}
+                                    onChange={(e) =>
+                                        editForm.setData(
+                                            'location',
+                                            e.target.value,
+                                        )
+                                    }
                                 >
                                     <option value="header">Header Only</option>
                                     <option value="footer">Footer Only</option>
@@ -511,7 +725,12 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     <Switch
                                         id="edit-active"
                                         checked={editForm.data.is_active}
-                                        onCheckedChange={(checked) => editForm.setData('is_active', checked)}
+                                        onCheckedChange={(checked) =>
+                                            editForm.setData(
+                                                'is_active',
+                                                checked,
+                                            )
+                                        }
                                     />
                                     <Label htmlFor="edit-active">Active</Label>
                                 </div>
@@ -519,18 +738,34 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
                                     <Switch
                                         id="edit-new-tab"
                                         checked={editForm.data.open_in_new_tab}
-                                        onCheckedChange={(checked) => editForm.setData('open_in_new_tab', checked)}
+                                        onCheckedChange={(checked) =>
+                                            editForm.setData(
+                                                'open_in_new_tab',
+                                                checked,
+                                            )
+                                        }
                                     />
-                                    <Label htmlFor="edit-new-tab">Open in new tab</Label>
+                                    <Label htmlFor="edit-new-tab">
+                                        Open in new tab
+                                    </Label>
                                 </div>
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setEditingMenuItem(null)}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setEditingMenuItem(null)}
+                            >
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={editForm.processing}>
-                                {editForm.processing ? 'Saving...' : 'Save Changes'}
+                            <Button
+                                type="submit"
+                                disabled={editForm.processing}
+                            >
+                                {editForm.processing
+                                    ? 'Saving...'
+                                    : 'Save Changes'}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -538,19 +773,25 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
             </Dialog>
 
             {/* Delete Menu Dialog */}
-            <AlertDialog open={deletingMenuId !== null} onOpenChange={() => setDeletingMenuId(null)}>
+            <AlertDialog
+                open={deletingMenuId !== null}
+                onOpenChange={() => setDeletingMenuId(null)}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Menu Item</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this menu item? This action cannot be undone.
+                            Are you sure you want to delete this menu item? This
+                            action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            onClick={() => deletingMenuId && handleDelete(deletingMenuId)}
+                            onClick={() =>
+                                deletingMenuId && handleDelete(deletingMenuId)
+                            }
                         >
                             Delete
                         </AlertDialogAction>

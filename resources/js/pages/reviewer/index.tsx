@@ -1,15 +1,52 @@
-import * as React from "react";
 import { Head, Link, router } from '@inertiajs/react';
-import {
+import type {
     ColumnFiltersState,
     SortingState,
+    ColumnDef} from '@tanstack/react-table';
+import {
     getCoreRowModel,
     getFilteredRowModel,
     getSortedRowModel,
     useReactTable,
-    flexRender,
-    ColumnDef,
-} from "@tanstack/react-table";
+    flexRender
+} from '@tanstack/react-table';
+import {
+    Eye,
+    MoreHorizontal,
+    Search,
+    Filter,
+    Calendar,
+    Users,
+    FileText,
+    Clock,
+} from 'lucide-react';
+import * as React from 'react';
+import { Pagination as ShadcnPagination } from '@/components/pagination';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -17,31 +54,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-    DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Pagination as ShadcnPagination } from "@/components/pagination";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import reviewer from '@/routes/reviewer';
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { Eye, MoreHorizontal, Search, Filter, Calendar, Users, FileText, Clock } from "lucide-react";
-import { Manuscript } from "@/types";
+import reviewer from '@/routes/reviewer';
+import type { Manuscript } from '@/types';
 
 interface PaginatedManuscripts {
     data: Manuscript[];
@@ -67,19 +83,32 @@ interface Filters {
 const breadcrumbItems = [
     {
         label: 'Manuscripts for Review',
-        href: "#",
-    }
+        href: '#',
+    },
 ];
 
-export default function Index({ manuscripts, filters }: { manuscripts: PaginatedManuscripts; filters: Filters }) {
+export default function Index({
+    manuscripts,
+    filters,
+}: {
+    manuscripts: PaginatedManuscripts;
+    filters: Filters;
+}) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnFilters, setColumnFilters] =
+        React.useState<ColumnFiltersState>([]);
     const [rowSelection, setRowSelection] = React.useState({});
-    const [globalFilter, setGlobalFilter] = React.useState(filters.search || "");
-    const [statusFilter, setStatusFilter] = React.useState<string>(filters.status || "all");
+    const [globalFilter, setGlobalFilter] = React.useState(
+        filters.search || '',
+    );
+    const [statusFilter, setStatusFilter] = React.useState<string>(
+        filters.status || 'all',
+    );
 
     // Debounced search to avoid too many requests
-    const [debouncedSearch, setDebouncedSearch] = React.useState(filters.search || "");
+    const [debouncedSearch, setDebouncedSearch] = React.useState(
+        filters.search || '',
+    );
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
@@ -90,7 +119,10 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
     }, [globalFilter]);
 
     React.useEffect(() => {
-        if (debouncedSearch !== filters.search || statusFilter !== filters.status) {
+        if (
+            debouncedSearch !== filters.search ||
+            statusFilter !== filters.status
+        ) {
             router.visit(reviewer.manuscripts.index.url(), {
                 data: {
                     search: debouncedSearch,
@@ -101,16 +133,24 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                 preserveScroll: true,
             });
         }
-    }, [debouncedSearch, statusFilter, filters.search, filters.status, filters.per_page]);
+    }, [
+        debouncedSearch,
+        statusFilter,
+        filters.search,
+        filters.status,
+        filters.per_page,
+    ]);
 
     const columns: ColumnDef<Manuscript>[] = [
         {
-            accessorKey: "title",
+            accessorKey: 'title',
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === 'asc')
+                        }
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                     >
                         Title
@@ -120,19 +160,24 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             },
             cell: ({ row }) => (
                 <div className="max-w-xs">
-                    <div className="font-medium truncate" title={row.getValue("title")}>
-                        {row.getValue("title")}
+                    <div
+                        className="truncate font-medium"
+                        title={row.getValue('title')}
+                    >
+                        {row.getValue('title')}
                     </div>
                 </div>
             ),
         },
         {
-            accessorKey: "authors",
+            accessorKey: 'authors',
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === 'asc')
+                        }
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                     >
                         Authors
@@ -141,18 +186,23 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                 );
             },
             cell: ({ row }) => (
-                <div className="max-w-xs truncate text-muted-foreground" title={row.getValue("authors")}>
-                    {row.getValue("authors")}
+                <div
+                    className="max-w-xs truncate text-muted-foreground"
+                    title={row.getValue('authors')}
+                >
+                    {row.getValue('authors')}
                 </div>
             ),
         },
         {
-            accessorKey: "status",
+            accessorKey: 'status',
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === 'asc')
+                        }
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                     >
                         Status
@@ -161,33 +211,45 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                 );
             },
             cell: ({ row }) => {
-                const status = row.getValue("status") as string;
+                const status = row.getValue('status') as string;
                 const getStatusVariant = (status: string) => {
                     switch (status) {
-                        case 'submitted': return 'secondary';
-                        case 'under_review': return 'default';
-                        case 'needs_revision': return 'destructive';
-                        case 'accepted': return 'default';
-                        case 'rejected': return 'destructive';
-                        case 'published': return 'default';
-                        default: return 'secondary';
+                        case 'submitted':
+                            return 'secondary';
+                        case 'under_review':
+                            return 'default';
+                        case 'needs_revision':
+                            return 'destructive';
+                        case 'accepted':
+                            return 'default';
+                        case 'rejected':
+                            return 'destructive';
+                        case 'published':
+                            return 'default';
+                        default:
+                            return 'secondary';
                     }
                 };
 
                 return (
-                    <Badge variant={getStatusVariant(status)} className="capitalize">
+                    <Badge
+                        variant={getStatusVariant(status)}
+                        className="capitalize"
+                    >
                         {status.replace('_', ' ')}
                     </Badge>
                 );
             },
         },
         {
-            accessorKey: "created_at",
+            accessorKey: 'created_at',
             header: ({ column }) => {
                 return (
                     <Button
                         variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === 'asc')
+                        }
                         className="h-auto p-0 font-semibold hover:bg-transparent"
                     >
                         Submitted
@@ -196,27 +258,30 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                 );
             },
             cell: ({ row }) => {
-                const date = new Date(row.getValue("created_at"));
+                const date = new Date(row.getValue('created_at'));
+
                 return (
                     <div className="text-sm text-muted-foreground">
                         {date.toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
-                            day: 'numeric'
+                            day: 'numeric',
                         })}
                     </div>
                 );
             },
         },
         {
-            id: "select",
+            id: 'select',
             header: ({ table }) => (
                 <Checkbox
                     checked={
                         table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                        (table.getIsSomePageRowsSelected() && 'indeterminate')
                     }
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    onCheckedChange={(value) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
                     aria-label="Select all"
                 />
             ),
@@ -231,7 +296,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             enableHiding: false,
         },
         {
-            id: "actions",
+            id: 'actions',
             enableHiding: false,
             cell: ({ row }) => {
                 const manuscript = row.original;
@@ -247,7 +312,12 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link href={reviewer.manuscripts.show.url({ id: manuscript.id })} prefetch="hover">
+                                <Link
+                                    href={reviewer.manuscripts.show.url({
+                                        id: manuscript.id,
+                                    })}
+                                    prefetch="hover"
+                                >
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                 </Link>
@@ -269,7 +339,7 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
         getFilteredRowModel: getFilteredRowModel(),
         onRowSelectionChange: setRowSelection,
         onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: "includesString",
+        globalFilterFn: 'includesString',
         state: {
             sorting,
             columnFilters,
@@ -318,9 +388,12 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
             <div className="flex flex-col space-y-4 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Manuscripts for Review</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">
+                            Manuscripts for Review
+                        </h1>
                         <p className="text-muted-foreground">
-                            Review manuscripts assigned to you ({manuscripts.total} total)
+                            Review manuscripts assigned to you (
+                            {manuscripts.total} total)
                         </p>
                     </div>
                 </div>
@@ -332,34 +405,54 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                             Filters & Search
                         </CardTitle>
                         <CardDescription>
-                            Filter manuscripts by status and search by title or authors
+                            Filter manuscripts by status and search by title or
+                            authors
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col gap-4 sm:flex-row">
                             <div className="flex-1">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                                     <Input
                                         placeholder="Search manuscripts..."
-                                        value={globalFilter ?? ""}
-                                        onChange={(event) => setGlobalFilter(event.target.value)}
+                                        value={globalFilter ?? ''}
+                                        onChange={(event) =>
+                                            setGlobalFilter(event.target.value)
+                                        }
                                         className="pl-10"
                                     />
                                 </div>
                             </div>
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select
+                                value={statusFilter}
+                                onValueChange={setStatusFilter}
+                            >
                                 <SelectTrigger className="w-full sm:w-[180px]">
                                     <SelectValue placeholder="Filter by status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="submitted">Submitted</SelectItem>
-                                    <SelectItem value="under_review">Under Review</SelectItem>
-                                    <SelectItem value="needs_revision">Needs Revision</SelectItem>
-                                    <SelectItem value="accepted">Accepted</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                    <SelectItem value="published">Published</SelectItem>
+                                    <SelectItem value="all">
+                                        All Statuses
+                                    </SelectItem>
+                                    <SelectItem value="submitted">
+                                        Submitted
+                                    </SelectItem>
+                                    <SelectItem value="under_review">
+                                        Under Review
+                                    </SelectItem>
+                                    <SelectItem value="needs_revision">
+                                        Needs Revision
+                                    </SelectItem>
+                                    <SelectItem value="accepted">
+                                        Accepted
+                                    </SelectItem>
+                                    <SelectItem value="rejected">
+                                        Rejected
+                                    </SelectItem>
+                                    <SelectItem value="published">
+                                        Published
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -377,9 +470,10 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext(),
+                                                      )}
                                             </TableHead>
                                         );
                                     })}
@@ -391,17 +485,19 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                                 table.getRowModel().rows.map((row, index) => (
                                     <TableRow
                                         key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                        className={`
-                                            hover:bg-muted/50 transition-colors
-                                            ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}
-                                        `}
+                                        data-state={
+                                            row.getIsSelected() && 'selected'
+                                        }
+                                        className={`transition-colors hover:bg-muted/50 ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'} `}
                                     >
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id} className="py-3">
+                                            <TableCell
+                                                key={cell.id}
+                                                className="py-3"
+                                            >
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
-                                                    cell.getContext()
+                                                    cell.getContext(),
                                                 )}
                                             </TableCell>
                                         ))}
@@ -433,9 +529,11 @@ export default function Index({ manuscripts, filters }: { manuscripts: Paginated
                     onPageSizeChange={handlePageSizeChange}
                     pageSizeOptions={[6, 12, 24, 48, 96, 'all']}
                     itemsLabel="Manuscripts per page"
-                    pageLabel={(meta) => `Showing ${meta.from || 0} to ${meta.to || 0} of ${meta.total} manuscripts`}
+                    pageLabel={(meta) =>
+                        `Showing ${meta.from || 0} to ${meta.to || 0} of ${meta.total} manuscripts`
+                    }
                 />
             </div>
         </AppLayout>
     );
-};
+}

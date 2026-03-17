@@ -1,11 +1,15 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -13,7 +17,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 
 interface Journal {
@@ -30,8 +36,14 @@ export default function CreatePage({ journal, pageTypes }: Props) {
     const breadcrumbItems = [
         { label: 'Admin', href: admin.institutions.index.url() },
         { label: 'Journals', href: admin.journals.index.url() },
-        { label: journal.name, href: admin.journals.edit.url({ journal: journal.id }) },
-        { label: 'CMS - Pages', href: `/admin/journals/${journal.id}/cms/pages` },
+        {
+            label: journal.name,
+            href: admin.journals.edit.url({ journal: journal.id }),
+        },
+        {
+            label: 'CMS - Pages',
+            href: `/admin/journals/${journal.id}/cms/pages`,
+        },
         { label: 'Create Page' },
     ];
 
@@ -62,7 +74,9 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Create Page</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            Create Page
+                        </h1>
                         <p className="text-muted-foreground">
                             Add a new page to {journal.name}
                         </p>
@@ -72,7 +86,7 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-6 lg:grid-cols-3">
                         {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="space-y-6 lg:col-span-2">
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Page Details</CardTitle>
@@ -86,11 +100,15 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                         <Input
                                             id="title"
                                             value={data.title}
-                                            onChange={(e) => setData('title', e.target.value)}
+                                            onChange={(e) =>
+                                                setData('title', e.target.value)
+                                            }
                                             placeholder="Enter page title"
                                         />
                                         {errors.title && (
-                                            <p className="text-sm text-destructive">{errors.title}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.title}
+                                            </p>
                                         )}
                                     </div>
 
@@ -98,21 +116,30 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                         <Label htmlFor="type">Page Type</Label>
                                         <Select
                                             value={data.type}
-                                            onValueChange={(value) => setData('type', value)}
+                                            onValueChange={(value) =>
+                                                setData('type', value)
+                                            }
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select page type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {Object.entries(pageTypes).map(([value, label]) => (
-                                                    <SelectItem key={value} value={value}>
-                                                        {label}
-                                                    </SelectItem>
-                                                ))}
+                                                {Object.entries(pageTypes).map(
+                                                    ([value, label]) => (
+                                                        <SelectItem
+                                                            key={value}
+                                                            value={value}
+                                                        >
+                                                            {label}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
                                             </SelectContent>
                                         </Select>
                                         {errors.type && (
-                                            <p className="text-sm text-destructive">{errors.type}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.type}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -127,11 +154,18 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="meta_description">Meta Description</Label>
+                                        <Label htmlFor="meta_description">
+                                            Meta Description
+                                        </Label>
                                         <Textarea
                                             id="meta_description"
                                             value={data.meta_description}
-                                            onChange={(e) => setData('meta_description', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'meta_description',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Brief description for search engines"
                                             rows={3}
                                         />
@@ -141,11 +175,18 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="meta_keywords">Meta Keywords</Label>
+                                        <Label htmlFor="meta_keywords">
+                                            Meta Keywords
+                                        </Label>
                                         <Input
                                             id="meta_keywords"
                                             value={data.meta_keywords}
-                                            onChange={(e) => setData('meta_keywords', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'meta_keywords',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="keyword1, keyword2, keyword3"
                                         />
                                     </div>
@@ -169,7 +210,9 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                         </div>
                                         <Switch
                                             checked={data.is_published}
-                                            onCheckedChange={(checked) => setData('is_published', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_published', checked)
+                                            }
                                         />
                                     </div>
 
@@ -182,7 +225,9 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                         </div>
                                         <Switch
                                             checked={data.show_in_menu}
-                                            onCheckedChange={(checked) => setData('show_in_menu', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('show_in_menu', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>
@@ -190,8 +235,14 @@ export default function CreatePage({ journal, pageTypes }: Props) {
 
                             <Card>
                                 <CardContent className="pt-6">
-                                    <Button type="submit" className="w-full" disabled={processing}>
-                                        {processing ? 'Creating...' : 'Create Page'}
+                                    <Button
+                                        type="submit"
+                                        className="w-full"
+                                        disabled={processing}
+                                    >
+                                        {processing
+                                            ? 'Creating...'
+                                            : 'Create Page'}
                                     </Button>
                                 </CardContent>
                             </Card>

@@ -4,8 +4,8 @@ import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -27,19 +27,31 @@ createInertiaApp({
             `./Pages/${name}.tsx`,
 
             // Handle mixed case in directory structure (e.g. auth/Login.tsx)
-            `./Pages/${name}.tsx`.replace(/\/([a-z])/g, (match, letter) => `/${letter}`),
-            `./Pages/${name}.tsx`.replace(/\/([a-z])/g, (match, letter) => `/${letter.toUpperCase()}`),
+            `./Pages/${name}.tsx`.replace(
+                /\/([a-z])/g,
+                (match, letter) => `/${letter}`,
+            ),
+            `./Pages/${name}.tsx`.replace(
+                /\/([a-z])/g,
+                (match, letter) => `/${letter.toUpperCase()}`,
+            ),
 
             // Handle uppercase first letter in both path and filename
-            `./Pages/${name.replace(/\b\w/g, c => c.toUpperCase())}.tsx`,
+            `./Pages/${name.replace(/\b\w/g, (c) => c.toUpperCase())}.tsx`,
 
             // Check if only the filename is capitalized
-            `./pages/${name.replace(/\/(\w+)$/, (match, filename) =>
-                '/' + filename.charAt(0).toUpperCase() + filename.slice(1))}.tsx`,
+            `./pages/${name.replace(
+                /\/(\w+)$/,
+                (match, filename) =>
+                    '/' + filename.charAt(0).toUpperCase() + filename.slice(1),
+            )}.tsx`,
 
             // Check if Pages directory with filename capitalized
-            `./Pages/${name.replace(/\/(\w+)$/, (match, filename) =>
-                '/' + filename.charAt(0).toUpperCase() + filename.slice(1))}.tsx`,
+            `./Pages/${name.replace(
+                /\/(\w+)$/,
+                (match, filename) =>
+                    '/' + filename.charAt(0).toUpperCase() + filename.slice(1),
+            )}.tsx`,
         ];
 
         // Try all possible paths
@@ -56,7 +68,8 @@ createInertiaApp({
         // Only proceed if we have a valid last part
         if (lastPart) {
             // Try with capitalized filename in any directory structure
-            const capitalizedFilename = lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
+            const capitalizedFilename =
+                lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
             const capitalizedPath = `./Pages/${pathParts.join('/')}/${capitalizedFilename}.tsx`;
 
             if (allPages[capitalizedPath]) {
@@ -76,7 +89,7 @@ createInertiaApp({
                     <App {...props} />
                 </TooltipProvider>
                 <Toaster />
-            </>
+            </>,
         );
     },
     progress: {

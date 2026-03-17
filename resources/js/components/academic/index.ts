@@ -1,6 +1,6 @@
 /**
  * Academic Components
- * 
+ *
  * Specialized components following the Scholarly Design System
  * for research journal management interfaces.
  */

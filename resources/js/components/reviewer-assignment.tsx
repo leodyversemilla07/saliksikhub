@@ -1,25 +1,31 @@
-import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-    UserPlus, 
-    Search, 
-    CheckCircle2, 
+import {
+    UserPlus,
+    Search,
+    CheckCircle2,
     Clock,
     TrendingUp,
     Mail,
     Building,
-    AlertCircle
+    AlertCircle,
 } from 'lucide-react';
-import type { Reviewer } from '@/types';
+import { useState } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import editor from '@/routes/editor';
+import type { Reviewer } from '@/types';
 
 interface ReviewerAssignmentProps {
     manuscriptId: number;
@@ -46,10 +52,13 @@ export function ReviewerAssignment({
         invitation_message: '',
     });
 
-    const filteredReviewers = suitableReviewers.filter((reviewer) =>
-        reviewer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reviewer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reviewer.affiliation?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredReviewers = suitableReviewers.filter(
+        (reviewer) =>
+            reviewer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reviewer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reviewer.affiliation
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase()),
     );
 
     const handleToggleReviewer = (reviewerId: number) => {
@@ -64,20 +73,26 @@ export function ReviewerAssignment({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(editor.manuscripts.assign_reviewers.store.url({ id: manuscriptId }), {
-            onSuccess: () => {
-                setSelectedReviewers([]);
-                onSuccess?.();
+        post(
+            editor.manuscripts.assign_reviewers.store.url({ id: manuscriptId }),
+            {
+                onSuccess: () => {
+                    setSelectedReviewers([]);
+                    onSuccess?.();
+                },
             },
-        });
+        );
     };
 
     const getReviewerScore = (reviewer: Reviewer): number => {
         // Simple scoring algorithm
-        const timeScore = Math.max(0, 10 - reviewer.average_review_time_days / 3);
+        const timeScore = Math.max(
+            0,
+            10 - reviewer.average_review_time_days / 3,
+        );
         const rateScore = reviewer.acceptance_rate / 10;
         const experienceScore = Math.min(10, reviewer.completed_reviews / 2);
-        
+
         return Math.round((timeScore + rateScore + experienceScore) / 3);
     };
 
@@ -97,22 +112,26 @@ export function ReviewerAssignment({
                             {currentReviews.map((review) => (
                                 <div
                                     key={review.id}
-                                    className="flex items-center justify-between p-3 border rounded-lg"
+                                    className="flex items-center justify-between rounded-lg border p-3"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span className="text-blue-600 font-medium">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                                            <span className="font-medium text-blue-600">
                                                 R{review.review_round}
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="font-medium">{review.reviewer_name}</p>
+                                            <p className="font-medium">
+                                                {review.reviewer_name}
+                                            </p>
                                             <p className="text-sm text-gray-500">
                                                 Round {review.review_round}
                                             </p>
                                         </div>
                                     </div>
-                                    <Badge variant="outline">{review.status_label}</Badge>
+                                    <Badge variant="outline">
+                                        {review.status_label}
+                                    </Badge>
                                 </div>
                             ))}
                         </div>
@@ -130,7 +149,7 @@ export function ReviewerAssignment({
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
                         <Input
                             type="text"
                             placeholder="Search by name, email, or affiliation..."
@@ -144,7 +163,9 @@ export function ReviewerAssignment({
                         <Alert>
                             <CheckCircle2 className="h-4 w-4" />
                             <AlertDescription>
-                                {selectedReviewers.length} reviewer{selectedReviewers.length !== 1 ? 's' : ''} selected
+                                {selectedReviewers.length} reviewer
+                                {selectedReviewers.length !== 1 ? 's' : ''}{' '}
+                                selected
                             </AlertDescription>
                         </Alert>
                     )}
@@ -152,7 +173,9 @@ export function ReviewerAssignment({
                     {errors.reviewer_ids && (
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{errors.reviewer_ids}</AlertDescription>
+                            <AlertDescription>
+                                {errors.reviewer_ids}
+                            </AlertDescription>
                         </Alert>
                     )}
                 </CardContent>
@@ -161,19 +184,25 @@ export function ReviewerAssignment({
             {/* Reviewer List */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Available Reviewers ({filteredReviewers.length})</CardTitle>
+                    <CardTitle>
+                        Available Reviewers ({filteredReviewers.length})
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                    <div className="max-h-[500px] space-y-3 overflow-y-auto">
                         {filteredReviewers.map((reviewer) => {
                             const score = getReviewerScore(reviewer);
-                            const isSelected = selectedReviewers.includes(reviewer.id);
+                            const isSelected = selectedReviewers.includes(
+                                reviewer.id,
+                            );
 
                             return (
                                 <div
                                     key={reviewer.id}
-                                    onClick={() => handleToggleReviewer(reviewer.id)}
-                                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                                    onClick={() =>
+                                        handleToggleReviewer(reviewer.id)
+                                    }
+                                    className={`cursor-pointer rounded-lg border-2 p-4 transition-all ${
                                         isSelected
                                             ? 'border-primary bg-primary/5'
                                             : 'border-gray-200 hover:border-gray-300'
@@ -182,14 +211,20 @@ export function ReviewerAssignment({
                                     <div className="flex items-start gap-3">
                                         <Checkbox
                                             checked={isSelected}
-                                            onCheckedChange={() => handleToggleReviewer(reviewer.id)}
+                                            onCheckedChange={() =>
+                                                handleToggleReviewer(
+                                                    reviewer.id,
+                                                )
+                                            }
                                             className="mt-1"
                                         />
                                         <div className="flex-1">
-                                            <div className="flex items-start justify-between mb-2">
+                                            <div className="mb-2 flex items-start justify-between">
                                                 <div>
-                                                    <h4 className="font-semibold">{reviewer.name}</h4>
-                                                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                                                    <h4 className="font-semibold">
+                                                        {reviewer.name}
+                                                    </h4>
+                                                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
                                                         <div className="flex items-center gap-1">
                                                             <Mail className="h-3 w-3" />
                                                             {reviewer.email}
@@ -197,7 +232,9 @@ export function ReviewerAssignment({
                                                         {reviewer.affiliation && (
                                                             <div className="flex items-center gap-1">
                                                                 <Building className="h-3 w-3" />
-                                                                {reviewer.affiliation}
+                                                                {
+                                                                    reviewer.affiliation
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
@@ -207,37 +244,53 @@ export function ReviewerAssignment({
                                                         <div className="text-2xl font-bold text-primary">
                                                             {score}
                                                         </div>
-                                                        <div className="text-xs text-gray-500">Score</div>
+                                                        <div className="text-xs text-gray-500">
+                                                            Score
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-3 gap-4 mt-3">
+                                            <div className="mt-3 grid grid-cols-3 gap-4">
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <CheckCircle2 className="h-4 w-4 text-green-500" />
                                                     <div>
                                                         <div className="font-medium">
-                                                            {reviewer.completed_reviews}
+                                                            {
+                                                                reviewer.completed_reviews
+                                                            }
                                                         </div>
-                                                        <div className="text-xs text-gray-500">Completed</div>
+                                                        <div className="text-xs text-gray-500">
+                                                            Completed
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <Clock className="h-4 w-4 text-blue-500" />
                                                     <div>
                                                         <div className="font-medium">
-                                                            {reviewer.average_review_time_days}d
+                                                            {
+                                                                reviewer.average_review_time_days
+                                                            }
+                                                            d
                                                         </div>
-                                                        <div className="text-xs text-gray-500">Avg Time</div>
+                                                        <div className="text-xs text-gray-500">
+                                                            Avg Time
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <TrendingUp className="h-4 w-4 text-purple-500" />
                                                     <div>
                                                         <div className="font-medium">
-                                                            {reviewer.acceptance_rate}%
+                                                            {
+                                                                reviewer.acceptance_rate
+                                                            }
+                                                            %
                                                         </div>
-                                                        <div className="text-xs text-gray-500">Accept Rate</div>
+                                                        <div className="text-xs text-gray-500">
+                                                            Accept Rate
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -248,8 +301,8 @@ export function ReviewerAssignment({
                         })}
 
                         {filteredReviewers.length === 0 && (
-                            <div className="text-center py-8 text-gray-500">
-                                <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <div className="py-8 text-center text-gray-500">
+                                <Search className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                 <p>No reviewers found matching your search</p>
                             </div>
                         )}
@@ -266,28 +319,41 @@ export function ReviewerAssignment({
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="due_date">Review Due Date</Label>
+                                <Label htmlFor="due_date">
+                                    Review Due Date
+                                </Label>
                                 <Input
                                     id="due_date"
                                     type="date"
                                     value={data.due_date}
-                                    onChange={(e) => setData('due_date', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('due_date', e.target.value)
+                                    }
                                     min={new Date().toISOString().split('T')[0]}
                                 />
                                 {errors.due_date && (
-                                    <p className="text-sm text-red-500">{errors.due_date}</p>
+                                    <p className="text-sm text-red-500">
+                                        {errors.due_date}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="review_round">Review Round</Label>
+                                <Label htmlFor="review_round">
+                                    Review Round
+                                </Label>
                                 <Input
                                     id="review_round"
                                     type="number"
                                     min="1"
                                     max="5"
                                     value={data.review_round}
-                                    onChange={(e) => setData('review_round', parseInt(e.target.value))}
+                                    onChange={(e) =>
+                                        setData(
+                                            'review_round',
+                                            parseInt(e.target.value),
+                                        )
+                                    }
                                 />
                             </div>
                         </div>
@@ -299,7 +365,12 @@ export function ReviewerAssignment({
                             <Textarea
                                 id="invitation_message"
                                 value={data.invitation_message}
-                                onChange={(e) => setData('invitation_message', e.target.value)}
+                                onChange={(e) =>
+                                    setData(
+                                        'invitation_message',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder="Add a personalized message to the review invitation email..."
                                 className="min-h-[100px]"
                             />
@@ -312,7 +383,7 @@ export function ReviewerAssignment({
             {selectedReviewers.length > 0 && (
                 <div className="flex justify-end">
                     <Button type="submit" disabled={processing} size="lg">
-                        <UserPlus className="h-4 w-4 mr-2" />
+                        <UserPlus className="mr-2 h-4 w-4" />
                         Assign {selectedReviewers.length} Reviewer
                         {selectedReviewers.length !== 1 ? 's' : ''}
                     </Button>

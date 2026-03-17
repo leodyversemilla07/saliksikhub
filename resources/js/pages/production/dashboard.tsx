@@ -1,10 +1,24 @@
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    ClipboardCheck,
+    Clock,
+    Eye,
+    FileCheck,
+    FileText,
+    Package,
+    Sparkles,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ClipboardCheck, Clock, Eye, FileCheck, FileText, Package, Sparkles } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
 
 interface ProductionStats {
     none: number;
@@ -62,19 +76,26 @@ export default function ProductionDashboard({
 }: Props) {
     const getStageIcon = (stage: string) => {
         const icons = {
-            copyediting: <FileText className="w-5 h-5" />,
-            typesetting: <Package className="w-5 h-5" />,
-            proofing: <Eye className="w-5 h-5" />,
-            ready: <FileCheck className="w-5 h-5" />,
+            copyediting: <FileText className="h-5 w-5" />,
+            typesetting: <Package className="h-5 w-5" />,
+            proofing: <Eye className="h-5 w-5" />,
+            ready: <FileCheck className="h-5 w-5" />,
         };
-        return icons[stage as keyof typeof icons] || <Clock className="w-5 h-5" />;
+
+        return (
+            icons[stage as keyof typeof icons] || <Clock className="h-5 w-5" />
+        );
     };
 
     const getDaysElapsed = (startDate: string | null) => {
-        if (!startDate) return 0;
+        if (!startDate) {
+return 0;
+}
+
         const start = new Date(startDate);
         const now = new Date();
         const diff = now.getTime() - start.getTime();
+
         return Math.floor(diff / (1000 * 60 * 60 * 24));
     };
 
@@ -99,18 +120,25 @@ export default function ProductionDashboard({
         const daysElapsed = getDaysElapsed(startedAt);
 
         return (
-            <Card key={manuscript.id} className="hover:shadow-md transition-shadow">
+            <Card
+                key={manuscript.id}
+                className="transition-shadow hover:shadow-md"
+            >
                 <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
-                            <CardTitle className="text-base">{manuscript.title}</CardTitle>
+                            <CardTitle className="text-base">
+                                {manuscript.title}
+                            </CardTitle>
                             <CardDescription className="mt-1">
-                                <span className="text-sm">by {manuscript.author.name}</span>
+                                <span className="text-sm">
+                                    by {manuscript.author.name}
+                                </span>
                             </CardDescription>
                         </div>
                         <Link href={route('production.show', manuscript.id)}>
                             <Button size="sm" variant="outline">
-                                <Eye className="w-3 h-3 mr-1" />
+                                <Eye className="mr-1 h-3 w-3" />
                                 View
                             </Button>
                         </Link>
@@ -121,11 +149,17 @@ export default function ProductionDashboard({
                         <div className="space-y-1">
                             {assignedTo && (
                                 <div className="text-gray-600">
-                                    <span className="font-medium">Assigned to:</span> {assignedTo}
+                                    <span className="font-medium">
+                                        Assigned to:
+                                    </span>{' '}
+                                    {assignedTo}
                                 </div>
                             )}
                             <div className="text-gray-600">
-                                <span className="font-medium">Days in stage:</span> {daysElapsed}
+                                <span className="font-medium">
+                                    Days in stage:
+                                </span>{' '}
+                                {daysElapsed}
                             </div>
                         </div>
                         {daysElapsed > 14 && (
@@ -144,87 +178,128 @@ export default function ProductionDashboard({
             <Head title="Production Dashboard" />
 
             <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Production Dashboard</h1>
-                        <p className="text-gray-600">Manage manuscript production workflow</p>
+                        <h1 className="mb-2 text-3xl font-bold text-gray-900">
+                            Production Dashboard
+                        </h1>
+                        <p className="text-gray-600">
+                            Manage manuscript production workflow
+                        </p>
                     </div>
 
                     {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Copyediting</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-2xl font-bold">{stats.copyediting}</div>
-                                    <FileText className="w-5 h-5 text-blue-500" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Avg: {averageTimes.copyediting} days</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Typesetting</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-2xl font-bold">{stats.typesetting}</div>
-                                    <Package className="w-5 h-5 text-purple-500" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Avg: {averageTimes.typesetting} days</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Proofing</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-2xl font-bold">{stats.proofing}</div>
-                                    <Eye className="w-5 h-5 text-orange-500" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Avg: {averageTimes.proofing} days</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Ready</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-2xl font-bold">{stats.ready}</div>
-                                    <FileCheck className="w-5 h-5 text-green-500" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">For publication</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Published</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div className="text-2xl font-bold">{stats.published}</div>
-                                    <Sparkles className="w-5 h-5 text-yellow-500" />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Completed</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">Total</CardTitle>
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Copyediting
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center justify-between">
                                     <div className="text-2xl font-bold">
-                                        {stats.copyediting + stats.typesetting + stats.proofing + stats.ready}
+                                        {stats.copyediting}
                                     </div>
-                                    <ClipboardCheck className="w-5 h-5 text-gray-500" />
+                                    <FileText className="h-5 w-5 text-blue-500" />
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">In production</p>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Avg: {averageTimes.copyediting} days
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Typesetting
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-2xl font-bold">
+                                        {stats.typesetting}
+                                    </div>
+                                    <Package className="h-5 w-5 text-purple-500" />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Avg: {averageTimes.typesetting} days
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Proofing
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-2xl font-bold">
+                                        {stats.proofing}
+                                    </div>
+                                    <Eye className="h-5 w-5 text-orange-500" />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Avg: {averageTimes.proofing} days
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Ready
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-2xl font-bold">
+                                        {stats.ready}
+                                    </div>
+                                    <FileCheck className="h-5 w-5 text-green-500" />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    For publication
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Published
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-2xl font-bold">
+                                        {stats.published}
+                                    </div>
+                                    <Sparkles className="h-5 w-5 text-yellow-500" />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Completed
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-medium text-gray-600 uppercase">
+                                    Total
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-2xl font-bold">
+                                        {stats.copyediting +
+                                            stats.typesetting +
+                                            stats.proofing +
+                                            stats.ready}
+                                    </div>
+                                    <ClipboardCheck className="h-5 w-5 text-gray-500" />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    In production
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -238,13 +313,22 @@ export default function ProductionDashboard({
                             <TabsTrigger value="typesetting">
                                 Typesetting ({manuscriptsByTypesetting.length})
                             </TabsTrigger>
-                            <TabsTrigger value="proofing">Proofing ({manuscriptsByProofing.length})</TabsTrigger>
-                            <TabsTrigger value="ready">Ready ({manuscriptsReady.length})</TabsTrigger>
+                            <TabsTrigger value="proofing">
+                                Proofing ({manuscriptsByProofing.length})
+                            </TabsTrigger>
+                            <TabsTrigger value="ready">
+                                Ready ({manuscriptsReady.length})
+                            </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="copyediting" className="space-y-4 mt-4">
+                        <TabsContent
+                            value="copyediting"
+                            className="mt-4 space-y-4"
+                        >
                             {manuscriptsByCopyediting.length > 0 ? (
-                                manuscriptsByCopyediting.map(renderManuscriptCard)
+                                manuscriptsByCopyediting.map(
+                                    renderManuscriptCard,
+                                )
                             ) : (
                                 <Card>
                                     <CardContent className="py-12 text-center text-gray-500">
@@ -254,9 +338,14 @@ export default function ProductionDashboard({
                             )}
                         </TabsContent>
 
-                        <TabsContent value="typesetting" className="space-y-4 mt-4">
+                        <TabsContent
+                            value="typesetting"
+                            className="mt-4 space-y-4"
+                        >
                             {manuscriptsByTypesetting.length > 0 ? (
-                                manuscriptsByTypesetting.map(renderManuscriptCard)
+                                manuscriptsByTypesetting.map(
+                                    renderManuscriptCard,
+                                )
                             ) : (
                                 <Card>
                                     <CardContent className="py-12 text-center text-gray-500">
@@ -266,7 +355,10 @@ export default function ProductionDashboard({
                             )}
                         </TabsContent>
 
-                        <TabsContent value="proofing" className="space-y-4 mt-4">
+                        <TabsContent
+                            value="proofing"
+                            className="mt-4 space-y-4"
+                        >
                             {manuscriptsByProofing.length > 0 ? (
                                 manuscriptsByProofing.map(renderManuscriptCard)
                             ) : (
@@ -278,7 +370,7 @@ export default function ProductionDashboard({
                             )}
                         </TabsContent>
 
-                        <TabsContent value="ready" className="space-y-4 mt-4">
+                        <TabsContent value="ready" className="mt-4 space-y-4">
                             {manuscriptsReady.length > 0 ? (
                                 manuscriptsReady.map(renderManuscriptCard)
                             ) : (

@@ -1,6 +1,6 @@
+import { Head } from '@inertiajs/react';
 import React from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
 
 interface Review {
     id: number;
@@ -18,11 +18,13 @@ export default function ReviewHistory({ reviews }: Props) {
         <AppLayout>
             <Head title="Review History" />
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-bold mb-6">Review History</h1>
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <h1 className="mb-6 text-2xl font-bold">Review History</h1>
                     {/* Review history content will be implemented here */}
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <p className="text-gray-600">Completed reviews: {reviews.length}</p>
+                    <div className="rounded-lg bg-white p-6 shadow">
+                        <p className="text-gray-600">
+                            Completed reviews: {reviews.length}
+                        </p>
                     </div>
                 </div>
             </div>

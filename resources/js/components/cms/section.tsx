@@ -1,11 +1,22 @@
 import { Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { ArrowRight } from 'lucide-react';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SectionContent {
     title?: string;
@@ -20,7 +31,12 @@ interface SectionContent {
     image_position?: string;
     email?: string;
     success_message?: string;
-    cards?: Array<{ title: string; description: string; icon?: string; link?: string }>;
+    cards?: Array<{
+        title: string;
+        description: string;
+        icon?: string;
+        link?: string;
+    }>;
     stats?: Array<{ value: string; label: string }>;
     items?: Array<{ title: string; content: string }>;
 }
@@ -49,20 +65,26 @@ export default function CmsSection({ section }: Props) {
 
     const getPaddingClass = () => {
         switch (settings.padding) {
-            case 'none': return 'py-0';
-            case 'small': return 'py-8';
-            case 'large': return 'py-24 sm:py-32';
-            default: return 'py-16 sm:py-20';
+            case 'none':
+                return 'py-0';
+            case 'small':
+                return 'py-8';
+            case 'large':
+                return 'py-24 sm:py-32';
+            default:
+                return 'py-16 sm:py-20';
         }
     };
 
     const style = {
-        backgroundColor: settings.bg_color as string || undefined,
-        color: settings.text_color as string || undefined,
+        backgroundColor: (settings.bg_color as string) || undefined,
+        color: (settings.text_color as string) || undefined,
     };
 
     const wrapperClass = `${getPaddingClass()} ${settings.full_width ? '' : ''}`;
-    const containerClass = settings.full_width ? 'w-full' : 'mx-auto max-w-7xl px-6 lg:px-8';
+    const containerClass = settings.full_width
+        ? 'w-full'
+        : 'mx-auto max-w-7xl px-6 lg:px-8';
 
     switch (type) {
         case 'hero':
@@ -121,7 +143,11 @@ export default function CmsSection({ section }: Props) {
             return (
                 <section className={wrapperClass} style={style}>
                     <div className={containerClass}>
-                        <div dangerouslySetInnerHTML={{ __html: content.html as string || '' }} />
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: (content.html as string) || '',
+                            }}
+                        />
                     </div>
                 </section>
             );
@@ -130,13 +156,19 @@ export default function CmsSection({ section }: Props) {
     }
 }
 
-function HeroSection({ content, settings }: { content: SectionContent; settings: SectionSettings }) {
+function HeroSection({
+    content,
+    settings,
+}: {
+    content: SectionContent;
+    settings: SectionSettings;
+}) {
     const backgroundImage = content.background_image;
 
     return (
         <section className="relative isolate overflow-hidden">
             {backgroundImage && (
-                <div 
+                <div
                     className="absolute inset-0 -z-10 bg-cover bg-center"
                     style={{ backgroundImage: `url(${backgroundImage})` }}
                 >
@@ -150,13 +182,17 @@ function HeroSection({ content, settings }: { content: SectionContent; settings:
             )}
 
             <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:py-40">
-                <div className="mx-auto max-w-2xl text-center lg:text-left lg:mx-0">
-                    <h1 className={`text-4xl font-bold tracking-tight sm:text-6xl ${backgroundImage ? 'text-white' : 'text-foreground'}`}>
+                <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+                    <h1
+                        className={`text-4xl font-bold tracking-tight sm:text-6xl ${backgroundImage ? 'text-white' : 'text-foreground'}`}
+                    >
                         {content.title}
                     </h1>
 
                     {content.subtitle && (
-                        <p className={`mt-6 text-lg leading-8 ${backgroundImage ? 'text-gray-300' : 'text-muted-foreground'}`}>
+                        <p
+                            className={`mt-6 text-lg leading-8 ${backgroundImage ? 'text-gray-300' : 'text-muted-foreground'}`}
+                        >
                             {content.subtitle}
                         </p>
                     )}
@@ -165,7 +201,7 @@ function HeroSection({ content, settings }: { content: SectionContent; settings:
                         <div className="mt-10">
                             <Link
                                 href={content.button_url}
-                                className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                                className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
                             >
                                 {content.button_text}
                                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -187,9 +223,9 @@ function TextSection({ content }: { content: SectionContent }) {
                 </h2>
             )}
             {content.body && (
-                <div 
+                <div
                     className="mt-6"
-                    dangerouslySetInnerHTML={{ __html: content.body }} 
+                    dangerouslySetInnerHTML={{ __html: content.body }}
                 />
             )}
         </div>
@@ -202,13 +238,18 @@ function CardsSection({ content }: { content: SectionContent }) {
     return (
         <div>
             {content.title && (
-                <h2 className="text-3xl font-bold tracking-tight text-foreground text-center sm:text-4xl">
+                <h2 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                     {content.title}
                 </h2>
             )}
-            <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${content.title ? 'mt-10' : ''}`}>
+            <div
+                className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${content.title ? 'mt-10' : ''}`}
+            >
                 {cards.map((card, index) => (
-                    <Card key={index} className="transition-shadow hover:shadow-lg">
+                    <Card
+                        key={index}
+                        className="transition-shadow hover:shadow-lg"
+                    >
                         <CardHeader>
                             <CardTitle>{card.title}</CardTitle>
                         </CardHeader>
@@ -217,8 +258,8 @@ function CardsSection({ content }: { content: SectionContent }) {
                                 {card.description}
                             </CardDescription>
                             {card.link && (
-                                <Link 
-                                    href={card.link} 
+                                <Link
+                                    href={card.link}
                                     className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline"
                                 >
                                     Learn more
@@ -239,11 +280,13 @@ function StatisticsSection({ content }: { content: SectionContent }) {
     return (
         <div>
             {content.title && (
-                <h2 className="text-3xl font-bold tracking-tight text-foreground text-center sm:text-4xl">
+                <h2 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                     {content.title}
                 </h2>
             )}
-            <div className={`grid gap-8 sm:grid-cols-2 lg:grid-cols-4 ${content.title ? 'mt-10' : ''}`}>
+            <div
+                className={`grid gap-8 sm:grid-cols-2 lg:grid-cols-4 ${content.title ? 'mt-10' : ''}`}
+            >
                 {stats.map((stat, index) => (
                     <div key={index} className="text-center">
                         <div className="text-4xl font-bold text-primary sm:text-5xl">
@@ -259,9 +302,15 @@ function StatisticsSection({ content }: { content: SectionContent }) {
     );
 }
 
-function CtaSection({ content, settings }: { content: SectionContent; settings: SectionSettings }) {
+function CtaSection({
+    content,
+    settings,
+}: {
+    content: SectionContent;
+    settings: SectionSettings;
+}) {
     return (
-        <section 
+        <section
             className="py-16 sm:py-24"
             style={{
                 backgroundColor: settings.bg_color || 'var(--primary)',
@@ -281,7 +330,7 @@ function CtaSection({ content, settings }: { content: SectionContent; settings: 
                         <div className="mt-10">
                             <Link
                                 href={content.button_url}
-                                className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 transition-colors"
+                                className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-gray-100"
                             >
                                 {content.button_text}
                                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -298,13 +347,15 @@ function ImageTextSection({ content }: { content: SectionContent }) {
     const imagePosition = content.image_position || 'left';
 
     return (
-        <div className={`grid gap-12 lg:grid-cols-2 lg:items-center ${imagePosition === 'right' ? 'lg:grid-flow-col-dense' : ''}`}>
+        <div
+            className={`grid gap-12 lg:grid-cols-2 lg:items-center ${imagePosition === 'right' ? 'lg:grid-flow-col-dense' : ''}`}
+        >
             <div className={imagePosition === 'right' ? 'lg:col-start-2' : ''}>
                 {content.image_url && (
-                    <img 
-                        src={content.image_url} 
-                        alt={content.title || ''} 
-                        className="rounded-xl shadow-lg w-full object-cover aspect-[4/3]"
+                    <img
+                        src={content.image_url}
+                        alt={content.title || ''}
+                        className="aspect-[4/3] w-full rounded-xl object-cover shadow-lg"
                     />
                 )}
             </div>
@@ -315,9 +366,9 @@ function ImageTextSection({ content }: { content: SectionContent }) {
                     </h2>
                 )}
                 {content.body && (
-                    <div 
-                        className="mt-6 prose dark:prose-invert"
-                        dangerouslySetInnerHTML={{ __html: content.body }} 
+                    <div
+                        className="prose dark:prose-invert mt-6"
+                        dangerouslySetInnerHTML={{ __html: content.body }}
                     />
                 )}
             </div>
@@ -329,9 +380,9 @@ function AccordionSection({ content }: { content: SectionContent }) {
     const items = content.items || [];
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="mx-auto max-w-3xl">
             {content.title && (
-                <h2 className="text-3xl font-bold tracking-tight text-foreground text-center sm:text-4xl mb-10">
+                <h2 className="mb-10 text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                     {content.title}
                 </h2>
             )}
@@ -342,9 +393,11 @@ function AccordionSection({ content }: { content: SectionContent }) {
                             {item.title}
                         </AccordionTrigger>
                         <AccordionContent>
-                            <div 
+                            <div
                                 className="prose dark:prose-invert"
-                                dangerouslySetInnerHTML={{ __html: item.content }} 
+                                dangerouslySetInnerHTML={{
+                                    __html: item.content,
+                                }}
                             />
                         </AccordionContent>
                     </AccordionItem>
@@ -356,14 +409,14 @@ function AccordionSection({ content }: { content: SectionContent }) {
 
 function ContactFormSection({ content }: { content: SectionContent }) {
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="mx-auto max-w-2xl">
             {content.title && (
-                <h2 className="text-3xl font-bold tracking-tight text-foreground text-center sm:text-4xl">
+                <h2 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                     {content.title}
                 </h2>
             )}
             {content.description && (
-                <p className="mt-4 text-lg text-muted-foreground text-center">
+                <p className="mt-4 text-center text-lg text-muted-foreground">
                     {content.description}
                 </p>
             )}
@@ -371,20 +424,42 @@ function ContactFormSection({ content }: { content: SectionContent }) {
                 <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" placeholder="Your name" required />
+                        <Input
+                            id="name"
+                            name="name"
+                            placeholder="Your name"
+                            required
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="your@email.com" required />
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="your@email.com"
+                            required
+                        />
                     </div>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" name="subject" placeholder="How can we help?" required />
+                    <Input
+                        id="subject"
+                        name="subject"
+                        placeholder="How can we help?"
+                        required
+                    />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" name="message" placeholder="Your message..." rows={5} required />
+                    <Textarea
+                        id="message"
+                        name="message"
+                        placeholder="Your message..."
+                        rows={5}
+                        required
+                    />
                 </div>
                 <Button type="submit" className="w-full sm:w-auto">
                     Send Message

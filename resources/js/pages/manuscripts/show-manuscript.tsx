@@ -1,14 +1,15 @@
 import { Head, usePage } from '@inertiajs/react';
 import React, { useMemo } from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { Manuscript, ManuscriptStatus } from '@/types';
-import { PageProps } from '@/types';
+import DocumentViewer from '@/components/document-viewer';
 import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
-import DocumentViewer from '@/components/document-viewer';
+import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import editor from '@/routes/editor';
 import manuscriptsRoutes from '@/routes/manuscripts';
+import { ManuscriptStatus } from '@/types';
+import type { Manuscript} from '@/types';
+import type { PageProps } from '@/types';
 
 interface ShowProps {
     manuscript: Manuscript;
@@ -24,7 +25,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                 label: 'Manuscript Created',
                 date: manuscript.created_at,
                 description: 'Initial manuscript submission',
-                status: 'completed'
+                status: 'completed',
             },
         ];
 
@@ -33,8 +34,9 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
             items.push({
                 label: 'Under Review',
                 date: manuscript.updated_at,
-                description: 'Manuscript is being reviewed by our editorial team',
-                status: 'active'
+                description:
+                    'Manuscript is being reviewed by our editorial team',
+                status: 'active',
             });
         } else if (manuscript.status === ManuscriptStatus.ACCEPTED) {
             items.push(
@@ -42,42 +44,45 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                     label: 'Review Completed',
                     date: manuscript.updated_at,
                     description: 'Editorial review process completed',
-                    status: 'completed'
+                    status: 'completed',
                 },
                 {
                     label: 'Manuscript Approved',
                     date: manuscript.updated_at,
                     description: 'Approved for publication',
-                    status: 'completed'
-                }
+                    status: 'completed',
+                },
             );
-        } else if (manuscript.status === ManuscriptStatus.PUBLISHED || manuscript.status === ManuscriptStatus.READY_FOR_PUBLICATION) {
+        } else if (
+            manuscript.status === ManuscriptStatus.PUBLISHED ||
+            manuscript.status === ManuscriptStatus.READY_FOR_PUBLICATION
+        ) {
             items.push(
                 {
                     label: 'Review Completed',
                     date: manuscript.updated_at,
                     description: 'Editorial review process completed',
-                    status: 'completed'
+                    status: 'completed',
                 },
                 {
                     label: 'Manuscript Approved',
                     date: manuscript.updated_at,
                     description: 'Approved for publication',
-                    status: 'completed'
+                    status: 'completed',
                 },
                 {
                     label: 'Published',
                     date: manuscript.updated_at,
                     description: 'Manuscript is now publicly available',
-                    status: 'completed'
-                }
+                    status: 'completed',
+                },
             );
         } else if (manuscript.status === ManuscriptStatus.REJECTED) {
             items.push({
                 label: 'Review Completed',
                 date: manuscript.updated_at,
                 description: 'Manuscript review completed with feedback',
-                status: 'rejected'
+                status: 'rejected',
             });
         }
 
@@ -87,7 +92,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                 label: 'Last Updated',
                 date: manuscript.updated_at,
                 description: 'Most recent changes to the manuscript',
-                status: 'info'
+                status: 'info',
             });
         }
 
@@ -97,25 +102,25 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
     const breadcrumbItems = [
         {
             label: 'Dashboard',
-            href: user && (
-                user.role === 'managing_editor' ||
-                user.role === 'editor_in_chief' ||
-                user.role === 'associate_editor' ||
-                user.role === 'language_editor'
-            )
-                ? editor.dashboard.url()
-                : dashboard.url(),
+            href:
+                user &&
+                (user.role === 'managing_editor' ||
+                    user.role === 'editor_in_chief' ||
+                    user.role === 'associate_editor' ||
+                    user.role === 'language_editor')
+                    ? editor.dashboard.url()
+                    : dashboard.url(),
         },
         {
             label: 'Manuscripts',
-            href: user && (
-                user.role === 'managing_editor' ||
-                user.role === 'editor_in_chief' ||
-                user.role === 'associate_editor' ||
-                user.role === 'language_editor'
-            )
-                ? editor.indexManuscripts.url()
-                : manuscriptsRoutes.index.url(),
+            href:
+                user &&
+                (user.role === 'managing_editor' ||
+                    user.role === 'editor_in_chief' ||
+                    user.role === 'associate_editor' ||
+                    user.role === 'language_editor')
+                    ? editor.indexManuscripts.url()
+                    : manuscriptsRoutes.index.url(),
         },
         {
             label: manuscript.title,
@@ -127,14 +132,14 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
     return (
         <AppLayout breadcrumbItems={breadcrumbItems}>
             <Head title={`Manuscript: ${manuscript.title}`} />
-            <div className="manuscript-viewer bg-background text-foreground min-h-screen">
-                <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 lg:gap-8">
+            <div className="manuscript-viewer min-h-screen bg-background text-foreground">
+                <div className="container mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 gap-6 lg:gap-8 xl:grid-cols-5">
                         {/* Left: Info Panel */}
-                        <div className="xl:col-span-2 space-y-6">
+                        <div className="space-y-6 xl:col-span-2">
                             {/* Header Section */}
                             <div className="space-y-4">
-                                <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-oxford-blue">
+                                <h1 className="text-oxford-blue font-serif text-2xl leading-tight font-bold sm:text-3xl lg:text-4xl">
                                     {manuscript.title}
                                 </h1>
 
@@ -142,13 +147,15 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                                     <div className="text-sm text-muted-foreground">
                                         <span>Last updated </span>
                                         <time className="font-medium text-foreground">
-                                            {new Date(manuscript.updated_at).toLocaleDateString(undefined, {
+                                            {new Date(
+                                                manuscript.updated_at,
+                                            ).toLocaleDateString(undefined, {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: '2-digit',
                                                 hour: '2-digit',
                                                 minute: '2-digit',
-                                                hour12: true
+                                                hour12: true,
                                             })}
                                         </time>
                                     </div>
@@ -160,12 +167,16 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                             <div className="space-y-6">
                                 {/* Authors */}
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                    <h3 className="text-sm font-semibold tracking-wide text-foreground uppercase">
                                         Authors
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {manuscript.authors.map((author) => (
-                                            <Badge key={author} variant="outline" className="text-sm">
+                                            <Badge
+                                                key={author}
+                                                variant="outline"
+                                                className="text-sm"
+                                            >
                                                 {author}
                                             </Badge>
                                         ))}
@@ -174,7 +185,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
 
                                 {/* Abstract */}
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                    <h3 className="text-sm font-semibold tracking-wide text-foreground uppercase">
                                         Abstract
                                     </h3>
                                     <p className="text-sm leading-relaxed text-muted-foreground">
@@ -184,12 +195,16 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
 
                                 {/* Keywords */}
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                    <h3 className="text-sm font-semibold tracking-wide text-foreground uppercase">
                                         Keywords
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {manuscript.keywords.map((keyword) => (
-                                            <Badge key={keyword} variant="secondary" className="text-xs">
+                                            <Badge
+                                                key={keyword}
+                                                variant="secondary"
+                                                className="text-xs"
+                                            >
                                                 {keyword}
                                             </Badge>
                                         ))}
@@ -198,20 +213,25 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
 
                                 {/* Timeline */}
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                                    <h3 className="text-sm font-semibold tracking-wide text-foreground uppercase">
                                         Timeline
                                     </h3>
                                     <div className="space-y-3">
                                         {timelineItems.map((item, idx) => (
-                                            <div key={idx} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
-                                                <div className="shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
+                                            <div
+                                                key={idx}
+                                                className="flex gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
+                                            >
+                                                <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary"></div>
                                                 <div className="min-w-0 flex-1">
-                                                    <div className="flex items-center justify-between mb-1">
+                                                    <div className="mb-1 flex items-center justify-between">
                                                         <span className="text-sm font-medium text-foreground">
                                                             {item.label}
                                                         </span>
                                                         <time className="text-xs text-muted-foreground">
-                                                            {new Date(item.date).toLocaleDateString()}
+                                                            {new Date(
+                                                                item.date,
+                                                            ).toLocaleDateString()}
                                                         </time>
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
@@ -228,25 +248,35 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                         {/* Right: Document Viewer */}
                         <div className="xl:col-span-3">
                             <div className="sticky top-6">
-                                <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
-                                    <div className="p-4 border-b border-border">
+                                <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+                                    <div className="border-b border-border p-4">
                                         <h3 className="text-lg font-semibold text-foreground">
                                             Document Preview
                                         </h3>
                                     </div>
                                     <div className="p-4">
                                         <DocumentViewer
-                                            pdfPath={manuscript.final_pdf_path?.toLowerCase().includes('.pdf')
-                                                ? manuscript.final_pdf_path
-                                                : manuscript.manuscript_path?.toLowerCase().includes('.pdf')
-                                                    ? manuscript.manuscript_path
-                                                    : null
+                                            pdfPath={
+                                                manuscript.final_pdf_path
+                                                    ?.toLowerCase()
+                                                    .includes('.pdf')
+                                                    ? manuscript.final_pdf_path
+                                                    : manuscript.manuscript_path
+                                                            ?.toLowerCase()
+                                                            .includes('.pdf')
+                                                      ? manuscript.manuscript_path
+                                                      : null
                                             }
-                                            docxPath={manuscript.final_pdf_path?.toLowerCase().includes('.docx')
-                                                ? manuscript.final_pdf_path
-                                                : manuscript.manuscript_path?.toLowerCase().includes('.docx')
-                                                    ? manuscript.manuscript_path
-                                                    : null
+                                            docxPath={
+                                                manuscript.final_pdf_path
+                                                    ?.toLowerCase()
+                                                    .includes('.docx')
+                                                    ? manuscript.final_pdf_path
+                                                    : manuscript.manuscript_path
+                                                            ?.toLowerCase()
+                                                            .includes('.docx')
+                                                      ? manuscript.manuscript_path
+                                                      : null
                                             }
                                         />
                                     </div>

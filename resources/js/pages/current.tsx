@@ -1,10 +1,16 @@
-import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { FileText, Eye, Calendar, BookOpen } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 
 interface Article {
     id: number;
@@ -45,125 +51,150 @@ export default function Current({ currentIssue }: CurrentPageProps) {
     if (!currentIssue) {
         return (
             <PublicLayout title={`Current Issue - ${journalName}`}>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <div className="text-center py-16">
-                            <Card className="max-w-md mx-auto">
-                                <CardContent className="pt-6">
-                                    <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                    <h1 className="font-serif text-2xl font-bold text-oxford-blue mb-2">
-                                        Current Issue
-                                    </h1>
-                                    <p className="text-muted-foreground mb-4">
-                                        No published issue is currently available. Please check back later.
-                                    </p>
-                                    <Button asChild variant="outline">
-                                        <Link href="/archives">View Archives</Link>
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        </div>
+                <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                    <div className="py-16 text-center">
+                        <Card className="mx-auto max-w-md">
+                            <CardContent className="pt-6">
+                                <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <h1 className="text-oxford-blue mb-2 font-serif text-2xl font-bold">
+                                    Current Issue
+                                </h1>
+                                <p className="mb-4 text-muted-foreground">
+                                    No published issue is currently available.
+                                    Please check back later.
+                                </p>
+                                <Button asChild variant="outline">
+                                    <Link href="/archives">View Archives</Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </div>
+                </div>
             </PublicLayout>
         );
     }
 
     return (
         <PublicLayout title={`${currentIssue.fullTitle} - ${journalName}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Page Header */}
-                    <div className="mb-8">
-                        <h1 className="font-serif text-3xl md:text-4xl font-bold text-oxford-blue mb-2">
-                            {currentIssue.fullTitle}
-                        </h1>
-                        <p className="text-lg text-muted-foreground">
-                            Current Issue • Published {currentIssue.publicationDate}
-                        </p>
-                    </div>
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                {/* Page Header */}
+                <div className="mb-8">
+                    <h1 className="text-oxford-blue mb-2 font-serif text-3xl font-bold md:text-4xl">
+                        {currentIssue.fullTitle}
+                    </h1>
+                    <p className="text-lg text-muted-foreground">
+                        Current Issue • Published {currentIssue.publicationDate}
+                    </p>
+                </div>
 
-                    <div className="grid lg:grid-cols-4 gap-8">
-                        {/* Issue Information Sidebar */}
-                        <div className="lg:col-span-1">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="font-serif flex items-center gap-2 text-oxford-blue">
-                                        <BookOpen className="h-5 w-5" />
-                                        Issue Details
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="text-center">
-                                        <img
-                                            src={currentIssue.coverImageUrl}
-                                            alt={`Cover of ${currentIssue.fullTitle}`}
-                                            className="w-full max-w-[200px] mx-auto object-cover rounded-md shadow-sm"
-                                        />
+                <div className="grid gap-8 lg:grid-cols-4">
+                    {/* Issue Information Sidebar */}
+                    <div className="lg:col-span-1">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-oxford-blue flex items-center gap-2 font-serif">
+                                    <BookOpen className="h-5 w-5" />
+                                    Issue Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="text-center">
+                                    <img
+                                        src={currentIssue.coverImageUrl}
+                                        alt={`Cover of ${currentIssue.fullTitle}`}
+                                        className="mx-auto w-full max-w-[200px] rounded-md object-cover shadow-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div>
+                                        <div className="mb-1 text-sm font-medium text-foreground">
+                                            Volume & Issue
+                                        </div>
+                                        <Badge variant="outline">
+                                            {currentIssue.volume} •{' '}
+                                            {currentIssue.number}
+                                        </Badge>
                                     </div>
-                                    
-                                    <div className="space-y-3">
-                                        <div>
-                                            <div className="text-sm font-medium text-foreground mb-1">Volume & Issue</div>
-                                            <Badge variant="outline">{currentIssue.volume} • {currentIssue.number}</Badge>
+
+                                    <div>
+                                        <div className="mb-1 text-sm font-medium text-foreground">
+                                            Publication Date
                                         </div>
-                                        
-                                        <div>
-                                            <div className="text-sm font-medium text-foreground mb-1">Publication Date</div>
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Calendar className="h-4 w-4" />
-                                                {currentIssue.publicationDate}
-                                            </div>
-                                        </div>
-                                        
-                                        {currentIssue.specialIssueTitle && (
-                                            <div>
-                                                <div className="text-sm font-medium text-foreground mb-1">Special Issue</div>
-                                                <p className="text-sm text-muted-foreground">{currentIssue.specialIssueTitle}</p>
-                                            </div>
-                                        )}
-                                        
-                                        <div>
-                                            <div className="text-sm font-medium text-foreground mb-1">Articles</div>
-                                            <Badge variant="secondary">{currentIssue.articles.length} Articles</Badge>
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Calendar className="h-4 w-4" />
+                                            {currentIssue.publicationDate}
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
 
-                        {/* Articles List */}
-                        <div className="lg:col-span-3">
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Articles in this Issue</CardTitle>
-                                    <CardDescription>
-                                        {currentIssue.articles.length} articles published in this issue
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {currentIssue.articles.length > 0 ? (
-                                        <div className="space-y-6">
-                                            {currentIssue.articles.map((article) => (
-                                                <ArticleCard key={article.id} article={article} />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-8">
-                                            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                            <p className="text-muted-foreground">Articles for this issue will be listed here.</p>
+                                    {currentIssue.specialIssueTitle && (
+                                        <div>
+                                            <div className="mb-1 text-sm font-medium text-foreground">
+                                                Special Issue
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">
+                                                {currentIssue.specialIssueTitle}
+                                            </p>
                                         </div>
                                     )}
-                                </CardContent>
-                            </Card>
-                        </div>
+
+                                    <div>
+                                        <div className="mb-1 text-sm font-medium text-foreground">
+                                            Articles
+                                        </div>
+                                        <Badge variant="secondary">
+                                            {currentIssue.articles.length}{' '}
+                                            Articles
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Articles List */}
+                    <div className="lg:col-span-3">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Articles in this Issue</CardTitle>
+                                <CardDescription>
+                                    {currentIssue.articles.length} articles
+                                    published in this issue
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {currentIssue.articles.length > 0 ? (
+                                    <div className="space-y-6">
+                                        {currentIssue.articles.map(
+                                            (article) => (
+                                                <ArticleCard
+                                                    key={article.id}
+                                                    article={article}
+                                                />
+                                            ),
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="py-8 text-center">
+                                        <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                        <p className="text-muted-foreground">
+                                            Articles for this issue will be
+                                            listed here.
+                                        </p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
+            </div>
         </PublicLayout>
     );
 }
 
 function ArticleCard({ article }: { article: Article }) {
     return (
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="transition-shadow hover:shadow-md">
             <CardContent className="pt-6">
                 <div className="space-y-4">
                     {/* Article Category */}
@@ -173,31 +204,40 @@ function ArticleCard({ article }: { article: Article }) {
 
                     {/* Article Title */}
                     <div>
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                            <Link href={article.url} className="hover:text-primary transition-colors">
+                        <h3 className="mb-2 text-lg font-semibold text-foreground">
+                            <Link
+                                href={article.url}
+                                className="transition-colors hover:text-primary"
+                            >
                                 {article.title}
                             </Link>
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-3">
+                        <p className="mb-3 text-sm text-muted-foreground">
                             <strong>Authors:</strong> {article.authors}
                         </p>
                     </div>
 
                     {/* Abstract */}
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="line-clamp-3 text-sm text-muted-foreground">
                         {article.abstract}
                     </p>
 
                     {/* Keywords */}
                     {article.keywords && article.keywords.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                            {article.keywords.slice(0, 5).map((keyword, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                    {keyword}
-                                </Badge>
-                            ))}
+                            {article.keywords
+                                .slice(0, 5)
+                                .map((keyword, index) => (
+                                    <Badge
+                                        key={index}
+                                        variant="outline"
+                                        className="text-xs"
+                                    >
+                                        {keyword}
+                                    </Badge>
+                                ))}
                             {article.keywords.length > 5 && (
-                                <span className="text-xs text-muted-foreground self-center">
+                                <span className="self-center text-xs text-muted-foreground">
                                     +{article.keywords.length - 5} more
                                 </span>
                             )}
@@ -209,12 +249,14 @@ function ArticleCard({ article }: { article: Article }) {
                         <div className="space-y-1 text-xs text-muted-foreground">
                             {article.pages && <div>Pages: {article.pages}</div>}
                             {article.doi && <div>DOI: {article.doi}</div>}
-                            {article.institution && <div>Institution: {article.institution}</div>}
+                            {article.institution && (
+                                <div>Institution: {article.institution}</div>
+                            )}
                         </div>
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center justify-between border-t border-border pt-4">
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             {article.citations !== undefined && (
                                 <span>{article.citations} citations</span>
@@ -227,7 +269,7 @@ function ArticleCard({ article }: { article: Article }) {
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" asChild>
                                 <Link href={article.url}>
-                                    <Eye className="w-4 h-4 mr-2" />
+                                    <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                 </Link>
                             </Button>
@@ -238,7 +280,7 @@ function ArticleCard({ article }: { article: Article }) {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        <FileText className="w-4 h-4 mr-2" />
+                                        <FileText className="mr-2 h-4 w-4" />
                                         PDF
                                     </a>
                                 </Button>

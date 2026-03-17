@@ -1,14 +1,26 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft } from 'lucide-react';
+import type { FormEventHandler } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
 
 interface Props {
     types: Record<string, string>;
@@ -49,7 +61,9 @@ export default function CreateAnnouncement({ types }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Create Announcement</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            Create Announcement
+                        </h1>
                         <p className="text-muted-foreground">
                             Create a new announcement for the current journal
                         </p>
@@ -58,12 +72,13 @@ export default function CreateAnnouncement({ types }: Props) {
 
                 <form onSubmit={submit}>
                     <div className="grid gap-6 lg:grid-cols-3">
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="space-y-6 lg:col-span-2">
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Announcement Content</CardTitle>
                                     <CardDescription>
-                                        Enter the title and content for the announcement
+                                        Enter the title and content for the
+                                        announcement
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -72,11 +87,15 @@ export default function CreateAnnouncement({ types }: Props) {
                                         <Input
                                             id="title"
                                             value={data.title}
-                                            onChange={(e) => setData('title', e.target.value)}
+                                            onChange={(e) =>
+                                                setData('title', e.target.value)
+                                            }
                                             placeholder="Enter announcement title"
                                         />
                                         {errors.title && (
-                                            <p className="text-sm text-destructive">{errors.title}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.title}
+                                            </p>
                                         )}
                                     </div>
 
@@ -85,29 +104,46 @@ export default function CreateAnnouncement({ types }: Props) {
                                         <Textarea
                                             id="excerpt"
                                             value={data.excerpt}
-                                            onChange={(e) => setData('excerpt', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'excerpt',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="A short summary of the announcement (optional)"
                                             rows={2}
                                         />
                                         <p className="text-xs text-muted-foreground">
-                                            Brief summary shown in announcement lists. Max 500 characters.
+                                            Brief summary shown in announcement
+                                            lists. Max 500 characters.
                                         </p>
                                         {errors.excerpt && (
-                                            <p className="text-sm text-destructive">{errors.excerpt}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.excerpt}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="content">Content *</Label>
+                                        <Label htmlFor="content">
+                                            Content *
+                                        </Label>
                                         <Textarea
                                             id="content"
                                             value={data.content}
-                                            onChange={(e) => setData('content', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'content',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Write the full announcement content"
                                             rows={10}
                                         />
                                         {errors.content && (
-                                            <p className="text-sm text-destructive">{errors.content}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.content}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -119,7 +155,8 @@ export default function CreateAnnouncement({ types }: Props) {
                                 <CardHeader>
                                     <CardTitle>Settings</CardTitle>
                                     <CardDescription>
-                                        Configure announcement type and visibility
+                                        Configure announcement type and
+                                        visibility
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -127,49 +164,68 @@ export default function CreateAnnouncement({ types }: Props) {
                                         <Label htmlFor="type">Type *</Label>
                                         <Select
                                             value={data.type}
-                                            onValueChange={(value) => setData('type', value)}
+                                            onValueChange={(value) =>
+                                                setData('type', value)
+                                            }
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {Object.entries(types).map(([value, label]) => (
-                                                    <SelectItem key={value} value={value}>
-                                                        {label}
-                                                    </SelectItem>
-                                                ))}
+                                                {Object.entries(types).map(
+                                                    ([value, label]) => (
+                                                        <SelectItem
+                                                            key={value}
+                                                            value={value}
+                                                        >
+                                                            {label}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
                                             </SelectContent>
                                         </Select>
                                         {errors.type && (
-                                            <p className="text-sm text-destructive">{errors.type}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.type}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="is_published">Published</Label>
+                                            <Label htmlFor="is_published">
+                                                Published
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Make this announcement visible to the public
+                                                Make this announcement visible
+                                                to the public
                                             </p>
                                         </div>
                                         <Switch
                                             id="is_published"
                                             checked={data.is_published}
-                                            onCheckedChange={(checked) => setData('is_published', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_published', checked)
+                                            }
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="is_pinned">Pinned</Label>
+                                            <Label htmlFor="is_pinned">
+                                                Pinned
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Pin this announcement to the top of the list
+                                                Pin this announcement to the top
+                                                of the list
                                             </p>
                                         </div>
                                         <Switch
                                             id="is_pinned"
                                             checked={data.is_pinned}
-                                            onCheckedChange={(checked) => setData('is_pinned', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_pinned', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>
@@ -184,34 +240,54 @@ export default function CreateAnnouncement({ types }: Props) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="published_at">Publish Date</Label>
+                                        <Label htmlFor="published_at">
+                                            Publish Date
+                                        </Label>
                                         <Input
                                             id="published_at"
                                             type="datetime-local"
                                             value={data.published_at}
-                                            onChange={(e) => setData('published_at', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'published_at',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
                                         <p className="text-xs text-muted-foreground">
-                                            Leave empty to publish immediately when enabled
+                                            Leave empty to publish immediately
+                                            when enabled
                                         </p>
                                         {errors.published_at && (
-                                            <p className="text-sm text-destructive">{errors.published_at}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.published_at}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="expires_at">Expiry Date</Label>
+                                        <Label htmlFor="expires_at">
+                                            Expiry Date
+                                        </Label>
                                         <Input
                                             id="expires_at"
                                             type="datetime-local"
                                             value={data.expires_at}
-                                            onChange={(e) => setData('expires_at', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'expires_at',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
                                         <p className="text-xs text-muted-foreground">
-                                            Announcement will be hidden after this date
+                                            Announcement will be hidden after
+                                            this date
                                         </p>
                                         {errors.expires_at && (
-                                            <p className="text-sm text-destructive">{errors.expires_at}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.expires_at}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -219,7 +295,7 @@ export default function CreateAnnouncement({ types }: Props) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 mt-6">
+                    <div className="mt-6 flex justify-end gap-4">
                         <Button variant="outline" asChild>
                             <Link href="/admin/announcements">Cancel</Link>
                         </Button>

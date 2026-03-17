@@ -1,11 +1,15 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -13,7 +17,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 
 interface SectionContent {
@@ -61,17 +67,33 @@ interface SectionFormData {
     is_visible: boolean;
 }
 
-export default function SectionEdit({ journal, page, section, sectionTypes }: Props) {
+export default function SectionEdit({
+    journal,
+    page,
+    section,
+    sectionTypes,
+}: Props) {
     const breadcrumbItems = [
         { label: 'Admin', href: admin.institutions.index.url() },
         { label: 'Journals', href: admin.journals.index.url() },
-        { label: journal.name, href: admin.journals.edit.url({ journal: journal.id }) },
-        { label: 'CMS - Pages', href: `/admin/journals/${journal.id}/cms/pages` },
-        { label: page.title, href: `/admin/journals/${journal.id}/cms/pages/${page.id}/edit` },
-        { label: `Edit Section: ${section.name || sectionTypes[section.type]}` },
+        {
+            label: journal.name,
+            href: admin.journals.edit.url({ journal: journal.id }),
+        },
+        {
+            label: 'CMS - Pages',
+            href: `/admin/journals/${journal.id}/cms/pages`,
+        },
+        {
+            label: page.title,
+            href: `/admin/journals/${journal.id}/cms/pages/${page.id}/edit`,
+        },
+        {
+            label: `Edit Section: ${section.name || sectionTypes[section.type]}`,
+        },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data, setData, put, processing, isDirty } = useForm<any>({
         name: section.name,
         content: section.content,
@@ -81,7 +103,9 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/journals/${journal.id}/cms/pages/${page.id}/sections/${section.id}`);
+        put(
+            `/admin/journals/${journal.id}/cms/pages/${page.id}/sections/${section.id}`,
+        );
     };
 
     const updateContent = (key: string, value: unknown) => {
@@ -89,31 +113,84 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
     };
 
     const updateSettings = (key: string, value: unknown) => {
-        setData('settings', { ...data.settings, [key]: value } as SectionSettings);
+        setData('settings', {
+            ...data.settings,
+            [key]: value,
+        } as SectionSettings);
     };
 
     const renderContentEditor = () => {
         switch (section.type) {
             case 'hero':
-                return <HeroEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <HeroEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'text':
-                return <TextEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <TextEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'cards':
-                return <CardsEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <CardsEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'statistics':
-                return <StatisticsEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <StatisticsEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'cta':
-                return <CtaEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <CtaEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'image_text':
-                return <ImageTextEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <ImageTextEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'accordion':
-                return <AccordionEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <AccordionEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'contact_form':
-                return <ContactFormEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <ContactFormEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             case 'custom_html':
-                return <CustomHtmlEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <CustomHtmlEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
             default:
-                return <GenericEditor content={data.content} updateContent={updateContent} />;
+                return (
+                    <GenericEditor
+                        content={data.content}
+                        updateContent={updateContent}
+                    />
+                );
         }
     };
 
@@ -124,20 +201,33 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                     <Label htmlFor="bg_color">Background Color</Label>
                     <div className="flex gap-2">
                         <div
-                            className="w-10 h-10 rounded-md border cursor-pointer"
-                            style={{ backgroundColor: (data.settings.bg_color as string) || '#ffffff' }}
+                            className="h-10 w-10 cursor-pointer rounded-md border"
+                            style={{
+                                backgroundColor:
+                                    (data.settings.bg_color as string) ||
+                                    '#ffffff',
+                            }}
                         >
                             <input
                                 type="color"
                                 id="bg_color"
-                                value={(data.settings.bg_color as string) || '#ffffff'}
-                                onChange={(e) => updateSettings('bg_color', e.target.value)}
-                                className="w-full h-full opacity-0 cursor-pointer"
+                                value={
+                                    (data.settings.bg_color as string) ||
+                                    '#ffffff'
+                                }
+                                onChange={(e) =>
+                                    updateSettings('bg_color', e.target.value)
+                                }
+                                className="h-full w-full cursor-pointer opacity-0"
                             />
                         </div>
                         <Input
-                            value={(data.settings.bg_color as string) || '#ffffff'}
-                            onChange={(e) => updateSettings('bg_color', e.target.value)}
+                            value={
+                                (data.settings.bg_color as string) || '#ffffff'
+                            }
+                            onChange={(e) =>
+                                updateSettings('bg_color', e.target.value)
+                            }
                             className="flex-1 font-mono uppercase"
                         />
                     </div>
@@ -147,20 +237,34 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                     <Label htmlFor="text_color">Text Color</Label>
                     <div className="flex gap-2">
                         <div
-                            className="w-10 h-10 rounded-md border cursor-pointer"
-                            style={{ backgroundColor: (data.settings.text_color as string) || '#000000' }}
+                            className="h-10 w-10 cursor-pointer rounded-md border"
+                            style={{
+                                backgroundColor:
+                                    (data.settings.text_color as string) ||
+                                    '#000000',
+                            }}
                         >
                             <input
                                 type="color"
                                 id="text_color"
-                                value={(data.settings.text_color as string) || '#000000'}
-                                onChange={(e) => updateSettings('text_color', e.target.value)}
-                                className="w-full h-full opacity-0 cursor-pointer"
+                                value={
+                                    (data.settings.text_color as string) ||
+                                    '#000000'
+                                }
+                                onChange={(e) =>
+                                    updateSettings('text_color', e.target.value)
+                                }
+                                className="h-full w-full cursor-pointer opacity-0"
                             />
                         </div>
                         <Input
-                            value={(data.settings.text_color as string) || '#000000'}
-                            onChange={(e) => updateSettings('text_color', e.target.value)}
+                            value={
+                                (data.settings.text_color as string) ||
+                                '#000000'
+                            }
+                            onChange={(e) =>
+                                updateSettings('text_color', e.target.value)
+                            }
                             className="flex-1 font-mono uppercase"
                         />
                     </div>
@@ -170,7 +274,9 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                     <Label htmlFor="padding">Padding</Label>
                     <Select
                         value={(data.settings.padding as string) || 'medium'}
-                        onValueChange={(value) => updateSettings('padding', value)}
+                        onValueChange={(value) =>
+                            updateSettings('padding', value)
+                        }
                     >
                         <SelectTrigger>
                             <SelectValue />
@@ -193,7 +299,9 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                     </div>
                     <Switch
                         checked={(data.settings.full_width as boolean) || false}
-                        onCheckedChange={(checked) => updateSettings('full_width', checked)}
+                        onCheckedChange={(checked) =>
+                            updateSettings('full_width', checked)
+                        }
                     />
                 </div>
             </div>
@@ -209,13 +317,17 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/admin/journals/${journal.id}/cms/pages/${page.id}/edit`}>
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages/${page.id}/edit`}
+                            >
                                 <ArrowLeft className="h-4 w-4" />
                             </Link>
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight">
-                                Edit {sectionTypes[section.type] || section.type} Section
+                                Edit{' '}
+                                {sectionTypes[section.type] || section.type}{' '}
+                                Section
                             </h1>
                             <p className="text-muted-foreground">
                                 {page.title} - {journal.name}
@@ -227,7 +339,7 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-6 lg:grid-cols-3">
                         {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-6">
+                        <div className="space-y-6 lg:col-span-2">
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Section Name</CardTitle>
@@ -238,8 +350,13 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                                 <CardContent>
                                     <Input
                                         value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        placeholder={sectionTypes[section.type] || section.type}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
+                                        placeholder={
+                                            sectionTypes[section.type] ||
+                                            section.type
+                                        }
                                     />
                                 </CardContent>
                             </Card>
@@ -273,7 +390,9 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                                         </div>
                                         <Switch
                                             checked={data.is_visible}
-                                            onCheckedChange={(checked) => setData('is_visible', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_visible', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>
@@ -296,7 +415,9 @@ export default function SectionEdit({ journal, page, section, sectionTypes }: Pr
                                         disabled={processing || !isDirty}
                                     >
                                         <Save className="mr-2 h-4 w-4" />
-                                        {processing ? 'Saving...' : 'Save Changes'}
+                                        {processing
+                                            ? 'Saving...'
+                                            : 'Save Changes'}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -340,7 +461,9 @@ function HeroEditor({
                 <Label>Background Image URL</Label>
                 <Input
                     value={(content.background_image as string) || ''}
-                    onChange={(e) => updateContent('background_image', e.target.value)}
+                    onChange={(e) =>
+                        updateContent('background_image', e.target.value)
+                    }
                     placeholder="https://..."
                 />
             </div>
@@ -349,7 +472,9 @@ function HeroEditor({
                     <Label>Button Text</Label>
                     <Input
                         value={(content.button_text as string) || ''}
-                        onChange={(e) => updateContent('button_text', e.target.value)}
+                        onChange={(e) =>
+                            updateContent('button_text', e.target.value)
+                        }
                         placeholder="Learn More"
                     />
                 </div>
@@ -357,7 +482,9 @@ function HeroEditor({
                     <Label>Button URL</Label>
                     <Input
                         value={(content.button_url as string) || ''}
-                        onChange={(e) => updateContent('button_url', e.target.value)}
+                        onChange={(e) =>
+                            updateContent('button_url', e.target.value)
+                        }
                         placeholder="/about"
                     />
                 </div>
@@ -406,10 +533,19 @@ function CardsEditor({
     content: SectionContent;
     updateContent: (key: string, value: unknown) => void;
 }) {
-    const cards = (content.cards as Array<{ title: string; description: string; icon?: string; link?: string }>) || [];
+    const cards =
+        (content.cards as Array<{
+            title: string;
+            description: string;
+            icon?: string;
+            link?: string;
+        }>) || [];
 
     const addCard = () => {
-        updateContent('cards', [...cards, { title: '', description: '', icon: '', link: '' }]);
+        updateContent('cards', [
+            ...cards,
+            { title: '', description: '', icon: '', link: '' },
+        ]);
     };
 
     const updateCard = (index: number, field: string, value: string) => {
@@ -419,7 +555,10 @@ function CardsEditor({
     };
 
     const removeCard = (index: number) => {
-        updateContent('cards', cards.filter((_, i) => i !== index));
+        updateContent(
+            'cards',
+            cards.filter((_, i) => i !== index),
+        );
     };
 
     return (
@@ -436,9 +575,14 @@ function CardsEditor({
             <div className="space-y-4">
                 <Label>Cards</Label>
                 {cards.map((card, index) => (
-                    <div key={index} className="p-4 border rounded-lg space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-sm">Card {index + 1}</span>
+                    <div
+                        key={index}
+                        className="space-y-3 rounded-lg border p-4"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">
+                                Card {index + 1}
+                            </span>
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -450,18 +594,24 @@ function CardsEditor({
                         </div>
                         <Input
                             value={card.title}
-                            onChange={(e) => updateCard(index, 'title', e.target.value)}
+                            onChange={(e) =>
+                                updateCard(index, 'title', e.target.value)
+                            }
                             placeholder="Card Title"
                         />
                         <Textarea
                             value={card.description}
-                            onChange={(e) => updateCard(index, 'description', e.target.value)}
+                            onChange={(e) =>
+                                updateCard(index, 'description', e.target.value)
+                            }
                             placeholder="Card description..."
                             rows={2}
                         />
                         <Input
                             value={card.link || ''}
-                            onChange={(e) => updateCard(index, 'link', e.target.value)}
+                            onChange={(e) =>
+                                updateCard(index, 'link', e.target.value)
+                            }
                             placeholder="Link URL (optional)"
                         />
                     </div>
@@ -482,7 +632,8 @@ function StatisticsEditor({
     content: SectionContent;
     updateContent: (key: string, value: unknown) => void;
 }) {
-    const stats = (content.stats as Array<{ value: string; label: string }>) || [];
+    const stats =
+        (content.stats as Array<{ value: string; label: string }>) || [];
 
     const addStat = () => {
         updateContent('stats', [...stats, { value: '', label: '' }]);
@@ -495,7 +646,10 @@ function StatisticsEditor({
     };
 
     const removeStat = (index: number) => {
-        updateContent('stats', stats.filter((_, i) => i !== index));
+        updateContent(
+            'stats',
+            stats.filter((_, i) => i !== index),
+        );
     };
 
     return (
@@ -512,16 +666,20 @@ function StatisticsEditor({
             <div className="space-y-4">
                 <Label>Statistics</Label>
                 {stats.map((stat, index) => (
-                    <div key={index} className="flex gap-3 items-start">
-                        <div className="flex-1 grid grid-cols-2 gap-3">
+                    <div key={index} className="flex items-start gap-3">
+                        <div className="grid flex-1 grid-cols-2 gap-3">
                             <Input
                                 value={stat.value}
-                                onChange={(e) => updateStat(index, 'value', e.target.value)}
+                                onChange={(e) =>
+                                    updateStat(index, 'value', e.target.value)
+                                }
                                 placeholder="100+"
                             />
                             <Input
                                 value={stat.label}
-                                onChange={(e) => updateStat(index, 'label', e.target.value)}
+                                onChange={(e) =>
+                                    updateStat(index, 'label', e.target.value)
+                                }
                                 placeholder="Published Articles"
                             />
                         </div>
@@ -565,7 +723,9 @@ function CtaEditor({
                 <Label>Description</Label>
                 <Textarea
                     value={(content.description as string) || ''}
-                    onChange={(e) => updateContent('description', e.target.value)}
+                    onChange={(e) =>
+                        updateContent('description', e.target.value)
+                    }
                     placeholder="Join our community of researchers..."
                     rows={3}
                 />
@@ -575,7 +735,9 @@ function CtaEditor({
                     <Label>Button Text</Label>
                     <Input
                         value={(content.button_text as string) || ''}
-                        onChange={(e) => updateContent('button_text', e.target.value)}
+                        onChange={(e) =>
+                            updateContent('button_text', e.target.value)
+                        }
                         placeholder="Submit Now"
                     />
                 </div>
@@ -583,7 +745,9 @@ function CtaEditor({
                     <Label>Button URL</Label>
                     <Input
                         value={(content.button_url as string) || ''}
-                        onChange={(e) => updateContent('button_url', e.target.value)}
+                        onChange={(e) =>
+                            updateContent('button_url', e.target.value)
+                        }
                         placeholder="/submit"
                     />
                 </div>
@@ -630,7 +794,9 @@ function ImageTextEditor({
                 <Label>Image Position</Label>
                 <Select
                     value={(content.image_position as string) || 'left'}
-                    onValueChange={(value) => updateContent('image_position', value)}
+                    onValueChange={(value) =>
+                        updateContent('image_position', value)
+                    }
                 >
                     <SelectTrigger>
                         <SelectValue />
@@ -652,7 +818,8 @@ function AccordionEditor({
     content: SectionContent;
     updateContent: (key: string, value: unknown) => void;
 }) {
-    const items = (content.items as Array<{ title: string; content: string }>) || [];
+    const items =
+        (content.items as Array<{ title: string; content: string }>) || [];
 
     const addItem = () => {
         updateContent('items', [...items, { title: '', content: '' }]);
@@ -665,7 +832,10 @@ function AccordionEditor({
     };
 
     const removeItem = (index: number) => {
-        updateContent('items', items.filter((_, i) => i !== index));
+        updateContent(
+            'items',
+            items.filter((_, i) => i !== index),
+        );
     };
 
     return (
@@ -682,9 +852,14 @@ function AccordionEditor({
             <div className="space-y-4">
                 <Label>Accordion Items</Label>
                 {items.map((item, index) => (
-                    <div key={index} className="p-4 border rounded-lg space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-sm">Item {index + 1}</span>
+                    <div
+                        key={index}
+                        className="space-y-3 rounded-lg border p-4"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">
+                                Item {index + 1}
+                            </span>
                             <Button
                                 type="button"
                                 variant="ghost"
@@ -696,12 +871,16 @@ function AccordionEditor({
                         </div>
                         <Input
                             value={item.title}
-                            onChange={(e) => updateItem(index, 'title', e.target.value)}
+                            onChange={(e) =>
+                                updateItem(index, 'title', e.target.value)
+                            }
                             placeholder="Question or title"
                         />
                         <Textarea
                             value={item.content}
-                            onChange={(e) => updateItem(index, 'content', e.target.value)}
+                            onChange={(e) =>
+                                updateItem(index, 'content', e.target.value)
+                            }
                             placeholder="Answer or content..."
                             rows={3}
                         />
@@ -737,7 +916,9 @@ function ContactFormEditor({
                 <Label>Description</Label>
                 <Textarea
                     value={(content.description as string) || ''}
-                    onChange={(e) => updateContent('description', e.target.value)}
+                    onChange={(e) =>
+                        updateContent('description', e.target.value)
+                    }
                     placeholder="Get in touch with our team..."
                     rows={3}
                 />
@@ -754,7 +935,9 @@ function ContactFormEditor({
                 <Label>Success Message</Label>
                 <Input
                     value={(content.success_message as string) || ''}
-                    onChange={(e) => updateContent('success_message', e.target.value)}
+                    onChange={(e) =>
+                        updateContent('success_message', e.target.value)
+                    }
                     placeholder="Thank you for your message!"
                 />
             </div>
@@ -781,7 +964,8 @@ function CustomHtmlEditor({
                     className="font-mono text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
-                    Enter raw HTML. Be careful with this feature as malformed HTML can break the page layout.
+                    Enter raw HTML. Be careful with this feature as malformed
+                    HTML can break the page layout.
                 </p>
             </div>
         </div>

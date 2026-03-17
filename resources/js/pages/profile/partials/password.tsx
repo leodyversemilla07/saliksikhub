@@ -1,6 +1,7 @@
-import { useRef, useState, FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Check } from 'lucide-react';
+import type { FormEventHandler } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -48,21 +49,25 @@ export default function PasswordUpdate() {
     };
 
     return (
-        <div className="max-w-xl bg-card p-4 space-y-4">
+        <div className="max-w-xl space-y-4 bg-card p-4">
             {/* Header */}
             <div>
                 <h2 className="text-lg font-semibold text-foreground">
                     Update Password
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                    Ensure your account is using a long, random password to stay secure.
+                    Ensure your account is using a long, random password to stay
+                    secure.
                 </p>
             </div>
 
             <form onSubmit={updatePassword} className="space-y-3">
                 {/* Current Password */}
                 <div className="space-y-2">
-                    <Label htmlFor="current_password" className="text-sm font-medium">
+                    <Label
+                        htmlFor="current_password"
+                        className="text-sm font-medium"
+                    >
                         Current Password
                     </Label>
                     <div className="relative">
@@ -71,14 +76,18 @@ export default function PasswordUpdate() {
                             ref={currentPasswordInput}
                             type={showCurrentPassword ? 'text' : 'password'}
                             value={data.current_password}
-                            onChange={(e) => setData('current_password', e.target.value)}
+                            onChange={(e) =>
+                                setData('current_password', e.target.value)
+                            }
                             className="pr-10"
                             placeholder="Enter your current password"
                         />
                         <button
                             type="button"
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            onClick={() =>
+                                setShowCurrentPassword(!showCurrentPassword)
+                            }
                         >
                             {showCurrentPassword ? (
                                 <EyeOff className="h-4 w-4" />
@@ -88,7 +97,9 @@ export default function PasswordUpdate() {
                         </button>
                     </div>
                     {errors.current_password && (
-                        <p className="text-sm text-destructive">{errors.current_password}</p>
+                        <p className="text-sm text-destructive">
+                            {errors.current_password}
+                        </p>
                     )}
                 </div>
 
@@ -103,7 +114,9 @@ export default function PasswordUpdate() {
                             ref={passwordInput}
                             type={showNewPassword ? 'text' : 'password'}
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={(e) =>
+                                setData('password', e.target.value)
+                            }
                             className="pr-10"
                             placeholder="Enter a new password"
                         />
@@ -120,13 +133,18 @@ export default function PasswordUpdate() {
                         </button>
                     </div>
                     {errors.password && (
-                        <p className="text-sm text-destructive">{errors.password}</p>
+                        <p className="text-sm text-destructive">
+                            {errors.password}
+                        </p>
                     )}
                 </div>
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                    <Label htmlFor="password_confirmation" className="text-sm font-medium">
+                    <Label
+                        htmlFor="password_confirmation"
+                        className="text-sm font-medium"
+                    >
                         Confirm Password
                     </Label>
                     <div className="relative">
@@ -134,14 +152,18 @@ export default function PasswordUpdate() {
                             id="password_confirmation"
                             type={showConfirmPassword ? 'text' : 'password'}
                             value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            onChange={(e) =>
+                                setData('password_confirmation', e.target.value)
+                            }
                             className="pr-10"
                             placeholder="Confirm your new password"
                         />
                         <button
                             type="button"
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                            }
                         >
                             {showConfirmPassword ? (
                                 <EyeOff className="h-4 w-4" />
@@ -151,31 +173,31 @@ export default function PasswordUpdate() {
                         </button>
                     </div>
                     {errors.password_confirmation && (
-                        <p className="text-sm text-destructive">{errors.password_confirmation}</p>
+                        <p className="text-sm text-destructive">
+                            {errors.password_confirmation}
+                        </p>
                     )}
                 </div>
 
                 {/* Action Button */}
                 <div className="flex items-center justify-between">
-                    <Button
-                        type="submit"
-                        disabled={processing}
-                    >
+                    <Button type="submit" disabled={processing}>
                         {processing ? (
                             <span className="flex items-center gap-2">
                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                                 Updating...
-                            </span>) : (
-                            <span>
-                                Update Password
                             </span>
+                        ) : (
+                            <span>Update Password</span>
                         )}
                     </Button>
 
                     {recentlySuccessful && (
                         <div className="flex items-center gap-2 text-green-600">
                             <Check className="h-4 w-4" />
-                            <span className="text-sm">Password updated successfully.</span>
+                            <span className="text-sm">
+                                Password updated successfully.
+                            </span>
                         </div>
                     )}
                 </div>

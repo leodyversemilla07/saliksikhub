@@ -1,22 +1,28 @@
-import { useState, useCallback, useRef } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-    Upload, 
-    File, 
-    X, 
+import {
+    Upload,
+    File,
+    X,
     AlertCircle,
     FileText,
     Image as ImageIcon,
     Table as TableIcon,
-    Paperclip
+    Paperclip,
 } from 'lucide-react';
+import { useState, useCallback, useRef } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import type { FileType, FileRequirements } from '@/types';
 import manuscripts from '@/routes/manuscripts';
+import type { FileType, FileRequirements } from '@/types';
 
 interface FileUploadProps {
     manuscriptId: number;
@@ -26,12 +32,12 @@ interface FileUploadProps {
     requirements?: FileRequirements;
 }
 
-export function FileUpload({ 
-    manuscriptId, 
-    fileType, 
-    onSuccess, 
+export function FileUpload({
+    manuscriptId,
+    fileType,
+    onSuccess,
     onError,
-    requirements 
+    requirements,
 }: FileUploadProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -59,7 +65,9 @@ export function FileUpload({
     };
 
     const validateFile = (file: File): string | null => {
-        if (!requirements) return null;
+        if (!requirements) {
+return null;
+}
 
         // Check file size
         if (file.size > requirements.max_file_size) {
@@ -78,8 +86,10 @@ export function FileUpload({
 
     const handleFileSelect = (file: File) => {
         const error = validateFile(file);
+
         if (error) {
             onError?.(error);
+
             return;
         }
 
@@ -101,6 +111,7 @@ export function FileUpload({
         setIsDragging(false);
 
         const files = Array.from(e.dataTransfer.files);
+
         if (files.length > 0) {
             handleFileSelect(files[0]);
         }
@@ -108,13 +119,16 @@ export function FileUpload({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
+
         if (files && files.length > 0) {
             handleFileSelect(files[0]);
         }
     };
 
     const handleUpload = () => {
-        if (!data.file) return;
+        if (!data.file) {
+return;
+}
 
         post(manuscripts.files.upload.url({ id: manuscriptId }), {
             onSuccess: () => {
@@ -127,7 +141,9 @@ export function FileUpload({
             },
             onProgress: (progress) => {
                 if (progress && progress.total) {
-                    setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
+                    setUploadProgress(
+                        Math.round((progress.loaded / progress.total) * 100),
+                    );
                 }
             },
         });
@@ -135,17 +151,24 @@ export function FileUpload({
 
     const handleRemove = () => {
         setData('file', null);
+
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
     };
 
     const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return '0 Bytes';
+        if (bytes === 0) {
+return '0 Bytes';
+}
+
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+
+        return (
+            Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+        );
     };
 
     return (
@@ -159,7 +182,7 @@ export function FileUpload({
                     <CardDescription>
                         {requirements.description}
                         {requirements.is_required && (
-                            <span className="text-red-500 ml-1">*</span>
+                            <span className="ml-1 text-red-500">*</span>
                         )}
                     </CardDescription>
                 )}
@@ -173,14 +196,14 @@ export function FileUpload({
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
-                            "border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors",
-                            isDragging 
-                                ? "border-primary bg-primary/5" 
-                                : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                            'cursor-pointer rounded-lg border-2 border-dashed p-12 text-center transition-colors',
+                            isDragging
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-300 hover:border-primary hover:bg-gray-50',
                         )}
                     >
-                        <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                        <p className="text-sm font-medium mb-1">
+                        <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                        <p className="mb-1 text-sm font-medium">
                             Drop file here or click to browse
                         </p>
                         {requirements && (
@@ -200,7 +223,7 @@ export function FileUpload({
 
                 {/* Selected File */}
                 {data.file && !processing && (
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center justify-between rounded-lg border p-4">
                         <div className="flex items-center gap-3">
                             <File className="h-8 w-8 text-blue-500" />
                             <div>
@@ -242,26 +265,33 @@ export function FileUpload({
 
                 {/* Upload Button */}
                 {data.file && !processing && (
-                    <Button 
-                        onClick={handleUpload} 
+                    <Button
+                        onClick={handleUpload}
                         className="w-full"
                         disabled={processing}
                     >
-                        <Upload className="h-4 w-4 mr-2" />
+                        <Upload className="mr-2 h-4 w-4" />
                         Upload File
                     </Button>
                 )}
 
                 {/* File Requirements */}
                 {requirements && !data.file && (
-                    <div className="text-xs text-gray-500 space-y-1">
+                    <div className="space-y-1 text-xs text-gray-500">
                         <p className="font-medium">Requirements:</p>
-                        <ul className="list-disc list-inside space-y-1">
+                        <ul className="list-inside list-disc space-y-1">
                             <li>Max size: {requirements.max_file_size_mb}MB</li>
-                            {requirements.accepted_mime_types.length > 0 && 
-                             !requirements.accepted_mime_types.includes('*/*') && (
-                                <li>Accepted formats: {requirements.accepted_mime_types.join(', ')}</li>
-                            )}
+                            {requirements.accepted_mime_types.length > 0 &&
+                                !requirements.accepted_mime_types.includes(
+                                    '*/*',
+                                ) && (
+                                    <li>
+                                        Accepted formats:{' '}
+                                        {requirements.accepted_mime_types.join(
+                                            ', ',
+                                        )}
+                                    </li>
+                                )}
                         </ul>
                     </div>
                 )}

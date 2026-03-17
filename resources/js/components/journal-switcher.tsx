@@ -6,10 +6,9 @@
  *
  * @module components/journal-switcher
  */
-import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { Building2, ChevronDown, Check, Loader2 } from 'lucide-react';
-import { PageProps } from '@/types';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -19,6 +18,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import type { PageProps } from '@/types';
 
 interface JournalWithInstitution {
     id: number;
@@ -50,6 +50,7 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
 
         if (open && journals.length === 0 && !isFetching) {
             setIsFetching(true);
+
             try {
                 const response = await fetch('/api/journals');
                 const data = await response.json();
@@ -65,6 +66,7 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
     const handleJournalSwitch = (journal: JournalWithInstitution) => {
         if (journal.id === currentJournal?.id) {
             setIsOpen(false);
+
             return;
         }
 
@@ -77,7 +79,7 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
                     setIsLoading(false);
                     setIsOpen(false);
                 },
-            }
+            },
         );
     };
 
@@ -104,7 +106,7 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
                         <Building2 className="h-5 w-5 text-muted-foreground" />
                     )}
                     <div className="flex flex-col items-start">
-                        <span className="text-sm font-medium truncate max-w-[150px]">
+                        <span className="max-w-[150px] truncate text-sm font-medium">
                             {currentJournal.abbreviation || currentJournal.name}
                         </span>
                     </div>
@@ -121,7 +123,9 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
                 {isFetching ? (
                     <div className="flex items-center justify-center py-4">
                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                        <span className="ml-2 text-sm text-muted-foreground">Loading journals...</span>
+                        <span className="ml-2 text-sm text-muted-foreground">
+                            Loading journals...
+                        </span>
                     </div>
                 ) : journals.length === 0 ? (
                     <div className="py-4 text-center text-sm text-muted-foreground">
@@ -134,28 +138,31 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
                             className="cursor-pointer"
                             onClick={() => handleJournalSwitch(journal)}
                         >
-                            <div className="flex items-center gap-3 w-full">
+                            <div className="flex w-full items-center gap-3">
                                 {journal.logo_url ? (
                                     <img
                                         src={journal.logo_url}
                                         alt={journal.name}
-                                        className="h-8 w-8 rounded object-contain shrink-0"
+                                        className="h-8 w-8 shrink-0 rounded object-contain"
                                     />
                                 ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded bg-muted shrink-0">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                                         <Building2 className="h-4 w-4 text-muted-foreground" />
                                     </div>
                                 )}
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-medium truncate">{journal.name}</div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="truncate font-medium">
+                                        {journal.name}
+                                    </div>
                                     {journal.institution && (
-                                        <div className="text-xs text-muted-foreground truncate">
-                                            {journal.institution.abbreviation || journal.institution.name}
+                                        <div className="truncate text-xs text-muted-foreground">
+                                            {journal.institution.abbreviation ||
+                                                journal.institution.name}
                                         </div>
                                     )}
                                 </div>
                                 {journal.id === currentJournal?.id && (
-                                    <Check className="h-4 w-4 text-primary shrink-0" />
+                                    <Check className="h-4 w-4 shrink-0 text-primary" />
                                 )}
                             </div>
                         </DropdownMenuItem>

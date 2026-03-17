@@ -146,7 +146,7 @@ export enum ManuscriptStatus {
     AWAITING_AUTHOR_APPROVAL = 'Awaiting Approval',
     READY_FOR_PUBLICATION = 'Ready to Publish',
     REJECTED = 'Rejected',
-    PUBLISHED = 'Published'
+    PUBLISHED = 'Published',
 }
 
 export interface Manuscript {
@@ -216,17 +216,17 @@ export interface Review {
     average_rating?: number | null;
 }
 
-export type ReviewStatus = 
-    | 'invited' 
-    | 'accepted' 
-    | 'in_progress' 
-    | 'completed' 
+export type ReviewStatus =
+    | 'invited'
+    | 'accepted'
+    | 'in_progress'
+    | 'completed'
     | 'declined';
 
-export type ReviewRecommendation = 
-    | 'accept' 
-    | 'minor_revision' 
-    | 'major_revision' 
+export type ReviewRecommendation =
+    | 'accept'
+    | 'minor_revision'
+    | 'major_revision'
     | 'reject';
 
 export interface ReviewMetrics {
@@ -272,11 +272,11 @@ export interface ManuscriptFile {
     download_url: string;
 }
 
-export type FileType = 
-    | 'main_document' 
-    | 'cover_letter' 
-    | 'figure' 
-    | 'table' 
+export type FileType =
+    | 'main_document'
+    | 'cover_letter'
+    | 'figure'
+    | 'table'
     | 'supplementary';
 
 export interface FileRequirements {

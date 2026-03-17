@@ -1,17 +1,40 @@
 import { Head, useForm, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import {
+    Settings,
+    Globe,
+    Shield,
+    Mail,
+    FileText,
+    Palette,
+    Upload,
+    Trash2,
+    RotateCcw,
+} from 'lucide-react';
+import type { FormEventHandler} from 'react';
+import { useRef, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Settings, Globe, Shield, Mail, FileText, Palette, Upload, Trash2, RotateCcw } from 'lucide-react';
-import { FormEventHandler, useRef, useState } from 'react';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
 
 interface SettingField {
     type: string;
@@ -44,23 +67,59 @@ interface Props {
     settingsSchema: SettingsSchema;
 }
 
-const TAB_LABELS: Record<string, { label: string; icon: React.ReactNode; description: string }> = {
-    general: { label: 'General', icon: <Globe className="h-4 w-4" />, description: 'Platform name, branding, and basic information' },
-    registration: { label: 'Registration', icon: <FileText className="h-4 w-4" />, description: 'User registration and account settings' },
-    security: { label: 'Security', icon: <Shield className="h-4 w-4" />, description: 'Security policies and access controls' },
-    email: { label: 'Email', icon: <Mail className="h-4 w-4" />, description: 'Email delivery configuration' },
-    submissions: { label: 'Submissions', icon: <FileText className="h-4 w-4" />, description: 'Global manuscript submission settings' },
-    appearance: { label: 'Appearance', icon: <Palette className="h-4 w-4" />, description: 'Admin panel appearance settings' },
+const TAB_LABELS: Record<
+    string,
+    { label: string; icon: React.ReactNode; description: string }
+> = {
+    general: {
+        label: 'General',
+        icon: <Globe className="h-4 w-4" />,
+        description: 'Platform name, branding, and basic information',
+    },
+    registration: {
+        label: 'Registration',
+        icon: <FileText className="h-4 w-4" />,
+        description: 'User registration and account settings',
+    },
+    security: {
+        label: 'Security',
+        icon: <Shield className="h-4 w-4" />,
+        description: 'Security policies and access controls',
+    },
+    email: {
+        label: 'Email',
+        icon: <Mail className="h-4 w-4" />,
+        description: 'Email delivery configuration',
+    },
+    submissions: {
+        label: 'Submissions',
+        icon: <FileText className="h-4 w-4" />,
+        description: 'Global manuscript submission settings',
+    },
+    appearance: {
+        label: 'Appearance',
+        icon: <Palette className="h-4 w-4" />,
+        description: 'Admin panel appearance settings',
+    },
 };
 
-export default function EditPlatformSettings({ platformSettings, settingsSchema }: Props) {
+export default function EditPlatformSettings({
+    platformSettings,
+    settingsSchema,
+}: Props) {
     const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
-    const [logoPreview, setLogoPreview] = useState<string | null>(platformSettings.logo_url);
-    const [faviconPreview, setFaviconPreview] = useState<string | null>(platformSettings.favicon_url);
+    const [logoPreview, setLogoPreview] = useState<string | null>(
+        platformSettings.logo_url,
+    );
+    const [faviconPreview, setFaviconPreview] = useState<string | null>(
+        platformSettings.favicon_url,
+    );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, setData, post, processing, errors } = useForm<Record<string, any>>({
+     
+    const { data, setData, post, processing, errors } = useForm<
+        Record<string, any>
+    >({
         _method: 'PUT',
         platform_name: platformSettings.platform_name || '',
         platform_tagline: platformSettings.platform_tagline || '',
@@ -87,6 +146,7 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('logo', file);
             setLogoPreview(URL.createObjectURL(file));
@@ -95,6 +155,7 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
 
     const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('favicon', file);
             setFaviconPreview(URL.createObjectURL(file));
@@ -116,10 +177,18 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
     };
 
     const handleReset = () => {
-        if (confirm('Are you sure you want to reset all settings to defaults? This will not affect platform name, tagline, or uploaded files.')) {
-            router.post('/admin/platform-settings/reset', {}, {
-                preserveScroll: true,
-            });
+        if (
+            confirm(
+                'Are you sure you want to reset all settings to defaults? This will not affect platform name, tagline, or uploaded files.',
+            )
+        ) {
+            router.post(
+                '/admin/platform-settings/reset',
+                {},
+                {
+                    preserveScroll: true,
+                },
+            );
         }
     };
 
@@ -131,21 +200,34 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
         });
     };
 
-    const renderSettingField = (group: string, key: string, field: SettingField) => {
+    const renderSettingField = (
+        group: string,
+        key: string,
+        field: SettingField,
+    ) => {
         const value = getSettingValue(group, key);
         const errorKey = `settings.${group}.${key}`;
 
         switch (field.type) {
             case 'boolean':
                 return (
-                    <div key={key} className="flex items-center justify-between rounded-lg border p-4">
+                    <div
+                        key={key}
+                        className="flex items-center justify-between rounded-lg border p-4"
+                    >
                         <div className="space-y-0.5">
-                            <Label className="text-sm font-medium">{field.label}</Label>
-                            <p className="text-xs text-muted-foreground">{field.description}</p>
+                            <Label className="text-sm font-medium">
+                                {field.label}
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                                {field.description}
+                            </p>
                         </div>
                         <Switch
                             checked={Boolean(value)}
-                            onCheckedChange={(checked) => updateSetting(group, key, checked)}
+                            onCheckedChange={(checked) =>
+                                updateSetting(group, key, checked)
+                            }
                         />
                     </div>
                 );
@@ -158,11 +240,21 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                             id={`${group}-${key}`}
                             type="number"
                             value={String(value || '')}
-                            onChange={(e) => updateSetting(group, key, parseInt(e.target.value) || 0)}
+                            onChange={(e) =>
+                                updateSetting(
+                                    group,
+                                    key,
+                                    parseInt(e.target.value) || 0,
+                                )
+                            }
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                         {errors[errorKey as keyof typeof errors] && (
-                            <p className="text-xs text-destructive">{errors[errorKey as keyof typeof errors]}</p>
+                            <p className="text-xs text-destructive">
+                                {errors[errorKey as keyof typeof errors]}
+                            </p>
                         )}
                     </div>
                 );
@@ -176,7 +268,9 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                             onValueChange={(v) => updateSetting(group, key, v)}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+                                <SelectValue
+                                    placeholder={`Select ${field.label.toLowerCase()}`}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {field.options?.map((option) => (
@@ -186,7 +280,9 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                 ))}
                             </SelectContent>
                         </Select>
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
@@ -199,18 +295,24 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                 id={`${group}-${key}`}
                                 type="color"
                                 value={String(value || '#2563eb')}
-                                onChange={(e) => updateSetting(group, key, e.target.value)}
+                                onChange={(e) =>
+                                    updateSetting(group, key, e.target.value)
+                                }
                                 className="h-10 w-16 cursor-pointer p-1"
                             />
                             <Input
                                 type="text"
                                 value={String(value || '')}
-                                onChange={(e) => updateSetting(group, key, e.target.value)}
+                                onChange={(e) =>
+                                    updateSetting(group, key, e.target.value)
+                                }
                                 placeholder="#2563eb"
                                 className="flex-1"
                             />
                         </div>
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
@@ -221,23 +323,37 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                         <Input
                             id={`${group}-${key}`}
                             type="text"
-                            value={Array.isArray(value) ? (value as string[]).join(', ') : String(value || '')}
+                            value={
+                                Array.isArray(value)
+                                    ? (value as string[]).join(', ')
+                                    : String(value || '')
+                            }
                             onChange={(e) => {
-                                const tags = e.target.value.split(',').map((t) => t.trim()).filter(Boolean);
+                                const tags = e.target.value
+                                    .split(',')
+                                    .map((t) => t.trim())
+                                    .filter(Boolean);
                                 updateSetting(group, key, tags);
                             }}
                             placeholder="Separate items with commas"
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
-                        {Array.isArray(value) && (value as string[]).length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                                {(value as string[]).map((tag, i) => (
-                                    <Badge key={i} variant="secondary" className="text-xs">
-                                        {tag}
-                                    </Badge>
-                                ))}
-                            </div>
-                        )}
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
+                        {Array.isArray(value) &&
+                            (value as string[]).length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                    {(value as string[]).map((tag, i) => (
+                                        <Badge
+                                            key={i}
+                                            variant="secondary"
+                                            className="text-xs"
+                                        >
+                                            {tag}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
                     </div>
                 );
 
@@ -249,11 +365,17 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                             id={`${group}-${key}`}
                             type="text"
                             value={String(value || '')}
-                            onChange={(e) => updateSetting(group, key, e.target.value)}
+                            onChange={(e) =>
+                                updateSetting(group, key, e.target.value)
+                            }
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                         {errors[errorKey as keyof typeof errors] && (
-                            <p className="text-xs text-destructive">{errors[errorKey as keyof typeof errors]}</p>
+                            <p className="text-xs text-destructive">
+                                {errors[errorKey as keyof typeof errors]}
+                            </p>
                         )}
                     </div>
                 );
@@ -267,12 +389,19 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Platform Settings</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            Platform Settings
+                        </h1>
                         <p className="text-muted-foreground">
-                            Configure global platform settings that apply across all journals.
+                            Configure global platform settings that apply across
+                            all journals.
                         </p>
                     </div>
-                    <Button variant="outline" onClick={handleReset} className="gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={handleReset}
+                        className="gap-2"
+                    >
                         <RotateCcw className="h-4 w-4" />
                         Reset to Defaults
                     </Button>
@@ -281,11 +410,17 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                 <form onSubmit={submit}>
                     <Tabs defaultValue="general" className="space-y-6">
                         <TabsList className="grid w-full grid-cols-6">
-                            {Object.entries(TAB_LABELS).map(([key, { label }]) => (
-                                <TabsTrigger key={key} value={key} className="gap-2">
-                                    {label}
-                                </TabsTrigger>
-                            ))}
+                            {Object.entries(TAB_LABELS).map(
+                                ([key, { label }]) => (
+                                    <TabsTrigger
+                                        key={key}
+                                        value={key}
+                                        className="gap-2"
+                                    >
+                                        {label}
+                                    </TabsTrigger>
+                                ),
+                            )}
                         </TabsList>
 
                         {/* General Tab */}
@@ -297,63 +432,101 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                         Platform Identity
                                     </CardTitle>
                                     <CardDescription>
-                                        Configure the platform name, description, and branding that appears throughout the system.
+                                        Configure the platform name,
+                                        description, and branding that appears
+                                        throughout the system.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="grid gap-6 md:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label htmlFor="platform_name">Platform Name</Label>
+                                            <Label htmlFor="platform_name">
+                                                Platform Name
+                                            </Label>
                                             <Input
                                                 id="platform_name"
                                                 value={data.platform_name}
-                                                onChange={(e) => setData('platform_name', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'platform_name',
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder="Research Platform"
                                             />
                                             {errors.platform_name && (
-                                                <p className="text-xs text-destructive">{errors.platform_name}</p>
+                                                <p className="text-xs text-destructive">
+                                                    {errors.platform_name}
+                                                </p>
                                             )}
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="admin_email">Admin Email</Label>
+                                            <Label htmlFor="admin_email">
+                                                Admin Email
+                                            </Label>
                                             <Input
                                                 id="admin_email"
                                                 type="email"
                                                 value={data.admin_email}
-                                                onChange={(e) => setData('admin_email', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'admin_email',
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder="admin@example.com"
                                             />
                                             {errors.admin_email && (
-                                                <p className="text-xs text-destructive">{errors.admin_email}</p>
+                                                <p className="text-xs text-destructive">
+                                                    {errors.admin_email}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="platform_tagline">Tagline</Label>
+                                        <Label htmlFor="platform_tagline">
+                                            Tagline
+                                        </Label>
                                         <Input
                                             id="platform_tagline"
                                             value={data.platform_tagline}
-                                            onChange={(e) => setData('platform_tagline', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'platform_tagline',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Open Access Research Journal Management"
                                         />
                                         {errors.platform_tagline && (
-                                            <p className="text-xs text-destructive">{errors.platform_tagline}</p>
+                                            <p className="text-xs text-destructive">
+                                                {errors.platform_tagline}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="platform_description">Description</Label>
+                                        <Label htmlFor="platform_description">
+                                            Description
+                                        </Label>
                                         <Textarea
                                             id="platform_description"
                                             value={data.platform_description}
-                                            onChange={(e) => setData('platform_description', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'platform_description',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Describe your platform..."
                                             rows={3}
                                         />
                                         {errors.platform_description && (
-                                            <p className="text-xs text-destructive">{errors.platform_description}</p>
+                                            <p className="text-xs text-destructive">
+                                                {errors.platform_description}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -362,9 +535,12 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                             <div className="grid gap-6 md:grid-cols-2">
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="text-base">Platform Logo</CardTitle>
+                                        <CardTitle className="text-base">
+                                            Platform Logo
+                                        </CardTitle>
                                         <CardDescription>
-                                            Upload a logo (PNG, JPG, SVG, WebP, max 2MB)
+                                            Upload a logo (PNG, JPG, SVG, WebP,
+                                            max 2MB)
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -398,24 +574,33 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => logoInputRef.current?.click()}
+                                                onClick={() =>
+                                                    logoInputRef.current?.click()
+                                                }
                                                 className="gap-2"
                                             >
                                                 <Upload className="h-4 w-4" />
-                                                {logoPreview ? 'Change Logo' : 'Upload Logo'}
+                                                {logoPreview
+                                                    ? 'Change Logo'
+                                                    : 'Upload Logo'}
                                             </Button>
                                         </div>
                                         {errors.logo && (
-                                            <p className="text-xs text-destructive">{errors.logo}</p>
+                                            <p className="text-xs text-destructive">
+                                                {errors.logo}
+                                            </p>
                                         )}
                                     </CardContent>
                                 </Card>
 
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="text-base">Favicon</CardTitle>
+                                        <CardTitle className="text-base">
+                                            Favicon
+                                        </CardTitle>
                                         <CardDescription>
-                                            Upload a favicon (PNG, ICO, SVG, max 512KB)
+                                            Upload a favicon (PNG, ICO, SVG, max
+                                            512KB)
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -430,7 +615,9 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={handleRemoveFavicon}
+                                                    onClick={
+                                                        handleRemoveFavicon
+                                                    }
                                                     className="gap-1 text-destructive"
                                                 >
                                                     <Trash2 className="h-3 w-3" />
@@ -449,15 +636,21 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => faviconInputRef.current?.click()}
+                                                onClick={() =>
+                                                    faviconInputRef.current?.click()
+                                                }
                                                 className="gap-2"
                                             >
                                                 <Upload className="h-4 w-4" />
-                                                {faviconPreview ? 'Change Favicon' : 'Upload Favicon'}
+                                                {faviconPreview
+                                                    ? 'Change Favicon'
+                                                    : 'Upload Favicon'}
                                             </Button>
                                         </div>
                                         {errors.favicon && (
-                                            <p className="text-xs text-destructive">{errors.favicon}</p>
+                                            <p className="text-xs text-destructive">
+                                                {errors.favicon}
+                                            </p>
                                         )}
                                     </CardContent>
                                 </Card>
@@ -465,31 +658,50 @@ export default function EditPlatformSettings({ platformSettings, settingsSchema 
                         </TabsContent>
 
                         {/* Dynamic Settings Tabs */}
-                        {Object.entries(settingsSchema).map(([group, fields]) => (
-                            <TabsContent key={group} value={group} className="space-y-6">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            {TAB_LABELS[group]?.icon}
-                                            {TAB_LABELS[group]?.label || group} Settings
-                                        </CardTitle>
-                                        <CardDescription>
-                                            {TAB_LABELS[group]?.description || `Configure ${group} settings`}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-6">
-                                        {Object.entries(fields).map(([key, field]) =>
-                                            renderSettingField(group, key, field)
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
-                        ))}
+                        {Object.entries(settingsSchema).map(
+                            ([group, fields]) => (
+                                <TabsContent
+                                    key={group}
+                                    value={group}
+                                    className="space-y-6"
+                                >
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                {TAB_LABELS[group]?.icon}
+                                                {TAB_LABELS[group]?.label ||
+                                                    group}{' '}
+                                                Settings
+                                            </CardTitle>
+                                            <CardDescription>
+                                                {TAB_LABELS[group]
+                                                    ?.description ||
+                                                    `Configure ${group} settings`}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-6">
+                                            {Object.entries(fields).map(
+                                                ([key, field]) =>
+                                                    renderSettingField(
+                                                        group,
+                                                        key,
+                                                        field,
+                                                    ),
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                </TabsContent>
+                            ),
+                        )}
 
                         <Separator />
 
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={processing} className="gap-2">
+                            <Button
+                                type="submit"
+                                disabled={processing}
+                                className="gap-2"
+                            >
                                 <Settings className="h-4 w-4" />
                                 {processing ? 'Saving...' : 'Save Settings'}
                             </Button>

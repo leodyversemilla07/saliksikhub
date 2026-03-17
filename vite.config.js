@@ -1,9 +1,10 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,8 +16,15 @@ export default defineConfig({
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
         }),
-        react(),
+        react({
+            babel: {
+                plugins: ['babel-plugin-react-compiler'],
+            },
+        }),
         tailwindcss(),
+        wayfinder({
+            formVariants: true,
+        }),
     ],
     esbuild: {
         jsx: 'automatic',
@@ -24,10 +32,6 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
-            '@/components': path.resolve(__dirname, './resources/js/components'),
-            '@/Components': path.resolve(__dirname, './resources/js/components'),
-            '@/pages': path.resolve(__dirname, './resources/js/pages'),
-            '@/Pages': path.resolve(__dirname, './resources/js/pages'),
         },
     },
 });

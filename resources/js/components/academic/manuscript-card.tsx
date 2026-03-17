@@ -1,16 +1,16 @@
 /**
  * ManuscriptCard Component
- * 
+ *
  * Displays manuscript information in an academic paper card style,
  * inspired by traditional library index cards and journal abstracts.
  * Part of the Scholarly Design System.
  */
 
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Link } from '@inertiajs/react';
 import { FileText, Calendar, Users, Tag } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 interface Author {
@@ -39,12 +39,13 @@ function formatAuthors(authors: string | Author[]): string {
     if (typeof authors === 'string') {
         return authors;
     }
-    
+
     return authors
         .map((author, index) => {
             if (index === authors.length - 1 && authors.length > 1) {
                 return `& ${author.name}`;
             }
+
             return author.name;
         })
         .join(', ');
@@ -53,16 +54,21 @@ function formatAuthors(authors: string | Author[]): string {
 /**
  * Get status badge variant based on manuscript status
  */
-function getStatusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
-    const statusMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-        'submitted': 'secondary',
-        'under_review': 'default',
-        'revision_needed': 'outline',
-        'accepted': 'default',
-        'published': 'default',
-        'rejected': 'destructive',
+function getStatusVariant(
+    status: string,
+): 'default' | 'secondary' | 'destructive' | 'outline' {
+    const statusMap: Record<
+        string,
+        'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
+        submitted: 'secondary',
+        under_review: 'default',
+        revision_needed: 'outline',
+        accepted: 'default',
+        published: 'default',
+        rejected: 'destructive',
     };
-    
+
     return statusMap[status] || 'secondary';
 }
 
@@ -72,7 +78,7 @@ function getStatusVariant(status: string): 'default' | 'secondary' | 'destructiv
 function formatStatus(status: string): string {
     return status
         .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
 
@@ -91,14 +97,14 @@ export function ManuscriptCard({
 }: ManuscriptCardProps) {
     const formattedAuthors = formatAuthors(authors);
     const CardWrapper = href ? Link : 'div';
-    
+
     return (
         <CardWrapper
             {...(href ? { href } : {})}
             className={cn(
                 'block transition-all duration-200',
-                href && 'hover:shadow-md hover:border-primary/20',
-                className
+                href && 'hover:border-primary/20 hover:shadow-md',
+                className,
             )}
         >
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
@@ -106,11 +112,11 @@ export function ManuscriptCard({
                     {/* Manuscript ID and Status */}
                     <div className="flex items-start justify-between gap-4">
                         {manuscriptId && (
-                            <code className="font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <code className="rounded bg-muted px-2 py-1 font-mono text-xs text-muted-foreground">
                                 {manuscriptId}
                             </code>
                         )}
-                        <Badge 
+                        <Badge
                             variant={getStatusVariant(status)}
                             className="shrink-0"
                         >
@@ -119,12 +125,12 @@ export function ManuscriptCard({
                     </div>
 
                     {/* Title - Academic Style */}
-                    <h3 className="font-serif text-xl font-bold leading-tight text-foreground">
+                    <h3 className="font-serif text-xl leading-tight font-bold text-foreground">
                         {title}
                     </h3>
 
                     {/* Authors - Italic, Academic Citation Style */}
-                    <p className="font-serif italic text-base text-muted-foreground">
+                    <p className="font-serif text-base text-muted-foreground italic">
                         {formattedAuthors}
                     </p>
                 </CardHeader>
@@ -135,10 +141,9 @@ export function ManuscriptCard({
                         <>
                             <div className="prose prose-sm max-w-none">
                                 <p className="font-serif text-sm leading-relaxed text-foreground/90">
-                                    {abstract.length > 300 
-                                        ? `${abstract.substring(0, 300)}...` 
-                                        : abstract
-                                    }
+                                    {abstract.length > 300
+                                        ? `${abstract.substring(0, 300)}...`
+                                        : abstract}
                                 </p>
                             </div>
                             <Separator />
@@ -146,18 +151,21 @@ export function ManuscriptCard({
                     )}
 
                     {/* Metadata Row */}
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground font-sans">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
                             <time dateTime={submittedDate}>
-                                {new Date(submittedDate).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                })}
+                                {new Date(submittedDate).toLocaleDateString(
+                                    'en-US',
+                                    {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    },
+                                )}
                             </time>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                             <FileText className="h-4 w-4" />
                             <span>Manuscript #{id}</span>
@@ -174,7 +182,7 @@ export function ManuscriptCard({
                                     {keywords.map((keyword, index) => (
                                         <span
                                             key={index}
-                                            className="font-sans text-xs uppercase tracking-wide text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-sm"
+                                            className="rounded-sm bg-muted/50 px-2 py-0.5 font-sans text-xs tracking-wide text-muted-foreground uppercase"
                                         >
                                             {keyword}
                                         </span>
@@ -204,17 +212,17 @@ export function ManuscriptCardCompact({
 }: Omit<ManuscriptCardProps, 'abstract' | 'keywords' | 'showAbstract'>) {
     const formattedAuthors = formatAuthors(authors);
     const CardWrapper = href ? Link : 'div';
-    
+
     return (
         <CardWrapper
             {...(href ? { href } : {})}
             className={cn(
                 'block transition-all duration-150',
                 href && 'hover:bg-muted/50',
-                className
+                className,
             )}
         >
-            <div className="flex items-start justify-between gap-4 p-4 border-b border-border/50 last:border-b-0">
+            <div className="flex items-start justify-between gap-4 border-b border-border/50 p-4 last:border-b-0">
                 <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-3">
                         {manuscriptId && (
@@ -222,32 +230,32 @@ export function ManuscriptCardCompact({
                                 {manuscriptId}
                             </code>
                         )}
-                        <Badge 
+                        <Badge
                             variant={getStatusVariant(status)}
                             className="text-xs"
                         >
                             {formatStatus(status)}
                         </Badge>
                     </div>
-                    
-                    <h4 className="font-serif text-base font-semibold leading-snug text-foreground">
+
+                    <h4 className="font-serif text-base leading-snug font-semibold text-foreground">
                         {title}
                     </h4>
-                    
-                    <p className="font-serif italic text-sm text-muted-foreground">
+
+                    <p className="font-serif text-sm text-muted-foreground italic">
                         {formattedAuthors}
                     </p>
                 </div>
-                
-                <div className="text-right shrink-0">
-                    <time 
+
+                <div className="shrink-0 text-right">
+                    <time
                         dateTime={submittedDate}
                         className="font-sans text-xs text-muted-foreground"
                     >
                         {new Date(submittedDate).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
-                            year: 'numeric'
+                            year: 'numeric',
                         })}
                     </time>
                 </div>

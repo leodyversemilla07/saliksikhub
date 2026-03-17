@@ -1,22 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    Plus,
+    MoreHorizontal,
+    Pencil,
+    Trash2,
+    Eye,
+    EyeOff,
+    GripVertical,
+    ArrowLeft,
+    FileText,
+    Menu,
+    Palette,
+} from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -28,7 +23,30 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, MoreHorizontal, Pencil, Trash2, Eye, EyeOff, GripVertical, ArrowLeft, FileText, Menu, Palette } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 
 interface Page {
@@ -57,7 +75,10 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
     const breadcrumbItems = [
         { label: 'Admin', href: admin.institutions.index.url() },
         { label: 'Journals', href: admin.journals.index.url() },
-        { label: journal.name, href: admin.journals.edit.url({ journal: journal.id }) },
+        {
+            label: journal.name,
+            href: admin.journals.edit.url({ journal: journal.id }),
+        },
         { label: 'CMS - Pages' },
     ];
 
@@ -74,19 +95,27 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" asChild>
-                            <Link href={admin.journals.edit.url({ journal: journal.id })}>
+                            <Link
+                                href={admin.journals.edit.url({
+                                    journal: journal.id,
+                                })}
+                            >
                                 <ArrowLeft className="h-4 w-4" />
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Content Management</h1>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                Content Management
+                            </h1>
                             <p className="text-muted-foreground">
                                 Manage pages and content for {journal.name}
                             </p>
                         </div>
                     </div>
                     <Button asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/pages/create`}>
+                        <Link
+                            href={`/admin/journals/${journal.id}/cms/pages/create`}
+                        >
                             <Plus className="mr-2 h-4 w-4" />
                             Create Page
                         </Link>
@@ -125,14 +154,18 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                     </CardHeader>
                     <CardContent>
                         {pages.length === 0 ? (
-                            <div className="text-center py-12">
+                            <div className="py-12 text-center">
                                 <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <h3 className="mt-4 text-lg font-semibold">No pages yet</h3>
+                                <h3 className="mt-4 text-lg font-semibold">
+                                    No pages yet
+                                </h3>
                                 <p className="text-muted-foreground">
                                     Create your first page to get started.
                                 </p>
                                 <Button className="mt-4" asChild>
-                                    <Link href={`/admin/journals/${journal.id}/cms/pages/create`}>
+                                    <Link
+                                        href={`/admin/journals/${journal.id}/cms/pages/create`}
+                                    >
                                         <Plus className="mr-2 h-4 w-4" />
                                         Create Page
                                     </Link>
@@ -155,11 +188,13 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                     {pages.map((page) => (
                                         <TableRow key={page.id}>
                                             <TableCell>
-                                                <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                                                <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
                                             </TableCell>
                                             <TableCell>
                                                 <div>
-                                                    <div className="font-medium">{page.title}</div>
+                                                    <div className="font-medium">
+                                                        {page.title}
+                                                    </div>
                                                     <div className="text-sm text-muted-foreground">
                                                         /{page.slug}
                                                     </div>
@@ -167,13 +202,19 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">
-                                                    {pageTypes[page.type] || page.type}
+                                                    {pageTypes[page.type] ||
+                                                        page.type}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>{page.sections_count} sections</TableCell>
+                                            <TableCell>
+                                                {page.sections_count} sections
+                                            </TableCell>
                                             <TableCell>
                                                 {page.is_published ? (
-                                                    <Badge variant="default" className="bg-green-500">
+                                                    <Badge
+                                                        variant="default"
+                                                        className="bg-green-500"
+                                                    >
                                                         <Eye className="mr-1 h-3 w-3" />
                                                         Published
                                                     </Badge>
@@ -186,30 +227,53 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                             </TableCell>
                                             <TableCell>
                                                 {page.show_in_menu ? (
-                                                    <Badge variant="outline">Yes</Badge>
+                                                    <Badge variant="outline">
+                                                        Yes
+                                                    </Badge>
                                                 ) : (
-                                                    <Badge variant="outline" className="text-muted-foreground">No</Badge>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-muted-foreground"
+                                                    >
+                                                        No
+                                                    </Badge>
                                                 )}
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon">
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
                                                             <MoreHorizontal className="h-4 w-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem asChild>
-                                                            <Link href={`/admin/journals/${journal.id}/cms/pages/${page.id}`}>
+                                                        <DropdownMenuItem
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href={`/admin/journals/${journal.id}/cms/pages/${page.id}`}
+                                                            >
                                                                 <Pencil className="mr-2 h-4 w-4" />
                                                                 Edit
                                                             </Link>
                                                         </DropdownMenuItem>
-                                                        {page.type !== 'home' && (
+                                                        {page.type !==
+                                                            'home' && (
                                                             <AlertDialog>
-                                                                <AlertDialogTrigger asChild>
+                                                                <AlertDialogTrigger
+                                                                    asChild
+                                                                >
                                                                     <DropdownMenuItem
-                                                                        onSelect={(e) => e.preventDefault()}
+                                                                        onSelect={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.preventDefault()
+                                                                        }
                                                                         className="text-destructive"
                                                                     >
                                                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -218,15 +282,40 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                                                 </AlertDialogTrigger>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>
-                                                                        <AlertDialogTitle>Delete Page</AlertDialogTitle>
+                                                                        <AlertDialogTitle>
+                                                                            Delete
+                                                                            Page
+                                                                        </AlertDialogTitle>
                                                                         <AlertDialogDescription>
-                                                                            Are you sure you want to delete "{page.title}"? This action cannot be undone.
+                                                                            Are
+                                                                            you
+                                                                            sure
+                                                                            you
+                                                                            want
+                                                                            to
+                                                                            delete
+                                                                            "
+                                                                            {
+                                                                                page.title
+                                                                            }
+                                                                            "?
+                                                                            This
+                                                                            action
+                                                                            cannot
+                                                                            be
+                                                                            undone.
                                                                         </AlertDialogDescription>
                                                                     </AlertDialogHeader>
                                                                     <AlertDialogFooter>
-                                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                        <AlertDialogCancel>
+                                                                            Cancel
+                                                                        </AlertDialogCancel>
                                                                         <AlertDialogAction
-                                                                            onClick={() => handleDelete(page.id)}
+                                                                            onClick={() =>
+                                                                                handleDelete(
+                                                                                    page.id,
+                                                                                )
+                                                                            }
                                                                             className="bg-destructive text-destructive-foreground"
                                                                         >
                                                                             Delete

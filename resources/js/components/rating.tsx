@@ -25,9 +25,18 @@ export function Rating({
     };
 
     const getRatingColor = (rating: number) => {
-        if (rating >= 8) return 'text-green-500';
-        if (rating >= 6) return 'text-blue-500';
-        if (rating >= 4) return 'text-yellow-500';
+        if (rating >= 8) {
+return 'text-green-500';
+}
+
+        if (rating >= 6) {
+return 'text-blue-500';
+}
+
+        if (rating >= 4) {
+return 'text-yellow-500';
+}
+
         return 'text-red-500';
     };
 
@@ -46,14 +55,19 @@ export function Rating({
                             disabled={readonly}
                             className={cn(
                                 'transition-colors',
-                                !readonly && 'hover:scale-110 cursor-pointer',
-                                readonly && 'cursor-default'
+                                !readonly && 'cursor-pointer hover:scale-110',
+                                readonly && 'cursor-default',
                             )}
                         >
                             <Star
                                 className={cn(
                                     sizes[size],
-                                    isFilled ? cn('fill-current', getRatingColor(value)) : 'text-gray-300'
+                                    isFilled
+                                        ? cn(
+                                              'fill-current',
+                                              getRatingColor(value),
+                                          )
+                                        : 'text-gray-300',
                                 )}
                             />
                         </button>
@@ -61,7 +75,9 @@ export function Rating({
                 })}
             </div>
             {showValue && (
-                <span className={cn('text-sm font-medium', getRatingColor(value))}>
+                <span
+                    className={cn('text-sm font-medium', getRatingColor(value))}
+                >
                     {value}/{max}
                 </span>
             )}

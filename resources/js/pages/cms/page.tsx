@@ -1,7 +1,7 @@
-import { PageProps } from '@/types';
 import { usePage } from '@inertiajs/react';
 import CmsSection from '@/components/cms/section';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 
 interface Section {
     id: number;
@@ -30,8 +30,8 @@ interface CmsPageProps extends PageProps {
 
 export default function CmsPage({ page, sections }: CmsPageProps) {
     const { currentJournal } = usePage<PageProps>().props;
-    
-    const pageTitle = page?.title 
+
+    const pageTitle = page?.title
         ? `${page.title} | ${currentJournal?.name ?? 'Journal'}`
         : 'Page';
 

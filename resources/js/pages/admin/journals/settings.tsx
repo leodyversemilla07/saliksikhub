@@ -1,22 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Settings, RotateCcw, X } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import type { FormEventHandler} from 'react';
+import { useState } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -28,15 +13,39 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from '@/components/ui/tabs';
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AppLayout from '@/layouts/app-layout';
+import admin from '@/routes/admin';
 
 interface SettingField {
-    type: 'string' | 'text' | 'number' | 'boolean' | 'color' | 'select' | 'tags';
+    type:
+        | 'string'
+        | 'text'
+        | 'number'
+        | 'boolean'
+        | 'color'
+        | 'select'
+        | 'tags';
     label: string;
     description: string;
     options?: string[];
@@ -61,7 +70,9 @@ interface Props {
 
 export default function JournalSettings({ journal, settingsSchema }: Props) {
     const [tagInputs, setTagInputs] = useState<Record<string, string>>({});
-    const [settings, setSettings] = useState<Record<string, unknown>>(journal.settings || {});
+    const [settings, setSettings] = useState<Record<string, unknown>>(
+        journal.settings || {},
+    );
     const [processing, setProcessing] = useState(false);
 
     const breadcrumbItems = [
@@ -90,7 +101,10 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
 
     const handleRemoveTag = (key: string, tagToRemove: string) => {
         const currentTags = (getSetting(key, []) as string[]) || [];
-        setSetting(key, currentTags.filter(tag => tag !== tagToRemove));
+        setSetting(
+            key,
+            currentTags.filter((tag) => tag !== tagToRemove),
+        );
     };
 
     const submit: FormEventHandler = (e) => {
@@ -101,7 +115,7 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
             { settings } as unknown as Record<string, string>,
             {
                 onFinish: () => setProcessing(false),
-            }
+            },
         );
     };
 
@@ -120,10 +134,14 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         <Input
                             id={fullKey}
                             value={getSetting(fullKey, '') as string}
-                            onChange={(e) => setSetting(fullKey, e.target.value)}
+                            onChange={(e) =>
+                                setSetting(fullKey, e.target.value)
+                            }
                             placeholder={field.description}
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
@@ -134,11 +152,15 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         <Textarea
                             id={fullKey}
                             value={getSetting(fullKey, '') as string}
-                            onChange={(e) => setSetting(fullKey, e.target.value)}
+                            onChange={(e) =>
+                                setSetting(fullKey, e.target.value)
+                            }
                             placeholder={field.description}
                             rows={3}
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
@@ -150,23 +172,37 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                             id={fullKey}
                             type="number"
                             value={getSetting(fullKey, '') as string}
-                            onChange={(e) => setSetting(fullKey, parseInt(e.target.value) || '')}
+                            onChange={(e) =>
+                                setSetting(
+                                    fullKey,
+                                    parseInt(e.target.value) || '',
+                                )
+                            }
                         />
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
             case 'boolean':
                 return (
-                    <div key={fullKey} className="flex items-center justify-between py-2">
+                    <div
+                        key={fullKey}
+                        className="flex items-center justify-between py-2"
+                    >
                         <div>
                             <Label htmlFor={fullKey}>{field.label}</Label>
-                            <p className="text-xs text-muted-foreground">{field.description}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {field.description}
+                            </p>
                         </div>
                         <Switch
                             id={fullKey}
                             checked={getSetting(fullKey, false) as boolean}
-                            onCheckedChange={(checked) => setSetting(fullKey, checked)}
+                            onCheckedChange={(checked) =>
+                                setSetting(fullKey, checked)
+                            }
                         />
                     </div>
                 );
@@ -180,17 +216,23 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                                 id={fullKey}
                                 type="color"
                                 value={getSetting(fullKey, '#000000') as string}
-                                onChange={(e) => setSetting(fullKey, e.target.value)}
-                                className="w-16 h-10 p-1 cursor-pointer"
+                                onChange={(e) =>
+                                    setSetting(fullKey, e.target.value)
+                                }
+                                className="h-10 w-16 cursor-pointer p-1"
                             />
                             <Input
                                 value={getSetting(fullKey, '') as string}
-                                onChange={(e) => setSetting(fullKey, e.target.value)}
+                                onChange={(e) =>
+                                    setSetting(fullKey, e.target.value)
+                                }
                                 placeholder="#000000"
                                 className="flex-1"
                             />
                         </div>
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
@@ -200,7 +242,9 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         <Label htmlFor={fullKey}>{field.label}</Label>
                         <Select
                             value={getSetting(fullKey, '') as string}
-                            onValueChange={(value) => setSetting(fullKey, value)}
+                            onValueChange={(value) =>
+                                setSetting(fullKey, value)
+                            }
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select an option" />
@@ -208,17 +252,24 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                             <SelectContent>
                                 {field.options?.map((option) => (
                                     <SelectItem key={option} value={option}>
-                                        {option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                        {option
+                                            .replace(/_/g, ' ')
+                                            .replace(/\b\w/g, (l) =>
+                                                l.toUpperCase(),
+                                            )}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
 
             case 'tags': {
                 const tags = (getSetting(fullKey, []) as string[]) || [];
+
                 return (
                     <div key={fullKey} className="space-y-2">
                         <Label htmlFor={fullKey}>{field.label}</Label>
@@ -226,7 +277,12 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                             <Input
                                 id={fullKey}
                                 value={tagInputs[fullKey] || ''}
-                                onChange={(e) => setTagInputs({ ...tagInputs, [fullKey]: e.target.value })}
+                                onChange={(e) =>
+                                    setTagInputs({
+                                        ...tagInputs,
+                                        [fullKey]: e.target.value,
+                                    })
+                                }
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault();
@@ -244,13 +300,19 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                             </Button>
                         </div>
                         {tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
+                            <div className="mt-2 flex flex-wrap gap-1">
                                 {tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary" className="gap-1">
+                                    <Badge
+                                        key={tag}
+                                        variant="secondary"
+                                        className="gap-1"
+                                    >
                                         {tag}
                                         <button
                                             type="button"
-                                            onClick={() => handleRemoveTag(fullKey, tag)}
+                                            onClick={() =>
+                                                handleRemoveTag(fullKey, tag)
+                                            }
                                             className="hover:text-destructive"
                                         >
                                             <X className="h-3 w-3" />
@@ -259,7 +321,9 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                                 ))}
                             </div>
                         )}
-                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {field.description}
+                        </p>
                     </div>
                 );
             }
@@ -284,7 +348,9 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Journal Settings</h1>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                Journal Settings
+                            </h1>
                             <p className="text-muted-foreground">
                                 Configure settings for {journal.name}
                             </p>
@@ -299,10 +365,13 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                                <AlertDialogTitle>Reset Settings</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                    Reset Settings
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    Are you sure you want to reset all settings to their default values?
-                                    This action cannot be undone.
+                                    Are you sure you want to reset all settings
+                                    to their default values? This action cannot
+                                    be undone.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -316,10 +385,22 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                 </div>
 
                 <form onSubmit={submit}>
-                    <Tabs defaultValue={categories[0]?.[0]} className="space-y-6">
-                        <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
+                    <Tabs
+                        defaultValue={categories[0]?.[0]}
+                        className="space-y-6"
+                    >
+                        <TabsList
+                            className="grid w-full"
+                            style={{
+                                gridTemplateColumns: `repeat(${categories.length}, 1fr)`,
+                            }}
+                        >
                             {categories.map(([category]) => (
-                                <TabsTrigger key={category} value={category} className="capitalize">
+                                <TabsTrigger
+                                    key={category}
+                                    value={category}
+                                    className="capitalize"
+                                >
                                     {category.replace(/_/g, ' ')}
                                 </TabsTrigger>
                             ))}
@@ -331,15 +412,19 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2 capitalize">
                                             <Settings className="h-5 w-5" />
-                                            {category.replace(/_/g, ' ')} Settings
+                                            {category.replace(/_/g, ' ')}{' '}
+                                            Settings
                                         </CardTitle>
                                         <CardDescription>
-                                            Configure {category.replace(/_/g, ' ')} options for this journal
+                                            Configure{' '}
+                                            {category.replace(/_/g, ' ')}{' '}
+                                            options for this journal
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
-                                        {Object.entries(fields).map(([key, field]) =>
-                                            renderField(key, field)
+                                        {Object.entries(fields).map(
+                                            ([key, field]) =>
+                                                renderField(key, field),
                                         )}
                                     </CardContent>
                                 </Card>
@@ -347,7 +432,7 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         ))}
                     </Tabs>
 
-                    <div className="flex justify-end gap-4 mt-6">
+                    <div className="mt-6 flex justify-end gap-4">
                         <Button variant="outline" asChild>
                             <Link href="/admin/journals">Cancel</Link>
                         </Button>

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
-import { PageProps, ThemeSettings } from '@/types';
+import { useEffect, useRef } from 'react';
+import type { PageProps, ThemeSettings } from '@/types';
 
 /**
  * Converts a hex color string (#RRGGBB) to oklch CSS format.
@@ -24,17 +24,24 @@ function hexToOklch(hex: string): string {
     const lb = toLinear(b);
 
     // Linear RGB to OKLab (using the Björn Ottosson method)
-    const l_ = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
-    const m_ = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
-    const s_ = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
+    const l_ = Math.cbrt(
+        0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb,
+    );
+    const m_ = Math.cbrt(
+        0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb,
+    );
+    const s_ = Math.cbrt(
+        0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb,
+    );
 
-    const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
-    const a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
-    const bOk = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+    const L = 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_;
+    const a = 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_;
+    const bOk = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
 
     // OKLab to OKLCh
     const C = Math.sqrt(a * a + bOk * bOk);
     let H = Math.atan2(bOk, a) * (180 / Math.PI);
+
     if (H < 0) {
         H += 360;
     }
@@ -138,23 +145,44 @@ function generateDarkVariant(hex: string, role: string): string {
     }
 
     // HSL to hex
-    const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
+    const hslToRgb = (
+        h: number,
+        s: number,
+        l: number,
+    ): [number, number, number] => {
         if (s === 0) {
             const v = Math.round(l * 255);
+
             return [v, v, v];
         }
 
         const hue2rgb = (p: number, q: number, t: number) => {
-            if (t < 0) { t += 1; }
-            if (t > 1) { t -= 1; }
-            if (t < 1 / 6) { return p + (q - p) * 6 * t; }
-            if (t < 1 / 2) { return q; }
-            if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
+            if (t < 0) {
+                t += 1;
+            }
+
+            if (t > 1) {
+                t -= 1;
+            }
+
+            if (t < 1 / 6) {
+                return p + (q - p) * 6 * t;
+            }
+
+            if (t < 1 / 2) {
+                return q;
+            }
+
+            if (t < 2 / 3) {
+                return p + (q - p) * (2 / 3 - t) * 6;
+            }
+
             return p;
         };
 
         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
         const p = 2 * l - q;
+
         return [
             Math.round(hue2rgb(p, q, h + 1 / 3) * 255),
             Math.round(hue2rgb(p, q, h) * 255),
@@ -163,7 +191,9 @@ function generateDarkVariant(hex: string, role: string): string {
     };
 
     const [rr, gg, bb] = hslToRgb(hue, sat, light);
-    const toHex = (v: number) => Math.min(255, Math.max(0, v)).toString(16).padStart(2, '0');
+    const toHex = (v: number) =>
+        Math.min(255, Math.max(0, v)).toString(16).padStart(2, '0');
+
     return `#${toHex(rr)}${toHex(gg)}${toHex(bb)}`;
 }
 
@@ -227,6 +257,7 @@ function applyTheme(themeSettings: ThemeSettings): void {
     // Apply direct color mappings
     for (const [cssVar, colorKey] of Object.entries(COLOR_VAR_MAP)) {
         const hex = colors[colorKey];
+
         if (hex) {
             const lightValue = hexToOklch(hex);
             const darkHex = generateDarkVariant(hex, colorKey);
@@ -245,9 +276,13 @@ function applyTheme(themeSettings: ThemeSettings): void {
     // Apply derived color mappings
     for (const [cssVar, sourceKey] of Object.entries(DERIVED_VARS)) {
         const hex = colors[sourceKey];
+
         if (hex) {
             const varName = cssVar.replace('--', '');
-            const darkHex = generateDarkVariant(hex, varName.replace(/-/g, '_'));
+            const darkHex = generateDarkVariant(
+                hex,
+                varName.replace(/-/g, '_'),
+            );
             const lightValue = hexToOklch(hex);
             const darkValue = hexToOklch(darkHex);
 
@@ -264,14 +299,23 @@ function applyTheme(themeSettings: ThemeSettings): void {
 
     // Typography
     const { typography } = themeSettings;
+
     if (typography.font_family) {
-        root.style.setProperty('--font-sans', `'${typography.font_family}', system-ui, sans-serif`);
+        root.style.setProperty(
+            '--font-sans',
+            `'${typography.font_family}', system-ui, sans-serif`,
+        );
         managedProperties.push('--font-sans');
     }
+
     if (typography.heading_font) {
-        root.style.setProperty('--font-serif', `'${typography.heading_font}', Georgia, serif`);
+        root.style.setProperty(
+            '--font-serif',
+            `'${typography.heading_font}', Georgia, serif`,
+        );
         managedProperties.push('--font-serif');
     }
+
     if (typography.base_size) {
         root.style.fontSize = typography.base_size;
         managedProperties.push('font-size');
@@ -285,10 +329,14 @@ function applyModeColors(isDark: boolean): void {
     const root = document.documentElement;
     const suffix = isDark ? '-dark' : '-light';
 
-    const allVars = [...Object.keys(COLOR_VAR_MAP), ...Object.keys(DERIVED_VARS)];
+    const allVars = [
+        ...Object.keys(COLOR_VAR_MAP),
+        ...Object.keys(DERIVED_VARS),
+    ];
 
     for (const cssVar of allVars) {
         const value = root.style.getPropertyValue(`${cssVar}${suffix}`);
+
         if (value) {
             root.style.setProperty(cssVar, value);
         }
@@ -300,6 +348,7 @@ function applyModeColors(isDark: boolean): void {
  */
 function clearTheme(): void {
     const root = document.documentElement;
+
     for (const prop of managedProperties) {
         if (prop === 'font-size') {
             root.style.removeProperty('font-size');
@@ -307,6 +356,7 @@ function clearTheme(): void {
             root.style.removeProperty(prop);
         }
     }
+
     managedProperties.length = 0;
 }
 
@@ -328,6 +378,7 @@ export function useJournalTheme(): void {
     useEffect(() => {
         if (!themeSettings) {
             clearTheme();
+
             return;
         }
 
@@ -340,7 +391,8 @@ export function useJournalTheme(): void {
                     mutation.type === 'attributes' &&
                     mutation.attributeName === 'class'
                 ) {
-                    const isDark = document.documentElement.classList.contains('dark');
+                    const isDark =
+                        document.documentElement.classList.contains('dark');
                     applyModeColors(isDark);
                 }
             }

@@ -1,12 +1,37 @@
-import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import { User } from '@/types';
-import { cn } from '@/lib/utils';
-import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'date-fns';
-import { Button } from '@/components/ui/button';
+import {
+    format,
+    formatDistanceToNow,
+    isToday,
+    isYesterday,
+    parseISO,
+} from 'date-fns';
+import {
+    Eye,
+    UserPlus,
+    Trash2,
+    Filter,
+    Users,
+    UserCog,
+    Search,
+    X,
+    MoreHorizontal,
+} from 'lucide-react';
+import { useState } from 'react';
+import BulkDeleteUserDialog from '@/components/bulk-delete-user-dialog';
+import DeleteUserDialog from '@/components/delete-user-dialog';
+import { Pagination } from '@/components/pagination'; // Reusable Pagination component
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -14,24 +39,21 @@ import {
     TableCell,
     TableHead,
     TableHeader,
-    TableRow
+    TableRow,
 } from '@/components/ui/table';
 import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuLabel
-} from '@/components/ui/dropdown-menu';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pagination } from '@/components/pagination'; // Reusable Pagination component
-import { Eye, UserPlus, Trash2, Filter, Users, UserCog, Search, X, MoreHorizontal } from 'lucide-react';
-import DeleteUserDialog from '@/components/delete-user-dialog';
-import BulkDeleteUserDialog from "@/components/bulk-delete-user-dialog";
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import usersRoutes from '@/routes/users';
+import type { User } from '@/types';
 
 interface PaginationMeta {
     current_page: number;
@@ -58,17 +80,30 @@ const breadcrumbItems = [
     },
 ];
 
-export default function IndexUser({ users, pagination }: { users: User[]; pagination: PaginationData }) {
-    const pageSizeValue = (typeof pagination?.meta?.per_page === 'number' && pagination.meta.per_page > 0)
-        ? pagination.meta.per_page
-        : 6;
+export default function IndexUser({
+    users,
+    pagination,
+}: {
+    users: User[];
+    pagination: PaginationData;
+}) {
+    const pageSizeValue =
+        typeof pagination?.meta?.per_page === 'number' &&
+        pagination.meta.per_page > 0
+            ? pagination.meta.per_page
+            : 6;
     const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-    const initialSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('search') || '' : '';
+    const initialSearch =
+        typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search).get('search') || ''
+            : '';
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedRole, setSelectedRole] = useState<string>('');
     const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [deleteDialogUserId, setDeleteDialogUserId] = useState<number | null>(null);
+    const [deleteDialogUserId, setDeleteDialogUserId] = useState<number | null>(
+        null,
+    );
 
     const filteredUsers: User[] = users;
 
@@ -76,27 +111,36 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         setIsLoading(true);
         const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
         const roleValue = selectedRole || 'all';
-        router.visit(`?page=${page}&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
-            onFinish: () => setIsLoading(false)
-        });
+        router.visit(
+            `?page=${page}&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`,
+            {
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handlePageSizeChange = (size: number) => {
         setIsLoading(true);
         const perPageValue = size === -1 ? 'all' : size;
         const roleValue = selectedRole || 'all';
-        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
-            onFinish: () => setIsLoading(false)
-        });
+        router.visit(
+            `?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`,
+            {
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleRoleChange = (role: string) => {
         setSelectedRole(role);
         setIsLoading(true);
         const perPageValue = role === 'all' ? 6 : 'all';
-        router.visit(`?page=1&per_page=${perPageValue}&role=${role}&search=${encodeURIComponent(searchTerm)}`, {
-            onFinish: () => setIsLoading(false)
-        });
+        router.visit(
+            `?page=1&per_page=${perPageValue}&role=${role}&search=${encodeURIComponent(searchTerm)}`,
+            {
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -104,11 +148,14 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         setIsLoading(true);
         const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
         const roleValue = selectedRole || 'all';
-        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`, {
-            preserveState: true,
-            replace: true,
-            onFinish: () => setIsLoading(false)
-        });
+        router.visit(
+            `?page=1&per_page=${perPageValue}&role=${roleValue}&search=${encodeURIComponent(searchTerm)}`,
+            {
+                preserveState: true,
+                replace: true,
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleClearSearch = () => {
@@ -116,11 +163,14 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         setIsLoading(true);
         const perPageValue = pageSizeValue === -1 ? 'all' : pageSizeValue;
         const roleValue = selectedRole || 'all';
-        router.visit(`?page=1&per_page=${perPageValue}&role=${roleValue}&search=`, {
-            preserveState: true,
-            replace: true,
-            onFinish: () => setIsLoading(false)
-        });
+        router.visit(
+            `?page=1&per_page=${perPageValue}&role=${roleValue}&search=`,
+            {
+                preserveState: true,
+                replace: true,
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleClearFilter = () => {
@@ -130,7 +180,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         router.visit(`?page=1&per_page=6&role=all&search=`, {
             preserveState: true,
             replace: true,
-            onFinish: () => setIsLoading(false)
+            onFinish: () => setIsLoading(false),
         });
     };
 
@@ -138,13 +188,13 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         if (selectedUsers.length === filteredUsers.length) {
             setSelectedUsers([]);
         } else {
-            setSelectedUsers(filteredUsers.map(user => user.id));
+            setSelectedUsers(filteredUsers.map((user) => user.id));
         }
     };
 
     const toggleSelectUser = (userId: number) => {
         if (selectedUsers.includes(userId)) {
-            setSelectedUsers(selectedUsers.filter(id => id !== userId));
+            setSelectedUsers(selectedUsers.filter((id) => id !== userId));
         } else {
             setSelectedUsers([...selectedUsers, userId]);
         }
@@ -155,39 +205,55 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
     };
 
     const roleOptions = [
-        { value: "all", label: "All Roles" },
-        { value: "editor_in_chief", label: "Editor-in-Chief" },
-        { value: "managing_editor", label: "Managing Editor" },
-        { value: "associate_editor", label: "Associate Editor" },
-        { value: "language_editor", label: "Language Editor" },
-        { value: "author", label: "Author" },
-        { value: "reviewer", label: "Reviewer" },
+        { value: 'all', label: 'All Roles' },
+        { value: 'editor_in_chief', label: 'Editor-in-Chief' },
+        { value: 'managing_editor', label: 'Managing Editor' },
+        { value: 'associate_editor', label: 'Associate Editor' },
+        { value: 'language_editor', label: 'Language Editor' },
+        { value: 'author', label: 'Author' },
+        { value: 'reviewer', label: 'Reviewer' },
     ];
 
-    const getRoleBadgeVariant = (role?: string): "default" | "secondary" | "destructive" | "outline" => {
-        if (!role) return "default";
-        const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-            editor_in_chief: "destructive",
-            managing_editor: "secondary",
-            associate_editor: "secondary",
-            language_editor: "secondary",
-            reviewer: "outline",
-            author: "default",
+    const getRoleBadgeVariant = (
+        role?: string,
+    ): 'default' | 'secondary' | 'destructive' | 'outline' => {
+        if (!role) {
+return 'default';
+}
+
+        const variants: Record<
+            string,
+            'default' | 'secondary' | 'destructive' | 'outline'
+        > = {
+            editor_in_chief: 'destructive',
+            managing_editor: 'secondary',
+            associate_editor: 'secondary',
+            language_editor: 'secondary',
+            reviewer: 'outline',
+            author: 'default',
         };
-        return variants[role] || "default";
+
+        return variants[role] || 'default';
     };
 
     const getRoleLabel = (role?: string): string => {
-        if (!role) return "No Role";
+        if (!role) {
+return 'No Role';
+}
+
         const labels: Record<string, string> = {
-            managing_editor: "Managing Editor",
-            author: "Author",
-            editor_in_chief: "Editor-in-Chief",
-            associate_editor: "Associate Editor",
-            language_editor: "Language Editor",
-            reviewer: "Reviewer",
+            managing_editor: 'Managing Editor',
+            author: 'Author',
+            editor_in_chief: 'Editor-in-Chief',
+            associate_editor: 'Associate Editor',
+            language_editor: 'Language Editor',
+            reviewer: 'Reviewer',
         };
-        return labels[role] || role.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+        return (
+            labels[role] ||
+            role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+        );
     };
 
     const formatDate = (date?: Date | string) => {
@@ -195,13 +261,14 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
             return {
                 full: '-',
                 short: '-',
-                relative: '-'
+                relative: '-',
             };
         }
 
         const dateObj = typeof date === 'string' ? parseISO(date) : date;
 
         let relative = '';
+
         if (isToday(dateObj)) {
             relative = 'Today';
         } else if (isYesterday(dateObj)) {
@@ -213,7 +280,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
         return {
             full: format(dateObj, 'EEEE, MMMM do, yyyy'),
             short: format(dateObj, 'MMM dd, yyyy'),
-            relative: relative
+            relative: relative,
         };
     };
 
@@ -222,25 +289,30 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
             <Head title="User Management" />
 
             <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">User Management</h1>
-                        <p className="text-muted-foreground mt-1">
+                        <h1 className="text-3xl font-bold text-foreground">
+                            User Management
+                        </h1>
+                        <p className="mt-1 text-muted-foreground">
                             Manage system users, permissions, and access control
                         </p>
                     </div>
                     <Button
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+                        className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
                         onClick={() => router.visit(usersRoutes.create.url())}
                     >
-                        <UserPlus className="w-4 h-4 mr-2" />
+                        <UserPlus className="mr-2 h-4 w-4" />
                         Add User
                     </Button>
                 </div>
 
-                <form className="flex flex-row items-center justify-between gap-4" onSubmit={handleSearch}>
-                    <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <form
+                    className="flex flex-row items-center justify-between gap-4"
+                    onSubmit={handleSearch}
+                >
+                    <div className="relative max-w-md flex-1">
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                         <Input
                             placeholder="Search users by name, username, email, country, or affiliation..."
                             value={searchTerm}
@@ -251,7 +323,7 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                                className="absolute top-1/2 right-2 h-6 w-6 -translate-y-1/2 transform p-0"
                                 type="button"
                                 onClick={handleClearSearch}
                                 disabled={isLoading}
@@ -260,15 +332,21 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                             </Button>
                         )}
                     </div>
-                    <div className="flex gap-2 items-center">
-                        <Select value={selectedRole} onValueChange={handleRoleChange}>
+                    <div className="flex items-center gap-2">
+                        <Select
+                            value={selectedRole}
+                            onValueChange={handleRoleChange}
+                        >
                             <SelectTrigger className="w-48">
-                                <Filter className="h-4 w-4 mr-2" />
+                                <Filter className="mr-2 h-4 w-4" />
                                 <SelectValue placeholder="Filter by role" />
                             </SelectTrigger>
                             <SelectContent>
                                 {roleOptions.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
                                         {option.label}
                                     </SelectItem>
                                 ))}
@@ -279,7 +357,10 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                             size="sm"
                             type="button"
                             onClick={handleClearFilter}
-                            disabled={isLoading || (selectedRole === 'all' && !searchTerm)}
+                            disabled={
+                                isLoading ||
+                                (selectedRole === 'all' && !searchTerm)
+                            }
                         >
                             Clear Filter
                         </Button>
@@ -287,16 +368,18 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                 </form>
 
                 {selectedUsers.length > 0 && (
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <div className="rounded-lg border border-primary/20 bg-primary/10 p-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 bg-primary/20 rounded-full flex items-center justify-center">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
                                     <span className="text-sm font-semibold text-primary">
                                         {selectedUsers.length}
                                     </span>
                                 </div>
                                 <span className="text-sm font-medium text-foreground">
-                                    {selectedUsers.length} user{selectedUsers.length > 1 ? "s" : ""} selected
+                                    {selectedUsers.length} user
+                                    {selectedUsers.length > 1 ? 's' : ''}{' '}
+                                    selected
                                 </span>
                             </div>
                             <div className="flex gap-2">
@@ -311,9 +394,11 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                 <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => setBulkDeleteDialogOpen(true)}
+                                    onClick={() =>
+                                        setBulkDeleteDialogOpen(true)
+                                    }
                                 >
-                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    <Trash2 className="mr-2 h-4 w-4" />
                                     Delete Selected
                                 </Button>
                             </div>
@@ -321,14 +406,18 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                     </div>
                 )}
 
-                <div className="overflow-hidden border rounded-lg">
+                <div className="overflow-hidden rounded-lg border">
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow className="bg-muted/50">
                                     <TableHead className="w-12">
                                         <Checkbox
-                                            checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
+                                            checked={
+                                                selectedUsers.length > 0 &&
+                                                selectedUsers.length ===
+                                                    filteredUsers.length
+                                            }
                                             onCheckedChange={toggleSelectAll}
                                             aria-label="Select all users"
                                         />
@@ -344,120 +433,230 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                     <TableHead></TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody className="bg-card divide-y divide-border">
+                            <TableBody className="divide-y divide-border bg-card">
                                 {isLoading ? (
-                                    Array.from({ length: pageSizeValue === -1 ? 6 : pageSizeValue }).map((_, idx) => (
-                                        <TableRow key={"skeleton-" + idx}>
-                                            <TableCell><Skeleton className="h-5 w-5 rounded" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                                            <TableCell><Skeleton className="h-8 w-8 rounded" /></TableCell>
+                                    Array.from({
+                                        length:
+                                            pageSizeValue === -1
+                                                ? 6
+                                                : pageSizeValue,
+                                    }).map((_, idx) => (
+                                        <TableRow key={'skeleton-' + idx}>
+                                            <TableCell>
+                                                <Skeleton className="h-5 w-5 rounded" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-32" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-24" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-40" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-32" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-24" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-24" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-20" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-4 w-20" />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className="h-8 w-8 rounded" />
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : filteredUsers.length > 0 ? (
                                     filteredUsers.map((user) => {
-                                        const isSelected = selectedUsers.includes(user.id);
-                                        const createdDate = formatDate(user.created_at);
-                                        const updatedDate = formatDate(user.updated_at);
+                                        const isSelected =
+                                            selectedUsers.includes(user.id);
+                                        const createdDate = formatDate(
+                                            user.created_at,
+                                        );
+                                        const updatedDate = formatDate(
+                                            user.updated_at,
+                                        );
 
                                         return (
                                             <TableRow
                                                 key={user.id}
                                                 className={cn(
-                                                    "hover:bg-muted/50 transition-all duration-200",
-                                                    isSelected && "bg-primary/5 dark:bg-primary/10"
+                                                    'transition-all duration-200 hover:bg-muted/50',
+                                                    isSelected &&
+                                                        'bg-primary/5 dark:bg-primary/10',
                                                 )}
                                             >
                                                 <TableCell>
                                                     <Checkbox
                                                         checked={isSelected}
-                                                        onCheckedChange={() => toggleSelectUser(user.id)}
+                                                        onCheckedChange={() =>
+                                                            toggleSelectUser(
+                                                                user.id,
+                                                            )
+                                                        }
                                                         aria-label={`Select ${user.firstname} ${user.lastname}`}
                                                     />
                                                 </TableCell>
 
-                                                <TableCell>{user.firstname} {user.lastname}</TableCell>
-                                                <TableCell>{user.username || '-'}</TableCell>
-                                                <TableCell>{user.email || '-'}</TableCell>
-                                                <TableCell>{user.affiliation || "-"}</TableCell>
-                                                <TableCell>{user.country || "-"}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={getRoleBadgeVariant(user.role)}>
-                                                        {getRoleLabel(user.role)}
+                                                    {user.firstname}{' '}
+                                                    {user.lastname}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {user.username || '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {user.email || '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {user.affiliation || '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {user.country || '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        variant={getRoleBadgeVariant(
+                                                            user.role,
+                                                        )}
+                                                    >
+                                                        {getRoleLabel(
+                                                            user.role,
+                                                        )}
                                                     </Badge>
                                                 </TableCell>
 
                                                 <TableCell>
                                                     <div className="space-y-1">
-                                                        <p className="text-sm font-medium text-foreground" title={createdDate.full}>
+                                                        <p
+                                                            className="text-sm font-medium text-foreground"
+                                                            title={
+                                                                createdDate.full
+                                                            }
+                                                        >
                                                             {createdDate.short}
                                                         </p>
-                                                        <p className="text-xs text-muted-foreground">{createdDate.relative}</p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {
+                                                                createdDate.relative
+                                                            }
+                                                        </p>
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell>
                                                     <div className="space-y-1">
-                                                        <p className="text-sm font-medium text-foreground" title={updatedDate.full}>
+                                                        <p
+                                                            className="text-sm font-medium text-foreground"
+                                                            title={
+                                                                updatedDate.full
+                                                            }
+                                                        >
                                                             {updatedDate.short}
                                                         </p>
-                                                        <p className="text-xs text-muted-foreground">{updatedDate.relative}</p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {
+                                                                updatedDate.relative
+                                                            }
+                                                        </p>
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell>
                                                     <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
+                                                        <DropdownMenuTrigger
+                                                            asChild
+                                                        >
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 className="h-8 w-8 p-0"
                                                             >
                                                                 <MoreHorizontal className="h-4 w-4" />
-                                                                <span className="sr-only">Open menu</span>
+                                                                <span className="sr-only">
+                                                                    Open menu
+                                                                </span>
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-48">
-                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuContent
+                                                            align="end"
+                                                            className="w-48"
+                                                        >
+                                                            <DropdownMenuLabel>
+                                                                Actions
+                                                            </DropdownMenuLabel>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuItem
                                                                 className="cursor-pointer"
-                                                                onClick={() => router.visit(usersRoutes.show.url({ user: user.id }))}
+                                                                onClick={() =>
+                                                                    router.visit(
+                                                                        usersRoutes.show.url(
+                                                                            {
+                                                                                user: user.id,
+                                                                            },
+                                                                        ),
+                                                                    )
+                                                                }
                                                             >
-                                                                <Eye className="w-4 h-4 mr-2 text-primary" />
+                                                                <Eye className="mr-2 h-4 w-4 text-primary" />
                                                                 View Details
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 className="cursor-pointer"
-                                                                onClick={() => router.visit(usersRoutes.edit.url({ user: user.id }))}
+                                                                onClick={() =>
+                                                                    router.visit(
+                                                                        usersRoutes.edit.url(
+                                                                            {
+                                                                                user: user.id,
+                                                                            },
+                                                                        ),
+                                                                    )
+                                                                }
                                                             >
-                                                                <UserCog className="w-4 h-4 mr-2 text-muted-foreground" />
+                                                                <UserCog className="mr-2 h-4 w-4 text-muted-foreground" />
                                                                 Edit User
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuItem
                                                                 className="cursor-pointer text-destructive focus:text-destructive"
-                                                                onClick={() => setDeleteDialogUserId(user.id)}
+                                                                onClick={() =>
+                                                                    setDeleteDialogUserId(
+                                                                        user.id,
+                                                                    )
+                                                                }
                                                             >
-                                                                <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                                                <Trash2 className="mr-2 h-4 w-4 text-destructive" />
                                                                 Delete User
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
-                                                    {deleteDialogUserId === user.id && (
+                                                    {deleteDialogUserId ===
+                                                        user.id && (
                                                         <DeleteUserDialog
                                                             open={true}
-                                                            onOpenChange={(open) => {
-                                                                if (!open) setDeleteDialogUserId(null);
+                                                            onOpenChange={(
+                                                                open,
+                                                            ) => {
+                                                                if (!open) {
+setDeleteDialogUserId(
+                                                                        null,
+                                                                    );
+}
                                                             }}
                                                             user={user}
-                                                            onSuccess={() => setDeleteDialogUserId(null)}
+                                                            onSuccess={() =>
+                                                                setDeleteDialogUserId(
+                                                                    null,
+                                                                )
+                                                            }
                                                         />
                                                     )}
                                                 </TableCell>
@@ -466,28 +665,39 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                                     })
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={11} className="h-64 text-center">
-                                            <div className="flex flex-col items-center justify-center text-muted-foreground space-y-4">
-                                                <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
+                                        <TableCell
+                                            colSpan={11}
+                                            className="h-64 text-center"
+                                        >
+                                            <div className="flex flex-col items-center justify-center space-y-4 text-muted-foreground">
+                                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                                                     <Users className="h-8 w-8" />
                                                 </div>
-                                                <div className="text-center space-y-2">
-                                                    <h3 className="text-lg font-semibold text-foreground">No users found</h3>
+                                                <div className="space-y-2 text-center">
+                                                    <h3 className="text-lg font-semibold text-foreground">
+                                                        No users found
+                                                    </h3>
                                                     <p className="text-sm">
-                                                        {searchTerm || selectedRole
-                                                            ? "Try adjusting your search or filters"
-                                                            : "Get started by adding your first user"}
+                                                        {searchTerm ||
+                                                        selectedRole
+                                                            ? 'Try adjusting your search or filters'
+                                                            : 'Get started by adding your first user'}
                                                     </p>
                                                 </div>
-                                                {!searchTerm && !selectedRole && (
-                                                    <Button
-                                                        className="mt-4"
-                                                        onClick={() => router.visit(usersRoutes.create.url())}
-                                                    >
-                                                        <UserPlus className="w-4 h-4 mr-2" />
-                                                        Add First User
-                                                    </Button>
-                                                )}
+                                                {!searchTerm &&
+                                                    !selectedRole && (
+                                                        <Button
+                                                            className="mt-4"
+                                                            onClick={() =>
+                                                                router.visit(
+                                                                    usersRoutes.create.url(),
+                                                                )
+                                                            }
+                                                        >
+                                                            <UserPlus className="mr-2 h-4 w-4" />
+                                                            Add First User
+                                                        </Button>
+                                                    )}
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -505,7 +715,9 @@ export default function IndexUser({ users, pagination }: { users: User[]; pagina
                         onPageSizeChange={handlePageSizeChange}
                         pageSizeOptions={[6, 12, 24, 48, 96, 'all']}
                         itemsLabel="Users per page"
-                        pageLabel={meta => `Page ${meta.current_page} of ${meta.last_page}`}
+                        pageLabel={(meta) =>
+                            `Page ${meta.current_page} of ${meta.last_page}`
+                        }
                         className="w-full"
                     />
                 )}

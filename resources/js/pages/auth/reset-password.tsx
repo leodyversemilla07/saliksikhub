@@ -1,14 +1,15 @@
-import { useState, FormEventHandler } from 'react';
 import { useForm } from '@inertiajs/react';
-import Breadcrumb from '@/components/breadcrumb';
-import { PageProps } from '@/types';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from 'lucide-react';
+import type { FormEventHandler } from 'react';
+import { useState } from 'react';
+import Breadcrumb from '@/components/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import PublicLayout from '@/layouts/public-layout';
 import { home } from '@/routes';
 import password from '@/routes/password';
-import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 
 export default function ResetPassword({
     token,
@@ -22,7 +23,7 @@ export default function ResetPassword({
 
     const breadcrumbItems = [
         { label: 'Home', href: home.url() },
-        { label: 'Reset Password' }
+        { label: 'Reset Password' },
     ];
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -41,11 +42,11 @@ export default function ResetPassword({
 
     return (
         <PublicLayout title="Reset Password">
-            <div className="flex-grow bg-muted flex items-center justify-center pt-12 pb-12 sm:px-6 lg:px-8">
+            <div className="flex flex-grow items-center justify-center bg-muted pt-12 pb-12 sm:px-6 lg:px-8">
                 <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                     <Breadcrumb items={breadcrumbItems} />
                     <div className="mb-8 text-left">
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-12">
+                        <h1 className="mb-12 text-3xl font-bold text-foreground md:text-4xl">
                             Reset Password
                         </h1>
                         <p className="mt-2 text-sm text-muted-foreground">
@@ -54,34 +55,49 @@ export default function ResetPassword({
                     </div>
                     <form onSubmit={submit} className="space-y-6 text-left">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                            <Label htmlFor="email" className="text-foreground">
+                                Email Address
+                            </Label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={data.email}
-                                className="w-96 bg-muted text-muted-foreground cursor-not-allowed rounded-md"
+                                className="w-96 cursor-not-allowed rounded-md bg-muted text-muted-foreground"
                                 readOnly
                             />
-                            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                            {errors.email && (
+                                <p className="text-sm text-destructive">
+                                    {errors.email}
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-foreground">New Password *</Label>
+                            <Label
+                                htmlFor="password"
+                                className="text-foreground"
+                            >
+                                New Password *
+                            </Label>
                             <div className="relative w-96">
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className={`w-full pr-10 rounded-md ${errors.password ? 'border-destructive' : ''}`}
+                                    className={`w-full rounded-md pr-10 ${errors.password ? 'border-destructive' : ''}`}
                                     placeholder="••••••••"
-                                    onChange={(e) => setData('password', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
                                     autoFocus
                                     required
                                 />
                                 <button
                                     type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10"
-                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute top-1/2 right-2 z-10 -translate-y-1/2"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
                                 >
                                     {showPassword ? (
                                         <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
@@ -90,25 +106,47 @@ export default function ResetPassword({
                                     )}
                                 </button>
                             </div>
-                            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                            {errors.password && (
+                                <p className="text-sm text-destructive">
+                                    {errors.password}
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password_confirmation" className="text-foreground">Confirm New Password *</Label>
+                            <Label
+                                htmlFor="password_confirmation"
+                                className="text-foreground"
+                            >
+                                Confirm New Password *
+                            </Label>
                             <div className="relative w-96">
                                 <Input
                                     id="password_confirmation"
-                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    type={
+                                        showConfirmPassword
+                                            ? 'text'
+                                            : 'password'
+                                    }
                                     value={data.password_confirmation}
-                                    className={`w-full pr-10 rounded-md ${errors.password_confirmation ? 'border-destructive' : ''}`}
+                                    className={`w-full rounded-md pr-10 ${errors.password_confirmation ? 'border-destructive' : ''}`}
                                     placeholder="••••••••"
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'password_confirmation',
+                                            e.target.value,
+                                        )
+                                    }
                                     required
                                 />
                                 <button
                                     type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute top-1/2 right-2 z-10 -translate-y-1/2"
+                                    onClick={() =>
+                                        setShowConfirmPassword(
+                                            !showConfirmPassword,
+                                        )
+                                    }
                                 >
                                     {showConfirmPassword ? (
                                         <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
@@ -117,7 +155,11 @@ export default function ResetPassword({
                                     )}
                                 </button>
                             </div>
-                            {errors.password_confirmation && <p className="text-sm text-destructive">{errors.password_confirmation}</p>}
+                            {errors.password_confirmation && (
+                                <p className="text-sm text-destructive">
+                                    {errors.password_confirmation}
+                                </p>
+                            )}
                         </div>
 
                         <Button type="submit" disabled={processing}>

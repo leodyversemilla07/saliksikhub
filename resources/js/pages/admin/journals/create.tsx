@@ -1,12 +1,17 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, BookOpen } from 'lucide-react';
+import type { FormEventHandler} from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -14,8 +19,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, BookOpen } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import admin from '@/routes/admin';
 
 interface Institution {
     id: number;
@@ -54,6 +61,7 @@ export default function CreateJournal({ institutions }: Props) {
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('logo', file);
             setLogoPreview(URL.createObjectURL(file));
@@ -62,6 +70,7 @@ export default function CreateJournal({ institutions }: Props) {
 
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('cover_image', file);
             setCoverPreview(URL.createObjectURL(file));
@@ -87,7 +96,9 @@ export default function CreateJournal({ institutions }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Create Journal</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            Create Journal
+                        </h1>
                         <p className="text-muted-foreground">
                             Add a new journal to the system
                         </p>
@@ -106,109 +117,169 @@ export default function CreateJournal({ institutions }: Props) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="institution_id">Institution *</Label>
+                                        <Label htmlFor="institution_id">
+                                            Institution *
+                                        </Label>
                                         <Select
                                             value={data.institution_id}
-                                            onValueChange={(value) => setData('institution_id', value)}
+                                            onValueChange={(value) =>
+                                                setData('institution_id', value)
+                                            }
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select an institution" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {institutions.map((institution) => (
-                                                    <SelectItem
-                                                        key={institution.id}
-                                                        value={institution.id.toString()}
-                                                    >
-                                                        {institution.name}
-                                                        {institution.abbreviation && ` (${institution.abbreviation})`}
-                                                    </SelectItem>
-                                                ))}
+                                                {institutions.map(
+                                                    (institution) => (
+                                                        <SelectItem
+                                                            key={institution.id}
+                                                            value={institution.id.toString()}
+                                                        >
+                                                            {institution.name}
+                                                            {institution.abbreviation &&
+                                                                ` (${institution.abbreviation})`}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
                                             </SelectContent>
                                         </Select>
                                         {errors.institution_id && (
-                                            <p className="text-sm text-destructive">{errors.institution_id}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.institution_id}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Journal Name *</Label>
+                                        <Label htmlFor="name">
+                                            Journal Name *
+                                        </Label>
                                         <Input
                                             id="name"
                                             value={data.name}
-                                            onChange={(e) => setData('name', e.target.value)}
+                                            onChange={(e) =>
+                                                setData('name', e.target.value)
+                                            }
                                             placeholder="e.g., Research Journal"
                                         />
                                         {errors.name && (
-                                            <p className="text-sm text-destructive">{errors.name}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.name}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="abbreviation">Abbreviation</Label>
+                                        <Label htmlFor="abbreviation">
+                                            Abbreviation
+                                        </Label>
                                         <Input
                                             id="abbreviation"
                                             value={data.abbreviation}
-                                            onChange={(e) => setData('abbreviation', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'abbreviation',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g., MRJ"
                                         />
                                         {errors.abbreviation && (
-                                            <p className="text-sm text-destructive">{errors.abbreviation}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.abbreviation}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="description">Description</Label>
+                                        <Label htmlFor="description">
+                                            Description
+                                        </Label>
                                         <Textarea
                                             id="description"
                                             value={data.description}
-                                            onChange={(e) => setData('description', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'description',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Brief description of the journal"
                                             rows={4}
                                         />
                                         {errors.description && (
-                                            <p className="text-sm text-destructive">{errors.description}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.description}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="issn">ISSN (Print)</Label>
+                                            <Label htmlFor="issn">
+                                                ISSN (Print)
+                                            </Label>
                                             <Input
                                                 id="issn"
                                                 value={data.issn}
-                                                onChange={(e) => setData('issn', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'issn',
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder="e.g., 1234-5678"
                                             />
                                             {errors.issn && (
-                                                <p className="text-sm text-destructive">{errors.issn}</p>
+                                                <p className="text-sm text-destructive">
+                                                    {errors.issn}
+                                                </p>
                                             )}
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="eissn">eISSN (Online)</Label>
+                                            <Label htmlFor="eissn">
+                                                eISSN (Online)
+                                            </Label>
                                             <Input
                                                 id="eissn"
                                                 value={data.eissn}
-                                                onChange={(e) => setData('eissn', e.target.value)}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'eissn',
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder="e.g., 1234-5679"
                                             />
                                             {errors.eissn && (
-                                                <p className="text-sm text-destructive">{errors.eissn}</p>
+                                                <p className="text-sm text-destructive">
+                                                    {errors.eissn}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="publication_frequency">Publication Frequency</Label>
+                                        <Label htmlFor="publication_frequency">
+                                            Publication Frequency
+                                        </Label>
                                         <Input
                                             id="publication_frequency"
                                             value={data.publication_frequency}
-                                            onChange={(e) => setData('publication_frequency', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'publication_frequency',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g., Bi-annual, Quarterly"
                                         />
                                         {errors.publication_frequency && (
-                                            <p className="text-sm text-destructive">{errors.publication_frequency}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.publication_frequency}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -223,30 +294,48 @@ export default function CreateJournal({ institutions }: Props) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="submission_guidelines">Submission Guidelines</Label>
+                                        <Label htmlFor="submission_guidelines">
+                                            Submission Guidelines
+                                        </Label>
                                         <Textarea
                                             id="submission_guidelines"
                                             value={data.submission_guidelines}
-                                            onChange={(e) => setData('submission_guidelines', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'submission_guidelines',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Enter submission guidelines for authors"
                                             rows={5}
                                         />
                                         {errors.submission_guidelines && (
-                                            <p className="text-sm text-destructive">{errors.submission_guidelines}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.submission_guidelines}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="review_policy">Review Policy</Label>
+                                        <Label htmlFor="review_policy">
+                                            Review Policy
+                                        </Label>
                                         <Textarea
                                             id="review_policy"
                                             value={data.review_policy}
-                                            onChange={(e) => setData('review_policy', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'review_policy',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Enter peer review policy"
                                             rows={5}
                                         />
                                         {errors.review_policy && (
-                                            <p className="text-sm text-destructive">{errors.review_policy}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.review_policy}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -269,10 +358,10 @@ export default function CreateJournal({ institutions }: Props) {
                                                 <img
                                                     src={logoPreview}
                                                     alt="Logo preview"
-                                                    className="h-16 w-16 rounded object-contain border"
+                                                    className="h-16 w-16 rounded border object-contain"
                                                 />
                                             ) : (
-                                                <div className="h-16 w-16 rounded border-2 border-dashed flex items-center justify-center">
+                                                <div className="flex h-16 w-16 items-center justify-center rounded border-2 border-dashed">
                                                     <BookOpen className="h-6 w-6 text-muted-foreground" />
                                                 </div>
                                             )}
@@ -284,28 +373,33 @@ export default function CreateJournal({ institutions }: Props) {
                                                     onChange={handleLogoChange}
                                                     className="cursor-pointer"
                                                 />
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Max 2MB. Recommended: 200x200px
+                                                <p className="mt-1 text-xs text-muted-foreground">
+                                                    Max 2MB. Recommended:
+                                                    200x200px
                                                 </p>
                                             </div>
                                         </div>
                                         {errors.logo && (
-                                            <p className="text-sm text-destructive">{errors.logo}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.logo}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="cover_image">Cover Image</Label>
+                                        <Label htmlFor="cover_image">
+                                            Cover Image
+                                        </Label>
                                         <div className="space-y-2">
                                             {coverPreview ? (
                                                 <img
                                                     src={coverPreview}
                                                     alt="Cover preview"
-                                                    className="w-full h-32 rounded object-cover border"
+                                                    className="h-32 w-full rounded border object-cover"
                                                 />
                                             ) : (
-                                                <div className="w-full h-32 rounded border-2 border-dashed flex items-center justify-center">
-                                                    <span className="text-muted-foreground text-sm">
+                                                <div className="flex h-32 w-full items-center justify-center rounded border-2 border-dashed">
+                                                    <span className="text-sm text-muted-foreground">
                                                         Cover image preview
                                                     </span>
                                                 </div>
@@ -322,7 +416,9 @@ export default function CreateJournal({ institutions }: Props) {
                                             </p>
                                         </div>
                                         {errors.cover_image && (
-                                            <p className="text-sm text-destructive">{errors.cover_image}</p>
+                                            <p className="text-sm text-destructive">
+                                                {errors.cover_image}
+                                            </p>
                                         )}
                                     </div>
                                 </CardContent>
@@ -335,15 +431,20 @@ export default function CreateJournal({ institutions }: Props) {
                                 <CardContent>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <Label htmlFor="is_active">Active</Label>
+                                            <Label htmlFor="is_active">
+                                                Active
+                                            </Label>
                                             <p className="text-sm text-muted-foreground">
-                                                Only active journals accept submissions
+                                                Only active journals accept
+                                                submissions
                                             </p>
                                         </div>
                                         <Switch
                                             id="is_active"
                                             checked={data.is_active}
-                                            onCheckedChange={(checked) => setData('is_active', checked)}
+                                            onCheckedChange={(checked) =>
+                                                setData('is_active', checked)
+                                            }
                                         />
                                     </div>
                                 </CardContent>
@@ -351,7 +452,7 @@ export default function CreateJournal({ institutions }: Props) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 mt-6">
+                    <div className="mt-6 flex justify-end gap-4">
                         <Button variant="outline" asChild>
                             <Link href="/admin/journals">Cancel</Link>
                         </Button>

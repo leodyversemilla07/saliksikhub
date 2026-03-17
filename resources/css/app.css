@@ -9,10 +9,10 @@
 
 @theme {
     /* Typography - Scholarly Aesthetic */
-    --font-serif:
-        'Merriweather', 'Georgia', 'Times New Roman', serif;
+    --font-serif: 'Merriweather', 'Georgia', 'Times New Roman', serif;
     --font-sans:
-        'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-mono:
         'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 
@@ -87,178 +87,115 @@
     /* Light Mode - Scholarly Library Aesthetic */
 
     /* Surfaces - Parchment-inspired */
-    --background:
-        oklch(1 0 0);          /* Warm off-white, like paper */
-    --foreground:
-        oklch(0.145 0 0);         /* Charcoal text */
+    --background: oklch(1 0 0); /* Warm off-white, like paper */
+    --foreground: oklch(0.145 0 0); /* Charcoal text */
 
-    --card:
-        oklch(1 0 0);               /* Subtle parchment cards */
-    --card-foreground:
-        oklch(0.145 0 0);    /* Charcoal */
+    --card: oklch(1 0 0); /* Subtle parchment cards */
+    --card-foreground: oklch(0.145 0 0); /* Charcoal */
 
-    --popover:
-        oklch(1 0 0);
-    --popover-foreground:
-        oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
 
     /* Primary - Oxford Blue (Authoritative, Academic) */
-    --primary:
-        oklch(0.205 0 0);            /* Deep scholarly blue */
-    --primary-foreground:
-        oklch(0.985 0 0);      /* White text on blue */
+    --primary: oklch(0.205 0 0); /* Deep scholarly blue */
+    --primary-foreground: oklch(0.985 0 0); /* White text on blue */
 
     /* Secondary - Soft Parchment Tones */
-    --secondary:
-        oklch(0.97 0 0);           /* Light warm gray */
-    --secondary-foreground:
-        oklch(0.205 0 0); /* Dark charcoal */
+    --secondary: oklch(0.97 0 0); /* Light warm gray */
+    --secondary-foreground: oklch(0.205 0 0); /* Dark charcoal */
 
     /* Muted - Archive Gray */
-    --muted:
-        oklch(0.97 0 0);              /* Subtle gray background */
-    --muted-foreground:
-        oklch(0.556 0 0);   /* Slate text */
+    --muted: oklch(0.97 0 0); /* Subtle gray background */
+    --muted-foreground: oklch(0.556 0 0); /* Slate text */
 
     /* Accent - Burgundy (Academic Robes) */
-    --accent:
-        oklch(0.97 0 0);              /* Rich burgundy */
-    --accent-foreground:
-        oklch(0.205 0 0);       /* White text */
+    --accent: oklch(0.97 0 0); /* Rich burgundy */
+    --accent-foreground: oklch(0.205 0 0); /* White text */
 
     /* Semantic Colors */
-    --destructive:
-        oklch(0.577 0.245 27.325);         /* Crimson for errors */
+    --destructive: oklch(0.577 0.245 27.325); /* Crimson for errors */
     --destructive-foreground: oklch(0.98 0 0);
 
     /* UI Elements */
-    --border:
-        oklch(0.922 0 0);             /* Pearl - subtle borders */
-    --input:
-        oklch(0.922 0 0);               /* Slightly darker than background */
-    --ring:
-        oklch(0.708 0 0);               /* Oxford blue focus ring */
+    --border: oklch(0.922 0 0); /* Pearl - subtle borders */
+    --input: oklch(0.922 0 0); /* Slightly darker than background */
+    --ring: oklch(0.708 0 0); /* Oxford blue focus ring */
 
     /* Charts - Academic Color Palette */
-    --chart-1:
-        oklch(0.646 0.222 41.116);            /* Oxford blue */
-    --chart-2:
-        oklch(0.6 0.118 184.704);             /* Burgundy */
-    --chart-3:
-        oklch(0.398 0.07 227.392);            /* Forest green */
-    --chart-4:
-        oklch(0.828 0.189 84.429);            /* Prussian blue */
-    --chart-5:
-        oklch(0.769 0.188 70.08);             /* Terracotta */
+    --chart-1: oklch(0.646 0.222 41.116); /* Oxford blue */
+    --chart-2: oklch(0.6 0.118 184.704); /* Burgundy */
+    --chart-3: oklch(0.398 0.07 227.392); /* Forest green */
+    --chart-4: oklch(0.828 0.189 84.429); /* Prussian blue */
+    --chart-5: oklch(0.769 0.188 70.08); /* Terracotta */
 
     /* Border Radius */
-    --radius:
-        0.625rem;                          /* 4px - minimal, traditional */
+    --radius: 0.625rem; /* 4px - minimal, traditional */
 
     /* Sidebar - Library Shelf Aesthetic */
-    --sidebar:
-        oklch(0.985 0 0);            /* Soft gray, like library shelves */
-    --sidebar-foreground:
-        oklch(0.145 0 0); /* Charcoal */
-    --sidebar-primary:
-        oklch(0.205 0 0);    /* Oxford blue */
-    --sidebar-primary-foreground:
-        oklch(0.985 0 0);
-    --sidebar-accent:
-        oklch(0.97 0 0);     /* Light gray hover */
-    --sidebar-accent-foreground:
-        oklch(0.205 0 0);
-    --sidebar-border:
-        oklch(0.922 0 0);     /* Pearl borders */
-    --sidebar-ring:
-        oklch(0.708 0 0);       /* Oxford blue */
+    --sidebar: oklch(0.985 0 0); /* Soft gray, like library shelves */
+    --sidebar-foreground: oklch(0.145 0 0); /* Charcoal */
+    --sidebar-primary: oklch(0.205 0 0); /* Oxford blue */
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0); /* Light gray hover */
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0); /* Pearl borders */
+    --sidebar-ring: oklch(0.708 0 0); /* Oxford blue */
 }
 
 .dark {
     /* Dark Mode - Library at Night Aesthetic */
 
     /* Surfaces - Warm Dark (not pure black) */
-    --background:
-        oklch(0.145 0 0);         /* Dark charcoal with warmth */
-    --foreground:
-        oklch(0.985 0 0);          /* Warm off-white, not harsh */
+    --background: oklch(0.145 0 0); /* Dark charcoal with warmth */
+    --foreground: oklch(0.985 0 0); /* Warm off-white, not harsh */
 
-    --card:
-        oklch(0.205 0 0);               /* Slightly lighter cards */
-    --card-foreground:
-        oklch(0.985 0 0);
+    --card: oklch(0.205 0 0); /* Slightly lighter cards */
+    --card-foreground: oklch(0.985 0 0);
 
-    --popover:
-        oklch(0.205 0 0);
-    --popover-foreground:
-        oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
 
     /* Primary - Lighter Oxford Blue for dark backgrounds */
-    --primary:
-        oklch(0.922 0 0);            /* Softer blue */
-    --primary-foreground:
-        oklch(0.205 0 0); /* Dark text on light blue */
+    --primary: oklch(0.922 0 0); /* Softer blue */
+    --primary-foreground: oklch(0.205 0 0); /* Dark text on light blue */
 
     /* Secondary */
-    --secondary:
-        oklch(0.269 0 0);          /* Dark warm gray */
-    --secondary-foreground:
-        oklch(0.985 0 0);
+    --secondary: oklch(0.269 0 0); /* Dark warm gray */
+    --secondary-foreground: oklch(0.985 0 0);
 
     /* Muted */
-    --muted:
-        oklch(0.269 0 0);
-    --muted-foreground:
-        oklch(0.708 0 0);   /* Light gray text */
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0); /* Light gray text */
 
     /* Accent - Lighter Burgundy */
-    --accent:
-        oklch(0.269 0 0);              /* Lighter burgundy */
-    --accent-foreground:
-        oklch(0.985 0 0);
+    --accent: oklch(0.269 0 0); /* Lighter burgundy */
+    --accent-foreground: oklch(0.985 0 0);
 
     /* Semantic Colors - Adjusted for dark mode */
-    --destructive:
-        oklch(0.704 0.191 22.216);         /* Lighter crimson */
+    --destructive: oklch(0.704 0.191 22.216); /* Lighter crimson */
     --destructive-foreground: oklch(0.95 0.01 85);
 
     /* UI Elements */
-    --border:
-        oklch(1 0 0 / 10%);             /* Dark borders */
-    --input:
-        oklch(1 0 0 / 15%);
-    --ring:
-        oklch(0.556 0 0);               /* Lighter blue ring */
+    --border: oklch(1 0 0 / 10%); /* Dark borders */
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0); /* Lighter blue ring */
 
     /* Charts */
-    --chart-1:
-        oklch(0.488 0.243 264.376);
-    --chart-2:
-        oklch(0.696 0.17 162.48);
-    --chart-3:
-        oklch(0.769 0.188 70.08);
-    --chart-4:
-        oklch(0.627 0.265 303.9);
-    --chart-5:
-        oklch(0.645 0.246 16.439);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
 
     /* Sidebar */
-    --sidebar:
-        oklch(0.205 0 0);
-    --sidebar-foreground:
-        oklch(0.985 0 0);
-    --sidebar-primary:
-        oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground:
-        oklch(0.985 0 0);
-    --sidebar-accent:
-        oklch(0.269 0 0);
-    --sidebar-accent-foreground:
-        oklch(0.985 0 0);
-    --sidebar-border:
-        oklch(1 0 0 / 10%);
-    --sidebar-ring:
-        oklch(0.556 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -269,19 +206,25 @@
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-serif);
-        font-feature-settings: 'kern' 1, 'liga' 1;
+        font-feature-settings:
+            'kern' 1,
+            'liga' 1;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 
     /* Typography Hierarchy - Scholarly Style */
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
         font-family: var(--font-serif);
         font-weight: 700;
         letter-spacing: -0.02em;
     }
 
-    h5, h6 {
+    h5,
+    h6 {
         font-family: var(--font-sans);
         font-weight: 600;
         text-transform: uppercase;
@@ -290,7 +233,11 @@
     }
 
     /* UI Elements use sans-serif */
-    button, input, select, textarea, label {
+    button,
+    input,
+    select,
+    textarea,
+    label {
         font-family: var(--font-sans);
     }
 
@@ -301,12 +248,16 @@
     }
 
     /* Monospace for technical content */
-    code, kbd, samp, pre {
+    code,
+    kbd,
+    samp,
+    pre {
         font-family: var(--font-mono);
     }
 
     /* Improved readability for article content */
-    article, .prose {
+    article,
+    .prose {
         font-family: var(--font-serif);
         font-size: 1rem;
         line-height: 1.7;
@@ -337,82 +288,44 @@
 */
 
 @theme inline {
-    --color-sidebar:
-        var(--sidebar);
-    --color-sidebar-foreground:
-        var(--sidebar-foreground);
-    --color-sidebar-primary:
-        var(--sidebar-primary);
-    --color-sidebar-primary-foreground:
-        var(--sidebar-primary-foreground);
-    --color-sidebar-accent:
-        var(--sidebar-accent);
-    --color-sidebar-accent-foreground:
-        var(--sidebar-accent-foreground);
-    --color-sidebar-border:
-        var(--sidebar-border);
-    --color-sidebar-ring:
-        var(--sidebar-ring);
-    --color-chart-5:
-        var(--chart-5);
-    --color-chart-4:
-        var(--chart-4);
-    --color-chart-3:
-        var(--chart-3);
-    --color-chart-2:
-        var(--chart-2);
-    --color-chart-1:
-        var(--chart-1);
-    --color-ring:
-        var(--ring);
-    --color-input:
-        var(--input);
-    --color-border:
-        var(--border);
-    --color-destructive:
-        var(--destructive);
-    --color-accent-foreground:
-        var(--accent-foreground);
-    --color-accent:
-        var(--accent);
-    --color-muted-foreground:
-        var(--muted-foreground);
-    --color-muted:
-        var(--muted);
-    --color-secondary-foreground:
-        var(--secondary-foreground);
-    --color-secondary:
-        var(--secondary);
-    --color-primary-foreground:
-        var(--primary-foreground);
-    --color-primary:
-        var(--primary);
-    --color-popover-foreground:
-        var(--popover-foreground);
-    --color-popover:
-        var(--popover);
-    --color-card-foreground:
-        var(--card-foreground);
-    --color-card:
-        var(--card);
-    --color-foreground:
-        var(--foreground);
-    --color-background:
-        var(--background);
-    --radius-sm:
-        calc(var(--radius) - 4px);
-    --radius-md:
-        calc(var(--radius) - 2px);
-    --radius-lg:
-        var(--radius);
-    --radius-xl:
-        calc(var(--radius) + 4px);
-    --radius-2xl:
-        calc(var(--radius) + 8px);
-    --radius-3xl:
-        calc(var(--radius) + 12px);
-    --radius-4xl:
-        calc(var(--radius) + 16px);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) + 8px);
+    --radius-3xl: calc(var(--radius) + 12px);
+    --radius-4xl: calc(var(--radius) + 16px);
 }
 
 /*
@@ -420,10 +333,10 @@
 */
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
