@@ -8,7 +8,7 @@
         "build": "vite build",
         "dev": "vite",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-        "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+        "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix --quiet"
     },
     "overrides": {
         "axios": "^1.13.4"
