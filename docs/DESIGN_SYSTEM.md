@@ -1,4 +1,4 @@
-# Saliksikhub Design System
+# SaliksikHub Design System
 ## Library & Scholarly Aesthetic
 
 > A comprehensive design system for academic journal management, inspired by traditional library and scholarly publishing aesthetics while maintaining modern usability.
@@ -514,4 +514,4 @@ When proposing design changes:
 
 ---
 
-*This design system is maintained by the Saliksikhub team and is open for community contributions.*
+*This design system is maintained by the SaliksikHub team and is open for community contributions.*

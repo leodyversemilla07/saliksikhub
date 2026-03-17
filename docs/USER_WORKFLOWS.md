@@ -1,6 +1,6 @@
-# User Workflows - Saliksikhub Research Journal Management System
+# User Workflows - SaliksikHub Research Journal Management System
 
-This document outlines the detailed workflows for each user role in Saliksikhub, a comprehensive open-source research journal management system designed for universities, colleges, and research institutions.
+This document outlines the detailed workflows for each user role in SaliksikHub, a comprehensive open-source research journal management system designed for universities, colleges, and research institutions.
 
 > **Note for Adopting Institutions**: This workflow documentation can be customized to match your institution's specific policies and procedures. The system is designed to be flexible and adaptable to various academic publishing contexts.
 
@@ -951,7 +951,7 @@ Associate Editors manage assigned manuscripts, coordinate peer review, and make 
 
 ### Overview
 
-Reviewers evaluate manuscripts, provide constructive feedback, and make recommendations to editors. Peer review is the cornerstone of academic publishing, and Saliksikhub makes it easy to participate as a reviewer.
+Reviewers evaluate manuscripts, provide constructive feedback, and make recommendations to editors. Peer review is the cornerstone of academic publishing, and SaliksikHub makes it easy to participate as a reviewer.
 
 > **💡 For New Reviewers**: If you're new to peer review, the system provides templates and guidelines to help you write effective, constructive reviews. See the [Reviewer Best Practices](#reviewer-best-practices) section below.
 
@@ -1690,7 +1690,7 @@ Each user role has access to:
 
 ## System Customization Guide
 
-Saliksikhub is designed to be easily customized for your institution. This section provides guidance on adapting the workflows to your needs.
+SaliksikHub is designed to be easily customized for your institution. This section provides guidance on adapting the workflows to your needs.
 
 ### Branding & Identity
 
@@ -1752,7 +1752,7 @@ All automated emails can be customized in the system. Key templates include:
 
 ### Multi-Journal Configuration
 
-Saliksikhub supports managing multiple journals from a single installation:
+SaliksikHub supports managing multiple journals from a single installation:
 
 - Each journal can have its own branding
 - Separate editorial boards per journal
@@ -1786,6 +1786,6 @@ Saliksikhub supports managing multiple journals from a single installation:
 
 **Document Version**: 2.0  
 **Last Updated**: December 2025  
-**System**: Saliksikhub Research Journal Management System  
+**System**: SaliksikHub Research Journal Management System  
 **License**: MIT License - Free for institutional use  
 **Related Documents**: PRD.md, MANUSCRIPT_STATUSES.md, roles.md, README.md

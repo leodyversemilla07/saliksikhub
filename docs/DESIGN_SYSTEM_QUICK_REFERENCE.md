@@ -1,4 +1,4 @@
-# Saliksikhub Design System - Quick Reference
+# SaliksikHub Design System - Quick Reference
 
 ## 🎨 Color Palette
 

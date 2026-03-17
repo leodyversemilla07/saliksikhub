@@ -1,6 +1,6 @@
 # Design System Implementation Guide
 
-This guide helps you implement the Scholarly Design System in Saliksikhub.
+This guide helps you implement the Scholarly Design System in SaliksikHub.
 
 ## Quick Start
 

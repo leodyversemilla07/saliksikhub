@@ -1,14 +1,14 @@
-# Product Requirements Document: Saliksikhub Research Journal Management System
+# Product Requirements Document: SaliksikHub Research Journal Management System
 
 ## 1. Executive Summary
 
 ### 1.1 Product Overview
 
-**Saliksikhub** (from the Filipino word "saliksik" meaning "research") is a comprehensive, open-source digital platform designed for universities, colleges, and research institutions to streamline the entire lifecycle of academic journal publishing. The system handles everything from manuscript submission through peer review, editorial management, production, and publication.
+**SaliksikHub** (from the Filipino word "saliksik" meaning "research") is a comprehensive, open-source digital platform designed for universities, colleges, and research institutions to streamline the entire lifecycle of academic journal publishing. The system handles everything from manuscript submission through peer review, editorial management, production, and publication.
 
-Saliksikhub serves researchers, faculty members, editors, reviewers, and administrators in managing scholarly content efficiently while promoting open access research and supporting institutional research goals.
+SaliksikHub serves researchers, faculty members, editors, reviewers, and administrators in managing scholarly content efficiently while promoting open access research and supporting institutional research goals.
 
-> **Open Source & Customizable**: Saliksikhub is released under the MIT License, allowing institutions to freely use, modify, and distribute the software to meet their specific needs.
+> **Open Source & Customizable**: SaliksikHub is released under the MIT License, allowing institutions to freely use, modify, and distribute the software to meet their specific needs.
 
 ### 1.2 Business Objectives
 
@@ -480,7 +480,7 @@ Saliksikhub serves researchers, faculty members, editors, reviewers, and adminis
 
 ### 7.1 Publishing Standards
 
-Saliksikhub is designed to meet international publishing standards while allowing institutions to configure compliance for their specific regional requirements.
+SaliksikHub is designed to meet international publishing standards while allowing institutions to configure compliance for their specific regional requirements.
 
 | Standard | Description | Configuration |
 |----------|-------------|---------------|
@@ -498,7 +498,7 @@ Saliksikhub is designed to meet international publishing standards while allowin
 
 ### 7.2 Legal and Regulatory Compliance
 
-Saliksikhub provides configurable compliance frameworks for different jurisdictions:
+SaliksikHub provides configurable compliance frameworks for different jurisdictions:
 
 | Framework | Purpose | Notes |
 |-----------|---------|-------|

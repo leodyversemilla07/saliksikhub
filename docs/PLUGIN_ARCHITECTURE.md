@@ -1,8 +1,8 @@
-# Saliksikhub Plugin System Architecture
+# SaliksikHub Plugin System Architecture
 
 ## Overview
 
-This document outlines the plugin system architecture for Saliksikhub, transforming it into a modular, OJS-like platform for academic journal management.
+This document outlines the plugin system architecture for SaliksikHub, transforming it into a modular, OJS-like platform for academic journal management.
 
 ## Goals
 
@@ -379,7 +379,7 @@ it('can install a plugin from directory', function () {
 
 #### Versioning
 - Follow semantic versioning
-- Plugins declare compatible Saliksikhub version
+- Plugins declare compatible SaliksikHub version
 - Migration system for plugin database updates
 
 ## Implementation Timeline
@@ -424,4 +424,4 @@ For questions or contributions, please refer to the main project documentation o
 
 **Document Version**: 1.0  
 **Last Updated**: 2026-02-17  
-**Compatible With**: Saliksikhub v2.0+
+**Compatible With**: SaliksikHub v2.0+

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Transform Saliksikhub from a single-journal RJMS (Research Journal Management System) into a multi-tenant SaaS platform serving multiple Philippine State Universities and Colleges (SUCs), with centralized maintenance and updates.
+Transform SaliksikHub from a single-journal RJMS (Research Journal Management System) into a multi-tenant SaaS platform serving multiple Philippine State Universities and Colleges (SUCs), with centralized maintenance and updates.
 
 ### Why Multi-Tenancy?
 
@@ -19,7 +19,7 @@ Transform Saliksikhub from a single-journal RJMS (Research Journal Management Sy
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                 Saliksikhub Platform (Central)               │
+│                 SaliksikHub Platform (Central)               │
 │         ┌─────────────────────────────────────────┐          │
 │         │  Bug fixes, security updates, backups   │          │
 │         │  24/7 monitoring, performance tuning    │          │
@@ -518,7 +518,7 @@ export function SiteHeader() {
     return (
         <header>
             <img src={currentJournal?.logo || '/default-logo.png'} />
-            <h1>{currentJournal?.name || 'Saliksikhub'}</h1>
+            <h1>{currentJournal?.name || 'SaliksikHub'}</h1>
             <p>{currentInstitution?.name}</p>
             {currentJournal?.issn && <span>ISSN: {currentJournal.issn}</span>}
         </header>
