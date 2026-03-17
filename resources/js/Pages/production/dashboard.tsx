@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -140,7 +140,7 @@ export default function ProductionDashboard({
     };
 
     return (
-        <AuthenticatedLayout>
+        <AppLayout>
             <Head title="Production Dashboard" />
 
             <div className="py-6">
@@ -292,6 +292,6 @@ export default function ProductionDashboard({
                     </Tabs>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -143,7 +143,7 @@ export default function DOIIndex({ manuscript, publications, doiPrefix }: Props)
     const unassignedCount = publications.filter((p) => !p.doi).length;
 
     return (
-        <AuthenticatedLayout>
+        <AppLayout>
             <Head title={`DOI Management - ${manuscript.title}`} />
 
             <div className="py-6">
@@ -366,6 +366,6 @@ export default function DOIIndex({ manuscript, publications, doiPrefix }: Props)
                     </Dialog>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

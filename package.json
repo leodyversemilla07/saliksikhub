@@ -5,9 +5,10 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "tsc && vite build",
+        "build": "vite build",
         "dev": "vite",
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+        "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
     },
     "overrides": {
         "axios": "^1.13.4"

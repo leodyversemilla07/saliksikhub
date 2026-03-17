@@ -53,9 +53,9 @@ function hexToOklch(hex: string): string {
  */
 function generateDarkVariant(hex: string, role: string): string {
     const h = hex.replace('#', '');
-    let r = parseInt(h.substring(0, 2), 16);
-    let g = parseInt(h.substring(2, 4), 16);
-    let b = parseInt(h.substring(4, 6), 16);
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
 
     // Convert to HSL for easier manipulation
     const rNorm = r / 255;

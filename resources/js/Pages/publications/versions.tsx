@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import AuthenticatedLayout from '@/Layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -102,7 +102,7 @@ export default function Versions({ manuscript, publications, currentPublicationI
     };
 
     return (
-        <AuthenticatedLayout>
+        <AppLayout>
             <Head title={`Publication Versions - ${manuscript.title}`} />
 
             <div className="py-6">
@@ -264,6 +264,6 @@ export default function Versions({ manuscript, publications, currentPublicationI
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

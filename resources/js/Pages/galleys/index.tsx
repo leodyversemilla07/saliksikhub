@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/authenticated-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -116,7 +116,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
     };
 
     return (
-        <AuthenticatedLayout>
+        <AppLayout>
             <Head title={`Galleys - ${publication.title}`} />
 
             <div className="py-6">
@@ -343,6 +343,6 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }
