@@ -13,7 +13,9 @@
         "noEmit": true,
         "paths": {
             "@/*": ["./resources/js/*"],
+            "@/components/*": ["./resources/js/Components/*"],
             "@/Components/*": ["./resources/js/Components/*"],
+            "@/pages/*": ["./resources/js/Pages/*"],
             "@/Pages/*": ["./resources/js/Pages/*"]
         }
     },
