@@ -1,6 +1,6 @@
-# SalikSikHub
+# SaliksikHub
 
-**SalikSikHub** (from the Filipino word _"saliksik"_, meaning _research_) is an open-source, self-hosted academic journal management platform. Designed as a modern alternative to OJS, it supports multiple journals within a single installation with a full plugin system, theme system, and guided setup wizard.
+**SaliksikHub** (from the Filipino word _"saliksik"_, meaning _research_) is an open-source, self-hosted academic journal management platform. Designed as a modern alternative to OJS, it supports multiple journals within a single installation with a full plugin system, theme system, and guided setup wizard.
 
 ## Features
 
