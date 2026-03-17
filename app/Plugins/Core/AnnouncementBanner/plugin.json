@@ -2,7 +2,7 @@
     "name": "announcement-banner",
     "displayName": "Announcement Banner",
     "version": "1.0.0",
-    "author": "Saliksikhub Team",
+    "author": "SaliksikHub Team",
     "description": "Display customizable announcement banners on journal pages",
     "isGlobal": false,
     "hasSettings": true,

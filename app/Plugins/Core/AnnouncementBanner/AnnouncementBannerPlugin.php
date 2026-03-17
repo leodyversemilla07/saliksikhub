@@ -20,10 +20,10 @@ class AnnouncementBannerPlugin implements PluginInterface
     {
         // Add banner to journal header
         Hook::addAction('journal.header.after', [$this, 'renderBanner'], 10);
-        
+
         // Add banner to journal homepage
         Hook::addAction('journal.homepage.before', [$this, 'renderBanner'], 10);
-        
+
         // Filter to check if banner should show
         Hook::addFilter('announcement.should_display', [$this, 'shouldDisplay'], 10);
     }
@@ -34,7 +34,7 @@ class AnnouncementBannerPlugin implements PluginInterface
     public function boot(): void
     {
         // Share view namespace
-        View::addLocation(__DIR__ . '/resources/views');
+        View::addLocation(__DIR__.'/resources/views');
     }
 
     /**
@@ -76,7 +76,7 @@ class AnnouncementBannerPlugin implements PluginInterface
         return [
             'name' => 'announcement-banner',
             'version' => '1.0.0',
-            'author' => 'Saliksikhub Team',
+            'author' => 'SaliksikHub Team',
             'description' => 'Display customizable announcement banners on journal pages',
         ];
     }
@@ -106,8 +106,8 @@ class AnnouncementBannerPlugin implements PluginInterface
     public function renderBanner(): void
     {
         $shouldDisplay = Hook::applyFilters('announcement.should_display', true);
-        
-        if (!$shouldDisplay || !$this->settings['enabled']) {
+
+        if (! $shouldDisplay || ! $this->settings['enabled']) {
             return;
         }
 
@@ -146,10 +146,10 @@ class AnnouncementBannerPlugin implements PluginInterface
 
         $classes = $typeClasses[$type] ?? $typeClasses['info'];
 
-        $html = '<div id="announcement-banner" class="' . $classes . ' border px-4 py-3 rounded relative mb-4" role="alert">';
+        $html = '<div id="announcement-banner" class="'.$classes.' border px-4 py-3 rounded relative mb-4" role="alert">';
         $html .= '<div class="flex">';
         $html .= '<div class="flex-1">';
-        $html .= '<p class="font-medium">' . htmlspecialchars($message) . '</p>';
+        $html .= '<p class="font-medium">'.htmlspecialchars($message).'</p>';
         $html .= '</div>';
 
         if ($dismissible) {
@@ -165,10 +165,12 @@ class AnnouncementBannerPlugin implements PluginInterface
         if ($dismissible) {
             $html .= '<script>';
             $html .= 'function dismissAnnouncementBanner() {';
-            $html .= 'document.getElementById("announcement-banner").style.display = "none";';            $html .= 'localStorage.setItem("announcement_banner_dismissed", "true");';
+            $html .= 'document.getElementById("announcement-banner").style.display = "none";';
+            $html .= 'localStorage.setItem("announcement_banner_dismissed", "true");';
             $html .= '}';
             $html .= 'if (localStorage.getItem("announcement_banner_dismissed") === "true") {';
-            $html .= 'document.getElementById("announcement-banner").style.display = "none";';            $html .= '}';
+            $html .= 'document.getElementById("announcement-banner").style.display = "none";';
+            $html .= '}';
             $html .= '</script>';
         }
 

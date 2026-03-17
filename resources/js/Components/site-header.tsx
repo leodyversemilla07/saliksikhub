@@ -1,7 +1,7 @@
 /**
  * SiteHeader Component
  * 
- * The main navigation header for the Saliksikhub Research Journal Management System.
+ * The main navigation header for the SaliksikHub Research Journal Management System.
  * This component provides the primary navigation interface for the public-facing
  * journal website, supporting both authenticated and guest users.
  * 

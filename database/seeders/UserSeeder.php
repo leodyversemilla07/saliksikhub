@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin@saliksikhub.com',
                 'password' => Hash::make('SuperAdmin@2024!'),
                 'role' => 'super_admin',
-                'affiliation' => 'Saliksikhub Platform',
+                'affiliation' => 'SaliksikHub Platform',
                 'country' => 'Philippines',
                 'email_verified_at' => now(),
                 'data_collection' => true,

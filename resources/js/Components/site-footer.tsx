@@ -1,7 +1,7 @@
 /**
  * SiteFooter Component
  * 
- * The main footer for the Saliksikhub Research Journal Management System.
+ * The main footer for the SaliksikHub Research Journal Management System.
  * Provides comprehensive navigation, contact information, and institutional
  * branding for the public-facing journal website.
  * 
@@ -290,7 +290,7 @@ export default function Footer() {
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                             <span>&copy; {currentYear} {journalName}. All rights reserved.</span>
                             <span className="hidden sm:inline">•</span>
-                            <span>Powered by Saliksikhub</span>
+                            <span>Powered by SaliksikHub</span>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 text-sm">
