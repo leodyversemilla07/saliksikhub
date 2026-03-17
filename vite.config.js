@@ -24,10 +24,10 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
-            '@/components': path.resolve(__dirname, './resources/js/Components'),
-            '@/Components': path.resolve(__dirname, './resources/js/Components'),
-            '@/pages': path.resolve(__dirname, './resources/js/Pages'),
-            '@/Pages': path.resolve(__dirname, './resources/js/Pages'),
+            '@/components': path.resolve(__dirname, './resources/js/components'),
+            '@/Components': path.resolve(__dirname, './resources/js/components'),
+            '@/pages': path.resolve(__dirname, './resources/js/pages'),
+            '@/Pages': path.resolve(__dirname, './resources/js/pages'),
         },
     },
 });
