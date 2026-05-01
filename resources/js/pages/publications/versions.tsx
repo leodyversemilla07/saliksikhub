@@ -35,6 +35,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
+import manuscriptPublications from '@/routes/manuscripts/publications';
 
 interface Publication {
     id: number;
@@ -82,7 +83,7 @@ export default function Versions({
 
     const handleCreateVersion = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('manuscripts.publications.store', manuscript.id), {
+        post(manuscriptPublications.store.url(manuscript.id), {
             onSuccess: () => {
                 setShowNewVersionDialog(false);
                 reset();
@@ -131,7 +132,7 @@ export default function Versions({
     const handlePublish = (publicationId: number) => {
         if (confirm('Are you sure you want to publish this version?')) {
             router.post(
-                route('manuscripts.publications.publish', [
+                manuscriptPublications.publish.url([
                     manuscript.id,
                     publicationId,
                 ]),
@@ -142,7 +143,7 @@ export default function Versions({
     const handleRevert = (publicationId: number, version: string) => {
         if (confirm(`Are you sure you want to revert to version ${version}?`)) {
             router.post(
-                route('manuscripts.publications.revert', [
+                manuscriptPublications.revert.url([
                     manuscript.id,
                     publicationId,
                 ]),

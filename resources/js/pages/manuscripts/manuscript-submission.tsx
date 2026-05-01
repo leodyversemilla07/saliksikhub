@@ -23,9 +23,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useWindowSize } from '@/hooks/use-window-size';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import type { User } from '@/types';
 import { dashboard } from '@/routes';
 import manuscriptsRoutes from '@/routes/manuscripts';
+import type { User } from '@/types';
 
 export default function ManuscriptSubmissionForm() {
     interface PageProps {

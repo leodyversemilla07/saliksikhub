@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import galleys from '@/routes/galleys';
 
 interface Galley {
     id: number;
@@ -38,10 +39,7 @@ export default function GalleyViewer({ galley, publication }: Props) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <Link
-                                    href={route(
-                                        'galleys.index',
-                                        publication.id,
-                                    )}
+                                    href={galleys.index.url(publication.id)}
                                 >
                                     <Button variant="outline" size="sm">
                                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -58,7 +56,7 @@ export default function GalleyViewer({ galley, publication }: Props) {
                                     </p>
                                 </div>
                             </div>
-                            <Link href={route('galleys.download', galley.id)}>
+                            <Link href={galleys.download.url(galley.id)}>
                                 <Button variant="default">
                                     <Download className="mr-2 h-4 w-4" />
                                     Download
@@ -104,10 +102,7 @@ export default function GalleyViewer({ galley, publication }: Props) {
                                         Please download to view.
                                     </p>
                                     <Link
-                                        href={route(
-                                            'galleys.download',
-                                            galley.id,
-                                        )}
+                                        href={galleys.download.url(galley.id)}
                                     >
                                         <Button>
                                             <Download className="mr-2 h-4 w-4" />

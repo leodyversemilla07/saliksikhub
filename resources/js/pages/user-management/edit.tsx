@@ -15,9 +15,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import type { User, UserRole } from '@/types';
 import { dashboard } from '@/routes';
 import users from '@/routes/users';
+import type { User, UserRole } from '@/types';
 
 interface EditUserProps {
     user: User;

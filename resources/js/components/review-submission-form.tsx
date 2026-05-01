@@ -15,12 +15,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import reviewer from '@/routes/reviewer';
 import type {
     ReviewFormData,
     ReviewRecommendation,
     RecommendationOption,
 } from '@/types';
-import reviewer from '@/routes/reviewer';
 
 interface ReviewSubmissionFormProps {
     reviewId: number;

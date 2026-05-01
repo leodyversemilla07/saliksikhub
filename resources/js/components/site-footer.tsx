@@ -51,7 +51,6 @@ import {
 } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { PageProps } from '@/types';
 import {
     home,
     submissions,
@@ -62,6 +61,7 @@ import {
     contactUs,
     current,
 } from '@/routes';
+import type { PageProps } from '@/types';
 
 const quickLinks = [
     { name: 'Home', href: home.url(), icon: LuBookOpen },
@@ -95,6 +95,9 @@ const socialLinks = [
 export default function Footer() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     const currentYear = new Date().getFullYear();
+    const institutionSettings = currentInstitution?.settings as
+        | Record<string, unknown>
+        | undefined;
 
     const journalName = currentJournal?.name || 'Research Journal';
     const journalDescription =
@@ -104,23 +107,37 @@ export default function Footer() {
     const institutionName = currentInstitution?.name || 'Institution';
     const institutionAddress = currentInstitution?.address || '';
     const contactEmail = currentInstitution?.contact_email || '';
+    const contactPhoneFromSettings = institutionSettings?.contact_phone;
     const contactPhone =
         currentInstitution?.contact_phone ||
-        currentInstitution?.settings?.contact_phone ||
+        (typeof contactPhoneFromSettings === 'string'
+            ? contactPhoneFromSettings
+            : '') ||
         '';
 
     // Check if settings has specific values if needed, otherwise use defaults
+    const issnFromSettings = institutionSettings?.issn;
     const issn =
         currentJournal?.issn ||
-        currentInstitution?.settings?.issn ||
+        (typeof issnFromSettings === 'string' ? issnFromSettings : '') ||
         '2024-XXXX';
+    const publicationFrequency = currentJournal?.settings?.publication_frequency;
+    const publicationFrequencyFromSettings = institutionSettings?.frequency;
     const frequency =
-        currentJournal?.settings?.publication_frequency ||
-        currentInstitution?.settings?.frequency ||
+        (typeof publicationFrequency === 'string'
+            ? publicationFrequency
+            : '') ||
+        (typeof publicationFrequencyFromSettings === 'string'
+            ? publicationFrequencyFromSettings
+            : '') ||
         'Bi-annual';
+    const journalLanguage = currentJournal?.settings?.language;
+    const journalLanguageFromSettings = institutionSettings?.language;
     const language =
-        currentJournal?.settings?.language ||
-        currentInstitution?.settings?.language ||
+        (typeof journalLanguage === 'string' ? journalLanguage : '') ||
+        (typeof journalLanguageFromSettings === 'string'
+            ? journalLanguageFromSettings
+            : '') ||
         'English';
 
     return (

@@ -11,7 +11,8 @@ import {
     Book,
     File,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState  } from 'react';
+import type {ReactElement} from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +32,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
+import galleysRoutes from '@/routes/galleys';
 
 interface Publication {
     id: number;
@@ -82,7 +84,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
 
     const handleUpload = (e: React.FormEvent) => {
         e.preventDefault();
-        uploadForm.post(route('galleys.store', publication.id), {
+        uploadForm.post(galleysRoutes.store.url(publication.id), {
             onSuccess: () => {
                 uploadForm.reset();
                 setIsUploadOpen(false);
@@ -92,7 +94,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
 
     const handleApprove = (galley: Galley) => {
         if (confirm(`Approve galley "${galley.label}" for public access?`)) {
-            approveForm.post(route('galleys.approve', galley.id));
+            approveForm.post(galleysRoutes.approve.url(galley.id));
         }
     };
 
@@ -102,12 +104,12 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                 `Delete galley "${galley.label}"? This action cannot be undone.`,
             )
         ) {
-            deleteForm.delete(route('galleys.destroy', galley.id));
+            deleteForm.delete(galleysRoutes.destroy.url(galley.id));
         }
     };
 
     const getIconComponent = (icon: string) => {
-        const icons: Record<string, JSX.Element> = {
+        const icons: Record<string, ReactElement> = {
             'file-pdf': <FileText className="h-5 w-5 text-red-500" />,
             'file-code': <FileCode className="h-5 w-5 text-blue-500" />,
             book: <Book className="h-5 w-5 text-green-500" />,
@@ -389,8 +391,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                                             <div className="flex items-center gap-2">
                                                 {galley.can_view_inline && (
                                                     <Link
-                                                        href={route(
-                                                            'galleys.view',
+                                                        href={galleysRoutes.view.url(
                                                             galley.id,
                                                         )}
                                                     >
@@ -404,8 +405,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                                                     </Link>
                                                 )}
                                                 <Link
-                                                    href={route(
-                                                        'galleys.download',
+                                                    href={galleysRoutes.download.url(
                                                         galley.id,
                                                     )}
                                                 >

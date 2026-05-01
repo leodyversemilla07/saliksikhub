@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import PublicLayout from '@/layouts/public-layout';
-import type { PageProps } from '@/types';
 import { home } from '@/routes';
 import password from '@/routes/password';
+import type { PageProps } from '@/types';
 
 export default function ResetPassword({
     token,

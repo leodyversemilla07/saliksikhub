@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
+import production from '@/routes/production';
 
 interface ProductionStats {
     none: number;
@@ -122,7 +123,7 @@ return 0;
                                 </span>
                             </CardDescription>
                         </div>
-                        <Link href={route('production.show', manuscript.id)}>
+                        <Link href={production.show.url(manuscript.id)}>
                             <Button size="sm" variant="outline">
                                 <Eye className="mr-1 h-3 w-3" />
                                 View

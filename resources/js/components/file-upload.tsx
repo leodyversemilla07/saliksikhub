@@ -21,8 +21,8 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import type { FileType, FileRequirements } from '@/types';
 import manuscripts from '@/routes/manuscripts';
+import type { FileType, FileRequirements } from '@/types';
 
 interface FileUploadProps {
     manuscriptId: number;

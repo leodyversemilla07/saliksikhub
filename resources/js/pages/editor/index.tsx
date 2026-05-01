@@ -42,9 +42,9 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 
+import editor from '@/routes/editor';
 import type { Manuscript } from '@/types';
 import { ManuscriptStatus } from '@/types';
-import editor from '@/routes/editor';
 
 
 

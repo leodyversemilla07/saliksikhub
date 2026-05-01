@@ -15,8 +15,8 @@ import {
     FieldError,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import type { PageProps } from '@/types';
 import { home, login as loginRoute, register as registerRoute } from '@/routes';
+import type { PageProps } from '@/types';
 
 export default function Register() {
     const { currentJournal } = usePage<PageProps>().props;

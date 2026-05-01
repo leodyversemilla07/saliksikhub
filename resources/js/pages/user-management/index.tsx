@@ -51,9 +51,9 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import type { User } from '@/types';
 import { dashboard } from '@/routes';
 import usersRoutes from '@/routes/users';
+import type { User } from '@/types';
 
 interface PaginationMeta {
     current_page: number;

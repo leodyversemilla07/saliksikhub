@@ -24,8 +24,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import type { Reviewer } from '@/types';
 import editor from '@/routes/editor';
+import type { Reviewer } from '@/types';
 
 interface ReviewerAssignmentProps {
     manuscriptId: number;

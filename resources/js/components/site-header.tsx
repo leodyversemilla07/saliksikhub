@@ -64,7 +64,6 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
-import type { PageProps, Journal, Institution } from '@/types';
 import {
     home,
     current,
@@ -78,6 +77,7 @@ import {
 import { dashboard } from '@/routes';
 import author from '@/routes/author';
 import editor from '@/routes/editor';
+import type { PageProps, Journal, Institution } from '@/types';
 
 /**
  * Navigation item configuration for the site header menu.

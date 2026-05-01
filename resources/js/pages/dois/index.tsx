@@ -39,6 +39,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
+import dois from '@/routes/dois';
+import manuscriptDois from '@/routes/manuscripts/dois';
 
 interface DOI {
     id: number;
@@ -95,7 +97,7 @@ return;
 }
 
         post(
-            route('manuscripts.dois.assign', [
+            manuscriptDois.assign.url([
                 manuscript.id,
                 selectedPublication.id,
             ]),
@@ -111,29 +113,29 @@ return;
 
     const handleRegisterDOI = (doiId: number) => {
         if (confirm('Are you sure you want to register this DOI?')) {
-            router.post(route('dois.register', doiId));
+            router.post(dois.register.url(doiId));
         }
     };
 
     const handleRedepositDOI = (doiId: number) => {
         if (confirm('Re-deposit updated metadata for this DOI?')) {
-            router.post(route('dois.redeposit', doiId));
+            router.post(dois.redeposit.url(doiId));
         }
     };
 
     const handleCheckStatus = (doiId: number) => {
-        router.post(route('dois.check-status', doiId));
+        router.post(dois.checkStatus.url(doiId));
     };
 
     const handleDeleteDOI = (doiId: number) => {
         if (confirm('Are you sure you want to remove this DOI?')) {
-            router.delete(route('dois.destroy', doiId));
+            router.delete(dois.destroy.url(doiId));
         }
     };
 
     const handleBatchAssign = () => {
         if (confirm('Assign DOIs to all publications without DOIs?')) {
-            router.post(route('manuscripts.dois.batch-assign', manuscript.id), {
+            router.post(manuscriptDois.batchAssign.url(manuscript.id), {
                 registration_agency: 'crossref',
             });
         }
@@ -141,9 +143,7 @@ return;
 
     const handleBatchRegister = () => {
         if (confirm('Register all pending DOIs?')) {
-            router.post(
-                route('manuscripts.dois.batch-register', manuscript.id),
-            );
+            router.post(manuscriptDois.batchRegister.url(manuscript.id));
         }
     };
 

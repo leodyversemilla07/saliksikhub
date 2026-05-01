@@ -16,9 +16,9 @@ import {
     SidebarMenuButton,
     useSidebar,
 } from '@/components/ui/sidebar';
-import type { User as UserType } from '@/types';
 import { logout } from '@/routes';
 import profile from '@/routes/profile';
+import type { User as UserType } from '@/types';
 
 interface NavUserProps {
     user: UserType;

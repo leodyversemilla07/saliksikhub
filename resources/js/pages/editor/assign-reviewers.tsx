@@ -18,8 +18,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import type { PageProps } from '@/types';
 import editor from '@/routes/editor';
+import type { PageProps } from '@/types';
 
 interface Reviewer {
     id: number;

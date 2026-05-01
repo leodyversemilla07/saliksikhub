@@ -4,12 +4,12 @@ import DocumentViewer from '@/components/document-viewer';
 import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { ManuscriptStatus } from '@/types';
-import type { Manuscript} from '@/types';
-import type { PageProps } from '@/types';
 import { dashboard } from '@/routes';
 import editor from '@/routes/editor';
 import manuscriptsRoutes from '@/routes/manuscripts';
+import { ManuscriptStatus } from '@/types';
+import type { Manuscript} from '@/types';
+import type { PageProps } from '@/types';
 
 interface ShowProps {
     manuscript: Manuscript;

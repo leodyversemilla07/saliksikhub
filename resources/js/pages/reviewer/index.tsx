@@ -56,8 +56,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { Manuscript } from '@/types';
 import reviewer from '@/routes/reviewer';
+import type { Manuscript } from '@/types';
 
 interface PaginatedManuscripts {
     data: Manuscript[];

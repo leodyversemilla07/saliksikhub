@@ -589,9 +589,9 @@ export default function EditorDashboard({
                                             className="fill-background"
                                             stroke="none"
                                             fontSize={12}
-                                            formatter={(
-                                                value: keyof ChartConfig,
-                                            ) => value}
+                                            formatter={(value) =>
+                                                String(value ?? '')
+                                            }
                                         />
                                         {dashboardData.statusDistribution.map(
                                             (entry, index) => (
@@ -666,9 +666,9 @@ export default function EditorDashboard({
                                             className="fill-background"
                                             stroke="none"
                                             fontSize={12}
-                                            formatter={(
-                                                value: keyof ChartConfig,
-                                            ) => value}
+                                            formatter={(value) =>
+                                                String(value ?? '')
+                                            }
                                         />
                                         {dashboardData.revisionRounds.map(
                                             (entry, index) => (

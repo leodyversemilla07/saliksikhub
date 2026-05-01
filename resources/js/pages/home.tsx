@@ -9,9 +9,9 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
-import type { PageProps } from '@/types';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
+import type { PageProps } from '@/types';
 
 export default function Home() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;

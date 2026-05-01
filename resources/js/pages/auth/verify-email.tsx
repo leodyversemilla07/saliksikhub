@@ -4,9 +4,9 @@ import type { FormEventHandler } from 'react';
 import Breadcrumb from '@/components/breadcrumb';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
-import type { PageProps } from '@/types';
 import { home, login as loginRoute, logout } from '@/routes';
 import verification from '@/routes/verification';
+import type { PageProps } from '@/types';
 
 export default function VerifyEmail({
     status,
