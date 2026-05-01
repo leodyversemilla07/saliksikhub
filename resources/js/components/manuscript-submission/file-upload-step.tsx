@@ -8,7 +8,7 @@ import {
     FileText,
     HardDrive,
 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,34 +42,27 @@ export function FileUploadStep({
 }: FileUploadStepProps) {
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [validationMessage, setValidationMessage] = useState<string | null>(
-        null,
-    );
-
-    // Validate file when it changes
-    useEffect(() => {
+    const validationMessage = (() => {
         if (!data.manuscript) {
-return;
-}
-
-        setValidationMessage(null);
-
-        // Validate file size (10MB max)
-        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-
-        if (data.manuscript.size > maxSize) {
-            setValidationMessage(`File is too large. Maximum size is 10MB.`);
+            return null;
         }
 
-        // Validate file type (only DOCX)
+        const maxSize = 10 * 1024 * 1024;
+
+        if (data.manuscript.size > maxSize) {
+            return 'File is too large. Maximum size is 10MB.';
+        }
+
         const allowedTypes = [
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ];
 
         if (!allowedTypes.includes(data.manuscript.type)) {
-            setValidationMessage(`Only DOCX files are allowed.`);
+            return 'Only DOCX files are allowed.';
         }
-    }, [data.manuscript]);
+
+        return null;
+    })();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -97,7 +90,6 @@ return;
 
     const handleRemoveFile = () => {
         setData('manuscript', null);
-        setValidationMessage(null);
 
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -106,8 +98,8 @@ return;
 
     const formatBytes = (bytes: number, decimals = 2) => {
         if (bytes === 0) {
-return '0 Bytes';
-}
+            return '0 Bytes';
+        }
 
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;
@@ -122,12 +114,12 @@ return '0 Bytes';
 
     const getProgressPercentage = () => {
         if (progress === null) {
-return 0;
-}
+            return 0;
+        }
 
         if (typeof progress === 'number') {
-return progress;
-}
+            return progress;
+        }
 
         return progress.percentage || 0;
     };

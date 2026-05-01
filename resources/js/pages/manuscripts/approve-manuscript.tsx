@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
 import editor from '@/routes/editor';
 import manuscriptsRoutes from '@/routes/manuscripts';
-import type { PageProps } from '@/types';
 
 interface ManuscriptProps {
     id: number;
@@ -69,7 +69,7 @@ export default function ApproveManuscript({
         }
     };
 
-    const ManuscriptDetailsPanel = () => (
+    const renderManuscriptDetailsPanel = () => (
         <div className="space-y-8">
             <div className="rounded-lg border border-gray-200 bg-white p-6 transition-colors duration-300 dark:border-gray-700 dark:bg-gray-800">
                 <div className="space-y-6">
@@ -262,7 +262,7 @@ export default function ApproveManuscript({
         </div>
     );
 
-    const ManuscriptPdfPanel = () => (
+    const renderManuscriptPdfPanel = () => (
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors duration-300 dark:border-gray-700 dark:bg-gray-800">
             <div className="border-b border-gray-200 p-4 dark:border-gray-700">
                 <div className="flex items-center justify-between">
@@ -342,10 +342,10 @@ export default function ApproveManuscript({
 
                 <div className="grid grid-cols-1 gap-8 xl:grid-cols-4">
                     <div className="xl:col-span-1">
-                        <ManuscriptDetailsPanel />
+                        {renderManuscriptDetailsPanel()}
                     </div>
                     <div className="xl:col-span-3">
-                        <ManuscriptPdfPanel />
+                        {renderManuscriptPdfPanel()}
                     </div>
                 </div>
             </div>

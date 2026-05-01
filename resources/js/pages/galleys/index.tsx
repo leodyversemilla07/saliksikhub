@@ -7,19 +7,16 @@ import {
     Trash2,
     CheckCircle,
     Clock,
-    ArrowUpDown,
     FileCode,
     Book,
     File,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -74,13 +71,14 @@ interface Props {
 
 export default function GalleyIndex({ publication, galleys, stats }: Props) {
     const [isUploadOpen, setIsUploadOpen] = useState(false);
-    const [editingGalley, setEditingGalley] = useState<Galley | null>(null);
 
     const uploadForm = useForm({
         file: null as File | null,
         label: '',
         locale: 'en',
     });
+    const approveForm = useForm({});
+    const deleteForm = useForm({});
 
     const handleUpload = (e: React.FormEvent) => {
         e.preventDefault();
@@ -94,7 +92,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
 
     const handleApprove = (galley: Galley) => {
         if (confirm(`Approve galley "${galley.label}" for public access?`)) {
-            useForm().post(route('galleys.approve', galley.id));
+            approveForm.post(route('galleys.approve', galley.id));
         }
     };
 
@@ -104,7 +102,7 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                 `Delete galley "${galley.label}"? This action cannot be undone.`,
             )
         ) {
-            useForm().delete(route('galleys.destroy', galley.id));
+            deleteForm.delete(route('galleys.destroy', galley.id));
         }
     };
 

@@ -26,7 +26,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -35,7 +34,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 
 interface Publication {
@@ -74,7 +72,7 @@ export default function Versions({
 }: Props) {
     const [showNewVersionDialog, setShowNewVersionDialog] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         is_major: false,
         version_stage: 'preprint',
         title: manuscript.title,

@@ -88,7 +88,7 @@ export default function CmsSection({ section }: Props) {
 
     switch (type) {
         case 'hero':
-            return <HeroSection content={content} settings={settings} />;
+            return <HeroSection content={content} />;
         case 'text':
             return (
                 <section className={wrapperClass} style={style}>
@@ -156,13 +156,7 @@ export default function CmsSection({ section }: Props) {
     }
 }
 
-function HeroSection({
-    content,
-    settings,
-}: {
-    content: SectionContent;
-    settings: SectionSettings;
-}) {
+function HeroSection({ content }: { content: SectionContent }) {
     const backgroundImage = content.background_image;
 
     return (

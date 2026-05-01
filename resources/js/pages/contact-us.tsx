@@ -8,7 +8,6 @@ import type { PageProps } from '@/types';
 export default function ContactUs() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     const journalName = currentJournal?.name ?? 'Research Journal';
-    const journalAbbreviation = currentJournal?.abbreviation ?? '';
     const institutionName = currentInstitution?.name ?? 'Institution';
     const institutionAddress = currentInstitution?.address ?? '';
     const contactEmail =

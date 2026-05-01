@@ -31,6 +31,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import type { PageProps } from '@/types';
 import admin from '@/routes/admin';
 import author from '@/routes/author';
 import editor from '@/routes/editor';
@@ -38,7 +39,6 @@ import issues from '@/routes/issues';
 import manuscripts from '@/routes/manuscripts';
 import reviewer from '@/routes/reviewer';
 import users from '@/routes/users';
-import type { PageProps } from '@/types';
 
 interface BreadcrumbItem {
     label: string;
@@ -183,19 +183,15 @@ const navigationMap = {
 };
 
 function useDarkMode() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() =>
+        typeof window !== 'undefined'
+            ? localStorage.getItem('theme') === 'dark'
+            : false,
+    );
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-
-        if (savedTheme) {
-            setIsDarkMode(savedTheme === 'dark');
-            document.documentElement.classList.toggle(
-                'dark',
-                savedTheme === 'dark',
-            );
-        }
-    }, []);
+        document.documentElement.classList.toggle('dark', isDarkMode);
+    }, [isDarkMode]);
 
     const toggleDarkMode = () => {
         const newTheme = isDarkMode ? 'light' : 'dark';

@@ -60,13 +60,6 @@ interface Props {
     sectionTypes: Record<string, string>;
 }
 
-interface SectionFormData {
-    name: string;
-    content: SectionContent;
-    settings: SectionSettings;
-    is_visible: boolean;
-}
-
 export default function SectionEdit({
     journal,
     page,

@@ -6,16 +6,12 @@ import {
     BookOpen,
     Users,
     Award,
-    Zap,
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
-import type { PageProps } from '@/types';
 
 export default function Home() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;

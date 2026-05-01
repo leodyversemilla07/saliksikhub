@@ -1,7 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
     Puzzle,
-    Plus,
     Settings,
     Power,
     PowerOff,

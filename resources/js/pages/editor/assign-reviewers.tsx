@@ -3,7 +3,6 @@ import {
     Search,
     UserCheck,
     Calendar as CalendarIcon,
-    Filter,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -18,11 +17,9 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import editor from '@/routes/editor';
 import type { PageProps } from '@/types';
+import editor from '@/routes/editor';
 
 interface Reviewer {
     id: number;
@@ -58,18 +55,23 @@ interface Props extends PageProps {
     current_reviews: CurrentReview[];
 }
 
+function getDefaultReviewDueDate(): string {
+    return new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
+}
+
 export default function AssignReviewers({
     manuscript,
     suitable_reviewers,
     current_reviews,
 }: Props) {
     const [searchTerm, setSearchTerm] = useState('');
+    const [defaultDueDate] = useState(getDefaultReviewDueDate);
 
     const { data, setData, post, processing, errors } = useForm({
         reviewer_ids: [] as number[],
-        due_date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0], // Default 3 weeks
+        due_date: defaultDueDate,
         review_round: 1, // Logic to determine round should be better
     });
 

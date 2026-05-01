@@ -24,14 +24,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import editor from '@/routes/editor';
 import type { Reviewer } from '@/types';
+import editor from '@/routes/editor';
 
 interface ReviewerAssignmentProps {
     manuscriptId: number;
     suitableReviewers: Reviewer[];
     currentReviews?: any[];
     onSuccess?: () => void;
+}
+
+function getDefaultReviewDueDate(): string {
+    return new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
 }
 
 export function ReviewerAssignment({
@@ -42,12 +48,11 @@ export function ReviewerAssignment({
 }: ReviewerAssignmentProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedReviewers, setSelectedReviewers] = useState<number[]>([]);
+    const [defaultDueDate] = useState(getDefaultReviewDueDate);
 
     const { data, setData, post, processing, errors } = useForm({
         reviewer_ids: [] as number[],
-        due_date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split('T')[0], // 3 weeks from now
+        due_date: defaultDueDate,
         review_round: 1,
         invitation_message: '',
     });

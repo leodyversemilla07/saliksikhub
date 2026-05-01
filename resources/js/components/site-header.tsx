@@ -64,6 +64,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import type { PageProps, Journal, Institution } from '@/types';
 import {
     home,
     current,
@@ -77,7 +78,6 @@ import {
 import { dashboard } from '@/routes';
 import author from '@/routes/author';
 import editor from '@/routes/editor';
-import type { PageProps, Journal, Institution } from '@/types';
 
 /**
  * Navigation item configuration for the site header menu.
@@ -150,7 +150,11 @@ const navigationItems: NavigationItem[] = [
 export default function SiteHeader({ auth }: SiteHeaderProps) {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
     const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
-    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
+    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(() =>
+        typeof window !== 'undefined'
+            ? localStorage.getItem('theme') === 'dark'
+            : false,
+    );
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -182,16 +186,8 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
     }, [isMobileNavigationOpen]);
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-
-        if (savedTheme) {
-            setIsDarkModeEnabled(savedTheme === 'dark');
-            document.documentElement.classList.toggle(
-                'dark',
-                savedTheme === 'dark',
-            );
-        }
-    }, []);
+        document.documentElement.classList.toggle('dark', isDarkModeEnabled);
+    }, [isDarkModeEnabled]);
 
     const toggleThemeMode = () => {
         const newTheme = isDarkModeEnabled ? 'light' : 'dark';

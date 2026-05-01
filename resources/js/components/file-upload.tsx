@@ -9,7 +9,7 @@ import {
     Table as TableIcon,
     Paperclip,
 } from 'lucide-react';
-import { useState, useCallback, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,8 +21,8 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import manuscripts from '@/routes/manuscripts';
 import type { FileType, FileRequirements } from '@/types';
+import manuscripts from '@/routes/manuscripts';
 
 interface FileUploadProps {
     manuscriptId: number;
@@ -66,8 +66,8 @@ export function FileUpload({
 
     const validateFile = (file: File): string | null => {
         if (!requirements) {
-return null;
-}
+            return null;
+        }
 
         // Check file size
         if (file.size > requirements.max_file_size) {
@@ -96,17 +96,17 @@ return null;
         setData('file', file);
     };
 
-    const handleDragOver = useCallback((e: React.DragEvent) => {
+    const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(true);
-    }, []);
+    };
 
-    const handleDragLeave = useCallback((e: React.DragEvent) => {
+    const handleDragLeave = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
-    }, []);
+    };
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
+    const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
 
@@ -115,7 +115,7 @@ return null;
         if (files.length > 0) {
             handleFileSelect(files[0]);
         }
-    }, []);
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -127,8 +127,8 @@ return null;
 
     const handleUpload = () => {
         if (!data.file) {
-return;
-}
+            return;
+        }
 
         post(manuscripts.files.upload.url({ id: manuscriptId }), {
             onSuccess: () => {
@@ -159,8 +159,8 @@ return;
 
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) {
-return '0 Bytes';
-}
+            return '0 Bytes';
+        }
 
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];

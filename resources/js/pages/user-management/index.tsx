@@ -34,14 +34,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -49,11 +41,19 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
+import type { User } from '@/types';
 import { dashboard } from '@/routes';
 import usersRoutes from '@/routes/users';
-import type { User } from '@/types';
 
 interface PaginationMeta {
     current_page: number;

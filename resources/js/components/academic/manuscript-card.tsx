@@ -7,7 +7,7 @@
  */
 
 import { Link } from '@inertiajs/react';
-import { FileText, Calendar, Users, Tag } from 'lucide-react';
+import { FileText, Calendar, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -201,7 +201,6 @@ export function ManuscriptCard({
  * Compact variant for list views
  */
 export function ManuscriptCardCompact({
-    id,
     title,
     authors,
     submittedDate,

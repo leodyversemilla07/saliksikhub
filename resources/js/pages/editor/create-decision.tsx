@@ -1,6 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import {
     CalendarIcon,
     CheckCircle,
@@ -18,12 +17,6 @@ import {
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -51,12 +44,19 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import editor from '@/routes/editor';
+import { cn } from '@/lib/utils';
 import type { Manuscript, User as UserType } from '@/types';
+import editor from '@/routes/editor';
 
 interface DecisionTypes {
     [key: string]: string;

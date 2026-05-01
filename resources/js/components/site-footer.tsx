@@ -34,17 +34,14 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     FaFacebook,
-    FaInstagram,
     FaXTwitter,
     FaLinkedin,
-    FaYoutube,
     FaOrcid,
 } from 'react-icons/fa6';
 import {
     LuMail,
     LuMapPin,
     LuPhone,
-    LuExternalLink,
     LuBookOpen,
     LuFileText,
     LuUsers,
@@ -54,7 +51,7 @@ import {
 } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+import type { PageProps } from '@/types';
 import {
     home,
     submissions,
@@ -65,7 +62,6 @@ import {
     contactUs,
     current,
 } from '@/routes';
-import type { PageProps } from '@/types';
 
 const quickLinks = [
     { name: 'Home', href: home.url(), icon: LuBookOpen },

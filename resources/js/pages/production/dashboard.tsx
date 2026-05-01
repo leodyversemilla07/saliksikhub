@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import {
     ClipboardCheck,
-    Clock,
     Eye,
     FileCheck,
     FileText,
@@ -74,19 +73,6 @@ export default function ProductionDashboard({
     manuscriptsByProofing,
     manuscriptsReady,
 }: Props) {
-    const getStageIcon = (stage: string) => {
-        const icons = {
-            copyediting: <FileText className="h-5 w-5" />,
-            typesetting: <Package className="h-5 w-5" />,
-            proofing: <Eye className="h-5 w-5" />,
-            ready: <FileCheck className="h-5 w-5" />,
-        };
-
-        return (
-            icons[stage as keyof typeof icons] || <Clock className="h-5 w-5" />
-        );
-    };
-
     const getDaysElapsed = (startDate: string | null) => {
         if (!startDate) {
 return 0;
