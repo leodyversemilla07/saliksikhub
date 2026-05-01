@@ -11,13 +11,13 @@ return [
     */
 
     'repository_name' => env('OAI_REPOSITORY_NAME', env('APP_NAME', 'SalikSikHub')),
-    
-    'base_url' => env('OAI_BASE_URL', env('APP_URL') . '/oai'),
-    
+
+    'base_url' => env('OAI_BASE_URL', env('APP_URL', 'http://localhost').'/oai'),
+
     'admin_email' => env('OAI_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS', 'admin@example.com')),
-    
-    'repository_identifier' => env('OAI_REPOSITORY_IDENTIFIER', parse_url(env('APP_URL'), PHP_URL_HOST)),
-    
+
+    'repository_identifier' => env('OAI_REPOSITORY_IDENTIFIER', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+
     /*
     |--------------------------------------------------------------------------
     | Metadata Formats
@@ -36,7 +36,7 @@ return [
             'namespace' => 'https://jats.nlm.nih.gov/ns/publishing/1.3/',
         ],
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Sets Configuration
@@ -50,7 +50,7 @@ return [
         'reviews' => 'Review Articles',
         'openaccess' => 'Open Access',
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Pagination
@@ -60,7 +60,7 @@ return [
     |
     */
     'records_per_page' => 100,
-    
+
     /*
     |--------------------------------------------------------------------------
     | Cache Configuration
