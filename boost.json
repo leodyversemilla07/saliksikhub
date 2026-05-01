@@ -1,9 +1,7 @@
 {
     "agents": [
-        "opencode"
+        "copilot"
     ],
-    "guidelines": true,
-    "packages": [
-        "laravel/fortify"
-    ]
+    "cloud": false,
+    "guidelines": true
 }
