@@ -63,8 +63,11 @@ export default function Current({ currentIssue }: CurrentPageProps) {
                                     No published issue is currently available.
                                     Please check back later.
                                 </p>
-                                <Button asChild variant="outline">
-                                    <Link href="/archives">View Archives</Link>
+                                <Button
+                                    variant="outline"
+                                    render={<Link href="/archives" />}
+                                >
+                                    View Archives
                                 </Button>
                             </CardContent>
                         </Card>
@@ -267,22 +270,27 @@ function ArticleCard({ article }: { article: Article }) {
                         </div>
 
                         <div className="flex gap-2">
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href={article.url}>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Details
-                                </Link>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                render={<Link href={article.url} />}
+                            >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
                             </Button>
                             {article.pdfUrl && (
-                                <Button size="sm" asChild>
-                                    <a
-                                        href={article.pdfUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <FileText className="mr-2 h-4 w-4" />
-                                        PDF
-                                    </a>
+                                <Button
+                                    size="sm"
+                                    render={
+                                        <a
+                                            href={article.pdfUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        />
+                                    }
+                                >
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    PDF
                                 </Button>
                             )}
                         </div>

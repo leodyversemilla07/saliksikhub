@@ -218,8 +218,8 @@ export default function IndexUser({
         role?: string,
     ): 'default' | 'secondary' | 'destructive' | 'outline' => {
         if (!role) {
-return 'default';
-}
+            return 'default';
+        }
 
         const variants: Record<
             string,
@@ -238,8 +238,8 @@ return 'default';
 
     const getRoleLabel = (role?: string): string => {
         if (!role) {
-return 'No Role';
-}
+            return 'No Role';
+        }
 
         const labels: Record<string, string> = {
             managing_editor: 'Managing Editor',
@@ -335,7 +335,11 @@ return 'No Role';
                     <div className="flex items-center gap-2">
                         <Select
                             value={selectedRole}
-                            onValueChange={handleRoleChange}
+                            onValueChange={(value) => {
+                                if (value !== null) {
+                                    handleRoleChange(value);
+                                }
+                            }}
                         >
                             <SelectTrigger className="w-48">
                                 <Filter className="mr-2 h-4 w-4" />
@@ -573,18 +577,18 @@ return 'No Role';
                                                 <TableCell>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
-                                                            asChild
+                                                            render={
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="h-8 w-8 p-0"
+                                                                />
+                                                            }
                                                         >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="h-8 w-8 p-0"
-                                                            >
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                                <span className="sr-only">
-                                                                    Open menu
-                                                                </span>
-                                                            </Button>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">
+                                                                Open menu
+                                                            </span>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent
                                                             align="end"
@@ -646,10 +650,10 @@ return 'No Role';
                                                                 open,
                                                             ) => {
                                                                 if (!open) {
-setDeleteDialogUserId(
+                                                                    setDeleteDialogUserId(
                                                                         null,
                                                                     );
-}
+                                                                }
                                                             }}
                                                             user={user}
                                                             onSuccess={() =>

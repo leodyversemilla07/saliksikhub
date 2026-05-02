@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Settings, Save, Puzzle } from 'lucide-react';
-import type { FormEventHandler} from 'react';
+import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,10 +163,12 @@ export default function PluginSettings({ plugin, journals }: Props) {
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" asChild>
-                            <Link href="/admin/plugins">
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            render={<Link href="/admin/plugins" />}
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
                             <h1 className="text-oxford-blue font-serif text-2xl font-bold tracking-tight">
@@ -250,7 +252,14 @@ export default function PluginSettings({ plugin, journals }: Props) {
                 </Card>
 
                 {/* Settings Tabs */}
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <Tabs
+                    value={activeTab}
+                    onValueChange={(value) => {
+                        if (value !== null) {
+                            setActiveTab(value);
+                        }
+                    }}
+                >
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="global">
                             Global Settings

@@ -134,8 +134,8 @@ export default function MenusIndex({ journal, menuItems, pages }: Props) {
         e.preventDefault();
 
         if (!editingMenuItem) {
-return;
-}
+            return;
+        }
 
         editForm.put(
             `/admin/journals/${journal.id}/cms/menus/${editingMenuItem.id}`,
@@ -210,14 +210,18 @@ return;
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild>
-                            <Link
-                                href={admin.journals.edit.url({
-                                    journal: journal.id,
-                                })}
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            render={
+                                <Link
+                                    href={admin.journals.edit.url({
+                                        journal: journal.id,
+                                    })}
+                                />
+                            }
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight">
@@ -232,16 +236,26 @@ return;
 
                 {/* CMS Navigation */}
                 <div className="flex gap-2">
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/pages`}>
-                            Pages
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages`}
+                            />
+                        }
+                    >
+                        Pages
                     </Button>
                     <Button variant="default">Menus</Button>
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/theme`}>
-                            Theme
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/theme`}
+                            />
+                        }
+                    >
+                        Theme
                     </Button>
                 </div>
 
@@ -262,11 +276,9 @@ return;
                                 open={showAddMenu}
                                 onOpenChange={setShowAddMenu}
                             >
-                                <DialogTrigger asChild>
-                                    <Button size="sm">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Item
-                                    </Button>
+                                <DialogTrigger render={<Button size="sm" />}>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add Item
                                 </DialogTrigger>
                                 <DialogContent>
                                     <form onSubmit={handleAddSubmit}>
@@ -531,14 +543,14 @@ return;
                                                 </Button>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger
-                                                        asChild
+                                                        render={
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                            />
+                                                        }
                                                     >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
+                                                        <MoreHorizontal className="h-4 w-4" />
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem

@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Building2 } from 'lucide-react';
-import type { FormEventHandler} from 'react';
+import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,10 +59,12 @@ export default function CreateInstitution() {
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/admin/institutions">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        render={<Link href="/admin/institutions" />}
+                    >
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">
@@ -295,8 +297,11 @@ export default function CreateInstitution() {
                     </div>
 
                     <div className="mt-6 flex justify-end gap-4">
-                        <Button variant="outline" asChild>
-                            <Link href="/admin/institutions">Cancel</Link>
+                        <Button
+                            variant="outline"
+                            render={<Link href="/admin/institutions" />}
+                        >
+                            Cancel
                         </Button>
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Creating...' : 'Create Institution'}

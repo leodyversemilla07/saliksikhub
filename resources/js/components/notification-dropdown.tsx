@@ -50,8 +50,8 @@ export const NotificationDropdown = forwardRef<HTMLButtonElement>((_, ref) => {
     const fetchNotifications = async (showLoadingIndicator = true) => {
         try {
             if (showLoadingIndicator) {
-setIsLoading(true);
-}
+                setIsLoading(true);
+            }
 
             setErrorMessage(null);
 
@@ -76,8 +76,8 @@ setIsLoading(true);
             console.error('Error fetching notifications:', error);
         } finally {
             if (showLoadingIndicator) {
-setIsLoading(false);
-}
+                setIsLoading(false);
+            }
         }
     };
 
@@ -90,8 +90,8 @@ setIsLoading(false);
 
         return () => {
             if (intervalId) {
-clearInterval(intervalId);
-}
+                clearInterval(intervalId);
+            }
         };
     }, [isDropdownOpen]);
 
@@ -101,8 +101,8 @@ clearInterval(intervalId);
         );
 
         if (!notificationToUpdate || notificationToUpdate.read) {
-return;
-}
+            return;
+        }
 
         try {
             const updatedNotifications = notifications.map((notification) =>
@@ -136,8 +136,8 @@ return;
 
     const markAllNotificationsAsRead = async () => {
         if (unreadCount === 0) {
-return;
-}
+            return;
+        }
 
         try {
             const originalNotifications = [...notifications];
@@ -396,36 +396,38 @@ return;
                 setIsDropdownOpen(open);
 
                 if (open) {
-fetchNotifications();
-}
+                    fetchNotifications();
+                }
             }}
         >
-            <DropdownMenuTrigger asChild>
-                <Button
-                    ref={ref}
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        'relative rounded-full',
-                        unreadCount > 0 &&
-                            'after:absolute after:top-1 after:right-1 after:h-2 after:w-2 after:rounded-full after:bg-primary after:ring-2 after:ring-card',
-                    )}
-                >
-                    <Bell
+            <DropdownMenuTrigger
+                render={
+                    <Button
+                        ref={ref}
+                        variant="ghost"
+                        size="icon"
                         className={cn(
-                            'h-5 w-5 transition-colors duration-300',
-                            unreadCount > 0
-                                ? 'text-foreground'
-                                : 'text-muted-foreground',
+                            'relative rounded-full',
+                            unreadCount > 0 &&
+                                'after:absolute after:top-1 after:right-1 after:h-2 after:w-2 after:rounded-full after:bg-primary after:ring-2 after:ring-card',
                         )}
                     />
-
-                    {unreadCount > 0 && (
-                        <span className="sr-only">
-                            {unreadCount} unread notifications
-                        </span>
+                }
+            >
+                <Bell
+                    className={cn(
+                        'h-5 w-5 transition-colors duration-300',
+                        unreadCount > 0
+                            ? 'text-foreground'
+                            : 'text-muted-foreground',
                     )}
-                </Button>
+                />
+
+                {unreadCount > 0 && (
+                    <span className="sr-only">
+                        {unreadCount} unread notifications
+                    </span>
+                )}
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
@@ -456,7 +458,11 @@ fetchNotifications();
                 <Tabs
                     defaultValue="all"
                     value={activeTab}
-                    onValueChange={setActiveTab}
+                    onValueChange={(value) => {
+                        if (value !== null) {
+                            setActiveTab(value);
+                        }
+                    }}
                     className="flex h-[400px] w-full flex-col"
                 >
                     <div className="border-b border-border px-4">
@@ -486,7 +492,7 @@ fetchNotifications();
                             value="all"
                             className="absolute inset-0 m-0"
                         >
-                            <ScrollArea className="h-full w-full" type="always">
+                            <ScrollArea className="h-full w-full">
                                 <NotificationContent />
                             </ScrollArea>
                         </TabsContent>
@@ -495,7 +501,7 @@ fetchNotifications();
                             value="unread"
                             className="absolute inset-0 m-0"
                         >
-                            <ScrollArea className="h-full w-full" type="always">
+                            <ScrollArea className="h-full w-full">
                                 <NotificationContent />
                             </ScrollArea>
                         </TabsContent>
@@ -505,14 +511,14 @@ fetchNotifications();
                         <Button
                             variant="ghost"
                             className="w-full justify-center bg-popover text-primary hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-ring"
-                            asChild
+                            render={
+                                <Link
+                                    href="/notifications"
+                                    className="flex w-full items-center justify-center rounded py-2 hover:text-primary-foreground"
+                                />
+                            }
                         >
-                            <Link
-                                href="/notifications"
-                                className="flex w-full items-center justify-center rounded py-2 hover:text-primary-foreground"
-                            >
-                                View all notifications
-                            </Link>
+                            View all notifications
                         </Button>
                     </div>
                 </Tabs>

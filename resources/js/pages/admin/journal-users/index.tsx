@@ -137,8 +137,8 @@ export default function JournalUsersIndex({
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) {
-return '-';
-}
+            return '-';
+        }
 
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -162,11 +162,11 @@ return '-';
                             journal
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/admin/journal-users/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Assign User
-                        </Link>
+                    <Button
+                        render={<Link href="/admin/journal-users/create" />}
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Assign User
                     </Button>
                 </div>
 
@@ -188,7 +188,11 @@ return '-';
                             </div>
                             <Select
                                 value={roleFilter}
-                                onValueChange={setRoleFilter}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        setRoleFilter(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder="Filter by role" />
@@ -211,7 +215,11 @@ return '-';
                             </Select>
                             <Select
                                 value={statusFilter}
-                                onValueChange={setStatusFilter}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        setStatusFilter(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-[150px]">
                                     <SelectValue placeholder="Filter by status" />
@@ -257,11 +265,13 @@ return '-';
                                     Get started by assigning users to this
                                     journal.
                                 </p>
-                                <Button asChild>
-                                    <Link href="/admin/journal-users/create">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Assign User
-                                    </Link>
+                                <Button
+                                    render={
+                                        <Link href="/admin/journal-users/create" />
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Assign User
                                 </Button>
                             </div>
                         ) : (
@@ -365,25 +375,25 @@ return '-';
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            asChild
+                                                            render={
+                                                                <Link
+                                                                    href={`/admin/journal-users/${user.pivot.id}/edit`}
+                                                                />
+                                                            }
                                                         >
-                                                            <Link
-                                                                href={`/admin/journal-users/${user.pivot.id}/edit`}
-                                                            >
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Link>
+                                                            <Pencil className="h-4 w-4" />
                                                         </Button>
                                                         <AlertDialog>
                                                             <AlertDialogTrigger
-                                                                asChild
+                                                                render={
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="text-destructive hover:text-destructive"
+                                                                    />
+                                                                }
                                                             >
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="text-destructive hover:text-destructive"
-                                                                >
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
+                                                                <Trash2 className="h-4 w-4" />
                                                             </AlertDialogTrigger>
                                                             <AlertDialogContent>
                                                                 <AlertDialogHeader>
@@ -468,24 +478,18 @@ return '-';
                                                                     disabled={
                                                                         !link.url
                                                                     }
-                                                                    asChild={
-                                                                        !!link.url
+                                                                    render={
+                                                                        link.url ? (
+                                                                            <Link
+                                                                                href={
+                                                                                    link.url
+                                                                                }
+                                                                                preserveScroll
+                                                                            />
+                                                                        ) : undefined
                                                                     }
                                                                 >
-                                                                    {link.url ? (
-                                                                        <Link
-                                                                            href={
-                                                                                link.url
-                                                                            }
-                                                                            preserveScroll
-                                                                        >
-                                                                            <ChevronLeft className="h-4 w-4" />
-                                                                        </Link>
-                                                                    ) : (
-                                                                        <span>
-                                                                            <ChevronLeft className="h-4 w-4" />
-                                                                        </span>
-                                                                    )}
+                                                                    <ChevronLeft className="h-4 w-4" />
                                                                 </Button>
                                                             );
                                                         }
@@ -504,24 +508,18 @@ return '-';
                                                                     disabled={
                                                                         !link.url
                                                                     }
-                                                                    asChild={
-                                                                        !!link.url
+                                                                    render={
+                                                                        link.url ? (
+                                                                            <Link
+                                                                                href={
+                                                                                    link.url
+                                                                                }
+                                                                                preserveScroll
+                                                                            />
+                                                                        ) : undefined
                                                                     }
                                                                 >
-                                                                    {link.url ? (
-                                                                        <Link
-                                                                            href={
-                                                                                link.url
-                                                                            }
-                                                                            preserveScroll
-                                                                        >
-                                                                            <ChevronRight className="h-4 w-4" />
-                                                                        </Link>
-                                                                    ) : (
-                                                                        <span>
-                                                                            <ChevronRight className="h-4 w-4" />
-                                                                        </span>
-                                                                    )}
+                                                                    <ChevronRight className="h-4 w-4" />
                                                                 </Button>
                                                             );
                                                         }

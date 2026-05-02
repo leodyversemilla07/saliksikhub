@@ -185,7 +185,7 @@ export default function PreparePublication({
                                 name="volume"
                                 value={data.volume}
                                 onValueChange={(value) =>
-                                    setData('volume', value)
+                                    setData('volume', value ?? '')
                                 }
                             >
                                 <SelectTrigger
@@ -239,7 +239,7 @@ export default function PreparePublication({
                                 name="issue"
                                 value={data.issue}
                                 onValueChange={(value) =>
-                                    setData('issue', value)
+                                    setData('issue', value ?? '')
                                 }
                             >
                                 <SelectTrigger

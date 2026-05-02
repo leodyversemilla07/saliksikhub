@@ -52,8 +52,8 @@ export default function AnnouncementShow({ announcement }: Props) {
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) {
-return '';
-}
+            return '';
+        }
 
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -67,11 +67,12 @@ return '';
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Back link */}
                 <div className="mb-6">
-                    <Button variant="ghost" asChild>
-                        <Link href="/announcements">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Announcements
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        render={<Link href="/announcements" />}
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Announcements
                     </Button>
                 </div>
 

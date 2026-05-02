@@ -90,32 +90,34 @@ export default function JournalSwitcher({ className }: JournalSwitcherProps) {
 
     return (
         <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className={`h-auto justify-start gap-2 px-2 py-1.5 text-left ${className}`}
-                    disabled={isLoading}
-                >
-                    {currentJournal.logo_url ? (
-                        <img
-                            src={currentJournal.logo_url}
-                            alt={currentJournal.name}
-                            className="h-6 w-6 rounded object-contain"
-                        />
-                    ) : (
-                        <Building2 className="h-5 w-5 text-muted-foreground" />
-                    )}
-                    <div className="flex flex-col items-start">
-                        <span className="max-w-[150px] truncate text-sm font-medium">
-                            {currentJournal.abbreviation || currentJournal.name}
-                        </span>
-                    </div>
-                    {isLoading ? (
-                        <Loader2 className="ml-auto h-4 w-4 animate-spin" />
-                    ) : (
-                        <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
-                    )}
-                </Button>
+            <DropdownMenuTrigger
+                render={
+                    <Button
+                        variant="ghost"
+                        className={`h-auto justify-start gap-2 px-2 py-1.5 text-left ${className}`}
+                        disabled={isLoading}
+                    />
+                }
+            >
+                {currentJournal.logo_url ? (
+                    <img
+                        src={currentJournal.logo_url}
+                        alt={currentJournal.name}
+                        className="h-6 w-6 rounded object-contain"
+                    />
+                ) : (
+                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                )}
+                <div className="flex flex-col items-start">
+                    <span className="max-w-[150px] truncate text-sm font-medium">
+                        {currentJournal.abbreviation || currentJournal.name}
+                    </span>
+                </div>
+                {isLoading ? (
+                    <Loader2 className="ml-auto h-4 w-4 animate-spin" />
+                ) : (
+                    <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />
+                )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[280px]">
                 <DropdownMenuLabel>Switch Journal</DropdownMenuLabel>

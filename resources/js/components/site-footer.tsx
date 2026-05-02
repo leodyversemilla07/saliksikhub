@@ -32,12 +32,7 @@
  * @see {@link SiteHeader} for the corresponding header component
  */
 import { Link, usePage } from '@inertiajs/react';
-import {
-    FaFacebook,
-    FaXTwitter,
-    FaLinkedin,
-    FaOrcid,
-} from 'react-icons/fa6';
+import { FaFacebook, FaXTwitter, FaLinkedin, FaOrcid } from 'react-icons/fa6';
 import {
     LuMail,
     LuMapPin,
@@ -121,7 +116,8 @@ export default function Footer() {
         currentJournal?.issn ||
         (typeof issnFromSettings === 'string' ? issnFromSettings : '') ||
         '2024-XXXX';
-    const publicationFrequency = currentJournal?.settings?.publication_frequency;
+    const publicationFrequency =
+        currentJournal?.settings?.publication_frequency;
     const publicationFrequencyFromSettings = institutionSettings?.frequency;
     const frequency =
         (typeof publicationFrequency === 'string'
@@ -267,10 +263,12 @@ export default function Footer() {
                             <p className="mb-4 text-sm text-muted-foreground">
                                 Submit your research for peer review.
                             </p>
-                            <Button asChild size="sm" className="w-full">
-                                <Link href={submissions.url()}>
-                                    Submit Manuscript
-                                </Link>
+                            <Button
+                                size="sm"
+                                className="w-full"
+                                render={<Link href={submissions.url()} />}
+                            >
+                                Submit Manuscript
                             </Button>
                         </div>
                     </div>
@@ -350,16 +348,16 @@ export default function Footer() {
                                         variant="outline"
                                         size="icon"
                                         className="h-9 w-9"
-                                        asChild
+                                        render={
+                                            <a
+                                                href={item.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                aria-label={item.name}
+                                            />
+                                        }
                                     >
-                                        <a
-                                            href={item.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            aria-label={item.name}
-                                        >
-                                            <item.icon className="h-4 w-4" />
-                                        </a>
+                                        <item.icon className="h-4 w-4" />
                                     </Button>
                                 ))}
                             </div>

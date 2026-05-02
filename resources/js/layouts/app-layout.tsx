@@ -15,7 +15,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import type { ReactNode , PropsWithChildren } from 'react';
+import type { ReactNode, PropsWithChildren } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import Breadcrumb from '@/components/breadcrumb';
 import { NotificationDropdown } from '@/components/notification-dropdown';
@@ -207,8 +207,8 @@ function useSidebarState() {
     // Read cookie synchronously during initial render to prevent flash
     const getInitialState = () => {
         if (typeof document === 'undefined') {
-return true;
-} // SSR fallback
+            return true;
+        } // SSR fallback
 
         const cookies = document.cookie.split(';');
         const sidebarCookie = cookies.find((cookie) =>
@@ -267,9 +267,7 @@ export default function AppLayout({
                     {/* Inline HeaderActions logic */}
                     <div className="flex items-center space-x-3">
                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <NotificationDropdown />
-                            </TooltipTrigger>
+                            <TooltipTrigger render={<NotificationDropdown />} />
                             <TooltipContent
                                 side="bottom"
                                 className="border bg-popover text-sm shadow-lg"

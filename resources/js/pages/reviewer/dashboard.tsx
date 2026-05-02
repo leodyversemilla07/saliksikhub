@@ -107,11 +107,9 @@ export default function ReviewerDashboard({
                             Track your review assignments and performance
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/reviewer/manuscripts">
-                            <Eye className="mr-2 h-4 w-4" />
-                            View All Manuscripts
-                        </Link>
+                    <Button render={<Link href="/reviewer/manuscripts" />}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        View All Manuscripts
                     </Button>
                 </div>
 
@@ -272,11 +270,13 @@ export default function ReviewerDashboard({
                                 <Clock className="h-5 w-5" />
                                 Recent Reviews
                             </CardTitle>
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href="/reviewer/reviews">
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View All
-                                </Link>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                render={<Link href="/reviewer/reviews" />}
+                            >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View All
                             </Button>
                         </CardHeader>
                         <CardContent>
@@ -350,11 +350,13 @@ export default function ReviewerDashboard({
                             <FileText className="h-5 w-5" />
                             Manuscripts Under Review
                         </CardTitle>
-                        <Button variant="outline" size="sm" asChild>
-                            <Link href="/reviewer/manuscripts">
-                                <Eye className="mr-2 h-4 w-4" />
-                                View All
-                            </Link>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            render={<Link href="/reviewer/manuscripts" />}
+                        >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View All
                         </Button>
                     </CardHeader>
                     <CardContent>
@@ -401,13 +403,13 @@ export default function ReviewerDashboard({
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        asChild
+                                                        render={
+                                                            <Link
+                                                                href={`/reviewer/manuscripts/${manuscript.id}`}
+                                                            />
+                                                        }
                                                     >
-                                                        <Link
-                                                            href={`/reviewer/manuscripts/${manuscript.id}`}
-                                                        >
-                                                            Review
-                                                        </Link>
+                                                        Review
                                                     </Button>
                                                 </div>
                                             </div>

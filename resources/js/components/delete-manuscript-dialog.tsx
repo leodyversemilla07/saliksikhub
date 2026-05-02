@@ -39,13 +39,15 @@ export function DeleteManuscriptDialog({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel asChild>
-                        <Button variant="outline">Cancel</Button>
+                    <AlertDialogCancel render={<Button variant="outline" />}>
+                        Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                        <Button variant="destructive" onClick={onDelete}>
-                            Delete
-                        </Button>
+                    <AlertDialogAction
+                        render={
+                            <Button variant="destructive" onClick={onDelete} />
+                        }
+                    >
+                        Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

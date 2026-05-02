@@ -66,15 +66,15 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setData(name as keyof FormData, value);
+        setData(name as keyof FormData, value ?? '');
     };
 
     const handleRoleChange = (value: string) => {
-        setData('role', value);
+        setData('role', value ?? '');
     };
 
     const handleCountryChange = (value: string) => {
-        setData('country', value);
+        setData('country', value ?? '');
     };
 
     const onSubmit = (e: React.FormEvent) => {
@@ -217,7 +217,11 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
                             </Label>
                             <Select
                                 value={data.country}
-                                onValueChange={handleCountryChange}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        handleCountryChange(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-full border bg-background text-foreground">
                                     <SelectValue placeholder="Select a country" />
@@ -285,7 +289,11 @@ export default function CreateUser({ roles, errors }: CreateUserProps) {
                             </Label>
                             <Select
                                 value={data.role}
-                                onValueChange={handleRoleChange}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        handleRoleChange(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-full border bg-background text-foreground">
                                     <SelectValue placeholder="Select role" />

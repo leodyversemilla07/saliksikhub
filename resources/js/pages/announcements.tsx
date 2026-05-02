@@ -63,8 +63,8 @@ export default function Announcements({ announcements }: Props) {
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) {
-return '';
-}
+            return '';
+        }
 
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -156,12 +156,15 @@ return '';
                                                     ? '...'
                                                     : '')}
                                     </p>
-                                    <Button asChild variant="outline">
-                                        <Link
-                                            href={`/announcements/${announcement.slug}`}
-                                        >
-                                            Read More
-                                        </Link>
+                                    <Button
+                                        variant="outline"
+                                        render={
+                                            <Link
+                                                href={`/announcements/${announcement.slug}`}
+                                            />
+                                        }
+                                    >
+                                        Read More
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -217,15 +220,15 @@ return '';
                                                     : '')}
                                     </p>
                                     <Button
-                                        asChild
                                         variant="link"
                                         className="h-auto p-0 text-primary"
+                                        render={
+                                            <Link
+                                                href={`/announcements/${announcement.slug}`}
+                                            />
+                                        }
                                     >
-                                        <Link
-                                            href={`/announcements/${announcement.slug}`}
-                                        >
-                                            Read More →
-                                        </Link>
+                                        Read More →
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -247,19 +250,16 @@ return '';
                                                     variant="outline"
                                                     size="sm"
                                                     disabled={!link.url}
-                                                    asChild={!!link.url}
+                                                    render={
+                                                        link.url ? (
+                                                            <Link
+                                                                href={link.url}
+                                                            />
+                                                        ) : undefined
+                                                    }
                                                 >
-                                                    {link.url ? (
-                                                        <Link href={link.url}>
-                                                            <ChevronLeft className="mr-1 h-4 w-4" />
-                                                            Previous
-                                                        </Link>
-                                                    ) : (
-                                                        <span>
-                                                            <ChevronLeft className="mr-1 h-4 w-4" />
-                                                            Previous
-                                                        </span>
-                                                    )}
+                                                    <ChevronLeft className="mr-1 h-4 w-4" />
+                                                    Previous
                                                 </Button>
                                             );
                                         }
@@ -274,19 +274,16 @@ return '';
                                                     variant="outline"
                                                     size="sm"
                                                     disabled={!link.url}
-                                                    asChild={!!link.url}
+                                                    render={
+                                                        link.url ? (
+                                                            <Link
+                                                                href={link.url}
+                                                            />
+                                                        ) : undefined
+                                                    }
                                                 >
-                                                    {link.url ? (
-                                                        <Link href={link.url}>
-                                                            Next
-                                                            <ChevronRight className="ml-1 h-4 w-4" />
-                                                        </Link>
-                                                    ) : (
-                                                        <span>
-                                                            Next
-                                                            <ChevronRight className="ml-1 h-4 w-4" />
-                                                        </span>
-                                                    )}
+                                                    Next
+                                                    <ChevronRight className="ml-1 h-4 w-4" />
                                                 </Button>
                                             );
                                         }

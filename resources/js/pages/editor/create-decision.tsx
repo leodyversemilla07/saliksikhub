@@ -106,7 +106,7 @@ export default function CreateDecision({ manuscript }: Props) {
     };
 
     const handleDecisionChange = (value: string) => {
-        setData('decision', value);
+        setData('decision', value ?? '');
         setShowDeadline(
             value === 'minor_revision' || value === 'major_revision',
         );
@@ -114,7 +114,7 @@ export default function CreateDecision({ manuscript }: Props) {
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
-        setData('comments', value);
+        setData('comments', value ?? '');
         setCommentLength(value.length);
     };
 
@@ -382,48 +382,50 @@ export default function CreateDecision({ manuscript }: Props) {
                                         reject: 'Reject',
                                     }).map(([value, label]) => (
                                         <Tooltip key={value}>
-                                            <TooltipTrigger asChild>
-                                                <div
-                                                    className={cn(
-                                                        'flex cursor-pointer items-center space-x-2 rounded-xl border-2 p-5 transition-all duration-200',
-                                                        data.decision === value
-                                                            ? 'scale-[1.02] transform border-primary bg-primary/10 shadow-md'
-                                                            : 'border-muted/40 hover:border-primary/30 hover:bg-muted/50 hover:shadow',
-                                                    )}
-                                                >
-                                                    <RadioGroupItem
-                                                        value={value}
-                                                        id={value}
+                                            <TooltipTrigger
+                                                render={
+                                                    <div
                                                         className={cn(
+                                                            'flex cursor-pointer items-center space-x-2 rounded-xl border-2 p-5 transition-all duration-200',
                                                             data.decision ===
                                                                 value
-                                                                ? 'border-primary'
-                                                                : '',
+                                                                ? 'scale-[1.02] transform border-primary bg-primary/10 shadow-md'
+                                                                : 'border-muted/40 hover:border-primary/30 hover:bg-muted/50 hover:shadow',
                                                         )}
                                                     />
-                                                    <div className="flex w-full items-center justify-between">
-                                                        <Label
-                                                            htmlFor={value}
-                                                            className="flex-grow cursor-pointer text-base font-medium"
-                                                        >
-                                                            {label}
-                                                        </Label>
-                                                        <span
-                                                            className={cn(
-                                                                'ml-2 rounded-full p-1.5',
-                                                                data.decision ===
-                                                                    value
-                                                                    ? 'bg-primary/10'
-                                                                    : 'bg-muted/40',
-                                                            )}
-                                                        >
-                                                            {value in
-                                                                decisionIcons &&
-                                                                decisionIcons[
-                                                                    value as keyof typeof decisionIcons
-                                                                ]}
-                                                        </span>
-                                                    </div>
+                                                }
+                                            >
+                                                <RadioGroupItem
+                                                    value={value}
+                                                    id={value}
+                                                    className={cn(
+                                                        data.decision === value
+                                                            ? 'border-primary'
+                                                            : '',
+                                                    )}
+                                                />
+                                                <div className="flex w-full items-center justify-between">
+                                                    <Label
+                                                        htmlFor={value}
+                                                        className="flex-grow cursor-pointer text-base font-medium"
+                                                    >
+                                                        {label}
+                                                    </Label>
+                                                    <span
+                                                        className={cn(
+                                                            'ml-2 rounded-full p-1.5',
+                                                            data.decision ===
+                                                                value
+                                                                ? 'bg-primary/10'
+                                                                : 'bg-muted/40',
+                                                        )}
+                                                    >
+                                                        {value in
+                                                            decisionIcons &&
+                                                            decisionIcons[
+                                                                value as keyof typeof decisionIcons
+                                                            ]}
+                                                    </span>
                                                 </div>
                                             </TooltipTrigger>
                                             <TooltipContent className="max-w-xs border-0 bg-primary text-primary-foreground shadow-lg">
@@ -461,31 +463,33 @@ export default function CreateDecision({ manuscript }: Props) {
                                     </div>
 
                                     <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className={cn(
-                                                    'w-full justify-start py-6 text-left text-base font-normal',
-                                                    !data.revision_deadline &&
-                                                        'text-muted-foreground',
-                                                    data.revision_deadline &&
-                                                        'border-amber-200 bg-amber-100 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200',
-                                                )}
-                                            >
-                                                <CalendarIcon className="mr-2 h-5 w-5" />
-                                                {data.revision_deadline ? (
-                                                    format(
-                                                        new Date(
-                                                            data.revision_deadline,
-                                                        ),
-                                                        'PPP',
-                                                    )
-                                                ) : (
-                                                    <span>
-                                                        Select deadline date
-                                                    </span>
-                                                )}
-                                            </Button>
+                                        <PopoverTrigger
+                                            render={
+                                                <Button
+                                                    variant="outline"
+                                                    className={cn(
+                                                        'w-full justify-start py-6 text-left text-base font-normal',
+                                                        !data.revision_deadline &&
+                                                            'text-muted-foreground',
+                                                        data.revision_deadline &&
+                                                            'border-amber-200 bg-amber-100 text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200',
+                                                    )}
+                                                />
+                                            }
+                                        >
+                                            <CalendarIcon className="mr-2 h-5 w-5" />
+                                            {data.revision_deadline ? (
+                                                format(
+                                                    new Date(
+                                                        data.revision_deadline,
+                                                    ),
+                                                    'PPP',
+                                                )
+                                            ) : (
+                                                <span>
+                                                    Select deadline date
+                                                </span>
+                                            )}
                                         </PopoverTrigger>
                                         <PopoverContent
                                             className="w-auto p-0"

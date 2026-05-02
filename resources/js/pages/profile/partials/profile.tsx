@@ -379,7 +379,9 @@ export default function ProfileUpdate({
                                                         <Checkbox
                                                             id={`expertise-${expertise.id}`}
                                                             name="expertises[]"
-                                                            value={expertise.id}
+                                                            value={String(
+                                                                expertise.id,
+                                                            )}
                                                             defaultChecked={userExpertises.includes(
                                                                 expertise.id,
                                                             )}
@@ -591,10 +593,10 @@ export default function ProfileUpdate({
                         open={confirmingUserDeletion}
                         onOpenChange={setConfirmingUserDeletion}
                     >
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive">
-                                Delete Account
-                            </Button>
+                        <AlertDialogTrigger
+                            render={<Button variant="destructive" />}
+                        >
+                            Delete Account
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>

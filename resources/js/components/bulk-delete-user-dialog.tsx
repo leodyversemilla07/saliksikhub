@@ -48,8 +48,8 @@ const BulkDeleteUserDialog: React.FC<BulkDeleteUserDialogProps> = ({
                 reset();
 
                 if (onSuccess) {
-onSuccess();
-}
+                    onSuccess();
+                }
 
                 toast(`${selectedUsers.length} user(s) deleted successfully.`);
             },
@@ -88,32 +88,36 @@ onSuccess();
                     )}
                 </div>
                 <AlertDialogFooter className="mt-6 flex flex-row gap-4">
-                    <AlertDialogCancel asChild>
-                        <Button
-                            type="button"
-                            className="flex-1 rounded-md border border-border bg-background py-2 text-foreground hover:bg-muted"
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
+                    <AlertDialogCancel
+                        render={
+                            <Button
+                                type="button"
+                                className="flex-1 rounded-md border border-border bg-background py-2 text-foreground hover:bg-muted"
+                                disabled={processing}
+                            />
+                        }
+                    >
+                        Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                        <Button
-                            type="button"
-                            onClick={onSubmit}
-                            disabled={processing}
-                            className="flex-1 rounded-md bg-destructive py-2 text-foreground hover:bg-destructive/90"
-                        >
-                            {processing ? (
-                                'Deleting...'
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    <Trash2 className="h-4 w-4 text-foreground" />
-                                    Delete {selectedUsers.length} User
-                                    {selectedUsers.length > 1 ? 's' : ''}
-                                </span>
-                            )}
-                        </Button>
+                    <AlertDialogAction
+                        render={
+                            <Button
+                                type="button"
+                                onClick={onSubmit}
+                                disabled={processing}
+                                className="flex-1 rounded-md bg-destructive py-2 text-foreground hover:bg-destructive/90"
+                            />
+                        }
+                    >
+                        {processing ? (
+                            'Deleting...'
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                <Trash2 className="h-4 w-4 text-foreground" />
+                                Delete {selectedUsers.length} User
+                                {selectedUsers.length > 1 ? 's' : ''}
+                            </span>
+                        )}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -14,8 +14,11 @@ export default function Unauthorized() {
                     You are not authorized to view this page.
                 </p>
                 <div className="flex flex-col justify-center gap-2 sm:flex-row">
-                    <Button asChild className="w-full min-w-[140px] sm:w-auto">
-                        <Link href="/">Return Home</Link>
+                    <Button
+                        className="w-full min-w-[140px] sm:w-auto"
+                        render={<Link href="/" />}
+                    >
+                        Return Home
                     </Button>
                     <Button
                         variant="outline"

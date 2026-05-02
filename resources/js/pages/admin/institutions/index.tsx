@@ -86,11 +86,9 @@ export default function InstitutionsIndex({ institutions }: Props) {
                             Manage institutions in the research journal system
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/admin/institutions/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Institution
-                        </Link>
+                    <Button render={<Link href="/admin/institutions/create" />}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Institution
                     </Button>
                 </div>
 
@@ -112,11 +110,13 @@ export default function InstitutionsIndex({ institutions }: Props) {
                                     Get started by creating your first
                                     institution.
                                 </p>
-                                <Button asChild>
-                                    <Link href="/admin/institutions/create">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Institution
-                                    </Link>
+                                <Button
+                                    render={
+                                        <Link href="/admin/institutions/create" />
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add Institution
                                 </Button>
                             </div>
                         ) : (
@@ -227,29 +227,29 @@ export default function InstitutionsIndex({ institutions }: Props) {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                asChild
+                                                                render={
+                                                                    <Link
+                                                                        href={`/admin/institutions/${institution.id}/edit`}
+                                                                    />
+                                                                }
                                                             >
-                                                                <Link
-                                                                    href={`/admin/institutions/${institution.id}/edit`}
-                                                                >
-                                                                    <Pencil className="h-4 w-4" />
-                                                                </Link>
+                                                                <Pencil className="h-4 w-4" />
                                                             </Button>
                                                             <AlertDialog>
                                                                 <AlertDialogTrigger
-                                                                    asChild
+                                                                    render={
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="text-destructive hover:text-destructive"
+                                                                            disabled={
+                                                                                institution.journals_count >
+                                                                                0
+                                                                            }
+                                                                        />
+                                                                    }
                                                                 >
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="text-destructive hover:text-destructive"
-                                                                        disabled={
-                                                                            institution.journals_count >
-                                                                            0
-                                                                        }
-                                                                    >
-                                                                        <Trash2 className="h-4 w-4" />
-                                                                    </Button>
+                                                                    <Trash2 className="h-4 w-4" />
                                                                 </AlertDialogTrigger>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>
@@ -319,24 +319,18 @@ export default function InstitutionsIndex({ institutions }: Props) {
                                                                 disabled={
                                                                     !link.url
                                                                 }
-                                                                asChild={
-                                                                    !!link.url
+                                                                render={
+                                                                    link.url ? (
+                                                                        <Link
+                                                                            href={
+                                                                                link.url
+                                                                            }
+                                                                            preserveScroll
+                                                                        />
+                                                                    ) : undefined
                                                                 }
                                                             >
-                                                                {link.url ? (
-                                                                    <Link
-                                                                        href={
-                                                                            link.url
-                                                                        }
-                                                                        preserveScroll
-                                                                    >
-                                                                        <ChevronLeft className="h-4 w-4" />
-                                                                    </Link>
-                                                                ) : (
-                                                                    <span>
-                                                                        <ChevronLeft className="h-4 w-4" />
-                                                                    </span>
-                                                                )}
+                                                                <ChevronLeft className="h-4 w-4" />
                                                             </Button>
                                                         );
                                                     }
@@ -355,24 +349,18 @@ export default function InstitutionsIndex({ institutions }: Props) {
                                                                 disabled={
                                                                     !link.url
                                                                 }
-                                                                asChild={
-                                                                    !!link.url
+                                                                render={
+                                                                    link.url ? (
+                                                                        <Link
+                                                                            href={
+                                                                                link.url
+                                                                            }
+                                                                            preserveScroll
+                                                                        />
+                                                                    ) : undefined
                                                                 }
                                                             >
-                                                                {link.url ? (
-                                                                    <Link
-                                                                        href={
-                                                                            link.url
-                                                                        }
-                                                                        preserveScroll
-                                                                    >
-                                                                        <ChevronRight className="h-4 w-4" />
-                                                                    </Link>
-                                                                ) : (
-                                                                    <span>
-                                                                        <ChevronRight className="h-4 w-4" />
-                                                                    </span>
-                                                                )}
+                                                                <ChevronRight className="h-4 w-4" />
                                                             </Button>
                                                         );
                                                     }

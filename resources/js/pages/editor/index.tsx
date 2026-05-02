@@ -46,8 +46,6 @@ import editor from '@/routes/editor';
 import type { Manuscript } from '@/types';
 import { ManuscriptStatus } from '@/types';
 
-
-
 interface ManuscriptTableProps {
     manuscripts: Manuscript[];
 }
@@ -74,23 +72,23 @@ const AuthorBadges = ({ authors }: AuthorBadgesProps) => {
     return (
         <div className="flex flex-wrap gap-1">
             <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className="flex flex-wrap gap-1">
-                        {authorList.slice(0, 1).map((author, index) => (
-                            <Badge
-                                key={index}
-                                variant="outline"
-                                className="text-xs"
-                            >
-                                {author}
-                            </Badge>
-                        ))}
-                        {authorList.length > 1 && (
-                            <Badge variant="outline" className="text-xs">
-                                +{authorList.length - 1}
-                            </Badge>
-                        )}
-                    </div>
+                <TooltipTrigger
+                    render={<div className="flex flex-wrap gap-1" />}
+                >
+                    {authorList.slice(0, 1).map((author, index) => (
+                        <Badge
+                            key={index}
+                            variant="outline"
+                            className="text-xs"
+                        >
+                            {author}
+                        </Badge>
+                    ))}
+                    {authorList.length > 1 && (
+                        <Badge variant="outline" className="text-xs">
+                            +{authorList.length - 1}
+                        </Badge>
+                    )}
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs">
                     <p className="text-sm font-medium">All Authors:</p>
@@ -147,8 +145,8 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
 
     const handleSetUnderReview = () => {
         if (!manuscriptToReview) {
-return;
-}
+            return;
+        }
 
         setIsLoading(true);
         router.post(
@@ -167,8 +165,8 @@ return;
 
     const handleStartCopyEditing = () => {
         if (!manuscriptToCopyEdit) {
-return;
-}
+            return;
+        }
 
         setIsLoading(true);
 
@@ -320,14 +318,16 @@ return;
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="p-1"
-                                            >
-                                                <MoreVertical className="h-5 w-5" />
-                                            </Button>
+                                        <DropdownMenuTrigger
+                                            render={
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="p-1"
+                                                />
+                                            }
+                                        >
+                                            <MoreVertical className="h-5 w-5" />
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem
@@ -436,8 +436,8 @@ return;
                     setShowReviewDialog(open);
 
                     if (!open) {
-setManuscriptToReview(null);
-}
+                        setManuscriptToReview(null);
+                    }
                 }}
             >
                 <DialogContent className="sm:max-w-[425px]">
@@ -528,8 +528,8 @@ setManuscriptToReview(null);
                     setShowCopyEditDialog(open);
 
                     if (!open) {
-setManuscriptToCopyEdit(null);
-}
+                        setManuscriptToCopyEdit(null);
+                    }
                 }}
             >
                 <DialogContent className="sm:max-w-[425px]">

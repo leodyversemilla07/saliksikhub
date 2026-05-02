@@ -68,10 +68,16 @@ export default function CreatePage({ journal, pageTypes }: Props) {
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/pages`}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages`}
+                            />
+                        }
+                    >
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">
@@ -117,7 +123,7 @@ export default function CreatePage({ journal, pageTypes }: Props) {
                                         <Select
                                             value={data.type}
                                             onValueChange={(value) =>
-                                                setData('type', value)
+                                                setData('type', value ?? '')
                                             }
                                         >
                                             <SelectTrigger>

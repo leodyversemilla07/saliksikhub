@@ -94,14 +94,18 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild>
-                            <Link
-                                href={admin.journals.edit.url({
-                                    journal: journal.id,
-                                })}
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            render={
+                                <Link
+                                    href={admin.journals.edit.url({
+                                        journal: journal.id,
+                                    })}
+                                />
+                            }
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight">
@@ -112,35 +116,52 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                             </p>
                         </div>
                     </div>
-                    <Button asChild>
-                        <Link
-                            href={`/admin/journals/${journal.id}/cms/pages/create`}
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Create Page
-                        </Link>
+                    <Button
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages/create`}
+                            />
+                        }
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Page
                     </Button>
                 </div>
 
                 {/* CMS Navigation */}
                 <div className="flex gap-2">
-                    <Button variant="default" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/pages`}>
-                            <FileText className="mr-2 h-4 w-4" />
-                            Pages
-                        </Link>
+                    <Button
+                        variant="default"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages`}
+                            />
+                        }
+                    >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Pages
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/menus`}>
-                            <Menu className="mr-2 h-4 w-4" />
-                            Menus
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/menus`}
+                            />
+                        }
+                    >
+                        <Menu className="mr-2 h-4 w-4" />
+                        Menus
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/theme`}>
-                            <Palette className="mr-2 h-4 w-4" />
-                            Theme
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/theme`}
+                            />
+                        }
+                    >
+                        <Palette className="mr-2 h-4 w-4" />
+                        Theme
                     </Button>
                 </div>
 
@@ -162,13 +183,16 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                 <p className="text-muted-foreground">
                                     Create your first page to get started.
                                 </p>
-                                <Button className="mt-4" asChild>
-                                    <Link
-                                        href={`/admin/journals/${journal.id}/cms/pages/create`}
-                                    >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Page
-                                    </Link>
+                                <Button
+                                    className="mt-4"
+                                    render={
+                                        <Link
+                                            href={`/admin/journals/${journal.id}/cms/pages/create`}
+                                        />
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create Page
                                 </Button>
                             </div>
                         ) : (
@@ -242,43 +266,43 @@ export default function PagesIndex({ journal, pages, pageTypes }: Props) {
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger
-                                                        asChild
+                                                        render={
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                            />
+                                                        }
                                                     >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
+                                                        <MoreHorizontal className="h-4 w-4" />
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem
-                                                            asChild
+                                                            render={
+                                                                <Link
+                                                                    href={`/admin/journals/${journal.id}/cms/pages/${page.id}`}
+                                                                />
+                                                            }
                                                         >
-                                                            <Link
-                                                                href={`/admin/journals/${journal.id}/cms/pages/${page.id}`}
-                                                            >
-                                                                <Pencil className="mr-2 h-4 w-4" />
-                                                                Edit
-                                                            </Link>
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit
                                                         </DropdownMenuItem>
                                                         {page.type !==
                                                             'home' && (
                                                             <AlertDialog>
                                                                 <AlertDialogTrigger
-                                                                    asChild
+                                                                    render={
+                                                                        <DropdownMenuItem
+                                                                            onSelect={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.preventDefault()
+                                                                            }
+                                                                            className="text-destructive"
+                                                                        />
+                                                                    }
                                                                 >
-                                                                    <DropdownMenuItem
-                                                                        onSelect={(
-                                                                            e,
-                                                                        ) =>
-                                                                            e.preventDefault()
-                                                                        }
-                                                                        className="text-destructive"
-                                                                    >
-                                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                                        Delete
-                                                                    </DropdownMenuItem>
+                                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                                    Delete
                                                                 </AlertDialogTrigger>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>

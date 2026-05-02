@@ -109,10 +109,12 @@ export default function CreateJournalUser({
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/admin/journal-users">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        render={<Link href="/admin/journal-users" />}
+                    >
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">
@@ -276,24 +278,18 @@ export default function CreateJournalUser({
                                                                             disabled={
                                                                                 !link.url
                                                                             }
-                                                                            asChild={
-                                                                                !!link.url
+                                                                            render={
+                                                                                link.url ? (
+                                                                                    <Link
+                                                                                        href={
+                                                                                            link.url
+                                                                                        }
+                                                                                        preserveScroll
+                                                                                    />
+                                                                                ) : undefined
                                                                             }
                                                                         >
-                                                                            {link.url ? (
-                                                                                <Link
-                                                                                    href={
-                                                                                        link.url
-                                                                                    }
-                                                                                    preserveScroll
-                                                                                >
-                                                                                    <ChevronLeft className="h-4 w-4" />
-                                                                                </Link>
-                                                                            ) : (
-                                                                                <span>
-                                                                                    <ChevronLeft className="h-4 w-4" />
-                                                                                </span>
-                                                                            )}
+                                                                            <ChevronLeft className="h-4 w-4" />
                                                                         </Button>
                                                                     );
                                                                 }
@@ -313,24 +309,18 @@ export default function CreateJournalUser({
                                                                             disabled={
                                                                                 !link.url
                                                                             }
-                                                                            asChild={
-                                                                                !!link.url
+                                                                            render={
+                                                                                link.url ? (
+                                                                                    <Link
+                                                                                        href={
+                                                                                            link.url
+                                                                                        }
+                                                                                        preserveScroll
+                                                                                    />
+                                                                                ) : undefined
                                                                             }
                                                                         >
-                                                                            {link.url ? (
-                                                                                <Link
-                                                                                    href={
-                                                                                        link.url
-                                                                                    }
-                                                                                    preserveScroll
-                                                                                >
-                                                                                    <ChevronRight className="h-4 w-4" />
-                                                                                </Link>
-                                                                            ) : (
-                                                                                <span>
-                                                                                    <ChevronRight className="h-4 w-4" />
-                                                                                </span>
-                                                                            )}
+                                                                            <ChevronRight className="h-4 w-4" />
                                                                         </Button>
                                                                     );
                                                                 }
@@ -398,7 +388,7 @@ export default function CreateJournalUser({
                                         <Select
                                             value={data.role}
                                             onValueChange={(value) =>
-                                                setData('role', value)
+                                                setData('role', value ?? '')
                                             }
                                         >
                                             <SelectTrigger>
@@ -427,12 +417,12 @@ export default function CreateJournalUser({
                                     <div className="flex gap-4 pt-4">
                                         <Button
                                             variant="outline"
-                                            asChild
                                             className="flex-1"
+                                            render={
+                                                <Link href="/admin/journal-users" />
+                                            }
                                         >
-                                            <Link href="/admin/journal-users">
-                                                Cancel
-                                            </Link>
+                                            Cancel
                                         </Button>
                                         <Button
                                             type="submit"

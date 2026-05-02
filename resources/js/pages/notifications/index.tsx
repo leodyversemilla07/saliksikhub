@@ -96,8 +96,8 @@ export default function Notifications({
         }
 
         if (data.manuscript_id) {
-return 'submission';
-}
+            return 'submission';
+        }
 
         return 'system';
     };
@@ -222,7 +222,11 @@ return 'submission';
                     <Tabs
                         defaultValue="all"
                         value={activeTab}
-                        onValueChange={setActiveTab}
+                        onValueChange={(value) => {
+                            if (value !== null) {
+                                setActiveTab(value);
+                            }
+                        }}
                         className="w-full"
                     >
                         <TabsList className="mb-4">

@@ -175,11 +175,9 @@ export default function Versions({
                             open={showNewVersionDialog}
                             onOpenChange={setShowNewVersionDialog}
                         >
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Create New Version
-                                </Button>
+                            <DialogTrigger render={<Button />}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create New Version
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[600px]">
                                 <form onSubmit={handleCreateVersion}>
@@ -232,7 +230,7 @@ export default function Versions({
                                                 onValueChange={(value) =>
                                                     setData(
                                                         'version_stage',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -261,7 +259,7 @@ export default function Versions({
                                                 onValueChange={(value) =>
                                                     setData(
                                                         'access_status',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >

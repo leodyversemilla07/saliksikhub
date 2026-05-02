@@ -242,7 +242,14 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                 <div className="mb-6">
                     <div className="mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <Select value={sortBy} onValueChange={setSortBy}>
+                            <Select
+                                value={sortBy}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        setSortBy(value);
+                                    }
+                                }}
+                            >
                                 <SelectTrigger className="w-[140px]">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -273,11 +280,11 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                             open={showFilters}
                             onOpenChange={setShowFilters}
                         >
-                            <CollapsibleTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                    <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                    Filters
-                                </Button>
+                            <CollapsibleTrigger
+                                render={<Button variant="outline" size="sm" />}
+                            >
+                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                Filters
                             </CollapsibleTrigger>
                             <CollapsibleContent className="mt-4 rounded-lg border bg-card p-4">
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -287,7 +294,11 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                                         </Label>
                                         <Select
                                             value={dateFilter}
-                                            onValueChange={setDateFilter}
+                                            onValueChange={(value) => {
+                                                if (value !== null) {
+                                                    setDateFilter(value);
+                                                }
+                                            }}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue />
@@ -314,7 +325,11 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
                                         </Label>
                                         <Select
                                             value={volumeFilter}
-                                            onValueChange={setVolumeFilter}
+                                            onValueChange={(value) => {
+                                                if (value !== null) {
+                                                    setVolumeFilter(value);
+                                                }
+                                            }}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue />

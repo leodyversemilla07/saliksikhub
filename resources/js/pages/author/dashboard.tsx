@@ -154,11 +154,9 @@ export default function AuthorDashboard({
                             progress
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/author/manuscripts/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Submission
-                        </Link>
+                    <Button render={<Link href="/author/manuscripts/create" />}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Submission
                     </Button>
                 </div>
 
@@ -318,11 +316,13 @@ export default function AuthorDashboard({
                             <FileText className="h-5 w-5" />
                             Recent Manuscripts
                         </CardTitle>
-                        <Button variant="outline" size="sm" asChild>
-                            <Link href="/author/manuscripts/index">
-                                <Eye className="mr-2 h-4 w-4" />
-                                View All
-                            </Link>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            render={<Link href="/author/manuscripts/index" />}
+                        >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View All
                         </Button>
                     </CardHeader>
                     <CardContent>
@@ -367,13 +367,13 @@ export default function AuthorDashboard({
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                asChild
+                                                render={
+                                                    <Link
+                                                        href={`/author/manuscripts/${manuscript.id}`}
+                                                    />
+                                                }
                                             >
-                                                <Link
-                                                    href={`/author/manuscripts/${manuscript.id}`}
-                                                >
-                                                    View
-                                                </Link>
+                                                View
                                             </Button>
                                         </div>
                                     </div>
@@ -389,11 +389,13 @@ export default function AuthorDashboard({
                                     Start your first submission to see your
                                     progress here.
                                 </p>
-                                <Button asChild>
-                                    <Link href="/author/manuscripts/create">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Create Your First Manuscript
-                                    </Link>
+                                <Button
+                                    render={
+                                        <Link href="/author/manuscripts/create" />
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create Your First Manuscript
                                 </Button>
                             </div>
                         )}

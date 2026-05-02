@@ -2,13 +2,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import type {
     ColumnFiltersState,
     SortingState,
-    ColumnDef} from '@tanstack/react-table';
+    ColumnDef,
+} from '@tanstack/react-table';
 import {
     getCoreRowModel,
     getFilteredRowModel,
     getSortedRowModel,
     useReactTable,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table';
 import {
     Eye,
@@ -275,10 +276,8 @@ export default function Index({
             id: 'select',
             header: ({ table }) => (
                 <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate')
-                    }
+                    checked={table.getIsAllPageRowsSelected()}
+                    indeterminate={table.getIsSomePageRowsSelected()}
                     onCheckedChange={(value) =>
                         table.toggleAllPageRowsSelected(!!value)
                     }
@@ -303,24 +302,31 @@ export default function Index({
 
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                        <DropdownMenuTrigger
+                            render={
+                                <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                />
+                            }
+                        >
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                                <Link
-                                    href={reviewer.manuscripts.show.url({
-                                        id: manuscript.id,
-                                    })}
-                                    prefetch="hover"
-                                >
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Details
-                                </Link>
+                            <DropdownMenuItem
+                                render={
+                                    <Link
+                                        href={reviewer.manuscripts.show.url({
+                                            id: manuscript.id,
+                                        })}
+                                        prefetch="hover"
+                                    />
+                                }
+                            >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -426,7 +432,11 @@ export default function Index({
                             </div>
                             <Select
                                 value={statusFilter}
-                                onValueChange={setStatusFilter}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        setStatusFilter(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-full sm:w-[180px]">
                                     <SelectValue placeholder="Filter by status" />

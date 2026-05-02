@@ -189,7 +189,7 @@ export function ReviewSubmissionForm({
                         <Rating
                             value={data.quality_rating}
                             onChange={(value) =>
-                                setData('quality_rating', value)
+                                setData('quality_rating', value ?? '')
                             }
                             max={10}
                             size="lg"
@@ -210,7 +210,7 @@ export function ReviewSubmissionForm({
                         <Rating
                             value={data.originality_rating}
                             onChange={(value) =>
-                                setData('originality_rating', value)
+                                setData('originality_rating', value ?? '')
                             }
                             max={10}
                             size="lg"
@@ -229,7 +229,7 @@ export function ReviewSubmissionForm({
                         <Rating
                             value={data.methodology_rating}
                             onChange={(value) =>
-                                setData('methodology_rating', value)
+                                setData('methodology_rating', value ?? '')
                             }
                             max={10}
                             size="lg"
@@ -250,7 +250,7 @@ export function ReviewSubmissionForm({
                         <Rating
                             value={data.significance_rating}
                             onChange={(value) =>
-                                setData('significance_rating', value)
+                                setData('significance_rating', value ?? '')
                             }
                             max={10}
                             size="lg"

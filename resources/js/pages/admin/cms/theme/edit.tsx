@@ -220,14 +220,18 @@ export default function ThemeEdit({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild>
-                            <Link
-                                href={admin.journals.edit.url({
-                                    journal: journal.id,
-                                })}
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            render={
+                                <Link
+                                    href={admin.journals.edit.url({
+                                        journal: journal.id,
+                                    })}
+                                />
+                            }
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight">
@@ -239,30 +243,43 @@ export default function ThemeEdit({
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" asChild>
-                            <a
-                                href={`/journals/${journal.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Eye className="mr-2 h-4 w-4" />
-                                Preview Site
-                            </a>
+                        <Button
+                            variant="outline"
+                            render={
+                                <a
+                                    href={`/journals/${journal.id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                />
+                            }
+                        >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Preview Site
                         </Button>
                     </div>
                 </div>
 
                 {/* CMS Navigation */}
                 <div className="flex gap-2">
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/pages`}>
-                            Pages
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/pages`}
+                            />
+                        }
+                    >
+                        Pages
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={`/admin/journals/${journal.id}/cms/menus`}>
-                            Menus
-                        </Link>
+                    <Button
+                        variant="outline"
+                        render={
+                            <Link
+                                href={`/admin/journals/${journal.id}/cms/menus`}
+                            />
+                        }
+                    >
+                        Menus
                     </Button>
                     <Button variant="default">Theme</Button>
                 </div>
@@ -375,7 +392,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'typography',
                                                         'heading_font',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -414,7 +431,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'typography',
                                                         'font_family',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -453,7 +470,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'typography',
                                                         'base_size',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -500,7 +517,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'layout',
                                                         'max_width',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -534,7 +551,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'layout',
                                                         'header_style',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -566,7 +583,7 @@ export default function ThemeEdit({
                                                     updateNestedData(
                                                         'layout',
                                                         'footer_style',
-                                                        value,
+                                                        value ?? '',
                                                     )
                                                 }
                                             >
@@ -827,14 +844,16 @@ export default function ThemeEdit({
                                     </Button>
 
                                     <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="w-full"
-                                            >
-                                                <RotateCcw className="mr-2 h-4 w-4" />
-                                                Reset to Defaults
-                                            </Button>
+                                        <AlertDialogTrigger
+                                            render={
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full"
+                                                />
+                                            }
+                                        >
+                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                            Reset to Defaults
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
                                             <AlertDialogHeader>

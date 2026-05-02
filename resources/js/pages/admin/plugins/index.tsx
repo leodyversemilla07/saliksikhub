@@ -119,8 +119,8 @@ export default function PluginsIndex({
         e.preventDefault();
 
         if (!selectedFile) {
-return;
-}
+            return;
+        }
 
         const formData = new FormData();
         formData.append('plugin_file', selectedFile);
@@ -162,11 +162,9 @@ return;
                             open={uploadDialogOpen}
                             onOpenChange={setUploadDialogOpen}
                         >
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    Upload Plugin
-                                </Button>
+                            <DialogTrigger render={<Button />}>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Plugin
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
@@ -374,27 +372,27 @@ return;
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        asChild
+                                                        render={
+                                                            <Link
+                                                                href={`/admin/plugins/${plugin.id}/settings`}
+                                                            />
+                                                        }
                                                     >
-                                                        <Link
-                                                            href={`/admin/plugins/${plugin.id}/settings`}
-                                                        >
-                                                            <Settings className="mr-1 h-4 w-4" />
-                                                            Settings
-                                                        </Link>
+                                                        <Settings className="mr-1 h-4 w-4" />
+                                                        Settings
                                                     </Button>
 
                                                     <AlertDialog>
                                                         <AlertDialogTrigger
-                                                            asChild
+                                                            render={
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="text-red-600 hover:text-red-700"
+                                                                />
+                                                            }
                                                         >
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="text-red-600 hover:text-red-700"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
+                                                            <Trash2 className="h-4 w-4" />
                                                         </AlertDialogTrigger>
                                                         <AlertDialogContent>
                                                             <AlertDialogHeader>

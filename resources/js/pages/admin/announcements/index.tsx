@@ -95,8 +95,8 @@ export default function AnnouncementsIndex({ announcements }: Props) {
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) {
-return '-';
-}
+            return '-';
+        }
 
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -107,8 +107,8 @@ return '-';
 
     const isExpired = (expiresAt: string | null) => {
         if (!expiresAt) {
-return false;
-}
+            return false;
+        }
 
         return new Date(expiresAt) < new Date();
     };
@@ -127,11 +127,11 @@ return false;
                             Manage announcements for the current journal
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/admin/announcements/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Announcement
-                        </Link>
+                    <Button
+                        render={<Link href="/admin/announcements/create" />}
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Announcement
                     </Button>
                 </div>
 
@@ -153,11 +153,13 @@ return false;
                                     Get started by creating your first
                                     announcement.
                                 </p>
-                                <Button asChild>
-                                    <Link href="/admin/announcements/create">
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        New Announcement
-                                    </Link>
+                                <Button
+                                    render={
+                                        <Link href="/admin/announcements/create" />
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    New Announcement
                                 </Button>
                             </div>
                         ) : (
@@ -250,25 +252,25 @@ return false;
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                asChild
+                                                                render={
+                                                                    <Link
+                                                                        href={`/admin/announcements/${announcement.id}/edit`}
+                                                                    />
+                                                                }
                                                             >
-                                                                <Link
-                                                                    href={`/admin/announcements/${announcement.id}/edit`}
-                                                                >
-                                                                    <Pencil className="h-4 w-4" />
-                                                                </Link>
+                                                                <Pencil className="h-4 w-4" />
                                                             </Button>
                                                             <AlertDialog>
                                                                 <AlertDialogTrigger
-                                                                    asChild
+                                                                    render={
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="text-destructive hover:text-destructive"
+                                                                        />
+                                                                    }
                                                                 >
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="text-destructive hover:text-destructive"
-                                                                    >
-                                                                        <Trash2 className="h-4 w-4" />
-                                                                    </Button>
+                                                                    <Trash2 className="h-4 w-4" />
                                                                 </AlertDialogTrigger>
                                                                 <AlertDialogContent>
                                                                     <AlertDialogHeader>
@@ -340,24 +342,18 @@ return false;
                                                                     disabled={
                                                                         !link.url
                                                                     }
-                                                                    asChild={
-                                                                        !!link.url
+                                                                    render={
+                                                                        link.url ? (
+                                                                            <Link
+                                                                                href={
+                                                                                    link.url
+                                                                                }
+                                                                                preserveScroll
+                                                                            />
+                                                                        ) : undefined
                                                                     }
                                                                 >
-                                                                    {link.url ? (
-                                                                        <Link
-                                                                            href={
-                                                                                link.url
-                                                                            }
-                                                                            preserveScroll
-                                                                        >
-                                                                            <ChevronLeft className="h-4 w-4" />
-                                                                        </Link>
-                                                                    ) : (
-                                                                        <span>
-                                                                            <ChevronLeft className="h-4 w-4" />
-                                                                        </span>
-                                                                    )}
+                                                                    <ChevronLeft className="h-4 w-4" />
                                                                 </Button>
                                                             );
                                                         }
@@ -376,24 +372,18 @@ return false;
                                                                     disabled={
                                                                         !link.url
                                                                     }
-                                                                    asChild={
-                                                                        !!link.url
+                                                                    render={
+                                                                        link.url ? (
+                                                                            <Link
+                                                                                href={
+                                                                                    link.url
+                                                                                }
+                                                                                preserveScroll
+                                                                            />
+                                                                        ) : undefined
                                                                     }
                                                                 >
-                                                                    {link.url ? (
-                                                                        <Link
-                                                                            href={
-                                                                                link.url
-                                                                            }
-                                                                            preserveScroll
-                                                                        >
-                                                                            <ChevronRight className="h-4 w-4" />
-                                                                        </Link>
-                                                                    ) : (
-                                                                        <span>
-                                                                            <ChevronRight className="h-4 w-4" />
-                                                                        </span>
-                                                                    )}
+                                                                    <ChevronRight className="h-4 w-4" />
                                                                 </Button>
                                                             );
                                                         }

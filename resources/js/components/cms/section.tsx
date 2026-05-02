@@ -380,7 +380,7 @@ function AccordionSection({ content }: { content: SectionContent }) {
                     {content.title}
                 </h2>
             )}
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion className="w-full">
                 {items.map((item, index) => (
                     <AccordionItem key={index} value={`item-${index}`}>
                         <AccordionTrigger className="text-left">

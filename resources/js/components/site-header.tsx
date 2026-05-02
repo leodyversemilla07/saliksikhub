@@ -199,12 +199,12 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
     const getDashboardRoute = (userRole: string) => {
         try {
             if (userRole === 'editor') {
-return editor.dashboard.url();
-}
+                return editor.dashboard.url();
+            }
 
             if (userRole === 'author') {
-return author.dashboard.url();
-}
+                return author.dashboard.url();
+            }
 
             return dashboard.url();
         } catch (error) {
@@ -220,12 +220,12 @@ return author.dashboard.url();
             .pathname;
 
         if (targetPath === '/' || targetPath === '/home') {
-return currentPath === '/' || currentPath === '/home';
-}
+            return currentPath === '/' || currentPath === '/home';
+        }
 
         if (targetPath.includes('/current')) {
-return currentPath.includes('/current');
-}
+            return currentPath.includes('/current');
+        }
 
         return (
             currentPath === targetPath ||
@@ -341,25 +341,27 @@ return currentPath.includes('/current');
                                 <NavigationMenuList className="gap-0">
                                     {navigationItems.map((item) => (
                                         <NavigationMenuItem key={item.name}>
-                                            <NavigationMenuLink asChild>
-                                                <Link
-                                                    href={item.href!}
-                                                    prefetch="hover"
-                                                    className={`relative rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent ${
-                                                        isNavigationLinkActive(
-                                                            item.href!,
-                                                        )
-                                                            ? 'text-primary'
-                                                            : 'text-muted-foreground hover:text-foreground'
-                                                    }`}
-                                                >
-                                                    {item.name}
-                                                    {isNavigationLinkActive(
-                                                        item.href!,
-                                                    ) && (
-                                                        <span className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
-                                                    )}
-                                                </Link>
+                                            <NavigationMenuLink
+                                                render={
+                                                    <Link
+                                                        href={item.href!}
+                                                        prefetch="hover"
+                                                        className={`relative rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent ${
+                                                            isNavigationLinkActive(
+                                                                item.href!,
+                                                            )
+                                                                ? 'text-primary'
+                                                                : 'text-muted-foreground hover:text-foreground'
+                                                        }`}
+                                                    />
+                                                }
+                                            >
+                                                {item.name}
+                                                {isNavigationLinkActive(
+                                                    item.href!,
+                                                ) && (
+                                                    <span className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
+                                                )}
                                             </NavigationMenuLink>
                                         </NavigationMenuItem>
                                     ))}
@@ -385,33 +387,43 @@ return currentPath.includes('/current');
 
                             {/* Auth Buttons */}
                             {auth?.user ? (
-                                <Button asChild size="sm">
-                                    <Link
-                                        href={getDashboardRoute(
-                                            auth.user.role ?? '',
-                                        )}
-                                        prefetch="hover"
-                                    >
-                                        Dashboard
-                                    </Link>
+                                <Button
+                                    size="sm"
+                                    render={
+                                        <Link
+                                            href={getDashboardRoute(
+                                                auth.user.role ?? '',
+                                            )}
+                                            prefetch="hover"
+                                        />
+                                    }
+                                >
+                                    Dashboard
                                 </Button>
                             ) : (
                                 <div className="hidden items-center gap-2 sm:flex">
-                                    <Button variant="ghost" size="sm" asChild>
-                                        <Link
-                                            href={loginRoute.url()}
-                                            prefetch="hover"
-                                        >
-                                            Sign In
-                                        </Link>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        render={
+                                            <Link
+                                                href={loginRoute.url()}
+                                                prefetch="hover"
+                                            />
+                                        }
+                                    >
+                                        Sign In
                                     </Button>
-                                    <Button size="sm" asChild>
-                                        <Link
-                                            href={registerRoute.url()}
-                                            prefetch="hover"
-                                        >
-                                            Register
-                                        </Link>
+                                    <Button
+                                        size="sm"
+                                        render={
+                                            <Link
+                                                href={registerRoute.url()}
+                                                prefetch="hover"
+                                            />
+                                        }
+                                    >
+                                        Register
                                     </Button>
                                 </div>
                             )}
@@ -422,13 +434,18 @@ return currentPath.includes('/current');
                                     open={isMobileNavigationOpen}
                                     onOpenChange={setIsMobileNavigationOpen}
                                 >
-                                    <SheetTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <Menu className="h-5 w-5" />
-                                            <span className="sr-only">
-                                                Open menu
-                                            </span>
-                                        </Button>
+                                    <SheetTrigger
+                                        render={
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                            />
+                                        }
+                                    >
+                                        <Menu className="h-5 w-5" />
+                                        <span className="sr-only">
+                                            Open menu
+                                        </span>
                                     </SheetTrigger>
                                     <SheetContent
                                         side="right"
@@ -483,24 +500,24 @@ return currentPath.includes('/current');
                                             <div className="flex flex-col gap-2">
                                                 <Button
                                                     variant="outline"
-                                                    asChild
                                                     className="w-full"
+                                                    render={
+                                                        <Link
+                                                            href={loginRoute.url()}
+                                                        />
+                                                    }
                                                 >
-                                                    <Link
-                                                        href={loginRoute.url()}
-                                                    >
-                                                        Sign In
-                                                    </Link>
+                                                    Sign In
                                                 </Button>
                                                 <Button
-                                                    asChild
                                                     className="w-full"
+                                                    render={
+                                                        <Link
+                                                            href={registerRoute.url()}
+                                                        />
+                                                    }
                                                 >
-                                                    <Link
-                                                        href={registerRoute.url()}
-                                                    >
-                                                        Register
-                                                    </Link>
+                                                    Register
                                                 </Button>
                                             </div>
                                         )}

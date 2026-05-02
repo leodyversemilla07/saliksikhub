@@ -2,13 +2,14 @@ import { Head, Link, router } from '@inertiajs/react';
 import type {
     ColumnFiltersState,
     SortingState,
-    ColumnDef} from '@tanstack/react-table';
+    ColumnDef,
+} from '@tanstack/react-table';
 import {
     getCoreRowModel,
     getFilteredRowModel,
     getSortedRowModel,
     useReactTable,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table';
 import {
     Eye,
@@ -63,7 +64,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import manuscriptsRoutes from '@/routes/manuscripts';
-import type { Manuscript} from '@/types';
+import type { Manuscript } from '@/types';
 import { ManuscriptStatus } from '@/types';
 
 interface PaginatedManuscripts {
@@ -281,10 +282,8 @@ export default function Index({
             id: 'select',
             header: ({ table }) => (
                 <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate')
-                    }
+                    checked={table.getIsAllPageRowsSelected()}
+                    indeterminate={table.getIsSomePageRowsSelected()}
                     onCheckedChange={(value) =>
                         table.toggleAllPageRowsSelected(!!value)
                     }
@@ -309,53 +308,66 @@ export default function Index({
 
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                        <DropdownMenuTrigger
+                            render={
+                                <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                />
+                            }
+                        >
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                                <Link
-                                    href={manuscriptsRoutes.show.url({
-                                        id: manuscript.id,
-                                    })}
-                                    prefetch="hover"
-                                >
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Details
-                                </Link>
+                            <DropdownMenuItem
+                                render={
+                                    <Link
+                                        href={manuscriptsRoutes.show.url({
+                                            id: manuscript.id,
+                                        })}
+                                        prefetch="hover"
+                                    />
+                                }
+                            >
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Details
                             </DropdownMenuItem>
                             {(manuscript.status ===
                                 ManuscriptStatus.MINOR_REVISION ||
                                 manuscript.status ===
                                     ManuscriptStatus.MAJOR_REVISION) && (
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href={manuscriptsRoutes.revision.form.url(
-                                            { id: manuscript.id },
-                                        )}
-                                        prefetch="hover"
-                                    >
-                                        <RefreshCw className="mr-2 h-4 w-4" />
-                                        Submit Revision
-                                    </Link>
+                                <DropdownMenuItem
+                                    render={
+                                        <Link
+                                            href={manuscriptsRoutes.revision.form.url(
+                                                { id: manuscript.id },
+                                            )}
+                                            prefetch="hover"
+                                        />
+                                    }
+                                >
+                                    <RefreshCw className="mr-2 h-4 w-4" />
+                                    Submit Revision
                                 </DropdownMenuItem>
                             )}
                             {manuscript.status ===
                                 ManuscriptStatus.AWAITING_AUTHOR_APPROVAL && (
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href={manuscriptsRoutes.approve.url({
-                                            manuscript: manuscript.id,
-                                        })}
-                                        prefetch="hover"
-                                    >
-                                        <CheckCircle className="mr-2 h-4 w-4" />
-                                        Approve
-                                    </Link>
+                                <DropdownMenuItem
+                                    render={
+                                        <Link
+                                            href={manuscriptsRoutes.approve.url(
+                                                {
+                                                    manuscript: manuscript.id,
+                                                },
+                                            )}
+                                            prefetch="hover"
+                                        />
+                                    }
+                                >
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    Approve
                                 </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
@@ -500,12 +512,10 @@ export default function Index({
                     </div>
                     <Button
                         className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
-                        asChild
+                        render={<Link href={manuscriptsRoutes.create.url()} />}
                     >
-                        <Link href={manuscriptsRoutes.create.url()}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Manuscript
-                        </Link>
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Manuscript
                     </Button>
                 </div>
 
@@ -537,7 +547,11 @@ export default function Index({
                             </div>
                             <Select
                                 value={statusFilter}
-                                onValueChange={setStatusFilter}
+                                onValueChange={(value) => {
+                                    if (value !== null) {
+                                        setStatusFilter(value);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="w-full sm:w-[180px]">
                                     <SelectValue placeholder="Filter by status" />

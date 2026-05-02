@@ -259,7 +259,7 @@ export default function Create() {
                                         <Select
                                             value={data.status}
                                             onValueChange={(value) =>
-                                                setData('status', value)
+                                                setData('status', value ?? '')
                                             }
                                         >
                                             <SelectTrigger

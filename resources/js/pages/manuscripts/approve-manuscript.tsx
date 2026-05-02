@@ -125,7 +125,7 @@ export default function ApproveManuscript({
                                 <RadioGroup
                                     value={data.action}
                                     onValueChange={(value) =>
-                                        setData('action', value)
+                                        setData('action', value ?? '')
                                     }
                                     className="space-y-3"
                                 >

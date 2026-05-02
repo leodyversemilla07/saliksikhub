@@ -208,12 +208,16 @@ export default function EditPage({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild>
-                            <Link
-                                href={`/admin/journals/${journal.id}/cms/pages`}
-                            >
-                                <ArrowLeft className="h-4 w-4" />
-                            </Link>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            render={
+                                <Link
+                                    href={`/admin/journals/${journal.id}/cms/pages`}
+                                />
+                            }
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                         </Button>
                         <div>
                             <h1 className="text-2xl font-bold tracking-tight">
@@ -224,15 +228,18 @@ export default function EditPage({
                             </p>
                         </div>
                     </div>
-                    <Button variant="outline" asChild>
-                        <a
-                            href={`/journals/${journal.id}/${page.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Eye className="mr-2 h-4 w-4" />
-                            Preview
-                        </a>
+                    <Button
+                        variant="outline"
+                        render={
+                            <a
+                                href={`/journals/${journal.id}/${page.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            />
+                        }
+                    >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Preview
                     </Button>
                 </div>
 
@@ -269,7 +276,7 @@ export default function EditPage({
                                         <Select
                                             value={data.type}
                                             onValueChange={(value) =>
-                                                setData('type', value)
+                                                setData('type', value ?? '')
                                             }
                                         >
                                             <SelectTrigger>
@@ -385,11 +392,9 @@ export default function EditPage({
                                     open={showAddSection}
                                     onOpenChange={setShowAddSection}
                                 >
-                                    <DialogTrigger asChild>
-                                        <Button>
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Add Section
-                                        </Button>
+                                    <DialogTrigger render={<Button />}>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Section
                                     </DialogTrigger>
                                     <DialogContent className="max-w-2xl">
                                         <DialogHeader>
@@ -511,25 +516,25 @@ export default function EditPage({
                                                     </Button>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
-                                                            asChild
+                                                            render={
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                />
+                                                            }
                                                         >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                            >
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
+                                                            <MoreHorizontal className="h-4 w-4" />
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem
-                                                                asChild
+                                                                render={
+                                                                    <Link
+                                                                        href={`/admin/journals/${journal.id}/cms/pages/${page.id}/sections/${section.id}/edit`}
+                                                                    />
+                                                                }
                                                             >
-                                                                <Link
-                                                                    href={`/admin/journals/${journal.id}/cms/pages/${page.id}/sections/${section.id}/edit`}
-                                                                >
-                                                                    <Pencil className="mr-2 h-4 w-4" />
-                                                                    Edit Content
-                                                                </Link>
+                                                                <Pencil className="mr-2 h-4 w-4" />
+                                                                Edit Content
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onClick={() =>
@@ -604,14 +609,14 @@ export default function EditPage({
                                 <Button
                                     variant="outline"
                                     className="w-full"
-                                    asChild
+                                    render={
+                                        <Link
+                                            href={`/admin/journals/${journal.id}/cms/pages/create`}
+                                        />
+                                    }
                                 >
-                                    <Link
-                                        href={`/admin/journals/${journal.id}/cms/pages/create`}
-                                    >
-                                        <Copy className="mr-2 h-4 w-4" />
-                                        Create New Page
-                                    </Link>
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    Create New Page
                                 </Button>
                             </CardContent>
                         </Card>

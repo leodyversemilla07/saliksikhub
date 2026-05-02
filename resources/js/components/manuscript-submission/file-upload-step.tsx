@@ -179,10 +179,12 @@ export function FileUploadStep({
                                 </>
                             )}
                             <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="cursor-help text-muted-foreground transition-colors hover:text-foreground">
-                                        <Info className="h-4 w-4" />
-                                    </div>
+                                <TooltipTrigger
+                                    render={
+                                        <div className="cursor-help text-muted-foreground transition-colors hover:text-foreground" />
+                                    }
+                                >
+                                    <Info className="h-4 w-4" />
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="max-w-xs">
                                     <p>

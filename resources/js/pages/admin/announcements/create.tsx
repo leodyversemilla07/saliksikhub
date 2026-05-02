@@ -55,10 +55,12 @@ export default function CreateAnnouncement({ types }: Props) {
 
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/admin/announcements">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        render={<Link href="/admin/announcements" />}
+                    >
+                        <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">
@@ -165,7 +167,7 @@ export default function CreateAnnouncement({ types }: Props) {
                                         <Select
                                             value={data.type}
                                             onValueChange={(value) =>
-                                                setData('type', value)
+                                                setData('type', value ?? '')
                                             }
                                         >
                                             <SelectTrigger>
@@ -296,8 +298,11 @@ export default function CreateAnnouncement({ types }: Props) {
                     </div>
 
                     <div className="mt-6 flex justify-end gap-4">
-                        <Button variant="outline" asChild>
-                            <Link href="/admin/announcements">Cancel</Link>
+                        <Button
+                            variant="outline"
+                            render={<Link href="/admin/announcements" />}
+                        >
+                            Cancel
                         </Button>
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Creating...' : 'Create Announcement'}

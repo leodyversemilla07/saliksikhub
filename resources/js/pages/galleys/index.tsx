@@ -11,16 +11,11 @@ import {
     Book,
     File,
 } from 'lucide-react';
-import { useState  } from 'react';
-import type {ReactElement} from 'react';
+import { useState } from 'react';
+import type { ReactElement } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -167,11 +162,9 @@ export default function GalleyIndex({ publication, galleys, stats }: Props) {
                             open={isUploadOpen}
                             onOpenChange={setIsUploadOpen}
                         >
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    Upload Galley
-                                </Button>
+                            <DialogTrigger render={<Button />}>
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Galley
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>

@@ -41,8 +41,8 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({
                 reset();
 
                 if (onSuccess) {
-onSuccess();
-}
+                    onSuccess();
+                }
 
                 toast('User has been successfully deleted.');
             },
@@ -79,31 +79,35 @@ onSuccess();
                     )}
                 </div>
                 <AlertDialogFooter className="mt-6 flex flex-row gap-4">
-                    <AlertDialogCancel asChild>
-                        <Button
-                            type="button"
-                            className="flex-1 rounded-md border border-border bg-background py-2 text-foreground hover:bg-muted"
-                            disabled={processing}
-                        >
-                            Cancel
-                        </Button>
+                    <AlertDialogCancel
+                        render={
+                            <Button
+                                type="button"
+                                className="flex-1 rounded-md border border-border bg-background py-2 text-foreground hover:bg-muted"
+                                disabled={processing}
+                            />
+                        }
+                    >
+                        Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                        <Button
-                            type="button"
-                            onClick={onSubmit}
-                            disabled={processing}
-                            className="flex-1 rounded-md bg-destructive py-2 text-foreground hover:bg-destructive/90"
-                        >
-                            {processing ? (
-                                'Deleting...'
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    <Trash2 className="h-4 w-4 text-foreground" />
-                                    Delete User
-                                </span>
-                            )}
-                        </Button>
+                    <AlertDialogAction
+                        render={
+                            <Button
+                                type="button"
+                                onClick={onSubmit}
+                                disabled={processing}
+                                className="flex-1 rounded-md bg-destructive py-2 text-foreground hover:bg-destructive/90"
+                            />
+                        }
+                    >
+                        {processing ? (
+                            'Deleting...'
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                <Trash2 className="h-4 w-4 text-foreground" />
+                                Delete User
+                            </span>
+                        )}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

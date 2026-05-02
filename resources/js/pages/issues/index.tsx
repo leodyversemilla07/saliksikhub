@@ -152,16 +152,16 @@ export default function Index({ issues, filters }: IndexProps) {
         let count = 0;
 
         if (searchTerm) {
-count++;
-}
+            count++;
+        }
 
         if (selectedStatus !== 'all') {
-count++;
-}
+            count++;
+        }
 
         if (selectedVolume !== 'all') {
-count++;
-}
+            count++;
+        }
 
         return count;
     }, [searchTerm, selectedStatus, selectedVolume]);
@@ -215,11 +215,9 @@ count++;
                             Manage your research publication volumes
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/issues/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            New Issue
-                        </Link>
+                    <Button render={<Link href="/issues/create" />}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Issue
                     </Button>
                 </div>
 
@@ -244,7 +242,9 @@ count++;
                                 <Select
                                     value={selectedStatus}
                                     onValueChange={(value) => {
-                                        setSelectedStatus(value);
+                                        if (value !== null) {
+                                            setSelectedStatus(value);
+                                        }
                                     }}
                                 >
                                     <SelectTrigger className="border bg-background">
@@ -288,7 +288,9 @@ count++;
                                 <Select
                                     value={selectedVolume}
                                     onValueChange={(value) => {
-                                        setSelectedVolume(value);
+                                        if (value !== null) {
+                                            setSelectedVolume(value);
+                                        }
                                     }}
                                 >
                                     <SelectTrigger className="border bg-background">

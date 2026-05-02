@@ -32,8 +32,7 @@ import {
     CardDescription,
     CardFooter,
 } from '@/components/ui/card';
-import type {
-    ChartConfig} from '@/components/ui/chart';
+import type { ChartConfig } from '@/components/ui/chart';
 import {
     ChartContainer,
     ChartLegend,
@@ -252,7 +251,11 @@ export default function EditorDashboard({
                         </div>
                         <Select
                             value={areaChartRange}
-                            onValueChange={setAreaChartRange}
+                            onValueChange={(value) => {
+                                if (value !== null) {
+                                    setAreaChartRange(value);
+                                }
+                            }}
                         >
                             <SelectTrigger
                                 className="w-40 rounded-lg sm:ml-auto"
