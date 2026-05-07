@@ -49,19 +49,12 @@ interface EditProps {
 
 export default function Edit({ issue }: EditProps) {
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
-        null,
+        () => (issue.cover_image ? `/storage/${issue.cover_image}` : null),
     );
     const [hasExistingImage, setHasExistingImage] = useState<boolean>(
         !!issue.cover_image,
     );
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Initialize with existing image if available
-    React.useEffect(() => {
-        if (issue.cover_image && !coverImagePreview) {
-            setCoverImagePreview(`/storage/${issue.cover_image}`);
-        }
-    }, [issue.cover_image, coverImagePreview]);
 
     const { data, setData, post, processing, errors } = useForm({
         volume_number: issue.volume_number.toString(),

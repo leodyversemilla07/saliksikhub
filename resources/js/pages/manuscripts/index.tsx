@@ -26,6 +26,7 @@ import {
     Plus,
 } from 'lucide-react';
 import * as React from 'react';
+import { useCallback } from 'react';
 import { Pagination as ShadcnPagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -443,16 +444,29 @@ export default function Index({
         currentFilters.per_page,
     ]);
 
+    const onSortingChange = useCallback((updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
+        setSorting(updaterOrValue);
+    }, []);
+    const onColumnFiltersChange = useCallback((updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
+        setColumnFilters(updaterOrValue);
+    }, []);
+    const onRowSelectionChange = useCallback((updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => {
+        setRowSelection(updaterOrValue);
+    }, []);
+    const onGlobalFilterChange = useCallback((updaterOrValue: string) => {
+        setGlobalFilter(updaterOrValue);
+    }, []);
+
     const table = useReactTable({
         data: manuscripts.data,
         columns,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        onSortingChange,
+        onColumnFiltersChange,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        onRowSelectionChange: setRowSelection,
-        onGlobalFilterChange: setGlobalFilter,
+        onRowSelectionChange,
+        onGlobalFilterChange,
         globalFilterFn: 'includesString',
         state: {
             sorting,

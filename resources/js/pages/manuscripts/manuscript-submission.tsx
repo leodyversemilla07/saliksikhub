@@ -11,7 +11,7 @@ import {
     ArrowRight,
     Loader2,
 } from 'lucide-react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -306,20 +306,15 @@ completedFields++;
 
     // File upload step specific state and functions
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [validationMessage, setValidationMessage] = useState<string | null>(
-        null,
-    );
-
-    useEffect(() => {
+    const validationMessage = useMemo<string | null>(() => {
         if (!form.data.manuscript) {
-return;
+return null;
 }
 
-        setValidationMessage(null);
         const maxSize = 10 * 1024 * 1024;
 
         if (form.data.manuscript.size > maxSize) {
-            setValidationMessage('File is too large. Maximum size is 10MB.');
+            return 'File is too large. Maximum size is 10MB.';
         }
 
         const allowedTypes = [
@@ -327,8 +322,10 @@ return;
         ];
 
         if (!allowedTypes.includes(form.data.manuscript.type)) {
-            setValidationMessage('Only DOCX files are allowed.');
+            return 'Only DOCX files are allowed.';
         }
+
+        return null;
     }, [form.data.manuscript]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,7 +336,6 @@ return;
 
     const handleRemoveFile = () => {
         form.setData('manuscript', null);
-        setValidationMessage(null);
 
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
