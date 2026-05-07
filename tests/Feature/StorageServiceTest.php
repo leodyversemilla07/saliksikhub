@@ -50,7 +50,7 @@ test('getFileContent throws exception for non-existent file', function () {
     try {
         $service->getFileContent('nonexistent/file.txt');
         expect()->fail('No exception thrown');
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         expect($e instanceof TypeError || str_contains(get_class($e), 'FileNotFound'))->toBeTrue();
     }
 });

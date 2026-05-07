@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('manuscript_id')->nullable()->constrained()->onDelete('set null');
-            
+
             // Payment type
             $table->enum('payment_type', [
                 'submission_fee',
@@ -23,13 +23,13 @@ return new class extends Migration
                 'subscription_fee',
                 'page_charge',
                 'color_charge',
-                'other'
+                'other',
             ]);
-            
+
             // Amount
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3)->default('USD');
-            
+
             // Payment status
             $table->enum('status', [
                 'pending',
@@ -37,31 +37,31 @@ return new class extends Migration
                 'completed',
                 'failed',
                 'refunded',
-                'cancelled'
+                'cancelled',
             ])->default('pending');
-            
+
             // Payment gateway details
             $table->string('payment_gateway')->nullable();  // stripe, paypal, etc.
             $table->string('transaction_id')->unique()->nullable();
             $table->string('gateway_transaction_id')->nullable();
             $table->text('gateway_response')->nullable();
-            
+
             // Payment method
             $table->string('payment_method')->nullable();  // card, bank_transfer, etc.
-            
+
             // Dates
             $table->timestamp('paid_at')->nullable();
             $table->decimal('refunded_amount', 10, 2)->nullable();
             $table->timestamp('refunded_at')->nullable();
             $table->timestamp('expires_at')->nullable();  // For pending payments
-            
+
             // Additional info
             $table->text('description')->nullable();
             $table->text('notes')->nullable();
             $table->json('metadata')->nullable();  // Store additional data
-            
+
             $table->timestamps();
-            
+
             // Indexes
             $table->index('user_id');
             $table->index('manuscript_id');

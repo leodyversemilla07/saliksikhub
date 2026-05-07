@@ -5,6 +5,7 @@ namespace App\Core\Plugin;
 use App\Core\Plugin\Contracts\PluginInterface;
 use App\Models\Journal;
 use App\Models\Plugin;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -396,7 +397,7 @@ class PluginManager
     /**
      * Get all installed plugins.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Plugin>
+     * @return Collection<int, Plugin>
      */
     public function getAllPlugins()
     {
@@ -406,7 +407,7 @@ class PluginManager
     /**
      * Get active plugins for a journal.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Plugin>
+     * @return Collection<int, Plugin>
      */
     public function getActivePlugins(?int $journalId = null)
     {
@@ -436,7 +437,9 @@ class PluginManager
         if ($journalId === null || $plugin->is_global) {
             $plugin->update(['settings' => $settings]);
         } else {
-            $plugin->journals()->updateExistingPivot($journalId, ['settings' => $settings]);
+            $plugin->journals()->updateExistingPivot($journalId, [
+                'settings' => json_encode($settings, JSON_THROW_ON_ERROR),
+            ]);
         }
 
         return true;

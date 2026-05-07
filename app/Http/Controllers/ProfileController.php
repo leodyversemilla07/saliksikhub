@@ -32,7 +32,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      *
-     * @param  ProfileUpdateRequest|\Illuminate\Http\Request  $request
+     * @param  ProfileUpdateRequest|Request  $request
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {

@@ -128,9 +128,9 @@ class Journal extends Model
         return $query->where('is_active', true);
     }
 
-/**
-      * Get a setting value from the settings JSON.
-      */
+    /**
+     * Get a setting value from the settings JSON.
+     */
     public function getSetting(string $key, mixed $default = null): mixed
     {
         return data_get($this->settings, $key, $default);

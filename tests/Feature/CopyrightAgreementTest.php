@@ -4,8 +4,6 @@ use App\Models\CopyrightAgreement;
 use App\Models\Manuscript;
 use App\Models\User;
 
-use function Pest\Laravel\{actingAs, assertDatabaseHas};
-
 beforeEach(function () {
     $this->author = User::factory()->create();
     $this->manuscript = Manuscript::factory()->create([

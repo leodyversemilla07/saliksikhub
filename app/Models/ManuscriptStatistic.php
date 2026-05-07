@@ -119,10 +119,10 @@ class ManuscriptStatistic extends Model
     public static function recordInvestigation(
         int $manuscriptId,
         string $sessionId,
-        string $userIp = null,
-        string $userAgent = null,
-        string $countryCode = null,
-        int $institutionId = null
+        ?string $userIp = null,
+        ?string $userAgent = null,
+        ?string $countryCode = null,
+        ?int $institutionId = null
     ): self {
         return self::create([
             'manuscript_id' => $manuscriptId,
@@ -145,10 +145,10 @@ class ManuscriptStatistic extends Model
         int $manuscriptId,
         int $galleyId,
         string $sessionId,
-        string $userIp = null,
-        string $userAgent = null,
-        string $countryCode = null,
-        int $institutionId = null
+        ?string $userIp = null,
+        ?string $userAgent = null,
+        ?string $countryCode = null,
+        ?int $institutionId = null
     ): self {
         return self::create([
             'manuscript_id' => $manuscriptId,

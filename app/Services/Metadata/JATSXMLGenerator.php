@@ -3,12 +3,14 @@
 namespace App\Services\Metadata;
 
 use App\Models\Publication;
+use Carbon\Carbon;
 use DOMDocument;
 use DOMElement;
 
 class JATSXMLGenerator
 {
     protected DOMDocument $doc;
+
     protected string $dtdVersion = '1.3';
 
     /**
@@ -18,14 +20,14 @@ class JATSXMLGenerator
     {
         $this->doc = new DOMDocument('1.0', 'UTF-8');
         $this->doc->formatOutput = true;
-        
+
         // Add DOCTYPE declaration for JATS
         $dtd = $this->doc->implementation->createDocumentType(
             'article',
             '-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.3 20210610//EN',
             'https://jats.nlm.nih.gov/publishing/1.3/JATS-journalpublishing1-3.dtd'
         );
-        
+
         $this->doc->appendChild($dtd);
 
         // Create root article element
@@ -34,11 +36,11 @@ class JATSXMLGenerator
         $article->setAttribute('xmlns:mml', 'http://www.w3.org/1998/Math/MathML');
         $article->setAttribute('article-type', $this->determineArticleType($publication));
         $article->setAttribute('dtd-version', $this->dtdVersion);
-        
+
         if ($publication->language) {
             $article->setAttribute('xml:lang', $publication->language);
         }
-        
+
         $this->doc->appendChild($article);
 
         // Build JATS structure
@@ -197,11 +199,11 @@ class JATSXMLGenerator
     protected function addContribGroup(DOMElement $articleMeta, Publication $publication): void
     {
         $contribGroup = $this->doc->createElement('contrib-group');
-        
+
         foreach ($publication->manuscript->authors as $index => $author) {
             $contrib = $this->doc->createElement('contrib');
             $contrib->setAttribute('contrib-type', 'author');
-            
+
             // Name
             $name = $this->doc->createElement('name');
             $name->appendChild($this->createElement('surname', $author->last_name ?? $author->full_name));
@@ -219,7 +221,7 @@ class JATSXMLGenerator
             // Affiliation
             if ($author->affiliation) {
                 $aff = $this->doc->createElement('aff');
-                $aff->setAttribute('id', 'aff' . ($index + 1));
+                $aff->setAttribute('id', 'aff'.($index + 1));
                 $institution = $this->createElement('institution', $author->affiliation);
                 $aff->appendChild($institution);
                 $contrib->appendChild($aff);
@@ -245,12 +247,12 @@ class JATSXMLGenerator
     {
         $pubDate = $this->doc->createElement('pub-date');
         $pubDate->setAttribute('pub-type', 'epub');
-        
-        $carbon = \Carbon\Carbon::parse($date);
+
+        $carbon = Carbon::parse($date);
         $pubDate->appendChild($this->createElement('day', $carbon->day));
         $pubDate->appendChild($this->createElement('month', $carbon->month));
         $pubDate->appendChild($this->createElement('year', $carbon->year));
-        
+
         $articleMeta->appendChild($pubDate);
     }
 
@@ -265,7 +267,7 @@ class JATSXMLGenerator
         if ($publication->copyright_holder) {
             $copyrightStatement = $this->createElement(
                 'copyright-statement',
-                '© ' . ($publication->copyright_year ?? date('Y')) . ' ' . $publication->copyright_holder
+                '© '.($publication->copyright_year ?? date('Y')).' '.$publication->copyright_holder
             );
             $permissions->appendChild($copyrightStatement);
         }
@@ -288,13 +290,13 @@ class JATSXMLGenerator
         if ($publication->license_url) {
             $license = $this->doc->createElement('license');
             $license->setAttribute('xlink:href', $publication->license_url);
-            
+
             $licenseP = $this->doc->createElement('license-p');
             $licenseP->appendChild(
                 $this->doc->createTextNode('This article is distributed under the terms of the license.')
             );
             $license->appendChild($licenseP);
-            
+
             $permissions->appendChild($license);
         }
 
@@ -309,17 +311,17 @@ class JATSXMLGenerator
         // For now, add empty body or simple paragraph
         // Full text parsing would require more complex implementation
         $body = $this->doc->createElement('body');
-        
+
         // If we have full text, we could parse it here
         // For now, just add a note that full text is in galleys
         $sec = $this->doc->createElement('sec');
         $title = $this->createElement('title', 'Full Text');
         $p = $this->createElement('p', 'Full text available in PDF and other formats.');
-        
+
         $sec->appendChild($title);
         $sec->appendChild($p);
         $body->appendChild($sec);
-        
+
         $article->appendChild($body);
     }
 
@@ -329,7 +331,7 @@ class JATSXMLGenerator
     protected function addBack(DOMElement $article, Publication $publication): void
     {
         $back = $this->doc->createElement('back');
-        
+
         // Acknowledgments
         if ($publication->manuscript->acknowledgments) {
             $ack = $this->doc->createElement('ack');
@@ -361,6 +363,7 @@ class JATSXMLGenerator
     {
         $element = $this->doc->createElement($name);
         $element->appendChild($this->doc->createTextNode((string) $value));
+
         return $element;
     }
 
@@ -371,7 +374,7 @@ class JATSXMLGenerator
     {
         // Map publication category to JATS article types
         $category = strtolower($publication->manuscript->category ?? '');
-        
+
         return match (true) {
             str_contains($category, 'review') => 'review-article',
             str_contains($category, 'research') => 'research-article',
@@ -388,9 +391,9 @@ class JATSXMLGenerator
      */
     public function validate(string $xml): bool
     {
-        $doc = new DOMDocument();
+        $doc = new DOMDocument;
         $doc->loadXML($xml);
-        
+
         // Note: Full DTD validation requires the DTD file
         // For now, just check if it's valid XML
         return $doc->schemaValidate('https://jats.nlm.nih.gov/publishing/1.3/JATS-journalpublishing1-3.xsd');

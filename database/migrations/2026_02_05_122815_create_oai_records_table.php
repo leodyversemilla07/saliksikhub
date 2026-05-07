@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('metadata')->nullable(); // Cached metadata XML
             $table->boolean('deleted')->default(false); // Tombstone for deleted records
             $table->timestamps();
-            
+
             $table->index('identifier');
             $table->index('datestamp');
             $table->index('set_spec');

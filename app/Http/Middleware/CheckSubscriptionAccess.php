@@ -29,11 +29,11 @@ class CheckSubscriptionAccess
         // Check if IP has subscription access
         $hasAccess = $this->checkIpSubscriptionAccess($ipAddress);
 
-        if (!$hasAccess) {
+        if (! $hasAccess) {
             // Check if the content requires subscription
             // This can be expanded based on your access control logic
             $manuscript = $request->route('manuscript');
-            
+
             if ($manuscript && $this->requiresSubscription($manuscript)) {
                 return response()->view('errors.subscription-required', [
                     'message' => 'This content requires a subscription or institutional access.',
@@ -68,14 +68,14 @@ class CheckSubscriptionAccess
      */
     protected function requiresSubscription($manuscript): bool
     {
-        if (!$manuscript) {
+        if (! $manuscript) {
             return false;
         }
 
         // Check manuscript's access status
         $publication = $manuscript->currentPublication;
-        
-        if (!$publication) {
+
+        if (! $publication) {
             return false;
         }
 

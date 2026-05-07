@@ -23,10 +23,10 @@ class JATSController extends Controller
     {
         try {
             $xml = $this->jatsGenerator->generate($publication);
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'inline; filename="article-' . $publication->id . '.xml"');
+                ->header('Content-Disposition', 'inline; filename="article-'.$publication->id.'.xml"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate JATS XML',
@@ -42,10 +42,10 @@ class JATSController extends Controller
     {
         try {
             $xml = $this->jatsGenerator->generate($publication);
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'attachment; filename="article-' . $publication->id . '.xml"');
+                ->header('Content-Disposition', 'attachment; filename="article-'.$publication->id.'.xml"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate JATS XML',
@@ -88,10 +88,10 @@ class JATSController extends Controller
         }
 
         // If single file, return XML directly
-        if (count($xmlFiles) === 1 && !isset($xmlFiles[0]['error'])) {
+        if (count($xmlFiles) === 1 && ! isset($xmlFiles[0]['error'])) {
             return response($xmlFiles[0]['xml'], 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'attachment; filename="article-' . $xmlFiles[0]['id'] . '.xml"');
+                ->header('Content-Disposition', 'attachment; filename="article-'.$xmlFiles[0]['id'].'.xml"');
         }
 
         // For multiple files, return JSON with all XMLs
@@ -112,7 +112,7 @@ class JATSController extends Controller
 
         try {
             $isValid = $this->jatsGenerator->validate($request->xml);
-            
+
             return response()->json([
                 'valid' => $isValid,
                 'message' => $isValid ? 'JATS XML is valid' : 'JATS XML validation failed',
@@ -133,9 +133,9 @@ class JATSController extends Controller
         $publications = Publication::whereHas('manuscript', function ($query) use ($issueId) {
             $query->where('issue_id', $issueId);
         })
-        ->where('status', 'published')
-        ->with(['manuscript.authors', 'manuscript.issue', 'doi'])
-        ->get();
+            ->where('status', 'published')
+            ->with(['manuscript.authors', 'manuscript.issue', 'doi'])
+            ->get();
 
         if ($publications->isEmpty()) {
             return response()->json([
@@ -169,4 +169,3 @@ class JATSController extends Controller
         ]);
     }
 }
-

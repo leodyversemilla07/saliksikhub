@@ -20,6 +20,9 @@ createInertiaApp({
         // Combine both sets of pages
         const allPages = { ...upperCasePages, ...lowerCasePages };
 
+         
+        const resolvePage = (path: string) => resolvePageComponent(path, allPages) as any;
+
         // Handle mixed case patterns - try multiple combinations
         const paths = [
             // Check original path for exact case match
@@ -57,7 +60,7 @@ createInertiaApp({
         // Try all possible paths
         for (const path of paths) {
             if (allPages[path]) {
-                return resolvePageComponent(path, allPages);
+                return resolvePage(path);
             }
         }
 
@@ -73,12 +76,12 @@ createInertiaApp({
             const capitalizedPath = `./Pages/${pathParts.join('/')}/${capitalizedFilename}.tsx`;
 
             if (allPages[capitalizedPath]) {
-                return resolvePageComponent(capitalizedPath, allPages);
+                return resolvePage(capitalizedPath);
             }
         }
 
         // Default case - let it try the original path and show proper error
-        return resolvePageComponent(`./pages/${name}.tsx`, allPages);
+        return resolvePage(`./pages/${name}.tsx`);
     },
     setup({ el, App, props }) {
         const root = createRoot(el);

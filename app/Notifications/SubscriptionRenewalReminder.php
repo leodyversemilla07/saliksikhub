@@ -32,16 +32,16 @@ class SubscriptionRenewalReminder extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $recipientName = $notifiable->firstname . ' ' . $notifiable->lastname;
+        $recipientName = $notifiable->firstname.' '.$notifiable->lastname;
         $daysLeft = now()->diffInDays($this->subscription->date_end);
 
         return (new MailMessage)
             ->subject('Subscription Renewal Reminder')
-            ->greeting('Hello ' . $recipientName . ',')
+            ->greeting('Hello '.$recipientName.',')
             ->line('Your subscription is expiring soon.')
-            ->line('**Subscription:** ' . $this->subscription->subscriptionType->name)
-            ->line('**Expires on:** ' . $this->subscription->date_end->format('F j, Y'))
-            ->line('**Days remaining:** ' . $daysLeft)
+            ->line('**Subscription:** '.$this->subscription->subscriptionType->name)
+            ->line('**Expires on:** '.$this->subscription->date_end->format('F j, Y'))
+            ->line('**Days remaining:** '.$daysLeft)
             ->line('Please renew your subscription to maintain uninterrupted access.')
             ->line('Thank you for using SaliksikHub.');
     }
@@ -52,8 +52,8 @@ class SubscriptionRenewalReminder extends Notification implements ShouldQueue
             'subscription_id' => $this->subscription->id,
             'subscription_type' => $this->subscription->subscriptionType->name,
             'end_date' => $this->subscription->date_end->toDateString(),
-            'message' => 'Your subscription "' . $this->subscription->subscriptionType->name .
-                '" expires on ' . $this->subscription->date_end->format('F j, Y') . '.',
+            'message' => 'Your subscription "'.$this->subscription->subscriptionType->name.
+                '" expires on '.$this->subscription->date_end->format('F j, Y').'.',
             'type' => 'subscription_renewal_reminder',
         ];
     }

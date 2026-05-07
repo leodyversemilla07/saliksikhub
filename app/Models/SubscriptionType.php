@@ -73,7 +73,7 @@ class SubscriptionType extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return $this->currency . ' ' . number_format($this->cost, 2);
+        return $this->currency.' '.number_format($this->cost, 2);
     }
 
     /**

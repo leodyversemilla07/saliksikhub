@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Manuscript;
 use App\Services\StatisticsService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -105,7 +106,7 @@ class StatisticsController extends Controller
     /**
      * Get COUNTER report
      */
-    public function counterReport(Request $request): \Illuminate\Http\JsonResponse
+    public function counterReport(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Manuscript::class);
 
@@ -165,7 +166,7 @@ class StatisticsController extends Controller
     /**
      * Get statistics API endpoint (for charts)
      */
-    public function api(Request $request, Manuscript $manuscript): \Illuminate\Http\JsonResponse
+    public function api(Request $request, Manuscript $manuscript): JsonResponse
     {
         $this->authorize('view', $manuscript);
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\ManuscriptStatus;
 use App\Models\Issue;
 use App\Models\Manuscript;
+use App\Notifications\IssueAssigned;
+use App\Services\StorageService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +49,7 @@ class IssueController extends Controller
 
         // Generate temporary URLs for cover images
         // Use StorageService to generate temporary URLs for cover images
-        $storageService = app(\App\Services\StorageService::class);
+        $storageService = app(StorageService::class);
 
         $issues->transform(function ($issue) use ($storageService) {
             if ($issue->cover_image) {
@@ -157,7 +159,7 @@ class IssueController extends Controller
         // Generate temporary URL for cover image if it exists
         $coverImageUrl = null;
         if ($issue->cover_image) {
-            $storageService = app(\App\Services\StorageService::class);
+            $storageService = app(StorageService::class);
             $coverImageUrl = $storageService->generateTemporaryUrl($issue->cover_image, 5);
         }
 
@@ -353,7 +355,7 @@ class IssueController extends Controller
 
                 // Notify author about assignment to journal issue
                 if ($manuscript->author) {
-                    $manuscript->author->notify(new \App\Notifications\IssueAssigned($issue, $manuscript));
+                    $manuscript->author->notify(new IssueAssigned($issue, $manuscript));
                 }
             }
 
@@ -577,7 +579,7 @@ class IssueController extends Controller
             });
 
         // Generate cover image URL
-        $storageService = app(\App\Services\StorageService::class);
+        $storageService = app(StorageService::class);
         $coverImageUrl = $currentIssue->cover_image
             ? $storageService->generateTemporaryUrl($currentIssue->cover_image, 5)
             : 'images/journal-cover.webp';
@@ -655,7 +657,7 @@ class IssueController extends Controller
                 });
 
             // Generate cover image URL
-            $storageService = app(\App\Services\StorageService::class);
+            $storageService = app(StorageService::class);
             $coverImageUrl = $issue->cover_image
                 ? $storageService->generateTemporaryUrl($issue->cover_image, 5)
                 : 'images/journal-cover.webp';

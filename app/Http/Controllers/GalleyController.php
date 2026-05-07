@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Galley;
 use App\Models\Publication;
 use App\Services\GalleyService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -62,7 +64,7 @@ class GalleyController extends Controller
     /**
      * Store a new galley
      */
-    public function store(Request $request, Publication $publication): \Illuminate\Http\RedirectResponse
+    public function store(Request $request, Publication $publication): RedirectResponse
     {
         $this->authorize('update', $publication->manuscript);
 
@@ -91,7 +93,7 @@ class GalleyController extends Controller
     /**
      * Update an existing galley
      */
-    public function update(Request $request, Galley $galley): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, Galley $galley): RedirectResponse
     {
         $this->authorize('update', $galley->publication->manuscript);
 
@@ -120,7 +122,7 @@ class GalleyController extends Controller
     /**
      * Delete a galley
      */
-    public function destroy(Galley $galley): \Illuminate\Http\RedirectResponse
+    public function destroy(Galley $galley): RedirectResponse
     {
         $this->authorize('update', $galley->publication->manuscript);
 
@@ -137,7 +139,7 @@ class GalleyController extends Controller
     /**
      * Approve a galley for public access
      */
-    public function approve(Galley $galley): \Illuminate\Http\RedirectResponse
+    public function approve(Galley $galley): RedirectResponse
     {
         $this->authorize('update', $galley->publication->manuscript);
 
@@ -151,7 +153,7 @@ class GalleyController extends Controller
     /**
      * Reorder galleys
      */
-    public function reorder(Request $request, Publication $publication): \Illuminate\Http\RedirectResponse
+    public function reorder(Request $request, Publication $publication): RedirectResponse
     {
         $this->authorize('update', $publication->manuscript);
 
@@ -222,7 +224,7 @@ class GalleyController extends Controller
     /**
      * Get galley statistics for a publication
      */
-    public function stats(Publication $publication): \Illuminate\Http\JsonResponse
+    public function stats(Publication $publication): JsonResponse
     {
         $this->authorize('view', $publication->manuscript);
 

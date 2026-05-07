@@ -13,16 +13,19 @@ use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\LanguageEditorAssigned;
 use App\Notifications\ManuscriptApproved;
 use App\Notifications\ManuscriptDecision;
+use App\Notifications\ManuscriptPublished;
 use App\Notifications\ManuscriptReadyForReview;
 use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptStatusChanged;
 use App\Notifications\ManuscriptSubmitted;
 use App\Notifications\ManuscriptWithdrawn;
 use App\Notifications\ProductionAssigned;
+use App\Notifications\ReviewInvitation;
 use App\ReviewStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 class ManuscriptWorkflowService
 {
@@ -144,7 +147,7 @@ class ManuscriptWorkflowService
                         ->where('reviewer_id', $reviewer->id)
                         ->first();
                     if ($review) {
-                        $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
+                        $reviewer->notify(new ReviewInvitation($manuscript, $review));
                     }
                 }
 
@@ -293,7 +296,7 @@ class ManuscriptWorkflowService
                 try {
                     $productionTeam = User::role(['production_editor', 'managing_editor'])->get();
                     Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
-                } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                } catch (RoleDoesNotExist $e) {
                     // Fallback if production_editor role doesn't exist yet
                     $productionTeam = User::role(['managing_editor'])->get();
                     Notification::send($productionTeam, new ProductionAssigned($manuscript, 'typesetting'));
@@ -424,7 +427,7 @@ class ManuscriptWorkflowService
                 $manuscript->save();
 
                 // Send publication notification to author
-                $manuscript->author->notify(new \App\Notifications\ManuscriptPublished($manuscript));
+                $manuscript->author->notify(new ManuscriptPublished($manuscript));
 
                 // Submit metadata to indexing services
                 $this->publicationService->submitToIndexingDatabases($manuscript);

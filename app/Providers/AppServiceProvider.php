@@ -43,4 +43,3 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Manuscript::class, ManuscriptPolicy::class);
     }
 }
-

@@ -6,7 +6,12 @@ use App\Core\Plugin\Hook;
 use App\Models\Manuscript;
 use App\Models\Review;
 use App\Models\User;
+use App\Notifications\ReviewAccepted;
+use App\Notifications\ReviewDeclined;
 use App\Notifications\ReviewExtensionRequested;
+use App\Notifications\ReviewInvitation;
+use App\Notifications\ReviewReminder;
+use App\Notifications\ReviewSubmitted;
 use App\ReviewRecommendation;
 use App\ReviewStatus;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +44,7 @@ class ReviewService
             ]);
 
             // Send review invitation email
-            $reviewer->notify(new \App\Notifications\ReviewInvitation($manuscript, $review));
+            $reviewer->notify(new ReviewInvitation($manuscript, $review));
 
             // Fire action hook after reviewer invitation
             Hook::doAction('review.invited', $review, $manuscript, $reviewer);
@@ -68,7 +73,7 @@ class ReviewService
             // Send confirmation to reviewer and notification to editor
             $manuscript = $review->manuscript;
             if ($manuscript->editor) {
-                $manuscript->editor->notify(new \App\Notifications\ReviewAccepted($review));
+                $manuscript->editor->notify(new ReviewAccepted($review));
             }
 
             // Fire action hook after review acceptance
@@ -101,7 +106,7 @@ class ReviewService
             // Notify editor about declined review
             $manuscript = $review->manuscript;
             if ($manuscript->editor) {
-                $manuscript->editor->notify(new \App\Notifications\ReviewDeclined($review, $reason));
+                $manuscript->editor->notify(new ReviewDeclined($review, $reason));
             }
 
             // Fire action hook after review decline
@@ -159,7 +164,7 @@ class ReviewService
             // Fire action hook after review submission
             Hook::doAction('review.submitted', $review, $manuscript, $recommendation);
             if ($manuscript->editor) {
-                $manuscript->editor->notify(new \App\Notifications\ReviewSubmitted($review));
+                $manuscript->editor->notify(new ReviewSubmitted($review));
             }
 
             // Check if all reviews are completed and notify if so
@@ -192,7 +197,7 @@ class ReviewService
             }
 
             // Send reminder notification
-            $review->reviewer->notify(new \App\Notifications\ReviewReminder($review));
+            $review->reviewer->notify(new ReviewReminder($review));
 
             // Fire action hook after reminder sent
             Hook::doAction('review.reminder_sent', $review);

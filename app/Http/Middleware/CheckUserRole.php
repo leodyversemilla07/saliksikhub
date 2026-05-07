@@ -14,7 +14,7 @@ class CheckUserRole
      * Check the user's role from the database `role` column.
      * This bypasses Spatie's team-based role checking for simpler role verification.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      * @param  string  ...$roles  Pipe-separated list of allowed roles
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response

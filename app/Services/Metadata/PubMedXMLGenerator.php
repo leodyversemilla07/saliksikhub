@@ -3,6 +3,7 @@
 namespace App\Services\Metadata;
 
 use App\Models\Publication;
+use Carbon\Carbon;
 use DOMDocument;
 use DOMElement;
 
@@ -12,7 +13,7 @@ class PubMedXMLGenerator
 
     /**
      * Generate PubMed XML for a publication
-     * 
+     *
      * PubMed XML is specifically designed for medical/health science journals
      * submitting to PubMed Central (PMC)
      */
@@ -67,7 +68,7 @@ class PubMedXMLGenerator
         // Volume and issue
         if ($publication->manuscript->issue) {
             $issue = $publication->manuscript->issue;
-            
+
             if ($issue->volume_number) {
                 $volume = $this->createElement('Volume', $issue->volume_number);
                 $journal->appendChild($volume);
@@ -81,11 +82,11 @@ class PubMedXMLGenerator
             // Publication date
             if ($issue->publication_date) {
                 $pubDate = $this->doc->createElement('PubDate');
-                $carbon = \Carbon\Carbon::parse($issue->publication_date);
-                
+                $carbon = Carbon::parse($issue->publication_date);
+
                 $pubDate->appendChild($this->createElement('Year', $carbon->year));
                 $pubDate->appendChild($this->createElement('Month', $carbon->format('m')));
-                
+
                 $journal->appendChild($pubDate);
             }
         }
@@ -107,13 +108,13 @@ class PubMedXMLGenerator
     {
         if ($publication->page_start && $publication->page_end) {
             $pagination = $this->doc->createElement('Pagination');
-            
+
             $medlinePgn = $this->createElement(
-                'MedlinePgn', 
-                $publication->page_start . '-' . $publication->page_end
+                'MedlinePgn',
+                $publication->page_start.'-'.$publication->page_end
             );
             $pagination->appendChild($medlinePgn);
-            
+
             $article->appendChild($pagination);
         }
     }
@@ -125,10 +126,10 @@ class PubMedXMLGenerator
     {
         if ($publication->abstract) {
             $abstract = $this->doc->createElement('Abstract');
-            
+
             $abstractText = $this->createElement('AbstractText', strip_tags($publication->abstract));
             $abstract->appendChild($abstractText);
-            
+
             $article->appendChild($abstract);
         }
     }
@@ -143,7 +144,7 @@ class PubMedXMLGenerator
 
         foreach ($publication->manuscript->authors as $author) {
             $authorEl = $this->doc->createElement('Author');
-            
+
             // Last name (required)
             if ($author->last_name) {
                 $lastName = $this->createElement('LastName', $author->last_name);
@@ -154,7 +155,7 @@ class PubMedXMLGenerator
             if ($author->first_name) {
                 $foreName = $this->createElement('ForeName', $author->first_name);
                 $authorEl->appendChild($foreName);
-                
+
                 // Initials (first letter of first name)
                 $initials = $this->createElement('Initials', strtoupper(substr($author->first_name, 0, 1)));
                 $authorEl->appendChild($initials);
@@ -183,15 +184,15 @@ class PubMedXMLGenerator
     protected function addPublicationDate(DOMElement $article, Publication $publication): void
     {
         if ($publication->date_published) {
-            $carbon = \Carbon\Carbon::parse($publication->date_published);
-            
+            $carbon = Carbon::parse($publication->date_published);
+
             $articleDate = $this->doc->createElement('ArticleDate');
             $articleDate->setAttribute('DateType', 'Electronic');
-            
+
             $articleDate->appendChild($this->createElement('Year', $carbon->year));
             $articleDate->appendChild($this->createElement('Month', $carbon->format('m')));
             $articleDate->appendChild($this->createElement('Day', $carbon->format('d')));
-            
+
             $article->appendChild($articleDate);
         }
     }
@@ -202,7 +203,7 @@ class PubMedXMLGenerator
     protected function addArticleIds(DOMElement $article, Publication $publication): void
     {
         $articleIdList = $this->doc->createElement('ArticleIdList');
-        
+
         // DOI
         if ($publication->doi) {
             $articleId = $this->createElement('ArticleId', $publication->doi->doi);
@@ -226,17 +227,17 @@ class PubMedXMLGenerator
     {
         if ($publication->keywords && count($publication->keywords) > 0) {
             $meshHeadingList = $this->doc->createElement('MeshHeadingList');
-            
+
             foreach ($publication->keywords as $keyword) {
                 $meshHeading = $this->doc->createElement('MeshHeading');
-                
+
                 $descriptorName = $this->createElement('DescriptorName', $keyword);
                 $descriptorName->setAttribute('MajorTopicYN', 'N');
-                
+
                 $meshHeading->appendChild($descriptorName);
                 $meshHeadingList->appendChild($meshHeading);
             }
-            
+
             $article->appendChild($meshHeadingList);
         }
     }
@@ -255,7 +256,7 @@ class PubMedXMLGenerator
         foreach ($publications as $publication) {
             // Create article element for each publication
             $article = $this->doc->createElement('Article');
-            
+
             $this->addJournal($article, $publication);
             $this->addArticleTitle($article, $publication);
             $this->addPagination($article, $publication);
@@ -264,7 +265,7 @@ class PubMedXMLGenerator
             $this->addPublicationDate($article, $publication);
             $this->addArticleIds($article, $publication);
             $this->addMeshTerms($article, $publication);
-            
+
             $articleSet->appendChild($article);
         }
 
@@ -278,6 +279,7 @@ class PubMedXMLGenerator
     {
         $element = $this->doc->createElement($name);
         $element->appendChild($this->doc->createTextNode((string) $value));
+
         return $element;
     }
 
@@ -286,10 +288,11 @@ class PubMedXMLGenerator
      */
     public function validate(string $xml): bool
     {
-        $doc = new DOMDocument();
-        
+        $doc = new DOMDocument;
+
         try {
             $doc->loadXML($xml);
+
             // Basic validation - check if it's valid XML
             return $doc->documentElement->tagName === 'ArticleSet';
         } catch (\Exception $e) {
@@ -305,10 +308,10 @@ class PubMedXMLGenerator
     {
         $journalAbbr = config('journal.abbreviation', 'journal');
         $journalAbbr = preg_replace('/[^a-z0-9]/i', '_', strtolower($journalAbbr));
-        
+
         $volume = $publication->manuscript->issue->volume_number ?? 'v1';
         $issue = $publication->manuscript->issue->issue_number ?? 'i1';
-        
+
         return sprintf('%s_%s_%s.xml', $journalAbbr, $volume, $issue);
     }
 }

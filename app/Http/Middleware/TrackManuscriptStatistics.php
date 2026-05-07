@@ -35,15 +35,15 @@ class TrackManuscriptStatistics
     protected function trackView(Request $request): void
     {
         $route = $request->route();
-        
-        if (!$route) {
+
+        if (! $route) {
             return;
         }
 
         $routeName = $route->getName();
         $manuscript = $this->getManuscriptFromRoute($route);
 
-        if (!$manuscript) {
+        if (! $manuscript) {
             return;
         }
 
@@ -60,7 +60,7 @@ class TrackManuscriptStatistics
             );
         } elseif ($this->isRequest($routeName)) {
             $galleyId = $route->parameter('galley')?->id ?? null;
-            
+
             $this->statisticsService->recordRequest(
                 $manuscript,
                 $request->ip(),
@@ -132,6 +132,6 @@ class TrackManuscriptStatistics
         }
 
         // Fallback to IP + User Agent hash
-        return hash('sha256', $request->ip() . $request->userAgent());
+        return hash('sha256', $request->ip().$request->userAgent());
     }
 }

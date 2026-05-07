@@ -21,9 +21,9 @@ class Hook
     /**
      * Add an action hook.
      *
-     * @param string $hook The action name
-     * @param callable $callback The callback function
-     * @param int $priority Priority (lower = earlier execution)
+     * @param  string  $hook  The action name
+     * @param  callable  $callback  The callback function
+     * @param  int  $priority  Priority (lower = earlier execution)
      */
     public static function addAction(string $hook, callable $callback, int $priority = 10): void
     {
@@ -41,12 +41,12 @@ class Hook
     /**
      * Execute all callbacks for an action.
      *
-     * @param string $hook The action name
-     * @param mixed ...$args Arguments to pass to callbacks
+     * @param  string  $hook  The action name
+     * @param  mixed  ...$args  Arguments to pass to callbacks
      */
     public static function doAction(string $hook, ...$args): void
     {
-        if (!isset(self::$actions[$hook])) {
+        if (! isset(self::$actions[$hook])) {
             return;
         }
 
@@ -58,9 +58,9 @@ class Hook
     /**
      * Add a filter hook.
      *
-     * @param string $hook The filter name
-     * @param callable $callback The callback function
-     * @param int $priority Priority (lower = earlier execution)
+     * @param  string  $hook  The filter name
+     * @param  callable  $callback  The callback function
+     * @param  int  $priority  Priority (lower = earlier execution)
      */
     public static function addFilter(string $hook, callable $callback, int $priority = 10): void
     {
@@ -78,14 +78,14 @@ class Hook
     /**
      * Apply all filters to a value.
      *
-     * @param string $hook The filter name
-     * @param mixed $value The value to filter
-     * @param mixed ...$args Additional arguments
+     * @param  string  $hook  The filter name
+     * @param  mixed  $value  The value to filter
+     * @param  mixed  ...$args  Additional arguments
      * @return mixed The filtered value
      */
     public static function applyFilters(string $hook, mixed $value, ...$args): mixed
     {
-        if (!isset(self::$filters[$hook])) {
+        if (! isset(self::$filters[$hook])) {
             return $value;
         }
 
@@ -99,12 +99,12 @@ class Hook
     /**
      * Remove an action.
      *
-     * @param string $hook The action name
-     * @param callable $callback The callback to remove
+     * @param  string  $hook  The action name
+     * @param  callable  $callback  The callback to remove
      */
     public static function removeAction(string $hook, callable $callback): void
     {
-        if (!isset(self::$actions[$hook])) {
+        if (! isset(self::$actions[$hook])) {
             return;
         }
 
@@ -117,12 +117,12 @@ class Hook
     /**
      * Remove a filter.
      *
-     * @param string $hook The filter name
-     * @param callable $callback The callback to remove
+     * @param  string  $hook  The filter name
+     * @param  callable  $callback  The callback to remove
      */
     public static function removeFilter(string $hook, callable $callback): void
     {
-        if (!isset(self::$filters[$hook])) {
+        if (! isset(self::$filters[$hook])) {
             return;
         }
 

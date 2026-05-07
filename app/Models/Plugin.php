@@ -62,6 +62,14 @@ class Plugin extends Model
             ->where('journal_id', $journalId)
             ->first()?->pivot;
 
-        return $pivot?->settings ?? $this->settings ?? [];
+        $settings = $pivot?->settings;
+
+        if (is_string($settings)) {
+            $decoded = json_decode($settings, true);
+
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        return $settings ?? $this->settings ?? [];
     }
 }

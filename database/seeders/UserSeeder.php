@@ -165,7 +165,7 @@ class UserSeeder extends Seeder
             $userData = $factoryUser->toArray();
             unset($userData['avatar_url']);
             if (empty($userData['password'])) {
-                $userData['password'] = \Illuminate\Support\Facades\Hash::make('password');
+                $userData['password'] = Hash::make('password');
             }
             $user = User::firstOrCreate(
                 ['email' => $factoryUser->email],

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Subscription;
 use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
 
@@ -32,7 +33,7 @@ class ProcessSubscriptions extends Command
         $autoRenew = $this->option('auto-renew');
 
         // If no options specified, run all
-        if (!$expire && !$reminders && !$autoRenew) {
+        if (! $expire && ! $reminders && ! $autoRenew) {
             $expire = $reminders = $autoRenew = true;
         }
 
@@ -47,20 +48,20 @@ class ProcessSubscriptions extends Command
         if ($reminders) {
             $this->info('Sending renewal reminders...');
             $expiring = $subscriptionService->getExpiringSubscriptions(30);
-            
+
             $sent = 0;
             foreach ($expiring as $subscription) {
                 $subscriptionService->sendRenewalReminder($subscription);
                 $sent++;
             }
-            
+
             $this->info("Sent {$sent} renewal reminder(s).");
         }
 
         // Process auto-renewals
         if ($autoRenew) {
             $this->info('Processing auto-renewals...');
-            $autoRenewSubscriptions = \App\Models\Subscription::where('status', 'active')
+            $autoRenewSubscriptions = Subscription::where('status', 'active')
                 ->where('auto_renew', true)
                 ->whereDate('date_end', '<=', now()->addDays(7))
                 ->get();
@@ -71,7 +72,7 @@ class ProcessSubscriptions extends Command
                     $renewed++;
                 }
             }
-            
+
             $this->info("Processed {$renewed} auto-renewal(s).");
         }
 

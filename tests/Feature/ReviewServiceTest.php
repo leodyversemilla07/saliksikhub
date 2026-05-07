@@ -1,5 +1,6 @@
 <?php
 
+use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\Review;
 use App\Models\User;
@@ -25,7 +26,7 @@ beforeEach(function () {
     $this->manuscript = Manuscript::factory()->create([
         'user_id' => $this->author->id,
         'editor_id' => $this->editor->id,
-        'status' => \App\ManuscriptStatus::UNDER_SCREENING,
+        'status' => ManuscriptStatus::UNDER_SCREENING,
     ]);
 });
 

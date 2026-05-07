@@ -34,4 +34,9 @@ export default defineConfig({
             '@': path.resolve(__dirname, './resources/js'),
         },
     },
+    build: {
+        rollupOptions: {
+            // Vite 8 uses Rolldown - keep default config
+        },
+    },
 });

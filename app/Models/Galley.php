@@ -60,7 +60,7 @@ class Galley extends Model
         if ($this->remote_url) {
             return $this->remote_url;
         }
-        
+
         return route('galleys.download', $this->id);
     }
 
@@ -72,7 +72,7 @@ class Galley extends Model
         if ($this->remote_url) {
             return $this->remote_url;
         }
-        
+
         return Storage::url($this->file_path);
     }
 
@@ -92,7 +92,7 @@ class Galley extends Model
         if ($this->remote_url) {
             return true; // Assume remote URLs are valid
         }
-        
+
         return Storage::exists($this->file_path);
     }
 
@@ -110,7 +110,7 @@ class Galley extends Model
      */
     public function getFormattedFileSizeAttribute(): string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return 'Unknown';
         }
 
@@ -123,7 +123,7 @@ class Galley extends Model
             $unit++;
         }
 
-        return round($size, 2) . ' ' . $units[$unit];
+        return round($size, 2).' '.$units[$unit];
     }
 
     /**
@@ -187,7 +187,7 @@ class Galley extends Model
      */
     public function getFormatIconAttribute(): string
     {
-        return match(true) {
+        return match (true) {
             $this->isPdf() => 'file-pdf',
             $this->isHtml() => 'file-code',
             $this->isEpub() => 'book',

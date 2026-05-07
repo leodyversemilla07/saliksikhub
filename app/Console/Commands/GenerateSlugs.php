@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Issue;
 use App\Models\Manuscript;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class GenerateSlugs extends Command
 {
@@ -217,6 +218,6 @@ class GenerateSlugs extends Command
      */
     private function generateSlugPreview(string $source): string
     {
-        return \Illuminate\Support\Str::slug($source);
+        return Str::slug($source);
     }
 }

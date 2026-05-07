@@ -21,45 +21,45 @@ describe('Hook System', function () {
     it('can register and trigger actions', function () {
         $called = false;
         $receivedArgs = [];
-        
+
         Hook::addAction('test.action', function (...$args) use (&$called, &$receivedArgs) {
             $called = true;
             $receivedArgs = $args;
         });
-        
+
         Hook::doAction('test.action', 'arg1', 'arg2');
-        
+
         expect($called)->toBeTrue();
         expect($receivedArgs)->toEqual(['arg1', 'arg2']);
     });
 
     it('can register and apply filters', function () {
         Hook::addFilter('test.filter', function ($value) {
-            return $value . '_modified';
+            return $value.'_modified';
         });
-        
+
         $result = Hook::applyFilters('test.filter', 'original');
-        
+
         expect($result)->toBe('original_modified');
     });
 
     it('applies multiple filters in priority order', function () {
         Hook::addFilter('test.priority', function ($value) {
-            return $value . '_second';
+            return $value.'_second';
         }, 20);
-        
+
         Hook::addFilter('test.priority', function ($value) {
-            return $value . '_first';
+            return $value.'_first';
         }, 10);
-        
+
         $result = Hook::applyFilters('test.priority', 'start');
-        
+
         expect($result)->toBe('start_first_second');
     });
 
     it('returns original value when no filters registered', function () {
         $result = Hook::applyFilters('nonexistent.filter', 'original');
-        
+
         expect($result)->toBe('original');
     });
 
@@ -67,13 +67,13 @@ describe('Hook System', function () {
         $callback = function () {
             throw new Exception('Should not be called');
         };
-        
+
         Hook::addAction('test.remove', $callback);
         Hook::removeAction('test.remove', $callback);
-        
+
         // Should not throw
         Hook::doAction('test.remove');
-        
+
         expect(true)->toBeTrue();
     });
 });
@@ -91,7 +91,7 @@ describe('Plugin Model', function () {
             'enabled' => false,
             'settings' => ['key' => 'value'],
         ]);
-        
+
         expect($plugin->id)->toBeInt();
         expect($plugin->name)->toBe('test-plugin');
         expect($plugin->settings)->toBe(['key' => 'value']);
@@ -99,7 +99,7 @@ describe('Plugin Model', function () {
 
     it('can check if active for journal', function () {
         $journal = Journal::factory()->create();
-        
+
         $plugin = Plugin::create([
             'name' => 'journal-plugin',
             'display_name' => 'Journal Plugin',
@@ -108,19 +108,19 @@ describe('Plugin Model', function () {
             'is_global' => false,
             'enabled' => false,
         ]);
-        
+
         // Not enabled initially
         expect($plugin->isActiveForJournal($journal->id))->toBeFalse();
-        
+
         // Enable for journal
         $plugin->journals()->attach($journal->id, ['enabled' => true]);
-        
+
         expect($plugin->isActiveForJournal($journal->id))->toBeTrue();
     });
 
     it('global plugins are active for all journals', function () {
         $journal = Journal::factory()->create();
-        
+
         $plugin = Plugin::create([
             'name' => 'global-plugin',
             'display_name' => 'Global Plugin',
@@ -129,7 +129,7 @@ describe('Plugin Model', function () {
             'is_global' => true,
             'enabled' => true,
         ]);
-        
+
         expect($plugin->isActiveForJournal($journal->id))->toBeTrue();
     });
 });
@@ -137,11 +137,11 @@ describe('Plugin Model', function () {
 describe('Plugin Manager', function () {
     it('can install a plugin from directory', function () {
         $pluginManager = app(PluginManager::class);
-        
+
         // Create a temporary plugin directory
-        $tempDir = sys_get_temp_dir() . '/test-plugin-' . uniqid();
+        $tempDir = sys_get_temp_dir().'/test-plugin-'.uniqid();
         mkdir($tempDir);
-        file_put_contents($tempDir . '/plugin.json', json_encode([
+        file_put_contents($tempDir.'/plugin.json', json_encode([
             'name' => 'temp-test-plugin',
             'displayName' => 'Temp Test Plugin',
             'version' => '1.0.0',
@@ -149,8 +149,8 @@ describe('Plugin Manager', function () {
         ]));
 
         // Create a simple plugin class
-        mkdir($tempDir . '/src');
-        file_put_contents($tempDir . '/src/TempTestPlugin.php', '<?php
+        mkdir($tempDir.'/src');
+        file_put_contents($tempDir.'/src/TempTestPlugin.php', '<?php
             namespace Plugins\\TempTest;
             use App\Core\Plugin\Contracts\PluginInterface;
             class TempTestPlugin implements PluginInterface {
@@ -176,7 +176,7 @@ describe('Plugin Manager', function () {
 
     it('can enable and disable plugins', function () {
         $pluginManager = app(PluginManager::class);
-        
+
         $plugin = Plugin::create([
             'name' => 'toggle-test',
             'display_name' => 'Toggle Test',
@@ -186,12 +186,12 @@ describe('Plugin Manager', function () {
         ]);
 
         $pluginManager->enable($plugin);
-        
+
         $plugin->refresh();
         expect($plugin->enabled)->toBeTrue();
 
         $pluginManager->disable($plugin);
-        
+
         $plugin->refresh();
         expect($plugin->enabled)->toBeFalse();
     });
@@ -200,30 +200,30 @@ describe('Plugin Manager', function () {
 describe('Plugin Integration', function () {
     it('plugins can hook into manuscript submission', function () {
         $called = false;
-        
+
         Hook::addAction('manuscript.submitted', function () use (&$called) {
             $called = true;
         });
-        
+
         // Simulate manuscript submission hook being called
-        Hook::doAction('manuscript.submitted', (object)['id' => 1]);
-        
+        Hook::doAction('manuscript.submitted', (object) ['id' => 1]);
+
         expect($called)->toBeTrue();
     });
 
     it('multiple plugins can hook into the same action', function () {
         $callOrder = [];
-        
+
         Hook::addAction('multi.hook', function () use (&$callOrder) {
             $callOrder[] = 'first';
         }, 10);
-        
+
         Hook::addAction('multi.hook', function () use (&$callOrder) {
             $callOrder[] = 'second';
         }, 20);
-        
+
         Hook::doAction('multi.hook');
-        
+
         expect($callOrder)->toEqual(['first', 'second']);
     });
 });

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
+use App\Models\User;
 use App\Services\SubscriptionService;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -96,7 +99,7 @@ class SubscriptionController extends Controller
     /**
      * Store new subscription
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $this->authorize('create', Subscription::class);
 
@@ -111,13 +114,13 @@ class SubscriptionController extends Controller
         ]);
 
         $type = SubscriptionType::findOrFail($validated['subscription_type_id']);
-        $user = \App\Models\User::findOrFail($validated['user_id']);
+        $user = User::findOrFail($validated['user_id']);
 
         $subscription = $this->subscriptionService->createSubscription(
             $type,
             $user,
-            \Carbon\Carbon::parse($validated['start_date']),
-            isset($validated['end_date']) ? \Carbon\Carbon::parse($validated['end_date']) : null,
+            Carbon::parse($validated['start_date']),
+            isset($validated['end_date']) ? Carbon::parse($validated['end_date']) : null,
             $validated['auto_renew'] ?? false,
             $validated['ip_ranges'] ?? null
         );
@@ -130,7 +133,7 @@ class SubscriptionController extends Controller
     /**
      * Renew subscription
      */
-    public function renew(Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function renew(Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -149,7 +152,7 @@ class SubscriptionController extends Controller
     /**
      * Cancel subscription
      */
-    public function cancel(Request $request, Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function cancel(Request $request, Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -165,7 +168,7 @@ class SubscriptionController extends Controller
     /**
      * Suspend subscription
      */
-    public function suspend(Request $request, Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function suspend(Request $request, Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -179,7 +182,7 @@ class SubscriptionController extends Controller
     /**
      * Reactivate subscription
      */
-    public function reactivate(Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function reactivate(Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -198,7 +201,7 @@ class SubscriptionController extends Controller
     /**
      * Add IP range
      */
-    public function addIpRange(Request $request, Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function addIpRange(Request $request, Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -221,7 +224,7 @@ class SubscriptionController extends Controller
     /**
      * Remove IP range
      */
-    public function removeIpRange(Request $request, Subscription $subscription): \Illuminate\Http\RedirectResponse
+    public function removeIpRange(Request $request, Subscription $subscription): RedirectResponse
     {
         $this->authorize('update', $subscription);
 
@@ -253,7 +256,7 @@ class SubscriptionController extends Controller
     /**
      * Create subscription type
      */
-    public function storeType(Request $request): \Illuminate\Http\RedirectResponse
+    public function storeType(Request $request): RedirectResponse
     {
         $this->authorize('create', SubscriptionType::class);
 
@@ -276,7 +279,7 @@ class SubscriptionController extends Controller
     /**
      * Update subscription type
      */
-    public function updateType(Request $request, SubscriptionType $type): \Illuminate\Http\RedirectResponse
+    public function updateType(Request $request, SubscriptionType $type): RedirectResponse
     {
         $this->authorize('update', $type);
 
@@ -299,7 +302,7 @@ class SubscriptionController extends Controller
     /**
      * Delete subscription type
      */
-    public function destroyType(SubscriptionType $type): \Illuminate\Http\RedirectResponse
+    public function destroyType(SubscriptionType $type): RedirectResponse
     {
         $this->authorize('delete', $type);
 

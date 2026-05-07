@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\ManuscriptStatus;
 use App\Models\Manuscript;
+use App\Services\StorageService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Inertia\Inertia;
 
 class ReviewerController extends Controller
@@ -109,7 +112,7 @@ class ReviewerController extends Controller
     /**
      * Build the manuscript query with filters applied.
      */
-    private function buildManuscriptQuery(string $status, ?string $search): \Illuminate\Database\Eloquent\Builder
+    private function buildManuscriptQuery(string $status, ?string $search): Builder
     {
         $query = Manuscript::where('status', ManuscriptStatus::UNDER_REVIEW)
             ->with('author')
@@ -137,13 +140,13 @@ class ReviewerController extends Controller
     /**
      * Paginate the manuscripts based on the per page parameter.
      */
-    private function paginateManuscripts(\Illuminate\Database\Eloquent\Builder $query, $perPage, Request $request)
+    private function paginateManuscripts(Builder $query, $perPage, Request $request)
     {
         if ($perPage === 'all') {
             $manuscripts = $query->get();
             $total = $manuscripts->count();
 
-            return new \Illuminate\Pagination\LengthAwarePaginator(
+            return new LengthAwarePaginator(
                 $manuscripts,
                 $total,
                 $total > 0 ? $total : 1,
@@ -175,7 +178,7 @@ class ReviewerController extends Controller
     /**
      * Display the details of a manuscript for reviewers.
      */
-    public function show(int $id, \App\Services\StorageService $storageService)
+    public function show(int $id, StorageService $storageService)
     {
         try {
             $manuscript = Manuscript::findOrFail($id);
@@ -197,7 +200,7 @@ class ReviewerController extends Controller
     /**
      * Format manuscript data for frontend display.
      */
-    private function formatManuscriptForDisplay(Manuscript $manuscript, \App\Services\StorageService $storageService): array
+    private function formatManuscriptForDisplay(Manuscript $manuscript, StorageService $storageService): array
     {
         return [
             'id' => $manuscript->id,
@@ -222,7 +225,7 @@ class ReviewerController extends Controller
     /**
      * Generate a temporary URL for a file path, handling errors gracefully.
      */
-    private function generateTemporaryUrl(?string $path, \App\Services\StorageService $storageService, int $manuscriptId, string $fileType): ?string
+    private function generateTemporaryUrl(?string $path, StorageService $storageService, int $manuscriptId, string $fileType): ?string
     {
         if (! $path) {
             return null;

@@ -109,7 +109,7 @@ php artisan test --compact          # all tests
 php artisan test --filter=FeatureName   # single file/group
 ```
 
-253 tests, 937 assertions (1 known pre-existing failure in `PluginAdminRoutesTest`).
+Tests include `PluginAdminRoutesTest`.
 
 ## Contributing
 

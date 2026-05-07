@@ -11,8 +11,10 @@ use App\Notifications\ManuscriptApproved;
 use App\Notifications\ManuscriptStatusChanged;
 use App\Services\StorageService;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -59,7 +61,7 @@ class ManuscriptController extends Controller
         $validated = $request->validated();
         try {
             // Use a local Request typed variable for file helpers so static analyzers recognize methods
-            /** @var \Illuminate\Http\Request $fileRequest */
+            /** @var Request $fileRequest */
             $fileRequest = $request;
 
             if ($fileRequest->hasFile('manuscript')) {
@@ -330,7 +332,7 @@ class ManuscriptController extends Controller
                 'comments' => $validated['revision_comments'],
             ];
 
-            /** @var \Illuminate\Http\Request $fileRequest */
+            /** @var Request $fileRequest */
             $fileRequest = $request;
 
             if ($fileRequest->hasFile('revised_manuscript')) {
@@ -506,7 +508,7 @@ class ManuscriptController extends Controller
     /**
      * Build the manuscript query with filters applied.
      */
-    private function buildManuscriptQuery(string $status, ?string $search): \Illuminate\Database\Eloquent\Builder
+    private function buildManuscriptQuery(string $status, ?string $search): Builder
     {
         $userId = Auth::id();
 
@@ -531,13 +533,13 @@ class ManuscriptController extends Controller
     /**
      * Paginate the manuscripts based on the per page parameter.
      */
-    private function paginateManuscripts(\Illuminate\Database\Eloquent\Builder $query, $perPage, Request $request)
+    private function paginateManuscripts(Builder $query, $perPage, Request $request)
     {
         if ($perPage === 'all') {
             $manuscripts = $query->get();
             $total = $manuscripts->count();
 
-            return new \Illuminate\Pagination\LengthAwarePaginator(
+            return new LengthAwarePaginator(
                 $manuscripts,
                 $total,
                 $total > 0 ? $total : 1,

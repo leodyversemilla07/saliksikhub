@@ -4,14 +4,18 @@ namespace App\Services\OAI;
 
 use App\Models\OAIRecord;
 use App\Models\Publication;
+use App\Services\Metadata\JATSXMLGenerator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 
 class OAIRepository
 {
     protected string $repositoryName;
+
     protected string $baseURL;
+
     protected string $adminEmail;
+
     protected string $repositoryIdentifier;
 
     public function __construct()
@@ -111,7 +115,7 @@ class OAIRepository
 
         $records = $query->skip($cursor)->take($perPage + 1)->get();
         $hasMore = $records->count() > $perPage;
-        
+
         if ($hasMore) {
             $records = $records->slice(0, $perPage);
         }
@@ -149,11 +153,11 @@ class OAIRepository
         ?string $resumptionToken = null
     ): array {
         $identifiersData = $this->listIdentifiers($metadataPrefix, $from, $until, $set, $resumptionToken);
-        
+
         $records = collect($identifiersData['identifiers'])->map(function ($identifierData) use ($metadataPrefix) {
             $record = OAIRecord::where('identifier', $identifierData['identifier'])->first();
-            
-            if (!$record) {
+
+            if (! $record) {
                 return null;
             }
 
@@ -209,7 +213,7 @@ class OAIRepository
 
         $recordable = $record->recordable;
 
-        if (!$recordable) {
+        if (! $recordable) {
             return [];
         }
 
@@ -257,9 +261,9 @@ class OAIRepository
     {
         if ($recordable instanceof Publication) {
             // Use JATSXMLGenerator service
-            $generator = app(\App\Services\Metadata\JATSXMLGenerator::class);
+            $generator = app(JATSXMLGenerator::class);
             $xml = $generator->generate($recordable);
-            
+
             return [
                 'jats:article' => $xml,
             ];
@@ -274,8 +278,8 @@ class OAIRepository
     protected function getEarliestDatestamp(): string
     {
         $earliest = OAIRecord::min('datestamp');
-        
-        return $earliest 
+
+        return $earliest
             ? Carbon::parse($earliest)->format('Y-m-d\TH:i:s\Z')
             : Carbon::now()->format('Y-m-d\TH:i:s\Z');
     }

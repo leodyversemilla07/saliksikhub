@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Manuscript;
 use App\Models\ManuscriptStatistic;
 use Carbon\Carbon;
+use GeoIp2\Database\Reader;
 use Illuminate\Support\Facades\DB;
 
 class StatisticsService
@@ -384,7 +385,7 @@ class StatisticsService
                 return null;
             }
 
-            $reader = new \GeoIp2\Database\Reader($dbPath);
+            $reader = new Reader($dbPath);
             $record = $reader->country($ipAddress);
 
             return $record->country->isoCode;

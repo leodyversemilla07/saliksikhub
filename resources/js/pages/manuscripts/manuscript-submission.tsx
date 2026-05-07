@@ -79,7 +79,7 @@ export default function ManuscriptSubmissionForm() {
         }, []);
 
         useEffect(() => {
-            let timer: NodeJS.Timeout;
+            let timer: ReturnType<typeof setTimeout>;
 
             if (showValidationAlert) {
                 timer = setTimeout(() => {

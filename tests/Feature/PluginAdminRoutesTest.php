@@ -46,6 +46,31 @@ describe('Plugin Admin Routes', function () {
         );
     });
 
+    it('shows plugin details page', function () {
+        $journal = Journal::factory()->create();
+        $plugin = Plugin::create([
+            'name' => 'details-plugin',
+            'display_name' => 'Details Plugin',
+            'version' => '1.2.3',
+            'path' => '/path',
+            'enabled' => true,
+        ]);
+
+        $plugin->journals()->attach($journal->id, [
+            'enabled' => true,
+            'settings' => json_encode(['mode' => 'active']),
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->get("/admin/plugins/{$plugin->id}");
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) => $page
+            ->component('admin/plugins/show')
+            ->has('plugin')
+        );
+    });
+
     it('can enable a plugin', function () {
         $plugin = Plugin::create([
             'name' => 'enable-test',

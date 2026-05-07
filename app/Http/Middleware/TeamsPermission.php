@@ -15,7 +15,7 @@ class TeamsPermission
      * For super_admin and global roles, we use team_id = 0.
      * For journal-specific roles, we use the journal_id from session.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {

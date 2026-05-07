@@ -4,9 +4,10 @@ use App\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 // Ensure this file uses the TestCase and RefreshDatabase so facades and factories work
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     // no-op: RefreshDatabase will run

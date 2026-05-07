@@ -24,10 +24,10 @@ class PubMedController extends Controller
     {
         try {
             $xml = $this->pubmedGenerator->generate($publication);
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'inline; filename="pubmed-article-' . $publication->id . '.xml"');
+                ->header('Content-Disposition', 'inline; filename="pubmed-article-'.$publication->id.'.xml"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate PubMed XML',
@@ -44,10 +44,10 @@ class PubMedController extends Controller
         try {
             $xml = $this->pubmedGenerator->generate($publication);
             $filename = $this->pubmedGenerator->generateFilename($publication);
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate PubMed XML',
@@ -73,10 +73,10 @@ class PubMedController extends Controller
         try {
             // Generate batch XML (all articles in one XML file)
             $xml = $this->pubmedGenerator->generateBatch($publications->all());
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'attachment; filename="pubmed-batch-' . date('Y-m-d') . '.xml"');
+                ->header('Content-Disposition', 'attachment; filename="pubmed-batch-'.date('Y-m-d').'.xml"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate PubMed batch XML',
@@ -93,9 +93,9 @@ class PubMedController extends Controller
         $publications = Publication::whereHas('manuscript', function ($query) use ($issueId) {
             $query->where('issue_id', $issueId);
         })
-        ->where('status', 'published')
-        ->with(['manuscript.authors', 'manuscript.issue', 'doi'])
-        ->get();
+            ->where('status', 'published')
+            ->with(['manuscript.authors', 'manuscript.issue', 'doi'])
+            ->get();
 
         if ($publications->isEmpty()) {
             return response()->json([
@@ -106,17 +106,17 @@ class PubMedController extends Controller
         try {
             // Generate batch XML for all articles in the issue
             $xml = $this->pubmedGenerator->generateBatch($publications->all());
-            
+
             $issue = $publications->first()->manuscript->issue;
             $filename = sprintf(
                 'pubmed-issue-%s-%s.xml',
                 $issue->volume_number ?? 'v1',
                 $issue->issue_number ?? 'i1'
             );
-            
+
             return response($xml, 200)
                 ->header('Content-Type', 'application/xml; charset=utf-8')
-                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate PubMed XML for issue',
@@ -136,7 +136,7 @@ class PubMedController extends Controller
 
         try {
             $isValid = $this->pubmedGenerator->validate($request->xml);
-            
+
             return response()->json([
                 'valid' => $isValid,
                 'message' => $isValid ? 'PubMed XML is valid' : 'PubMed XML validation failed',
@@ -151,7 +151,7 @@ class PubMedController extends Controller
 
     /**
      * Prepare FTP upload package for PubMed Central
-     * 
+     *
      * This generates the XML and saves it to a designated FTP directory
      * for automated submission to PubMed Central
      */
@@ -168,18 +168,18 @@ class PubMedController extends Controller
 
         try {
             $xml = $this->pubmedGenerator->generateBatch($publications->all());
-            
+
             // Save to FTP upload directory
-            $ftpPath = 'pubmed-ftp/' . date('Y-m-d');
-            $filename = 'pubmed-submission-' . date('YmdHis') . '.xml';
-            
-            Storage::disk('local')->put($ftpPath . '/' . $filename, $xml);
-            
+            $ftpPath = 'pubmed-ftp/'.date('Y-m-d');
+            $filename = 'pubmed-submission-'.date('YmdHis').'.xml';
+
+            Storage::disk('local')->put($ftpPath.'/'.$filename, $xml);
+
             return response()->json([
                 'success' => true,
                 'message' => 'PubMed XML prepared for FTP upload',
                 'filename' => $filename,
-                'path' => $ftpPath . '/' . $filename,
+                'path' => $ftpPath.'/'.$filename,
                 'articles_count' => $publications->count(),
                 'file_size' => strlen($xml),
             ]);
@@ -197,7 +197,7 @@ class PubMedController extends Controller
     public function listFtpUploads()
     {
         $files = Storage::disk('local')->files('pubmed-ftp');
-        
+
         $uploads = collect($files)->map(function ($file) {
             return [
                 'filename' => basename($file),
@@ -213,4 +213,3 @@ class PubMedController extends Controller
         ]);
     }
 }
-

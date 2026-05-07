@@ -20,10 +20,10 @@ class PublicationVersionService
         return DB::transaction(function () use ($manuscript, $data, $versionStage, $isMajor) {
             // Get the latest publication to determine version numbers
             $latestPublication = $manuscript->latestPublication();
-            
+
             $versionMajor = 1;
             $versionMinor = 0;
-            
+
             if ($latestPublication) {
                 if ($isMajor) {
                     $versionMajor = $latestPublication->version_major + 1;
@@ -33,7 +33,7 @@ class PublicationVersionService
                     $versionMinor = $latestPublication->version_minor + 1;
                 }
             }
-            
+
             // Prepare publication data
             $publicationData = array_merge([
                 'manuscript_id' => $manuscript->id,
@@ -43,25 +43,25 @@ class PublicationVersionService
                 'status' => 'draft',
                 'title' => $manuscript->title,
                 'abstract' => $manuscript->abstract,
-                'keywords' => is_string($manuscript->keywords) 
-                    ? explode(',', $manuscript->keywords) 
+                'keywords' => is_string($manuscript->keywords)
+                    ? explode(',', $manuscript->keywords)
                     : (is_array($manuscript->keywords) ? $manuscript->keywords : []),
                 'language' => 'en',
                 'access_status' => 'open',
                 'date_submitted' => now(),
             ], $data);
-            
+
             $publication = Publication::create($publicationData);
-            
+
             // If this is the first publication, set it as current
-            if (!$manuscript->current_publication_id) {
+            if (! $manuscript->current_publication_id) {
                 $manuscript->update(['current_publication_id' => $publication->id]);
             }
-            
+
             return $publication;
         });
     }
-    
+
     /**
      * Publish a publication version.
      */
@@ -73,9 +73,9 @@ class PublicationVersionService
                 'version_stage' => 'published',
                 'date_published' => now(),
             ], $data);
-            
+
             $publication->update($updateData);
-            
+
             // Update manuscript's current publication
             $manuscript = $publication->manuscript;
             $manuscript->update([
@@ -83,11 +83,11 @@ class PublicationVersionService
                 'status' => 'published',
                 'published_at' => now(),
             ]);
-            
+
             return true;
         });
     }
-    
+
     /**
      * Create a new version from an existing publication.
      */
@@ -98,7 +98,7 @@ class PublicationVersionService
     ): Publication {
         return DB::transaction(function () use ($basePublication, $isMajor, $changes) {
             $newVersion = $basePublication->replicate(['id', 'created_at', 'updated_at', 'deleted_at']);
-            
+
             // Increment version
             if ($isMajor) {
                 $newVersion->version_major = $basePublication->version_major + 1;
@@ -106,20 +106,20 @@ class PublicationVersionService
             } else {
                 $newVersion->version_minor = $basePublication->version_minor + 1;
             }
-            
+
             // Reset publication status
             $newVersion->status = 'draft';
             $newVersion->version_stage = 'preprint';
             $newVersion->date_published = null;
-            
+
             // Apply any changes
             $newVersion->fill($changes);
             $newVersion->save();
-            
+
             return $newVersion;
         });
     }
-    
+
     /**
      * Revert manuscript to a specific publication version.
      */
@@ -128,16 +128,16 @@ class PublicationVersionService
         if ($publication->manuscript_id !== $manuscript->id) {
             throw new \InvalidArgumentException('Publication does not belong to this manuscript');
         }
-        
+
         return DB::transaction(function () use ($manuscript, $publication) {
             $manuscript->update([
                 'current_publication_id' => $publication->id,
             ]);
-            
+
             return true;
         });
     }
-    
+
     /**
      * Update publication metadata.
      */
@@ -145,7 +145,7 @@ class PublicationVersionService
     {
         return $publication->update($metadata);
     }
-    
+
     /**
      * Schedule publication for future date.
      */
@@ -156,7 +156,7 @@ class PublicationVersionService
             'date_published' => $publishDate,
         ]);
     }
-    
+
     /**
      * Set embargo on publication.
      */
@@ -167,7 +167,7 @@ class PublicationVersionService
             'embargo_date' => $embargoDate,
         ]);
     }
-    
+
     /**
      * Mark publication as corrected version.
      */
@@ -176,11 +176,11 @@ class PublicationVersionService
         return DB::transaction(function () use ($publication, $corrections) {
             $correctedVersion = $this->createNewVersionFrom($publication, false, $corrections);
             $correctedVersion->update(['version_stage' => 'corrected']);
-            
+
             return $correctedVersion;
         });
     }
-    
+
     /**
      * Retract a publication.
      */
@@ -191,19 +191,19 @@ class PublicationVersionService
                 'version_stage' => 'retracted',
                 'status' => 'declined',
             ]);
-            
+
             // Log retraction reason in manuscript notes
             $manuscript = $publication->manuscript;
             $manuscript->update([
-                'decision_comments' => ($manuscript->decision_comments ?? '') 
-                    . "\n\n[RETRACTION] Version {$publication->version} retracted on " 
-                    . now()->toDateString() . ": {$reason}",
+                'decision_comments' => ($manuscript->decision_comments ?? '')
+                    ."\n\n[RETRACTION] Version {$publication->version} retracted on "
+                    .now()->toDateString().": {$reason}",
             ]);
-            
+
             return true;
         });
     }
-    
+
     /**
      * Get publication version history.
      */
@@ -226,7 +226,7 @@ class PublicationVersionService
             })
             ->toArray();
     }
-    
+
     /**
      * Copy galleys from one publication to another.
      */
@@ -240,7 +240,7 @@ class PublicationVersionService
             $newGalley->save();
         }
     }
-    
+
     /**
      * Get all versions of a manuscript with their galleys.
      */

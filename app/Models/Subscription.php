@@ -98,7 +98,7 @@ class Subscription extends Model
     public function expiresSoon(): bool
     {
         return $this->date_end->diffInDays(today()) <= 30
-            && !$this->isExpired();
+            && ! $this->isExpired();
     }
 
     /**
@@ -132,12 +132,12 @@ class Subscription extends Model
     public function renew(?int $months = null): bool
     {
         $months = $months ?? $this->subscriptionType->duration_months;
-        
+
         $this->date_start = $this->date_end->addDay();
         $this->date_end = $this->date_start->copy()->addMonths($months);
         $this->status = 'active';
         $this->renewal_reminder_sent_at = null;
-        
+
         return $this->save();
     }
 
@@ -147,6 +147,7 @@ class Subscription extends Model
     public function cancel(): bool
     {
         $this->status = 'cancelled';
+
         return $this->save();
     }
 
@@ -155,7 +156,7 @@ class Subscription extends Model
      */
     public function isIpAllowed(string $ip): bool
     {
-        if (!$this->ip_ranges) {
+        if (! $this->ip_ranges) {
             return false;
         }
 
@@ -178,13 +179,14 @@ class Subscription extends Model
             [$subnet, $mask] = explode('/', $range);
             $ip_long = ip2long($ip);
             $subnet_long = ip2long($subnet);
-            $mask_long = -1 << (32 - (int)$mask);
-            
+            $mask_long = -1 << (32 - (int) $mask);
+
             return ($ip_long & $mask_long) === ($subnet_long & $mask_long);
         } elseif (str_contains($range, '-')) {
             // IP range (e.g., 192.168.1.1-192.168.1.255)
             [$start, $end] = explode('-', $range);
             $ip_long = ip2long($ip);
+
             return $ip_long >= ip2long(trim($start)) && $ip_long <= ip2long(trim($end));
         } else {
             // Single IP

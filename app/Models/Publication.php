@@ -105,7 +105,7 @@ class Publication extends Model
     public function isOpenAccess(): bool
     {
         return $this->access_status === 'open'
-            || ($this->access_status === 'embargo' && !$this->isEmbargoed());
+            || ($this->access_status === 'embargo' && ! $this->isEmbargoed());
     }
 
     /**
@@ -151,7 +151,7 @@ class Publication extends Model
         $this->status = 'published';
         $this->date_published = now();
         $this->version_stage = 'published';
-        
+
         return $this->save();
     }
 
@@ -161,19 +161,19 @@ class Publication extends Model
     public function createNewVersion(bool $isMajor = false): self
     {
         $newPublication = $this->replicate();
-        
+
         if ($isMajor) {
             $newPublication->version_major = $this->version_major + 1;
             $newPublication->version_minor = 0;
         } else {
             $newPublication->version_minor = $this->version_minor + 1;
         }
-        
+
         $newPublication->status = 'draft';
         $newPublication->version_stage = 'preprint';
         $newPublication->date_published = null;
         $newPublication->save();
-        
+
         return $newPublication;
     }
 }

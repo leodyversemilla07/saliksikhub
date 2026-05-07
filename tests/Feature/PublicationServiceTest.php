@@ -1,5 +1,6 @@
 <?php
 
+use App\ManuscriptStatus;
 use App\Models\CopyrightAgreement;
 use App\Models\Manuscript;
 use App\Models\ManuscriptIndexing;
@@ -13,7 +14,7 @@ beforeEach(function () {
     $this->manuscript = Manuscript::factory()->create([
         'user_id' => $this->author->id,
         'doi' => '10.1234/test.2025.001',
-        'status' => \App\ManuscriptStatus::ACCEPTED, // Set to accepted for proof sending
+        'status' => ManuscriptStatus::ACCEPTED, // Set to accepted for proof sending
     ]);
 });
 

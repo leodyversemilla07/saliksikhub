@@ -112,15 +112,15 @@ class Payment extends Model
     {
         $this->status = 'completed';
         $this->paid_at = now();
-        
+
         if ($transactionId) {
             $this->transaction_id = $transactionId;
         }
-        
+
         if ($gatewayResponse) {
             $this->gateway_response = $gatewayResponse;
         }
-        
+
         return $this->save();
     }
 
@@ -130,11 +130,11 @@ class Payment extends Model
     public function markAsFailed(?string $gatewayResponse = null): bool
     {
         $this->status = 'failed';
-        
+
         if ($gatewayResponse) {
             $this->gateway_response = $gatewayResponse;
         }
-        
+
         return $this->save();
     }
 
@@ -143,17 +143,17 @@ class Payment extends Model
      */
     public function refund(?string $reason = null): bool
     {
-        if (!$this->isCompleted()) {
+        if (! $this->isCompleted()) {
             return false;
         }
 
         $this->status = 'refunded';
         $this->refunded_at = now();
-        
+
         if ($reason) {
-            $this->notes = ($this->notes ? $this->notes . "\n\n" : '') . "Refund reason: {$reason}";
+            $this->notes = ($this->notes ? $this->notes."\n\n" : '')."Refund reason: {$reason}";
         }
-        
+
         return $this->save();
     }
 
@@ -162,11 +162,12 @@ class Payment extends Model
      */
     public function cancel(): bool
     {
-        if (!$this->isPending()) {
+        if (! $this->isPending()) {
             return false;
         }
 
         $this->status = 'cancelled';
+
         return $this->save();
     }
 
@@ -175,7 +176,7 @@ class Payment extends Model
      */
     public function getFormattedAmountAttribute(): string
     {
-        return $this->currency . ' ' . number_format($this->amount, 2);
+        return $this->currency.' '.number_format($this->amount, 2);
     }
 
     /**
@@ -183,7 +184,7 @@ class Payment extends Model
      */
     public function getPaymentTypeLabelAttribute(): string
     {
-        return match($this->payment_type) {
+        return match ($this->payment_type) {
             'submission_fee' => 'Submission Fee',
             'publication_charge' => 'Publication Charge',
             'subscription_fee' => 'Subscription Fee',

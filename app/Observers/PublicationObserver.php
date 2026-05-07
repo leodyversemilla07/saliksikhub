@@ -47,7 +47,7 @@ class PublicationObserver
             config('oai.repository_identifier'),
             $publication->id
         );
-        
+
         $this->oaiRepository->deleteRecord($identifier);
     }
 
@@ -73,8 +73,7 @@ class PublicationObserver
             config('oai.repository_identifier'),
             $publication->id
         );
-        
+
         $this->oaiRepository->deleteRecord($identifier);
     }
 }
-

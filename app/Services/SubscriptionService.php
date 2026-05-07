@@ -7,6 +7,7 @@ use App\Models\SubscriptionType;
 use App\Models\User;
 use App\Notifications\SubscriptionRenewalReminder;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -239,7 +240,7 @@ class SubscriptionService
     /**
      * Get expiring subscriptions
      */
-    public function getExpiringSubscriptions(int $daysBeforeExpiry = 30): \Illuminate\Database\Eloquent\Collection
+    public function getExpiringSubscriptions(int $daysBeforeExpiry = 30): Collection
     {
         $expiryDate = now()->addDays($daysBeforeExpiry);
 

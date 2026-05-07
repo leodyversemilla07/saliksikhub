@@ -6,7 +6,7 @@ use App\Models\PlatformSetting;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PlatformSetting>
+ * @extends Factory<PlatformSetting>
  */
 class PlatformSettingFactory extends Factory
 {

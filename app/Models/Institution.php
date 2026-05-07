@@ -85,9 +85,9 @@ class Institution extends Model
         return Storage::url($this->logo_path);
     }
 
-/**
-      * Scope a query to only include active institutions.
-      */
+    /**
+     * Scope a query to only include active institutions.
+     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

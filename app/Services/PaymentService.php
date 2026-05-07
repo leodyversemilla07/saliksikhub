@@ -6,6 +6,7 @@ use App\Core\Plugin\Hook;
 use App\Models\Manuscript;
 use App\Models\Payment;
 use App\Models\Subscription;
+use App\Models\User;
 use App\Notifications\PaymentConfirmation;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -458,7 +459,7 @@ class PaymentService
 
         // Send payment confirmation email and receipt.
         $payment->load(['manuscript', 'subscription']);
-        $user = $payment->user ?? \App\Models\User::find($payment->user_id);
+        $user = $payment->user ?? User::find($payment->user_id);
         if ($user) {
             $user->notify(new PaymentConfirmation($payment));
         }

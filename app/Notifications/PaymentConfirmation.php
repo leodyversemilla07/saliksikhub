@@ -32,18 +32,18 @@ class PaymentConfirmation extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $recipientName = $notifiable->firstname . ' ' . $notifiable->lastname;
+        $recipientName = $notifiable->firstname.' '.$notifiable->lastname;
         $typeLabel = ucfirst(str_replace('_', ' ', $this->payment->payment_type));
 
         return (new MailMessage)
-            ->subject('Payment Confirmation - ' . $this->payment->transaction_id)
-            ->greeting('Hello ' . $recipientName . ',')
+            ->subject('Payment Confirmation - '.$this->payment->transaction_id)
+            ->greeting('Hello '.$recipientName.',')
             ->line('Your payment has been successfully processed.')
-            ->line('**Transaction ID:** ' . $this->payment->transaction_id)
-            ->line('**Type:** ' . $typeLabel)
-            ->line('**Amount:** ' . $this->payment->currency . ' ' . number_format($this->payment->amount, 2))
-            ->line('**Date:** ' . $this->payment->paid_at->format('F j, Y g:i A'))
-            ->line('**Payment Method:** ' . ucfirst($this->payment->payment_gateway ?? 'N/A'))
+            ->line('**Transaction ID:** '.$this->payment->transaction_id)
+            ->line('**Type:** '.$typeLabel)
+            ->line('**Amount:** '.$this->payment->currency.' '.number_format($this->payment->amount, 2))
+            ->line('**Date:** '.$this->payment->paid_at->format('F j, Y g:i A'))
+            ->line('**Payment Method:** '.ucfirst($this->payment->payment_gateway ?? 'N/A'))
             ->line('Thank you for your payment.');
     }
 
@@ -55,8 +55,8 @@ class PaymentConfirmation extends Notification implements ShouldQueue
             'amount' => $this->payment->amount,
             'currency' => $this->payment->currency,
             'payment_type' => $this->payment->payment_type,
-            'message' => 'Payment of ' . $this->payment->currency . ' ' .
-                number_format($this->payment->amount, 2) . ' confirmed. Transaction: ' .
+            'message' => 'Payment of '.$this->payment->currency.' '.
+                number_format($this->payment->amount, 2).' confirmed. Transaction: '.
                 $this->payment->transaction_id,
             'type' => 'payment_confirmation',
         ];

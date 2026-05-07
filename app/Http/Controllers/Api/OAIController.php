@@ -23,7 +23,7 @@ class OAIController extends Controller
     {
         $verb = $request->input('verb');
 
-        if (!$verb) {
+        if (! $verb) {
             return $this->errorResponse('badVerb', 'Missing verb argument');
         }
 
@@ -58,6 +58,7 @@ class OAIController extends Controller
     protected function listMetadataFormats(Request $request): array
     {
         $identifier = $request->input('identifier');
+
         return ['formats' => $this->repository->listMetadataFormats($identifier)];
     }
 
@@ -75,8 +76,8 @@ class OAIController extends Controller
     protected function listIdentifiers(Request $request): array
     {
         $metadataPrefix = $request->input('metadataPrefix');
-        
-        if (!$metadataPrefix) {
+
+        if (! $metadataPrefix) {
             throw new \Exception('Missing required argument: metadataPrefix');
         }
 
@@ -95,8 +96,8 @@ class OAIController extends Controller
     protected function listRecords(Request $request): array
     {
         $metadataPrefix = $request->input('metadataPrefix');
-        
-        if (!$metadataPrefix) {
+
+        if (! $metadataPrefix) {
             throw new \Exception('Missing required argument: metadataPrefix');
         }
 
@@ -117,7 +118,7 @@ class OAIController extends Controller
         $identifier = $request->input('identifier');
         $metadataPrefix = $request->input('metadataPrefix');
 
-        if (!$identifier || !$metadataPrefix) {
+        if (! $identifier || ! $metadataPrefix) {
             throw new \Exception('Missing required arguments: identifier and metadataPrefix');
         }
 
@@ -135,7 +136,7 @@ class OAIController extends Controller
         $xml->addAttribute('xsi:schemaLocation', 'http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd');
 
         $xml->addChild('responseDate', gmdate('Y-m-d\TH:i:s\Z'));
-        
+
         $requestNode = $xml->addChild('request', config('oai.base_url'));
         $requestNode->addAttribute('verb', $verb);
 
@@ -153,10 +154,10 @@ class OAIController extends Controller
     {
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><OAI-PMH></OAI-PMH>');
         $xml->addAttribute('xmlns', 'http://www.openarchives.org/OAI/2.0/');
-        
+
         $xml->addChild('responseDate', gmdate('Y-m-d\TH:i:s\Z'));
         $xml->addChild('request', config('oai.base_url'));
-        
+
         $error = $xml->addChild('error', htmlspecialchars($message));
         $error->addAttribute('code', $code);
 
@@ -206,4 +207,3 @@ class OAIController extends Controller
         return array_keys($arr) === range(0, count($arr) - 1);
     }
 }
-

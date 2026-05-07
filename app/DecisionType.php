@@ -59,15 +59,15 @@ enum DecisionType: string
     /**
      * Get the resulting manuscript status for this decision
      */
-    public function resultingStatus(): \App\ManuscriptStatus
+    public function resultingStatus(): ManuscriptStatus
     {
         return match ($this) {
-            self::ACCEPT => \App\ManuscriptStatus::ACCEPTED,
-            self::MINOR_REVISION => \App\ManuscriptStatus::MINOR_REVISION_REQUIRED,
-            self::MAJOR_REVISION => \App\ManuscriptStatus::MAJOR_REVISION_REQUIRED,
-            self::REJECT => \App\ManuscriptStatus::REJECTED,
-            self::DESK_REJECT => \App\ManuscriptStatus::DESK_REJECTED,
-            self::CONDITIONAL_ACCEPT => \App\ManuscriptStatus::CONDITIONALLY_ACCEPTED,
+            self::ACCEPT => ManuscriptStatus::ACCEPTED,
+            self::MINOR_REVISION => ManuscriptStatus::MINOR_REVISION_REQUIRED,
+            self::MAJOR_REVISION => ManuscriptStatus::MAJOR_REVISION_REQUIRED,
+            self::REJECT => ManuscriptStatus::REJECTED,
+            self::DESK_REJECT => ManuscriptStatus::DESK_REJECTED,
+            self::CONDITIONAL_ACCEPT => ManuscriptStatus::CONDITIONALLY_ACCEPTED,
         };
     }
 }

@@ -290,9 +290,17 @@ export default function PluginsIndex({
                                         <TableRow key={plugin.id}>
                                             <TableCell>
                                                 <div>
-                                                    <div className="font-medium">
+                                                    <Button
+                                                        variant="link"
+                                                        className="h-auto p-0 font-medium"
+                                                        render={
+                                                            <Link
+                                                                href={`/admin/plugins/${plugin.id}`}
+                                                            />
+                                                        }
+                                                    >
                                                         {plugin.display_name}
-                                                    </div>
+                                                    </Button>
                                                     <div className="text-sm text-muted-foreground">
                                                         {plugin.name}
                                                     </div>

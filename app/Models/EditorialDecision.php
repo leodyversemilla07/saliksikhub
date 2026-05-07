@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DecisionType;
+use App\ManuscriptStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -111,8 +112,8 @@ class EditorialDecision extends Model
     /**
      * Get the resulting manuscript status for this decision.
      */
-    public function getResultingStatus(): \App\ManuscriptStatus
+    public function getResultingStatus(): ManuscriptStatus
     {
-        return $this->decision_type?->resultingStatus() ?? \App\ManuscriptStatus::UNDER_SCREENING;
+        return $this->decision_type?->resultingStatus() ?? ManuscriptStatus::UNDER_SCREENING;
     }
 }

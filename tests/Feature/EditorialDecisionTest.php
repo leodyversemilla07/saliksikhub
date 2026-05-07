@@ -1,17 +1,19 @@
 <?php
 
 use App\ManuscriptStatus;
+use App\Models\EditorialDecision;
 use App\Models\Manuscript;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\PermissionRegistrar;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Ensure permission cache is cleared
-    $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
+    $registrar = app(PermissionRegistrar::class);
     $registrar->forgetCachedPermissions();
     $registrar->cacheExpirationTime = 0;
 
@@ -62,7 +64,7 @@ it('maps accept decision to ACCEPTED status', function () {
     $manuscript->refresh();
 
     // Debug: Check if any editorial decisions were created
-    expect(\App\Models\EditorialDecision::count())->toBeGreaterThan(0);
+    expect(EditorialDecision::count())->toBeGreaterThan(0);
 
     expect($manuscript->status)->toBe(ManuscriptStatus::ACCEPTED);
     $this->assertDatabaseHas('editorial_decisions', [

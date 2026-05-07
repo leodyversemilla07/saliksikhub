@@ -7,6 +7,7 @@ use App\Models\Manuscript;
 use App\Models\ManuscriptIndexing;
 use App\Models\ProofCorrection;
 use App\Notifications\AuthorApprovalRequired;
+use App\Notifications\ProofReviewRequired;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -88,7 +89,7 @@ class PublicationService
             ]);
 
             // Send notification to author
-            $manuscript->author->notify(new \App\Notifications\ProofReviewRequired($manuscript, $proof));
+            $manuscript->author->notify(new ProofReviewRequired($manuscript, $proof));
 
             DB::commit();
 

@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Issue;
+use App\Models\Manuscript;
 use Database\Seeders\ManuscriptAndIssueSeeder;
 use Illuminate\Console\Command;
 
@@ -30,8 +32,8 @@ class SeedManuscriptsAndIssues extends Command
             $this->info('Clearing existing manuscripts and issues...');
 
             // Clear existing data
-            \App\Models\Manuscript::query()->delete();
-            \App\Models\Issue::query()->delete();
+            Manuscript::query()->delete();
+            Issue::query()->delete();
 
             $this->info('Existing data cleared.');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignReviewersRequest;
 use App\ManuscriptStatus;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
@@ -10,6 +11,8 @@ use App\Notifications\AuthorApprovalRequired;
 use App\Notifications\ManuscriptDecision as ManuscriptDecisionNotification;
 use App\Notifications\ManuscriptPublished;
 use App\Notifications\ManuscriptStatusChanged;
+use App\Services\ManuscriptWorkflowService;
+use App\Services\ReviewService;
 use App\Services\StorageService;
 use Exception;
 use Illuminate\Http\Request;
@@ -884,7 +887,7 @@ class EditorController extends Controller
     public function showAssignReviewers(Manuscript $manuscript)
     {
         // Get suitable reviewers (exclude author, co-authors, current reviewers)
-        $reviewService = app(\App\Services\ReviewService::class);
+        $reviewService = app(ReviewService::class);
         $suitableReviewers = $reviewService->findSuitableReviewers($manuscript, 20);
 
         // Get current reviews for this manuscript
@@ -935,12 +938,12 @@ class EditorController extends Controller
     /**
      * Assign reviewers to a manuscript.
      */
-    public function assignReviewers(\App\Http\Requests\AssignReviewersRequest $request, Manuscript $manuscript)
+    public function assignReviewers(AssignReviewersRequest $request, Manuscript $manuscript)
     {
         try {
             $validated = $request->validated();
 
-            $workflowService = app(\App\Services\ManuscriptWorkflowService::class);
+            $workflowService = app(ManuscriptWorkflowService::class);
 
             $dueDate = new \DateTime($validated['due_date']);
             $reviewRound = $validated['review_round'] ?? 1;
@@ -956,7 +959,7 @@ class EditorController extends Controller
             }
 
             return back()->with('error', 'Failed to assign reviewers.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error assigning reviewers: '.$e->getMessage());
 
             return back()->with('error', 'Failed to assign reviewers: '.$e->getMessage());

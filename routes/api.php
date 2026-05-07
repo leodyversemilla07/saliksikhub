@@ -46,7 +46,7 @@ Route::prefix('sushi')->name('sushi.')->group(function () {
     Route::get('/status', [SushiController::class, 'status'])->name('status');
     Route::get('/members', [SushiController::class, 'members'])->name('members');
     Route::get('/reports', [SushiController::class, 'reports'])->name('reports');
-    
+
     // Report endpoints (require API key in query parameters)
     Route::get('/reports/{report}', [SushiController::class, 'report'])->name('report');
 });

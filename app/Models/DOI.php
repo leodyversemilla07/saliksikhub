@@ -79,20 +79,21 @@ class DOI extends Model
     public function queue(): bool
     {
         $this->status = 'queued';
+
         return $this->save();
     }
 
     /**
      * Mark DOI as successfully deposited.
      */
-    public function markAsDeposited(string $response = null): bool
+    public function markAsDeposited(?string $response = null): bool
     {
         $this->status = 'deposited';
         $this->registered_at = now();
         $this->registration_response = $response;
         $this->error_message = null;
         $this->retry_count = 0;
-        
+
         return $this->save();
     }
 
@@ -104,7 +105,7 @@ class DOI extends Model
         $this->status = 'error';
         $this->error_message = $errorMessage;
         $this->retry_count++;
-        
+
         return $this->save();
     }
 
@@ -115,7 +116,7 @@ class DOI extends Model
     {
         $this->status = 'assigned';
         $this->error_message = null;
-        
+
         return $this->save();
     }
 
@@ -158,7 +159,7 @@ class DOI extends Model
     public static function parseDoi(string $doi): array
     {
         $parts = explode('/', $doi, 2);
-        
+
         return [
             'prefix' => $parts[0] ?? '',
             'suffix' => $parts[1] ?? '',

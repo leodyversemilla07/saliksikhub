@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Manuscript;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -116,7 +118,7 @@ class PaymentController extends Controller
     /**
      * Process submission fee payment
      */
-    public function processSubmissionFee(Request $request, Manuscript $manuscript): \Illuminate\Http\RedirectResponse
+    public function processSubmissionFee(Request $request, Manuscript $manuscript): RedirectResponse
     {
         $this->authorize('update', $manuscript);
 
@@ -208,7 +210,7 @@ class PaymentController extends Controller
     /**
      * Process publication charge payment
      */
-    public function processPublicationCharge(Request $request, Manuscript $manuscript): \Illuminate\Http\RedirectResponse
+    public function processPublicationCharge(Request $request, Manuscript $manuscript): RedirectResponse
     {
         $this->authorize('update', $manuscript);
 
@@ -259,12 +261,12 @@ class PaymentController extends Controller
     /**
      * Handle payment return from gateway
      */
-    public function return(Request $request): \Illuminate\Http\RedirectResponse
+    public function return(Request $request): RedirectResponse
     {
         // PayPal return
         if ($request->has('token')) {
             $orderId = $request->input('token');
-            
+
             $payment = Payment::where('gateway_transaction_id', $orderId)
                 ->where('payment_gateway', 'paypal')
                 ->firstOrFail();
@@ -292,7 +294,7 @@ class PaymentController extends Controller
         // Stripe return (if using redirect flow)
         if ($request->has('payment_intent')) {
             $paymentIntentId = $request->input('payment_intent');
-            
+
             $payment = Payment::where('gateway_transaction_id', $paymentIntentId)
                 ->where('payment_gateway', 'stripe')
                 ->firstOrFail();
@@ -308,7 +310,7 @@ class PaymentController extends Controller
     /**
      * Handle payment cancellation
      */
-    public function cancel(Request $request): \Illuminate\Http\RedirectResponse
+    public function cancel(Request $request): RedirectResponse
     {
         return redirect()
             ->route('dashboard')
@@ -318,12 +320,12 @@ class PaymentController extends Controller
     /**
      * Refund a payment
      */
-    public function refund(Request $request, Payment $payment): \Illuminate\Http\RedirectResponse
+    public function refund(Request $request, Payment $payment): RedirectResponse
     {
         $this->authorize('refund', $payment);
 
         $validated = $request->validate([
-            'amount' => 'nullable|numeric|min:0.01|max:' . $payment->amount,
+            'amount' => 'nullable|numeric|min:0.01|max:'.$payment->amount,
             'reason' => 'nullable|string|max:500',
         ]);
 
@@ -346,7 +348,7 @@ class PaymentController extends Controller
     /**
      * Webhook handler for Stripe
      */
-    public function stripeWebhook(Request $request): \Illuminate\Http\JsonResponse
+    public function stripeWebhook(Request $request): JsonResponse
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
@@ -359,9 +361,9 @@ class PaymentController extends Controller
 
         if ($event['type'] === 'payment_intent.succeeded') {
             $paymentIntent = $event['data']['object'];
-            
+
             $payment = Payment::where('gateway_transaction_id', $paymentIntent['id'])->first();
-            
+
             if ($payment && $payment->status !== 'completed') {
                 $this->paymentService->markAsCompleted($payment, $paymentIntent['id']);
             }
@@ -373,16 +375,16 @@ class PaymentController extends Controller
     /**
      * Webhook handler for PayPal
      */
-    public function paypalWebhook(Request $request): \Illuminate\Http\JsonResponse
+    public function paypalWebhook(Request $request): JsonResponse
     {
         // Verify webhook signature (use PayPal SDK in production)
         $event = $request->all();
 
         if ($event['event_type'] === 'PAYMENT.CAPTURE.COMPLETED') {
             $resource = $event['resource'];
-            
+
             $payment = Payment::where('gateway_transaction_id', $resource['id'])->first();
-            
+
             if ($payment && $payment->status !== 'completed') {
                 $this->paymentService->markAsCompleted($payment, $resource['id']);
             }

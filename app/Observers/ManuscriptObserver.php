@@ -7,6 +7,7 @@ use App\Models\ManuscriptRevision;
 use App\Models\User;
 use App\Notifications\ManuscriptRevisionSubmitted;
 use App\Notifications\ManuscriptSubmitted;
+use Illuminate\Support\Arr;
 
 class ManuscriptObserver
 {
@@ -25,7 +26,7 @@ class ManuscriptObserver
         if ($manuscript->wasChanged('revision_history') || $manuscript->wasChanged('revised_at')) {
             // Create a revision row if last revision exists in the history
             $history = $manuscript->revision_history ?? [];
-            $last = \Illuminate\Support\Arr::last($history);
+            $last = Arr::last($history);
             if ($last) {
                 ManuscriptRevision::create([
                     'manuscript_id' => $manuscript->id,

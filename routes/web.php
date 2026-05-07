@@ -3,19 +3,33 @@
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\JournalController as AdminJournalController;
+use App\Http\Controllers\Admin\JournalMenuController;
+use App\Http\Controllers\Admin\JournalPageController;
 use App\Http\Controllers\Admin\JournalSettingsController;
+use App\Http\Controllers\Admin\JournalThemeController;
 use App\Http\Controllers\Admin\JournalUserController;
 use App\Http\Controllers\Admin\PlatformSettingsController;
+use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\DOIController;
 use App\Http\Controllers\EditorController;
+use App\Http\Controllers\GalleyController;
+use App\Http\Controllers\InitialScreeningController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\ManuscriptController;
+use App\Http\Controllers\ManuscriptFileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductionWorkflowController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicationVersionController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewerController;
+use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -51,16 +65,16 @@ Route::middleware(['journal'])->group(function () {
     Route::get('/manuscripts/{manuscript:slug}/pdf', [ManuscriptController::class, 'servePdf'])->name('manuscripts.pdf');
 
     // Public galley view/download
-    Route::get('/galleys/{galley}/view', [\App\Http\Controllers\GalleyController::class, 'view'])->name('galleys.view');
-    Route::get('/galleys/{galley}/download', [\App\Http\Controllers\GalleyController::class, 'download'])->name('galleys.download');
+    Route::get('/galleys/{galley}/view', [GalleyController::class, 'view'])->name('galleys.view');
+    Route::get('/galleys/{galley}/download', [GalleyController::class, 'download'])->name('galleys.download');
 
     // Public payment return/cancel endpoints
-    Route::get('/payments/return', [\App\Http\Controllers\PaymentController::class, 'return'])->name('payments.return');
-    Route::get('/payments/cancel', [\App\Http\Controllers\PaymentController::class, 'cancel'])->name('payments.cancel');
+    Route::get('/payments/return', [PaymentController::class, 'return'])->name('payments.return');
+    Route::get('/payments/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
 
     // Payment webhooks (public, no auth)
-    Route::post('/webhooks/stripe', [\App\Http\Controllers\PaymentController::class, 'stripeWebhook'])->name('webhooks.stripe');
-    Route::post('/webhooks/paypal', [\App\Http\Controllers\PaymentController::class, 'paypalWebhook'])->name('webhooks.paypal');
+    Route::post('/webhooks/stripe', [PaymentController::class, 'stripeWebhook'])->name('webhooks.stripe');
+    Route::post('/webhooks/paypal', [PaymentController::class, 'paypalWebhook'])->name('webhooks.paypal');
 
     // Public manuscript view for published manuscripts
     Route::get('/manuscripts/{manuscript:slug}', [ManuscriptController::class, 'showPublic'])->name('manuscripts.public.show');
@@ -126,8 +140,8 @@ Route::middleware(['journal'])->group(function () {
             Route::post('/editor/manuscripts/{manuscript}/prepare-publication', [EditorController::class, 'prepareForPublication'])->name('editor.manuscripts.prepare_publication');
 
             // Initial screening routes
-            Route::get('/editor/manuscripts/{manuscript}/initial-screening', [\App\Http\Controllers\InitialScreeningController::class, 'show'])->name('editor.manuscripts.initial_screening');
-            Route::post('/editor/manuscripts/{manuscript}/initial-screening', [\App\Http\Controllers\InitialScreeningController::class, 'update'])->name('editor.manuscripts.initial_screening.update');
+            Route::get('/editor/manuscripts/{manuscript}/initial-screening', [InitialScreeningController::class, 'show'])->name('editor.manuscripts.initial_screening');
+            Route::post('/editor/manuscripts/{manuscript}/initial-screening', [InitialScreeningController::class, 'update'])->name('editor.manuscripts.initial_screening.update');
 
             // Review assignment routes
             Route::get('/editor/manuscripts/{manuscript}/assign-reviewers', [EditorController::class, 'showAssignReviewers'])->name('editor.manuscripts.assign_reviewers');
@@ -136,109 +150,109 @@ Route::middleware(['journal'])->group(function () {
 
             // Publication versioning routes
             Route::prefix('/manuscripts/{manuscript}/publications')->name('manuscripts.publications.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\PublicationVersionController::class, 'index'])->name('index');
-                Route::post('/', [\App\Http\Controllers\PublicationVersionController::class, 'store'])->name('store');
-                Route::get('/{publication}', [\App\Http\Controllers\PublicationVersionController::class, 'show'])->name('show');
-                Route::put('/{publication}', [\App\Http\Controllers\PublicationVersionController::class, 'update'])->name('update');
-                Route::post('/{publication}/publish', [\App\Http\Controllers\PublicationVersionController::class, 'publish'])->name('publish');
-                Route::post('/{publication}/schedule', [\App\Http\Controllers\PublicationVersionController::class, 'schedule'])->name('schedule');
-                Route::post('/{publication}/embargo', [\App\Http\Controllers\PublicationVersionController::class, 'setEmbargo'])->name('embargo');
-                Route::post('/{publication}/correct', [\App\Http\Controllers\PublicationVersionController::class, 'correct'])->name('correct');
-                Route::post('/{publication}/retract', [\App\Http\Controllers\PublicationVersionController::class, 'retract'])->name('retract');
-                Route::post('/{publication}/revert', [\App\Http\Controllers\PublicationVersionController::class, 'revert'])->name('revert');
+                Route::get('/', [PublicationVersionController::class, 'index'])->name('index');
+                Route::post('/', [PublicationVersionController::class, 'store'])->name('store');
+                Route::get('/{publication}', [PublicationVersionController::class, 'show'])->name('show');
+                Route::put('/{publication}', [PublicationVersionController::class, 'update'])->name('update');
+                Route::post('/{publication}/publish', [PublicationVersionController::class, 'publish'])->name('publish');
+                Route::post('/{publication}/schedule', [PublicationVersionController::class, 'schedule'])->name('schedule');
+                Route::post('/{publication}/embargo', [PublicationVersionController::class, 'setEmbargo'])->name('embargo');
+                Route::post('/{publication}/correct', [PublicationVersionController::class, 'correct'])->name('correct');
+                Route::post('/{publication}/retract', [PublicationVersionController::class, 'retract'])->name('retract');
+                Route::post('/{publication}/revert', [PublicationVersionController::class, 'revert'])->name('revert');
             });
 
             // DOI management routes
             Route::prefix('/manuscripts/{manuscript}/dois')->name('manuscripts.dois.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\DOIController::class, 'index'])->name('index');
-                Route::post('/publications/{publication}/assign', [\App\Http\Controllers\DOIController::class, 'assign'])->name('assign');
-                Route::post('/batch-assign', [\App\Http\Controllers\DOIController::class, 'batchAssign'])->name('batch-assign');
-                Route::post('/batch-register', [\App\Http\Controllers\DOIController::class, 'batchRegister'])->name('batch-register');
+                Route::get('/', [DOIController::class, 'index'])->name('index');
+                Route::post('/publications/{publication}/assign', [DOIController::class, 'assign'])->name('assign');
+                Route::post('/batch-assign', [DOIController::class, 'batchAssign'])->name('batch-assign');
+                Route::post('/batch-register', [DOIController::class, 'batchRegister'])->name('batch-register');
             });
 
             Route::prefix('/dois')->name('dois.')->group(function () {
-                Route::post('/{doi}/register', [\App\Http\Controllers\DOIController::class, 'register'])->name('register');
-                Route::post('/{doi}/check-status', [\App\Http\Controllers\DOIController::class, 'checkStatus'])->name('check-status');
-                Route::post('/{doi}/redeposit', [\App\Http\Controllers\DOIController::class, 'redeposit'])->name('redeposit');
-                Route::delete('/{doi}', [\App\Http\Controllers\DOIController::class, 'destroy'])->name('destroy');
+                Route::post('/{doi}/register', [DOIController::class, 'register'])->name('register');
+                Route::post('/{doi}/check-status', [DOIController::class, 'checkStatus'])->name('check-status');
+                Route::post('/{doi}/redeposit', [DOIController::class, 'redeposit'])->name('redeposit');
+                Route::delete('/{doi}', [DOIController::class, 'destroy'])->name('destroy');
             });
 
             // Galley management routes
             Route::prefix('/publications/{publication}/galleys')->name('galleys.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\GalleyController::class, 'index'])->name('index');
-                Route::post('/', [\App\Http\Controllers\GalleyController::class, 'store'])->name('store');
-                Route::post('/reorder', [\App\Http\Controllers\GalleyController::class, 'reorder'])->name('reorder');
+                Route::get('/', [GalleyController::class, 'index'])->name('index');
+                Route::post('/', [GalleyController::class, 'store'])->name('store');
+                Route::post('/reorder', [GalleyController::class, 'reorder'])->name('reorder');
             });
 
             Route::prefix('/galleys')->name('galleys.')->group(function () {
-                Route::put('/{galley}', [\App\Http\Controllers\GalleyController::class, 'update'])->name('update');
-                Route::delete('/{galley}', [\App\Http\Controllers\GalleyController::class, 'destroy'])->name('destroy');
-                Route::post('/{galley}/approve', [\App\Http\Controllers\GalleyController::class, 'approve'])->name('approve');
+                Route::put('/{galley}', [GalleyController::class, 'update'])->name('update');
+                Route::delete('/{galley}', [GalleyController::class, 'destroy'])->name('destroy');
+                Route::post('/{galley}/approve', [GalleyController::class, 'approve'])->name('approve');
             });
 
             // Production workflow routes
             Route::prefix('/production')->name('production.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\ProductionWorkflowController::class, 'index'])->name('dashboard');
-                Route::get('/manuscripts/{manuscript}', [\App\Http\Controllers\ProductionWorkflowController::class, 'show'])->name('show');
+                Route::get('/', [ProductionWorkflowController::class, 'index'])->name('dashboard');
+                Route::get('/manuscripts/{manuscript}', [ProductionWorkflowController::class, 'show'])->name('show');
 
-                Route::post('/manuscripts/{manuscript}/copyediting/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startCopyediting'])->name('copyediting.start');
-                Route::post('/manuscripts/{manuscript}/copyediting/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeCopyediting'])->name('copyediting.complete');
-                Route::post('/manuscripts/{manuscript}/copyeditor/assign', [\App\Http\Controllers\ProductionWorkflowController::class, 'assignCopyeditor'])->name('copyeditor.assign');
+                Route::post('/manuscripts/{manuscript}/copyediting/start', [ProductionWorkflowController::class, 'startCopyediting'])->name('copyediting.start');
+                Route::post('/manuscripts/{manuscript}/copyediting/complete', [ProductionWorkflowController::class, 'completeCopyediting'])->name('copyediting.complete');
+                Route::post('/manuscripts/{manuscript}/copyeditor/assign', [ProductionWorkflowController::class, 'assignCopyeditor'])->name('copyeditor.assign');
 
-                Route::post('/manuscripts/{manuscript}/typesetting/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startTypesetting'])->name('typesetting.start');
-                Route::post('/manuscripts/{manuscript}/typesetting/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeTypesetting'])->name('typesetting.complete');
-                Route::post('/manuscripts/{manuscript}/layout-editor/assign', [\App\Http\Controllers\ProductionWorkflowController::class, 'assignLayoutEditor'])->name('layout-editor.assign');
+                Route::post('/manuscripts/{manuscript}/typesetting/start', [ProductionWorkflowController::class, 'startTypesetting'])->name('typesetting.start');
+                Route::post('/manuscripts/{manuscript}/typesetting/complete', [ProductionWorkflowController::class, 'completeTypesetting'])->name('typesetting.complete');
+                Route::post('/manuscripts/{manuscript}/layout-editor/assign', [ProductionWorkflowController::class, 'assignLayoutEditor'])->name('layout-editor.assign');
 
-                Route::post('/manuscripts/{manuscript}/proofing/start', [\App\Http\Controllers\ProductionWorkflowController::class, 'startProofing'])->name('proofing.start');
-                Route::post('/manuscripts/{manuscript}/proofing/complete', [\App\Http\Controllers\ProductionWorkflowController::class, 'completeProofing'])->name('proofing.complete');
+                Route::post('/manuscripts/{manuscript}/proofing/start', [ProductionWorkflowController::class, 'startProofing'])->name('proofing.start');
+                Route::post('/manuscripts/{manuscript}/proofing/complete', [ProductionWorkflowController::class, 'completeProofing'])->name('proofing.complete');
 
-                Route::post('/manuscripts/{manuscript}/publish', [\App\Http\Controllers\ProductionWorkflowController::class, 'publish'])->name('publish');
-                Route::post('/manuscripts/{manuscript}/revert', [\App\Http\Controllers\ProductionWorkflowController::class, 'revertStage'])->name('revert');
+                Route::post('/manuscripts/{manuscript}/publish', [ProductionWorkflowController::class, 'publish'])->name('publish');
+                Route::post('/manuscripts/{manuscript}/revert', [ProductionWorkflowController::class, 'revertStage'])->name('revert');
             });
 
             // Statistics routes
             Route::prefix('/statistics')->name('statistics.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\StatisticsController::class, 'index'])->name('index');
-                Route::get('/manuscripts/{manuscript}', [\App\Http\Controllers\StatisticsController::class, 'show'])->name('show');
-                Route::get('/manuscripts/{manuscript}/export', [\App\Http\Controllers\StatisticsController::class, 'export'])->name('export');
-                Route::get('/manuscripts/{manuscript}/api', [\App\Http\Controllers\StatisticsController::class, 'api'])->name('api');
-                Route::post('/counter-report', [\App\Http\Controllers\StatisticsController::class, 'counterReport'])->name('counter-report');
+                Route::get('/', [StatisticsController::class, 'index'])->name('index');
+                Route::get('/manuscripts/{manuscript}', [StatisticsController::class, 'show'])->name('show');
+                Route::get('/manuscripts/{manuscript}/export', [StatisticsController::class, 'export'])->name('export');
+                Route::get('/manuscripts/{manuscript}/api', [StatisticsController::class, 'api'])->name('api');
+                Route::post('/counter-report', [StatisticsController::class, 'counterReport'])->name('counter-report');
             });
 
             // Payment routes
             Route::prefix('/payments')->name('payments.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
-                Route::get('/{payment}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('show');
+                Route::get('/', [PaymentController::class, 'index'])->name('index');
+                Route::get('/{payment}', [PaymentController::class, 'show'])->name('show');
 
-                Route::get('/manuscripts/{manuscript}/submission-fee', [\App\Http\Controllers\PaymentController::class, 'submissionFee'])->name('submission-fee');
-                Route::post('/manuscripts/{manuscript}/submission-fee', [\App\Http\Controllers\PaymentController::class, 'processSubmissionFee'])->name('submission-fee.process');
+                Route::get('/manuscripts/{manuscript}/submission-fee', [PaymentController::class, 'submissionFee'])->name('submission-fee');
+                Route::post('/manuscripts/{manuscript}/submission-fee', [PaymentController::class, 'processSubmissionFee'])->name('submission-fee.process');
 
-                Route::get('/manuscripts/{manuscript}/publication-charge', [\App\Http\Controllers\PaymentController::class, 'publicationCharge'])->name('publication-charge');
-                Route::post('/manuscripts/{manuscript}/publication-charge', [\App\Http\Controllers\PaymentController::class, 'processPublicationCharge'])->name('publication-charge.process');
+                Route::get('/manuscripts/{manuscript}/publication-charge', [PaymentController::class, 'publicationCharge'])->name('publication-charge');
+                Route::post('/manuscripts/{manuscript}/publication-charge', [PaymentController::class, 'processPublicationCharge'])->name('publication-charge.process');
 
-                Route::post('/{payment}/refund', [\App\Http\Controllers\PaymentController::class, 'refund'])->name('refund');
+                Route::post('/{payment}/refund', [PaymentController::class, 'refund'])->name('refund');
             });
 
             // Subscription routes
             Route::prefix('/subscriptions')->name('subscriptions.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\SubscriptionController::class, 'index'])->name('index');
-                Route::get('/create', [\App\Http\Controllers\SubscriptionController::class, 'create'])->name('create');
-                Route::post('/', [\App\Http\Controllers\SubscriptionController::class, 'store'])->name('store');
-                Route::get('/{subscription}', [\App\Http\Controllers\SubscriptionController::class, 'show'])->name('show');
+                Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+                Route::get('/create', [SubscriptionController::class, 'create'])->name('create');
+                Route::post('/', [SubscriptionController::class, 'store'])->name('store');
+                Route::get('/{subscription}', [SubscriptionController::class, 'show'])->name('show');
 
-                Route::post('/{subscription}/renew', [\App\Http\Controllers\SubscriptionController::class, 'renew'])->name('renew');
-                Route::post('/{subscription}/cancel', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('cancel');
-                Route::post('/{subscription}/suspend', [\App\Http\Controllers\SubscriptionController::class, 'suspend'])->name('suspend');
-                Route::post('/{subscription}/reactivate', [\App\Http\Controllers\SubscriptionController::class, 'reactivate'])->name('reactivate');
+                Route::post('/{subscription}/renew', [SubscriptionController::class, 'renew'])->name('renew');
+                Route::post('/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
+                Route::post('/{subscription}/suspend', [SubscriptionController::class, 'suspend'])->name('suspend');
+                Route::post('/{subscription}/reactivate', [SubscriptionController::class, 'reactivate'])->name('reactivate');
 
-                Route::post('/{subscription}/ip-ranges/add', [\App\Http\Controllers\SubscriptionController::class, 'addIpRange'])->name('ip-ranges.add');
-                Route::post('/{subscription}/ip-ranges/remove', [\App\Http\Controllers\SubscriptionController::class, 'removeIpRange'])->name('ip-ranges.remove');
+                Route::post('/{subscription}/ip-ranges/add', [SubscriptionController::class, 'addIpRange'])->name('ip-ranges.add');
+                Route::post('/{subscription}/ip-ranges/remove', [SubscriptionController::class, 'removeIpRange'])->name('ip-ranges.remove');
 
                 // Subscription types management
-                Route::get('/types/manage', [\App\Http\Controllers\SubscriptionController::class, 'types'])->name('types');
-                Route::post('/types', [\App\Http\Controllers\SubscriptionController::class, 'storeType'])->name('types.store');
-                Route::put('/types/{type}', [\App\Http\Controllers\SubscriptionController::class, 'updateType'])->name('types.update');
-                Route::delete('/types/{type}', [\App\Http\Controllers\SubscriptionController::class, 'destroyType'])->name('types.destroy');
+                Route::get('/types/manage', [SubscriptionController::class, 'types'])->name('types');
+                Route::post('/types', [SubscriptionController::class, 'storeType'])->name('types.store');
+                Route::put('/types/{type}', [SubscriptionController::class, 'updateType'])->name('types.update');
+                Route::delete('/types/{type}', [SubscriptionController::class, 'destroyType'])->name('types.destroy');
             });
 
             // User management CRUD resource route
@@ -280,34 +294,34 @@ Route::middleware(['journal'])->group(function () {
             Route::post('journals/{journal}/settings/reset', [JournalSettingsController::class, 'reset'])->name('journals.settings.reset');
 
             // Journal CMS - Pages
-            Route::get('journals/{journal}/cms/pages', [\App\Http\Controllers\Admin\JournalPageController::class, 'index'])->name('journals.cms.pages.index');
-            Route::get('journals/{journal}/cms/pages/create', [\App\Http\Controllers\Admin\JournalPageController::class, 'create'])->name('journals.cms.pages.create');
-            Route::post('journals/{journal}/cms/pages', [\App\Http\Controllers\Admin\JournalPageController::class, 'store'])->name('journals.cms.pages.store');
-            Route::get('journals/{journal}/cms/pages/{page}', [\App\Http\Controllers\Admin\JournalPageController::class, 'edit'])->name('journals.cms.pages.edit');
-            Route::put('journals/{journal}/cms/pages/{page}', [\App\Http\Controllers\Admin\JournalPageController::class, 'update'])->name('journals.cms.pages.update');
-            Route::delete('journals/{journal}/cms/pages/{page}', [\App\Http\Controllers\Admin\JournalPageController::class, 'destroy'])->name('journals.cms.pages.destroy');
-            Route::post('journals/{journal}/cms/pages/reorder', [\App\Http\Controllers\Admin\JournalPageController::class, 'reorder'])->name('journals.cms.pages.reorder');
+            Route::get('journals/{journal}/cms/pages', [JournalPageController::class, 'index'])->name('journals.cms.pages.index');
+            Route::get('journals/{journal}/cms/pages/create', [JournalPageController::class, 'create'])->name('journals.cms.pages.create');
+            Route::post('journals/{journal}/cms/pages', [JournalPageController::class, 'store'])->name('journals.cms.pages.store');
+            Route::get('journals/{journal}/cms/pages/{page}', [JournalPageController::class, 'edit'])->name('journals.cms.pages.edit');
+            Route::put('journals/{journal}/cms/pages/{page}', [JournalPageController::class, 'update'])->name('journals.cms.pages.update');
+            Route::delete('journals/{journal}/cms/pages/{page}', [JournalPageController::class, 'destroy'])->name('journals.cms.pages.destroy');
+            Route::post('journals/{journal}/cms/pages/reorder', [JournalPageController::class, 'reorder'])->name('journals.cms.pages.reorder');
 
             // Journal CMS - Sections
-            Route::post('journals/{journal}/cms/pages/{page}/sections', [\App\Http\Controllers\Admin\JournalPageController::class, 'addSection'])->name('journals.cms.pages.sections.store');
-            Route::get('journals/{journal}/cms/pages/{page}/sections/{section}/edit', [\App\Http\Controllers\Admin\JournalPageController::class, 'editSection'])->name('journals.cms.pages.sections.edit');
-            Route::put('journals/{journal}/cms/pages/{page}/sections/{section}', [\App\Http\Controllers\Admin\JournalPageController::class, 'updateSection'])->name('journals.cms.pages.sections.update');
-            Route::delete('journals/{journal}/cms/pages/{page}/sections/{section}', [\App\Http\Controllers\Admin\JournalPageController::class, 'deleteSection'])->name('journals.cms.pages.sections.destroy');
-            Route::put('journals/{journal}/cms/pages/{page}/sections/reorder', [\App\Http\Controllers\Admin\JournalPageController::class, 'reorderSections'])->name('journals.cms.pages.sections.reorder');
+            Route::post('journals/{journal}/cms/pages/{page}/sections', [JournalPageController::class, 'addSection'])->name('journals.cms.pages.sections.store');
+            Route::get('journals/{journal}/cms/pages/{page}/sections/{section}/edit', [JournalPageController::class, 'editSection'])->name('journals.cms.pages.sections.edit');
+            Route::put('journals/{journal}/cms/pages/{page}/sections/{section}', [JournalPageController::class, 'updateSection'])->name('journals.cms.pages.sections.update');
+            Route::delete('journals/{journal}/cms/pages/{page}/sections/{section}', [JournalPageController::class, 'deleteSection'])->name('journals.cms.pages.sections.destroy');
+            Route::put('journals/{journal}/cms/pages/{page}/sections/reorder', [JournalPageController::class, 'reorderSections'])->name('journals.cms.pages.sections.reorder');
 
             // Journal CMS - Menus
-            Route::get('journals/{journal}/cms/menus', [\App\Http\Controllers\Admin\JournalMenuController::class, 'index'])->name('journals.cms.menus.index');
-            Route::post('journals/{journal}/cms/menus', [\App\Http\Controllers\Admin\JournalMenuController::class, 'store'])->name('journals.cms.menus.store');
-            Route::put('journals/{journal}/cms/menus/{menu}', [\App\Http\Controllers\Admin\JournalMenuController::class, 'update'])->name('journals.cms.menus.update');
-            Route::delete('journals/{journal}/cms/menus/{menu}', [\App\Http\Controllers\Admin\JournalMenuController::class, 'destroy'])->name('journals.cms.menus.destroy');
-            Route::post('journals/{journal}/cms/menus/reorder', [\App\Http\Controllers\Admin\JournalMenuController::class, 'reorder'])->name('journals.cms.menus.reorder');
+            Route::get('journals/{journal}/cms/menus', [JournalMenuController::class, 'index'])->name('journals.cms.menus.index');
+            Route::post('journals/{journal}/cms/menus', [JournalMenuController::class, 'store'])->name('journals.cms.menus.store');
+            Route::put('journals/{journal}/cms/menus/{menu}', [JournalMenuController::class, 'update'])->name('journals.cms.menus.update');
+            Route::delete('journals/{journal}/cms/menus/{menu}', [JournalMenuController::class, 'destroy'])->name('journals.cms.menus.destroy');
+            Route::post('journals/{journal}/cms/menus/reorder', [JournalMenuController::class, 'reorder'])->name('journals.cms.menus.reorder');
 
             // Journal CMS - Theme
-            Route::get('journals/{journal}/cms/theme', [\App\Http\Controllers\Admin\JournalThemeController::class, 'edit'])->name('journals.cms.theme.edit');
-            Route::put('journals/{journal}/cms/theme', [\App\Http\Controllers\Admin\JournalThemeController::class, 'update'])->name('journals.cms.theme.update');
-            Route::post('journals/{journal}/cms/theme/favicon', [\App\Http\Controllers\Admin\JournalThemeController::class, 'uploadFavicon'])->name('journals.cms.theme.favicon');
-            Route::post('journals/{journal}/cms/theme/reset', [\App\Http\Controllers\Admin\JournalThemeController::class, 'reset'])->name('journals.cms.theme.reset');
-            Route::get('journals/{journal}/cms/theme/preview.css', [\App\Http\Controllers\Admin\JournalThemeController::class, 'preview'])->name('journals.cms.theme.preview');
+            Route::get('journals/{journal}/cms/theme', [JournalThemeController::class, 'edit'])->name('journals.cms.theme.edit');
+            Route::put('journals/{journal}/cms/theme', [JournalThemeController::class, 'update'])->name('journals.cms.theme.update');
+            Route::post('journals/{journal}/cms/theme/favicon', [JournalThemeController::class, 'uploadFavicon'])->name('journals.cms.theme.favicon');
+            Route::post('journals/{journal}/cms/theme/reset', [JournalThemeController::class, 'reset'])->name('journals.cms.theme.reset');
+            Route::get('journals/{journal}/cms/theme/preview.css', [JournalThemeController::class, 'preview'])->name('journals.cms.theme.preview');
 
             // Platform Settings (super_admin only)
             Route::middleware(['user_role:super_admin'])->group(function () {
@@ -319,18 +333,18 @@ Route::middleware(['journal'])->group(function () {
             });
 
             // Plugin Management
-            Route::get('plugins', [\App\Http\Controllers\Admin\PluginController::class, 'index'])->name('plugins.index');
-            Route::get('plugins/{plugin}', [\App\Http\Controllers\Admin\PluginController::class, 'show'])->name('plugins.show');
-            Route::post('plugins/install', [\App\Http\Controllers\Admin\PluginController::class, 'install'])->name('plugins.install');
-            Route::post('plugins/upload', [\App\Http\Controllers\Admin\PluginController::class, 'upload'])->name('plugins.upload');
-            Route::post('plugins/{plugin}/enable', [\App\Http\Controllers\Admin\PluginController::class, 'enable'])->name('plugins.enable');
-            Route::post('plugins/{plugin}/disable', [\App\Http\Controllers\Admin\PluginController::class, 'disable'])->name('plugins.disable');
-            Route::post('plugins/{plugin}/enable-for-journal', [\App\Http\Controllers\Admin\PluginController::class, 'enableForJournal'])->name('plugins.enable-for-journal');
-            Route::post('plugins/{plugin}/disable-for-journal', [\App\Http\Controllers\Admin\PluginController::class, 'disableForJournal'])->name('plugins.disable-for-journal');
-            Route::get('plugins/{plugin}/settings', [\App\Http\Controllers\Admin\PluginController::class, 'settings'])->name('plugins.settings');
-            Route::post('plugins/{plugin}/settings', [\App\Http\Controllers\Admin\PluginController::class, 'updateSettings'])->name('plugins.settings.update');
-            Route::delete('plugins/{plugin}', [\App\Http\Controllers\Admin\PluginController::class, 'destroy'])->name('plugins.destroy');
-            Route::post('plugins/refresh', [\App\Http\Controllers\Admin\PluginController::class, 'refresh'])->name('plugins.refresh');
+            Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
+            Route::get('plugins/{plugin}', [PluginController::class, 'show'])->name('plugins.show');
+            Route::post('plugins/install', [PluginController::class, 'install'])->name('plugins.install');
+            Route::post('plugins/upload', [PluginController::class, 'upload'])->name('plugins.upload');
+            Route::post('plugins/{plugin}/enable', [PluginController::class, 'enable'])->name('plugins.enable');
+            Route::post('plugins/{plugin}/disable', [PluginController::class, 'disable'])->name('plugins.disable');
+            Route::post('plugins/{plugin}/enable-for-journal', [PluginController::class, 'enableForJournal'])->name('plugins.enable-for-journal');
+            Route::post('plugins/{plugin}/disable-for-journal', [PluginController::class, 'disableForJournal'])->name('plugins.disable-for-journal');
+            Route::get('plugins/{plugin}/settings', [PluginController::class, 'settings'])->name('plugins.settings');
+            Route::post('plugins/{plugin}/settings', [PluginController::class, 'updateSettings'])->name('plugins.settings.update');
+            Route::delete('plugins/{plugin}', [PluginController::class, 'destroy'])->name('plugins.destroy');
+            Route::post('plugins/refresh', [PluginController::class, 'refresh'])->name('plugins.refresh');
         });
 
         // Reviewers group
@@ -340,14 +354,14 @@ Route::middleware(['journal'])->group(function () {
             Route::get('/reviewer/manuscripts/{id}', [ReviewerController::class, 'show'])->name('reviewer.manuscripts.show');
 
             // Review management routes
-            Route::get('/reviewer/reviews', [\App\Http\Controllers\ReviewController::class, 'index'])->name('reviewer.reviews.index');
-            Route::get('/reviewer/reviews/history', [\App\Http\Controllers\ReviewController::class, 'history'])->name('reviewer.reviews.history');
-            Route::get('/reviewer/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'show'])->name('reviewer.reviews.show');
-            Route::post('/reviewer/reviews/{review}/accept', [\App\Http\Controllers\ReviewController::class, 'accept'])->name('reviewer.reviews.accept');
-            Route::post('/reviewer/reviews/{review}/decline', [\App\Http\Controllers\ReviewController::class, 'decline'])->name('reviewer.reviews.decline');
-            Route::post('/reviewer/reviews/{review}/submit', [\App\Http\Controllers\ReviewController::class, 'submit'])->name('reviewer.reviews.submit');
-            Route::post('/reviewer/reviews/{review}/save-draft', [\App\Http\Controllers\ReviewController::class, 'saveDraft'])->name('reviewer.reviews.save-draft');
-            Route::post('/reviewer/reviews/{review}/request-extension', [\App\Http\Controllers\ReviewController::class, 'requestExtension'])->name('reviewer.reviews.request-extension');
+            Route::get('/reviewer/reviews', [ReviewController::class, 'index'])->name('reviewer.reviews.index');
+            Route::get('/reviewer/reviews/history', [ReviewController::class, 'history'])->name('reviewer.reviews.history');
+            Route::get('/reviewer/reviews/{review}', [ReviewController::class, 'show'])->name('reviewer.reviews.show');
+            Route::post('/reviewer/reviews/{review}/accept', [ReviewController::class, 'accept'])->name('reviewer.reviews.accept');
+            Route::post('/reviewer/reviews/{review}/decline', [ReviewController::class, 'decline'])->name('reviewer.reviews.decline');
+            Route::post('/reviewer/reviews/{review}/submit', [ReviewController::class, 'submit'])->name('reviewer.reviews.submit');
+            Route::post('/reviewer/reviews/{review}/save-draft', [ReviewController::class, 'saveDraft'])->name('reviewer.reviews.save-draft');
+            Route::post('/reviewer/reviews/{review}/request-extension', [ReviewController::class, 'requestExtension'])->name('reviewer.reviews.request-extension');
         });
     });
 
@@ -358,11 +372,11 @@ Route::middleware(['journal'])->group(function () {
         Route::post('/api/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('api.notifications.readAll');
 
         // Manuscript file management routes
-        Route::post('/manuscripts/{manuscript}/files/upload', [\App\Http\Controllers\ManuscriptFileController::class, 'upload'])->name('manuscripts.files.upload');
-        Route::get('/manuscripts/{manuscript}/files', [\App\Http\Controllers\ManuscriptFileController::class, 'index'])->name('manuscripts.files.index');
-        Route::get('/manuscripts/files/{file}/download', [\App\Http\Controllers\ManuscriptFileController::class, 'download'])->name('manuscripts.files.download');
-        Route::delete('/manuscripts/files/{file}', [\App\Http\Controllers\ManuscriptFileController::class, 'destroy'])->name('manuscripts.files.destroy');
-        Route::get('/manuscripts/files/requirements', [\App\Http\Controllers\ManuscriptFileController::class, 'requirements'])->name('manuscripts.files.requirements');
+        Route::post('/manuscripts/{manuscript}/files/upload', [ManuscriptFileController::class, 'upload'])->name('manuscripts.files.upload');
+        Route::get('/manuscripts/{manuscript}/files', [ManuscriptFileController::class, 'index'])->name('manuscripts.files.index');
+        Route::get('/manuscripts/files/{file}/download', [ManuscriptFileController::class, 'download'])->name('manuscripts.files.download');
+        Route::delete('/manuscripts/files/{file}', [ManuscriptFileController::class, 'destroy'])->name('manuscripts.files.destroy');
+        Route::get('/manuscripts/files/requirements', [ManuscriptFileController::class, 'requirements'])->name('manuscripts.files.requirements');
     });
 
     Route::get('/unauthorized', function () {

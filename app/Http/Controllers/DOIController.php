@@ -223,9 +223,9 @@ class DOIController extends Controller
         $dois = DOI::whereHasMorph('doiable', [Publication::class], function ($query) use ($manuscript) {
             $query->where('manuscript_id', $manuscript->id);
         })
-        ->whereIn('status', ['assigned', 'stale', 'error'])
-        ->where('retry_count', '<', 3)
-        ->get();
+            ->whereIn('status', ['assigned', 'stale', 'error'])
+            ->where('retry_count', '<', 3)
+            ->get();
 
         if ($dois->isEmpty()) {
             return redirect()

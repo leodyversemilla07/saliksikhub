@@ -344,7 +344,7 @@ class Manuscript extends Model
 
         // If no specific editor is assigned, return the first user with an editor role
         // Use Spatie role scopes to find any editor-like user seeded by RolesAndPermissionsSeeder
-        return \App\Models\User::role([
+        return User::role([
             'managing_editor',
             'editor_in_chief',
             'associate_editor',
@@ -357,7 +357,7 @@ class Manuscript extends Model
      */
     public function scopePublished($query)
     {
-        return $query->where('status', \App\ManuscriptStatus::PUBLISHED);
+        return $query->where('status', ManuscriptStatus::PUBLISHED);
     }
 
     public function scopeByAuthor($query, $userId)
@@ -373,8 +373,8 @@ class Manuscript extends Model
     public function scopePendingReview($query)
     {
         return $query->whereIn('status', [
-            \App\ManuscriptStatus::SUBMITTED,
-            \App\ManuscriptStatus::UNDER_REVIEW,
+            ManuscriptStatus::SUBMITTED,
+            ManuscriptStatus::UNDER_REVIEW,
         ]);
     }
 

@@ -5,10 +5,11 @@ use App\Models\Institution;
 use App\Models\Journal;
 use App\Models\PlatformSetting;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Reset the installed state so the middleware redirects to /install

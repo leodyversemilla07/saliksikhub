@@ -237,7 +237,7 @@ class PublicationVersionController extends Controller
 
         return redirect()
             ->route('manuscripts.publications.index', $manuscript)
-            ->with('success', 'Reverted to version ' . $publication->version);
+            ->with('success', 'Reverted to version '.$publication->version);
     }
 
     /**
@@ -252,7 +252,7 @@ class PublicationVersionController extends Controller
         $this->authorize('update', $manuscript);
 
         abort_if(
-            $fromPublication->manuscript_id !== $manuscript->id || 
+            $fromPublication->manuscript_id !== $manuscript->id ||
             $toPublication->manuscript_id !== $manuscript->id,
             400
         );

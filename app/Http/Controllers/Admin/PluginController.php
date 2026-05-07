@@ -34,7 +34,7 @@ class PluginController extends Controller
     public function index(Request $request): Response
     {
         $plugins = Plugin::withCount('journals')->get();
-        
+
         return Inertia::render('admin/plugins/index', [
             'plugins' => $plugins,
             'totalPlugins' => $plugins->count(),
@@ -67,16 +67,16 @@ class PluginController extends Controller
 
         try {
             $plugin = $this->pluginManager->install($request->input('source'));
-            
+
             return redirect()
                 ->route('admin.plugins.index')
                 ->with('success', "Plugin '{$plugin->display_name}' installed successfully.");
         } catch (\Exception $e) {
-            Log::error('Plugin installation failed: ' . $e->getMessage());
-            
+            Log::error('Plugin installation failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to install plugin: ' . $e->getMessage());
+                ->with('error', 'Failed to install plugin: '.$e->getMessage());
         }
     }
 
@@ -92,7 +92,7 @@ class PluginController extends Controller
         try {
             $file = $request->file('plugin_file');
             $path = $file->store('temp/plugins');
-            $fullPath = storage_path('app/' . $path);
+            $fullPath = storage_path('app/'.$path);
 
             $plugin = $this->pluginManager->install($fullPath);
 
@@ -103,11 +103,11 @@ class PluginController extends Controller
                 ->route('admin.plugins.index')
                 ->with('success', "Plugin '{$plugin->display_name}' uploaded and installed successfully.");
         } catch (\Exception $e) {
-            Log::error('Plugin upload failed: ' . $e->getMessage());
-            
+            Log::error('Plugin upload failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to upload plugin: ' . $e->getMessage());
+                ->with('error', 'Failed to upload plugin: '.$e->getMessage());
         }
     }
 
@@ -118,16 +118,16 @@ class PluginController extends Controller
     {
         try {
             $this->pluginManager->enable($plugin);
-            
+
             return redirect()
                 ->back()
                 ->with('success', "Plugin '{$plugin->display_name}' enabled successfully.");
         } catch (\Exception $e) {
-            Log::error('Plugin enable failed: ' . $e->getMessage());
-            
+            Log::error('Plugin enable failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to enable plugin: ' . $e->getMessage());
+                ->with('error', 'Failed to enable plugin: '.$e->getMessage());
         }
     }
 
@@ -138,16 +138,16 @@ class PluginController extends Controller
     {
         try {
             $this->pluginManager->disable($plugin);
-            
+
             return redirect()
                 ->back()
                 ->with('success', "Plugin '{$plugin->display_name}' disabled successfully.");
         } catch (\Exception $e) {
-            Log::error('Plugin disable failed: ' . $e->getMessage());
-            
+            Log::error('Plugin disable failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to disable plugin: ' . $e->getMessage());
+                ->with('error', 'Failed to disable plugin: '.$e->getMessage());
         }
     }
 
@@ -162,16 +162,16 @@ class PluginController extends Controller
 
         try {
             $this->pluginManager->enable($plugin, $request->input('journal_id'));
-            
+
             return redirect()
                 ->back()
-                ->with('success', "Plugin enabled for journal successfully.");
+                ->with('success', 'Plugin enabled for journal successfully.');
         } catch (\Exception $e) {
-            Log::error('Plugin enable for journal failed: ' . $e->getMessage());
-            
+            Log::error('Plugin enable for journal failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to enable plugin for journal: ' . $e->getMessage());
+                ->with('error', 'Failed to enable plugin for journal: '.$e->getMessage());
         }
     }
 
@@ -186,16 +186,16 @@ class PluginController extends Controller
 
         try {
             $this->pluginManager->disable($plugin, $request->input('journal_id'));
-            
+
             return redirect()
                 ->back()
-                ->with('success', "Plugin disabled for journal successfully.");
+                ->with('success', 'Plugin disabled for journal successfully.');
         } catch (\Exception $e) {
-            Log::error('Plugin disable for journal failed: ' . $e->getMessage());
-            
+            Log::error('Plugin disable for journal failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to disable plugin for journal: ' . $e->getMessage());
+                ->with('error', 'Failed to disable plugin for journal: '.$e->getMessage());
         }
     }
 
@@ -205,7 +205,14 @@ class PluginController extends Controller
     public function settings(Plugin $plugin): Response
     {
         $plugin->load('journals');
-        
+
+        $plugin->journals->each(function ($journal) {
+            if (is_string($journal->pivot?->settings)) {
+                $decoded = json_decode($journal->pivot->settings, true);
+                $journal->pivot->settings = is_array($decoded) ? $decoded : [];
+            }
+        });
+
         return Inertia::render('admin/plugins/settings', [
             'plugin' => $plugin,
             'journals' => Journal::select('id', 'name')->get(),
@@ -234,16 +241,16 @@ class PluginController extends Controller
                 $settings,
                 $request->input('journal_id')
             );
-            
+
             return redirect()
                 ->back()
                 ->with('success', 'Plugin settings updated successfully.');
         } catch (\Exception $e) {
-            Log::error('Plugin settings update failed: ' . $e->getMessage());
-            
+            Log::error('Plugin settings update failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to update plugin settings: ' . $e->getMessage());
+                ->with('error', 'Failed to update plugin settings: '.$e->getMessage());
         }
     }
 
@@ -255,16 +262,16 @@ class PluginController extends Controller
         try {
             $name = $plugin->display_name;
             $this->pluginManager->uninstall($plugin);
-            
+
             return redirect()
                 ->route('admin.plugins.index')
                 ->with('success', "Plugin '{$name}' uninstalled successfully.");
         } catch (\Exception $e) {
-            Log::error('Plugin uninstall failed: ' . $e->getMessage());
-            
+            Log::error('Plugin uninstall failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to uninstall plugin: ' . $e->getMessage());
+                ->with('error', 'Failed to uninstall plugin: '.$e->getMessage());
         }
     }
 
@@ -294,7 +301,7 @@ class PluginController extends Controller
         try {
             // Scan plugins directory for new plugins
             $pluginsPath = storage_path('plugins');
-            if (!is_dir($pluginsPath)) {
+            if (! is_dir($pluginsPath)) {
                 return redirect()
                     ->back()
                     ->with('info', 'No plugins directory found.');
@@ -302,18 +309,18 @@ class PluginController extends Controller
 
             $discovered = 0;
             $iterator = new \DirectoryIterator($pluginsPath);
-            
+
             foreach ($iterator as $item) {
-                if ($item->isDir() && !$item->isDot()) {
+                if ($item->isDir() && ! $item->isDot()) {
                     $pluginPath = $item->getPathname();
-                    
+
                     // Check if already installed
-                    $pluginJsonPath = $pluginPath . '/plugin.json';
+                    $pluginJsonPath = $pluginPath.'/plugin.json';
                     if (file_exists($pluginJsonPath)) {
                         $pluginData = json_decode(file_get_contents($pluginJsonPath), true);
-                        
+
                         $existing = Plugin::where('name', $pluginData['name'])->first();
-                        if (!$existing) {
+                        if (! $existing) {
                             $this->pluginManager->install($pluginPath);
                             $discovered++;
                         }
@@ -325,11 +332,11 @@ class PluginController extends Controller
                 ->route('admin.plugins.index')
                 ->with('success', "Plugin list refreshed. {$discovered} new plugin(s) discovered.");
         } catch (\Exception $e) {
-            Log::error('Plugin refresh failed: ' . $e->getMessage());
-            
+            Log::error('Plugin refresh failed: '.$e->getMessage());
+
             return redirect()
                 ->back()
-                ->with('error', 'Failed to refresh plugin list: ' . $e->getMessage());
+                ->with('error', 'Failed to refresh plugin list: '.$e->getMessage());
         }
     }
 }
