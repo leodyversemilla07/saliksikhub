@@ -375,6 +375,21 @@ export default function Footer() {
                 </div>
             </div>
 
+            {/* Footer Content — extra HTML/content from CMS settings */}
+            {currentJournal?.settings?.footer_content && (
+                <div className="border-t bg-background">
+                    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                        <div
+                            className="prose prose-sm max-w-none text-muted-foreground"
+                            dangerouslySetInnerHTML={{
+                                __html: currentJournal.settings
+                                    .footer_content as string,
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Bottom Bar */}
             <div className="border-t bg-background">
                 <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
