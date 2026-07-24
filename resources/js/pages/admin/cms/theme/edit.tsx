@@ -9,6 +9,7 @@ import {
     Save,
     Eye,
     Upload,
+    Code,
 } from 'lucide-react';
 import { useState, useRef } from 'react';
 import {
@@ -70,6 +71,7 @@ interface ThemeSettings {
         show_journal_name: boolean;
         favicon: string | null;
     };
+    custom_css: string | null;
 }
 
 interface Journal {
@@ -705,6 +707,47 @@ export default function ThemeEdit({
                                                 Show journal name next to logo
                                             </Label>
                                         </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Custom CSS */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Code className="h-5 w-5" />
+                                        Custom CSS
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Add custom CSS styles that will be
+                                        applied to all public-facing pages.
+                                        Overrides the theme above.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="custom-css">
+                                            CSS Styles
+                                        </Label>
+                                        <textarea
+                                            id="custom-css"
+                                            value={data.custom_css ?? ''}
+                                            onChange={(e) =>
+                                                setData({
+                                                    ...data,
+                                                    custom_css: e.target.value,
+                                                })
+                                            }
+                                            className="min-h-[200px] w-full rounded-md border bg-card p-4 font-mono text-sm"
+                                            placeholder="/* Add your custom CSS here */&#10;.example { color: var(--primary); }&#10;.custom-header { background: #f0f0f0; }&#10;@media (max-width: 768px) { ... }"
+                                            spellCheck={false}
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            These styles are injected as inline
+                                            CSS on every public page of this
+                                            journal. Use with caution — invalid
+                                            CSS may break the layout.
+                                        </p>
                                     </div>
                                 </CardContent>
                             </Card>

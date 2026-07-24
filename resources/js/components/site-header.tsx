@@ -47,15 +47,6 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-interface CmsMenuItem {
-    id: number;
-    label: string;
-    url: string | null;
-    open_in_new_tab: boolean;
-    page?: { slug: string; title: string } | null;
-    children?: CmsMenuItem[];
-}
-
 import JournalSwitcher from '@/components/journal-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

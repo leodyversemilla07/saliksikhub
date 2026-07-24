@@ -335,6 +335,7 @@ class Journal extends Model
                 'show_journal_name' => true,
                 'favicon' => null,
             ],
+            'custom_css' => null,
         ];
     }
 

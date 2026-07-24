@@ -81,6 +81,7 @@ class JournalThemeController extends Controller
             'branding' => 'sometimes|array',
             'branding.show_institution_logo' => 'sometimes|boolean',
             'branding.show_journal_name' => 'sometimes|boolean',
+            'custom_css' => 'sometimes|nullable|string',
         ]);
 
         // Merge with existing settings

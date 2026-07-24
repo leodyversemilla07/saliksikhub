@@ -46,6 +46,12 @@ class JournalSettingsController extends Controller
             'notify_on_review_complete' => ['type' => 'boolean', 'label' => 'Notify on Review Complete', 'description' => 'Send email when review is completed'],
             'notify_on_decision' => ['type' => 'boolean', 'label' => 'Notify on Decision', 'description' => 'Send email when editorial decision is made'],
         ],
+        'cms' => [
+            'for_readers' => ['type' => 'text', 'label' => 'For Readers', 'description' => 'Information block for readers (e.g., tips, resources)'],
+            'for_authors' => ['type' => 'text', 'label' => 'For Authors', 'description' => 'Information block for authors (e.g., guidelines, policies)'],
+            'for_librarians' => ['type' => 'text', 'label' => 'For Librarians', 'description' => 'Information block for librarians (e.g., indexing, archiving)'],
+            'footer_content' => ['type' => 'text', 'label' => 'Footer Content', 'description' => 'Extra HTML/content displayed in the footer area'],
+        ],
     ];
 
     /**
