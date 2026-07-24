@@ -1,6 +1,6 @@
 <?php
 
-use App\FileType;
+use App\Enums\FileType;
 use App\Http\Middleware\EnsureInstalled;
 use App\Models\Manuscript;
 use App\Models\ManuscriptFile;

@@ -1,6 +1,6 @@
 <?php
 
-use App\ManuscriptStatus;
+use App\Enums\ManuscriptStatus;
 use App\Models\CopyrightAgreement;
 use App\Models\Manuscript;
 use App\Models\ManuscriptIndexing;

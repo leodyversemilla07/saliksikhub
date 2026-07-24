@@ -5,8 +5,8 @@ namespace App\Observers;
 use App\Models\Manuscript;
 use App\Models\ManuscriptRevision;
 use App\Models\User;
-use App\Notifications\ManuscriptRevisionSubmitted;
-use App\Notifications\ManuscriptSubmitted;
+use App\Notifications\Submission\ManuscriptRevisionSubmitted;
+use App\Notifications\Submission\ManuscriptSubmitted;
 use Illuminate\Support\Arr;
 
 class ManuscriptObserver

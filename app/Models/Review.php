@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\ReviewRecommendation;
-use App\ReviewStatus;
+use App\Enums\ReviewRecommendation;
+use App\Enums\ReviewStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

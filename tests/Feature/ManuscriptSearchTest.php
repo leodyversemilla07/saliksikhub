@@ -1,6 +1,6 @@
 <?php
 
-use App\ManuscriptStatus;
+use App\Enums\ManuscriptStatus;
 use App\Models\Institution;
 use App\Models\Journal;
 use App\Models\Manuscript;

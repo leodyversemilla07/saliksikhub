@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\FileType;
+use App\Enums\FileType;
 use App\Models\Manuscript;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

@@ -4,8 +4,8 @@ namespace Database\Factories;
 
 use App\Models\Manuscript;
 use App\Models\User;
-use App\ReviewRecommendation;
-use App\ReviewStatus;
+use App\Enums\ReviewRecommendation;
+use App\Enums\ReviewStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReviewFactory extends Factory

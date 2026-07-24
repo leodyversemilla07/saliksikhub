@@ -1,7 +1,7 @@
 <?php
 
-use App\DecisionType;
-use App\ManuscriptStatus;
+use App\Enums\DecisionType;
+use App\Enums\ManuscriptStatus;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
 use App\Models\Review;

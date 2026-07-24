@@ -4,7 +4,7 @@ use App\Http\Middleware\EnsureInstalled;
 use App\Models\Manuscript;
 use App\Models\Review;
 use App\Models\User;
-use App\ReviewStatus;
+use App\Enums\ReviewStatus;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

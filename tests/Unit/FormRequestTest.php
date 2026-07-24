@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Requests\StoreManuscriptRequest;
-use App\Http\Requests\SubmitRevisionRequest;
+use App\Http\Requests\Submission\StoreManuscriptRequest;
+use App\Http\Requests\Submission\SubmitRevisionRequest;
 
 it('has expected rules for StoreManuscriptRequest', function () {
     $request = new StoreManuscriptRequest;

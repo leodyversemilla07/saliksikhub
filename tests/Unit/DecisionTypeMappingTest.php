@@ -1,7 +1,7 @@
 <?php
 
-use App\DecisionType;
-use App\ManuscriptStatus;
+use App\Enums\DecisionType;
+use App\Enums\ManuscriptStatus;
 
 it('maps editorial decision types to manuscript statuses', function () {
     expect(DecisionType::ACCEPT->resultingStatus())->toBe(ManuscriptStatus::ACCEPTED);

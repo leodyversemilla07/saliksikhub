@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\ManuscriptStatus;
+use App\Enums\ManuscriptStatus;
 use App\Models\Issue;
 use App\Models\Journal;
 use App\Models\Manuscript;

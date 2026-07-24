@@ -6,7 +6,7 @@ use App\Models\Manuscript;
 use App\Models\Publication;
 use App\Observers\ManuscriptObserver;
 use App\Observers\PublicationObserver;
-use App\Policies\ManuscriptPolicy;
+use App\Policies\Submission\ManuscriptPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;

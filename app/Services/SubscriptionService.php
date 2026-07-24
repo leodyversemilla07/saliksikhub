@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\User;
-use App\Notifications\SubscriptionRenewalReminder;
+use App\Notifications\Payment\SubscriptionRenewalReminder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;

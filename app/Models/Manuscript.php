@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\ManuscriptStatus;
+use App\Enums\ManuscriptStatus;
 use App\Models\Concerns\BelongsToJournal;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;

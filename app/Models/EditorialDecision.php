@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\DecisionType;
-use App\ManuscriptStatus;
+use App\Enums\DecisionType;
+use App\Enums\ManuscriptStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\ManuscriptStatus;
+use App\Enums\ManuscriptStatus;
 use App\Models\Issue;
 use App\Models\Manuscript;
 use Illuminate\Console\Command;

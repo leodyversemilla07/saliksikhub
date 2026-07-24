@@ -7,7 +7,7 @@ use App\Models\Manuscript;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Notifications\PaymentConfirmation;
+use App\Notifications\Payment\PaymentConfirmation;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 

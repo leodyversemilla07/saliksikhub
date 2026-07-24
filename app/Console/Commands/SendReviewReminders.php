@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Review;
-use App\ReviewStatus;
+use App\Enums\ReviewStatus;
 use App\Services\ReviewService;
 use Illuminate\Console\Command;
 
