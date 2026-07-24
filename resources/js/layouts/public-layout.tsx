@@ -1,7 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import type {ReactNode} from 'react';
 import { Link } from '@inertiajs/react';
-import { LuBookOpen, LuUsers, LuFileText, LuInfo, LuArrowRight } from 'react-icons/lu';
+import { LuBookOpen, LuUsers, LuFileText, LuArrowRight } from 'react-icons/lu';
 import SiteFooter from '@/components/site-footer';
 import SiteHeader from '@/components/site-header';
 import { useJournalTheme } from '@/hooks/use-journal-theme';

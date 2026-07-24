@@ -58,37 +58,6 @@ import {
 } from '@/routes';
 import type { PageProps } from '@/types';
 
-// Build footer links from CMS menu, fall back to hardcoded
-const cmsFooterLinks = footerMenu && footerMenu.length > 0
-    ? footerMenu.map((item) => ({
-          name: item.label,
-          href: item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
-          icon: LuBookOpen,
-      }))
-    : null;
-
-const quickLinks = cmsFooterLinks ?? [
-    { name: 'Home', href: home.url(), icon: LuBookOpen },
-    { name: 'Current Issue', href: current.url(), icon: LuFileText },
-    { name: 'Archives', href: archives.url(), icon: LuArchive },
-    { name: 'Submissions', href: submissions.url(), icon: LuFileText },
-];
-
-const aboutLinks = [
-    { name: 'About the Journal', href: aboutJournal.url(), icon: LuInfo },
-    { name: 'Editorial Board', href: editorialBoard.url(), icon: LuUsers },
-    { name: 'Announcements', href: announcements.url(), icon: LuMessageSquare },
-    { name: 'Contact Us', href: contactUs.url(), icon: LuMail },
-];
-
-const authorResources = [
-    { name: 'Author Guidelines', href: '#' },
-    { name: 'Submission Process', href: submissions.url() },
-    { name: 'Publication Ethics', href: '#' },
-    { name: 'Copyright Policy', href: '#' },
-    { name: 'Open Access Policy', href: '#' },
-];
-
 const socialLinks = [
     { name: 'Facebook', icon: FaFacebook, href: '#' },
     { name: 'Twitter', icon: FaXTwitter, href: '#' },
@@ -144,6 +113,37 @@ export default function Footer() {
             ? journalLanguageFromSettings
             : '') ||
         'English';
+
+    // Build footer links from CMS menu, fall back to hardcoded
+    const cmsFooterLinks = footerMenu && footerMenu.length > 0
+        ? footerMenu.map((item) => ({
+              name: item.label,
+              href: item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
+              icon: LuBookOpen,
+          }))
+        : null;
+
+    const quickLinks = cmsFooterLinks ?? [
+        { name: 'Home', href: home.url(), icon: LuBookOpen },
+        { name: 'Current Issue', href: current.url(), icon: LuFileText },
+        { name: 'Archives', href: archives.url(), icon: LuArchive },
+        { name: 'Submissions', href: submissions.url(), icon: LuFileText },
+    ];
+
+    const aboutLinks = [
+        { name: 'About the Journal', href: aboutJournal.url(), icon: LuInfo },
+        { name: 'Editorial Board', href: editorialBoard.url(), icon: LuUsers },
+        { name: 'Announcements', href: announcements.url(), icon: LuMessageSquare },
+        { name: 'Contact Us', href: contactUs.url(), icon: LuMail },
+    ];
+
+    const authorResources = [
+        { name: 'Author Guidelines', href: '#' },
+        { name: 'Submission Process', href: submissions.url() },
+        { name: 'Publication Ethics', href: '#' },
+        { name: 'Copyright Policy', href: '#' },
+        { name: 'Open Access Policy', href: '#' },
+    ];
 
     return (
         <footer className="border-t bg-muted/30">
