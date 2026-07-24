@@ -157,7 +157,11 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export default function SiteHeader({ auth }: SiteHeaderProps) {
-    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    const {
+        currentJournal,
+        currentInstitution,
+        headerMenu,
+    } = usePage<PageProps>().props;
     const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
     const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(() =>
         typeof window !== 'undefined'
@@ -173,31 +177,9 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
 
     const { url: currentUrl } = usePage();
 
-    const [cmsMenuItems, setCmsMenuItems] = useState<CmsMenuItem[] | null>(null);
-
-    // Fetch CMS menu items when journal is available
-    useEffect(() => {
-        if (!currentJournal) {
-            setCmsMenuItems(null);
-            return;
-        }
-
-        fetch('/api/menu')
-            .then((res) => res.json())
-            .then((data) => {
-                if (data?.menu) {
-                    setCmsMenuItems(data.menu);
-                }
-            })
-            .catch(() => {
-                // Silently fall back to hardcoded navigation
-                setCmsMenuItems(null);
-            });
-    }, [currentJournal]);
-
     // Build navigation items: prefer CMS menu, fall back to hardcoded
-    const effectiveNavItems: NavigationItem[] = cmsMenuItems
-        ? cmsMenuItems.map((item) => ({
+    const effectiveNavItems: NavigationItem[] = headerMenu && headerMenu.length > 0
+        ? headerMenu.map((item) => ({
               name: item.label,
               href:
                   item.url ??

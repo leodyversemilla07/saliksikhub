@@ -123,6 +123,15 @@ export interface PlatformSettings {
     admin_email?: string | null;
 }
 
+export interface CmsMenuItem {
+    id: number;
+    label: string;
+    url: string | null;
+    open_in_new_tab: boolean;
+    page?: { slug: string; title: string } | null;
+    children?: CmsMenuItem[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
@@ -132,6 +141,8 @@ export type PageProps<
     platformSettings?: PlatformSettings | null;
     currentJournal?: Journal | null;
     currentInstitution?: Institution | null;
+    headerMenu?: CmsMenuItem[];
+    footerMenu?: CmsMenuItem[];
 };
 
 // Manuscript related types

@@ -58,7 +58,16 @@ import {
 } from '@/routes';
 import type { PageProps } from '@/types';
 
-const quickLinks = [
+// Build footer links from CMS menu, fall back to hardcoded
+const cmsFooterLinks = footerMenu && footerMenu.length > 0
+    ? footerMenu.map((item) => ({
+          name: item.label,
+          href: item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
+          icon: LuBookOpen,
+      }))
+    : null;
+
+const quickLinks = cmsFooterLinks ?? [
     { name: 'Home', href: home.url(), icon: LuBookOpen },
     { name: 'Current Issue', href: current.url(), icon: LuFileText },
     { name: 'Archives', href: archives.url(), icon: LuArchive },
@@ -88,7 +97,7 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    const { currentJournal, currentInstitution, footerMenu } = usePage<PageProps>().props;
     const currentYear = new Date().getFullYear();
     const institutionSettings = currentInstitution?.settings as
         | Record<string, unknown>

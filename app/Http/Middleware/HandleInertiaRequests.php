@@ -39,6 +39,14 @@ class HandleInertiaRequests extends Middleware
             $platformSettings = null;
         }
 
+        // Build navigation menus
+        $headerMenu = [];
+        $footerMenu = [];
+        if ($journal) {
+            $headerMenu = $journal->headerMenu();
+            $footerMenu = $journal->footerMenu();
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -76,6 +84,8 @@ class HandleInertiaRequests extends Middleware
                 'website' => $institution->website,
                 'contact_email' => $institution->contact_email,
             ] : null,
+            'headerMenu' => $headerMenu,
+            'footerMenu' => $footerMenu,
         ];
     }
 }
