@@ -1,12 +1,14 @@
 <?php
 
 use App\Enums\ManuscriptStatus;
+use App\Http\Middleware\EnsureInstalled;
 use App\Models\Institution;
 use App\Models\Journal;
 use App\Models\Manuscript;
 use App\Models\User;
 
 beforeEach(function () {
+    EnsureInstalled::markInstalled();
     $this->institution = Institution::factory()->create();
     $this->journal = Journal::factory()->forInstitution($this->institution)->create();
 
@@ -30,7 +32,7 @@ it('allows searching published manuscripts by title', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('search-results')
+        ->component('public/search-results')
         ->has('results.data', 1)
         ->where('results.data.0.title', 'Machine Learning Applications')
         ->where('query', 'Machine Learning')
@@ -53,7 +55,7 @@ it('allows searching published manuscripts by author', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('search-results')
+        ->component('public/search-results')
         ->has('results.data', 1)
         ->where('results.data.0.authors.0', 'Jane Smith')
     );
@@ -80,7 +82,7 @@ it('does not return unpublished manuscripts in search results', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('search-results')
+        ->component('public/search-results')
         ->has('results.data', 1)
         ->where('results.data.0.title', 'Published Paper')
     );
@@ -91,7 +93,7 @@ it('returns no results for empty search', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('search-results')
+        ->component('public/search-results')
         ->has('results.data', 0)
         ->where('query', '')
     );
@@ -113,7 +115,7 @@ it('handles pagination for search results', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('search-results')
+        ->component('public/search-results')
         ->has('results.data', 20) // Default per page
         ->where('results.total', 25)
         ->where('results.last_page', 2)

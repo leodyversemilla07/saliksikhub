@@ -176,7 +176,7 @@ describe('Public Announcement Routes', function () {
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
-            ->component('announcements')
+            ->component('public/announcements')
             ->has('announcements.data', 3)
         );
     });
@@ -192,7 +192,7 @@ describe('Public Announcement Routes', function () {
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
-            ->component('announcement-show')
+            ->component('public/announcement-show')
             ->has('announcement')
         );
     });
@@ -240,7 +240,7 @@ describe('Public Announcement Routes', function () {
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
-            ->component('announcements')
+            ->component('public/announcements')
             ->has('announcements.data', 1)
         );
     });
