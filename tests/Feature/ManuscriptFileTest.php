@@ -26,6 +26,10 @@ beforeEach(function () {
     $this->manuscript = Manuscript::factory()->create([
         'user_id' => $this->author->id,
     ]);
+
+    // Set journal context for team-based permissions
+    app()->instance('currentJournal', $this->manuscript->journal);
+    app()->instance('currentInstitution', $this->manuscript->journal->institution);
 });
 
 test('author can upload main document', function () {
