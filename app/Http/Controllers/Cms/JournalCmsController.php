@@ -16,7 +16,7 @@ class JournalCmsController extends Controller
      */
     public function home(Request $request)
     {
-        $journal = $request->get('current_journal');
+        $journal = app('currentJournal');
 
         if (! $journal) {
             return Inertia::render('public/home', [
@@ -43,7 +43,7 @@ class JournalCmsController extends Controller
      */
     public function show(Request $request, string $slug)
     {
-        $journal = $request->get('current_journal');
+        $journal = app('currentJournal');
 
         if (! $journal) {
             abort(404);
@@ -76,7 +76,7 @@ class JournalCmsController extends Controller
      */
     public function getMenu(Request $request)
     {
-        $journal = $request->get('current_journal');
+        $journal = app('currentJournal');
 
         if (! $journal) {
             return response()->json(['menu' => []]);
