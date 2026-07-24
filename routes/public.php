@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Cms\AnnouncementController;
+use App\Http\Controllers\Cms\JournalCmsController;
 use App\Http\Controllers\Production\GalleyController;
 use App\Http\Controllers\Publication\IssueController;
 use App\Http\Controllers\JournalController;
@@ -15,17 +16,20 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/api/journals', [JournalController::class, 'index'])->name('api.journals.index');
 Route::post('/journals/{journal}/switch', [JournalController::class, 'switch'])->name('journals.switch');
 
-// Static pages
-Route::inertia('/', 'public/home')->name('home');
+// Static & CMS-managed pages
+Route::get('/', [JournalCmsController::class, 'home'])->name('home');
+Route::get('/page/{slug}', [JournalCmsController::class, 'show'])->name('cms.page');
 Route::get('/current', [IssueController::class, 'current'])->name('current');
 Route::inertia('/submissions', 'public/submissions')->name('submissions');
 Route::inertia('/archives', 'public/archives')->name('archives');
 Route::inertia('/editorial-board', 'public/editorial-board')->name('editorial-board');
 Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements');
 Route::get('/announcements/{announcement:slug}', [AnnouncementController::class, 'show'])->name('announcements.show');
-Route::inertia('/about/aims-scope', 'public/about-aims-scope')->name('about-aims-scope');
 Route::inertia('/about/journal', 'public/about-journal')->name('about-journal');
 Route::inertia('/contact', 'public/contact-us')->name('contact-us');
+
+// CMS Menu API (public)
+Route::get('/api/menu', [JournalCmsController::class, 'getMenu'])->name('api.menu');
 
 // Design System Documentation
 Route::get('/design-system', function () {

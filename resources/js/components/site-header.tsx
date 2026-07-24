@@ -47,6 +47,15 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+interface CmsMenuItem {
+    id: number;
+    label: string;
+    url: string | null;
+    open_in_new_tab: boolean;
+    page?: { slug: string; title: string } | null;
+    children?: CmsMenuItem[];
+}
+
 import JournalSwitcher from '@/components/journal-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -163,6 +172,40 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
     });
 
     const { url: currentUrl } = usePage();
+
+    const [cmsMenuItems, setCmsMenuItems] = useState<CmsMenuItem[] | null>(null);
+
+    // Fetch CMS menu items when journal is available
+    useEffect(() => {
+        if (!currentJournal) {
+            setCmsMenuItems(null);
+            return;
+        }
+
+        fetch('/api/menu')
+            .then((res) => res.json())
+            .then((data) => {
+                if (data?.menu) {
+                    setCmsMenuItems(data.menu);
+                }
+            })
+            .catch(() => {
+                // Silently fall back to hardcoded navigation
+                setCmsMenuItems(null);
+            });
+    }, [currentJournal]);
+
+    // Build navigation items: prefer CMS menu, fall back to hardcoded
+    const effectiveNavItems: NavigationItem[] = cmsMenuItems
+        ? cmsMenuItems.map((item) => ({
+              name: item.label,
+              href:
+                  item.url ??
+                  (item.page ? `/page/${item.page.slug}` : '#'),
+              icon: undefined,
+              description: undefined,
+          }))
+        : navigationItems;
 
     // Handle scroll effect
     useEffect(() => {
@@ -339,7 +382,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                         <div className="hidden items-center gap-1 lg:flex">
                             <NavigationMenu>
                                 <NavigationMenuList className="gap-0">
-                                    {navigationItems.map((item) => (
+                                    {effectiveNavItems.map((item) => (
                                         <NavigationMenuItem key={item.name}>
                                             <NavigationMenuLink
                                                 render={
@@ -458,7 +501,7 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
                                         </SheetHeader>
 
                                         <div className="flex flex-col gap-1">
-                                            {navigationItems.map((item) => (
+                                            {effectiveNavItems.map((item) => (
                                                 <Link
                                                     key={item.name}
                                                     href={item.href!}

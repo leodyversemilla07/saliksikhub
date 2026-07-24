@@ -8,18 +8,51 @@ import {
     Award,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import CmsSection from '@/components/cms/section';
 import PublicLayout from '@/layouts/public-layout';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
 import type { PageProps } from '@/types';
 
+interface CmsSection {
+    id: number;
+    type: string;
+    name: string;
+    content: Record<string, unknown>;
+    settings: Record<string, unknown>;
+    is_visible: boolean;
+}
+
+interface HomePageProps extends PageProps {
+    page?: {
+        id: number;
+        title: string;
+        sections: CmsSection[];
+    } | null;
+    sections?: CmsSection[];
+    themeSettings?: Record<string, unknown> | null;
+}
+
 export default function Home() {
-    const { currentJournal, currentInstitution } = usePage<PageProps>().props;
+    const pageData = usePage<HomePageProps>().props;
+    const { currentJournal, currentInstitution, page, sections } = pageData;
 
     const pageTitle = currentJournal?.name
         ? `${currentJournal.name} | ${currentInstitution?.abbreviation ?? 'RJMS'}`
         : 'Research Journal Management System';
 
+    // If CMS page content exists, render it
+    if (page && sections && sections.length > 0) {
+        return (
+            <PublicLayout title={page?.title ?? pageTitle}>
+                {sections.map((section) => (
+                    <CmsSection key={section.id} section={section} />
+                ))}
+            </PublicLayout>
+        );
+    }
+
+    // Fallback: render the default static homepage
     const heroTitle = currentJournal?.settings?.hero_title ?? 'Modern Research';
     const heroDescription =
         currentJournal?.settings?.hero_description ??
@@ -41,7 +74,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Main Heading - Serif Font */}
+                        {/* Main Heading */}
                         <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
                             {currentJournal?.name || heroTitle}
                         </h1>
@@ -52,7 +85,6 @@ export default function Home() {
                             </p>
                         )}
 
-                        {/* Description - Serif for readability */}
                         <p className="mx-auto mb-10 max-w-2xl font-serif text-lg leading-relaxed text-muted-foreground">
                             {heroDescription}
                         </p>
@@ -65,7 +97,6 @@ export default function Home() {
                             >
                                 Submit Manuscript
                             </Link>
-
                             <Link
                                 href={dashboard.url()}
                                 className="inline-flex items-center font-sans text-sm font-semibold text-foreground transition-colors hover:text-primary"
@@ -100,7 +131,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Features Section - Academic Style */}
+            {/* Features Section */}
             <section className="bg-muted/30 py-20 sm:py-28">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto mb-16 max-w-2xl text-center">
@@ -132,7 +163,6 @@ export default function Home() {
                                     </p>
                                 </CardContent>
                             </Card>
-
                             <Card className="border-border/50 bg-card transition-colors hover:border-primary/30">
                                 <CardContent className="p-8">
                                     <div className="mb-6 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">
@@ -148,7 +178,6 @@ export default function Home() {
                                     </p>
                                 </CardContent>
                             </Card>
-
                             <Card className="border-border/50 bg-card transition-colors hover:border-primary/30">
                                 <CardContent className="p-8">
                                     <div className="mb-6 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">
@@ -170,7 +199,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Stats Section - Academic Metrics */}
+            {/* Stats Section */}
             <section className="border-y border-border py-20 sm:py-28">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto mb-16 max-w-2xl text-center">
@@ -178,104 +207,32 @@ export default function Home() {
                             Supporting Scholarly Excellence
                         </h2>
                         <p className="font-serif text-base leading-relaxed text-muted-foreground">
-                            Trusted by researchers, editors, and academic
-                            institutions worldwide.
+                            Trusted by researchers and academic institutions
+                            worldwide.
                         </p>
                     </div>
-
                     <div className="mx-auto grid max-w-2xl grid-cols-2 gap-8 lg:max-w-none lg:grid-cols-4">
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
-                                10,000+
-                            </div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
-                                Researchers
-                            </div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">10,000+</div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Researchers</div>
                         </div>
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
-                                2,500+
-                            </div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
-                                Articles Published
-                            </div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">2,500+</div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Articles Published</div>
                         </div>
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
-                                150+
-                            </div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
-                                Institutions
-                            </div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">150+</div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Institutions</div>
                         </div>
                         <div className="px-4 text-center">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
-                                99.9%
-                            </div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
-                                Uptime
-                            </div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">99.9%</div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Uptime</div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Integration Section - Scholarly Standards */}
-            <section className="bg-muted/30 py-20 sm:py-28">
-                <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto mb-16 max-w-2xl text-center">
-                        <h2 className="mb-4 font-serif text-3xl font-bold text-foreground sm:text-4xl">
-                            Industry Standards & Integrations
-                        </h2>
-                        <p className="font-serif text-base leading-relaxed text-muted-foreground">
-                            Built to comply with international scholarly
-                            publishing standards
-                        </p>
-                    </div>
-
-                    <div className="mx-auto grid max-w-2xl grid-cols-2 gap-6 lg:max-w-none lg:grid-cols-4">
-                        {[
-                            {
-                                name: 'DOI',
-                                description: 'Digital Object Identifier',
-                            },
-                            {
-                                name: 'ORCID',
-                                description: 'Researcher Identification',
-                            },
-                            {
-                                name: 'CrossRef',
-                                description: 'Citation Linking',
-                            },
-                            {
-                                name: 'OpenAIRE',
-                                description: 'Open Access Infrastructure',
-                            },
-                        ].map((integration) => (
-                            <Card
-                                key={integration.name}
-                                className="border-border/50 text-center transition-colors hover:border-primary/30"
-                            >
-                                <CardContent className="p-6">
-                                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center border border-border bg-muted/50">
-                                        <div className="font-mono text-lg font-bold text-primary">
-                                            {integration.name.charAt(0)}
-                                        </div>
-                                    </div>
-                                    <h3 className="mb-1 font-sans text-sm font-semibold tracking-wide text-foreground uppercase">
-                                        {integration.name}
-                                    </h3>
-                                    <p className="font-sans text-xs text-muted-foreground">
-                                        {integration.description}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Section - Academic Registration */}
+            {/* CTA Section */}
             <section className="relative border-y border-primary bg-primary">
                 <div className="mx-auto max-w-7xl px-6 py-20 sm:py-28 lg:px-8">
                     <div className="mx-auto max-w-2xl text-center">
