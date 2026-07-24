@@ -42,6 +42,10 @@ class Manuscript extends Model
         'final_pdf_path',
         'author_approval_date',
         'published_at',
+        'plagiarism_score',
+        'grammar_score',
+        'scope_assessment',
+        'initial_screening_notes',
     ];
 
     protected $casts = [
@@ -53,6 +57,8 @@ class Manuscript extends Model
         'final_manuscript_uploaded_at' => 'datetime',
         'published_at' => 'datetime',
         'status' => ManuscriptStatus::class,
+        'plagiarism_score' => 'decimal:2',
+        'grammar_score' => 'decimal:2',
     ];
 
     /**
@@ -263,6 +269,18 @@ class Manuscript extends Model
     public function canBeEditedByAuthor(): bool
     {
         return $this->status?->canBeEditedByAuthor() ?? false;
+    }
+
+    /**
+     * Determine if the manuscript passes initial screening.
+     * A manuscript passes if plagiarism is low (<=30%) and grammar is acceptable (>=60%).
+     */
+    public function passesInitialScreening(): bool
+    {
+        return $this->plagiarism_score !== null
+            && $this->grammar_score !== null
+            && $this->plagiarism_score <= 30
+            && $this->grammar_score >= 60;
     }
 
     /**
