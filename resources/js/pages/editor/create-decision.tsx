@@ -144,7 +144,7 @@ export default function CreateDecision({ manuscript }: Props) {
         },
         {
             label: 'Manuscripts',
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
         },
         {
             label: 'Editorial Decision',

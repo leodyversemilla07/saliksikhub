@@ -4,6 +4,7 @@ namespace App\Policies\Submission;
 
 use App\Models\Manuscript;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ManuscriptPolicy
 {
@@ -45,8 +46,8 @@ class ManuscriptPolicy
             $result = $manuscript->user_id === $user->id ||
                $manuscript->editor_id === $user->id ||
                $user->hasRole(['editor', 'chief_editor']);
-            
-            \Illuminate\Support\Facades\Log::debug('ManuscriptPolicy::update', [
+
+            Log::debug('ManuscriptPolicy::update', [
                 'user_id' => $user->id,
                 'manuscript_user_id' => $manuscript->user_id,
                 'user_id_match' => $manuscript->user_id === $user->id,

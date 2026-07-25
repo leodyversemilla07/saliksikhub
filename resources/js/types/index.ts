@@ -143,7 +143,19 @@ export type PageProps<
     currentInstitution?: Institution | null;
     headerMenu?: CmsMenuItem[];
     footerMenu?: CmsMenuItem[];
+    sidebarWidgets?: Widget[];
+    pluginData?: Record<string, unknown>;
 };
+
+// Sidebar widget types
+
+export interface Widget {
+    id: string;
+    type: string;
+    title: string;
+    order: number;
+    settings: Record<string, unknown>;
+}
 
 // Manuscript related types
 

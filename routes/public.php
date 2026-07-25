@@ -1,16 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Cms\AnnouncementController;
 use App\Http\Controllers\Cms\JournalCmsController;
+use App\Http\Controllers\JournalController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Production\GalleyController;
 use App\Http\Controllers\Publication\IssueController;
-use App\Http\Controllers\JournalController;
 use App\Http\Controllers\Submission\ManuscriptController;
-use App\Http\Controllers\Payment\PaymentController;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Journal API routes
 Route::get('/api/journals', [JournalController::class, 'index'])->name('api.journals.index');
@@ -33,7 +31,7 @@ Route::get('/api/menu', [JournalCmsController::class, 'getMenu'])->name('api.men
 
 // Design System Documentation
 Route::get('/design-system', function () {
-return response()->file(base_path('docs/design-system-palette.html'));
+    return response()->file(base_path('docs/design-system-palette.html'));
 })->name('design-system');
 
 // Public manuscript PDF
@@ -62,17 +60,18 @@ Route::get('/issues/{issue:slug}', [IssueController::class, 'showPublic'])->name
 
 // Dashboard redirect
 Route::get('/dashboard', function () {
-$user = Auth::user();
-if ($user->hasRole('author')) {
-return redirect()->route('author.dashboard');
-}
-if ($user->hasRole('reviewer')) {
-return redirect()->route('reviewer.dashboard');
-}
-if ($user->hasRole('managing_editor') || $user->hasRole('editor_in_chief') || $user->hasRole('associate_editor') || $user->hasRole('language_editor')) {
-return redirect()->route('editor.dashboard');
-}
-return redirect()->route('login');
+    $user = Auth::user();
+    if ($user->hasRole('author')) {
+        return redirect()->route('author.dashboard');
+    }
+    if ($user->hasRole('reviewer')) {
+        return redirect()->route('reviewer.dashboard');
+    }
+    if ($user->hasRole('managing_editor') || $user->hasRole('editor_in_chief') || $user->hasRole('associate_editor') || $user->hasRole('language_editor')) {
+        return redirect()->route('editor.dashboard');
+    }
+
+    return redirect()->route('login');
 })->name('dashboard')->middleware(['auth', 'verified']);
 
 // Unauthorized page

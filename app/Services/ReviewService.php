@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Core\Plugin\Hook;
+use App\Enums\ReviewRecommendation;
+use App\Enums\ReviewStatus;
 use App\Models\Manuscript;
 use App\Models\Review;
 use App\Models\User;
@@ -12,8 +14,6 @@ use App\Notifications\Review\ReviewExtensionRequested;
 use App\Notifications\Review\ReviewInvitation;
 use App\Notifications\Review\ReviewReminder;
 use App\Notifications\Review\ReviewSubmitted;
-use App\Enums\ReviewRecommendation;
-use App\Enums\ReviewStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

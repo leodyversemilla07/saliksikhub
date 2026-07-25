@@ -70,7 +70,7 @@ export default function PreparePublication({
                             description: `"${manuscript.title}" has been published and is now available to readers.`,
                         });
                         // Redirect to manuscripts index page
-                        window.location.href = editor.indexManuscripts.url();
+                        window.location.href = editor.manuscripts.index.url();
                     },
                     onError: () => {
                         setIsSubmitting(false);
@@ -111,7 +111,7 @@ export default function PreparePublication({
         },
         {
             label: 'Manuscripts',
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
         },
         {
             label: 'Prepare for Publication',
@@ -352,7 +352,7 @@ export default function PreparePublication({
 
                     {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
-                        <Link href={editor.indexManuscripts.url()}>
+                        <Link href={editor.manuscripts.index.url()}>
                             <Button
                                 variant="outline"
                                 className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"

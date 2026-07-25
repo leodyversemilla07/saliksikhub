@@ -119,7 +119,7 @@ export default function Show({ manuscript }: ShowProps): React.ReactElement {
                     user.role === 'editor_in_chief' ||
                     user.role === 'associate_editor' ||
                     user.role === 'language_editor')
-                    ? editor.indexManuscripts.url()
+                    ? editor.manuscripts.index.url()
                     : manuscriptsRoutes.index.url(),
         },
         {

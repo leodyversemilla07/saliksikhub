@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Submission;
 
-
-use App\Http\Controllers\Controller;
 use App\Enums\FileType;
+use App\Http\Controllers\Controller;
 use App\Models\Manuscript;
 use App\Models\ManuscriptFile;
 use Illuminate\Http\Request;

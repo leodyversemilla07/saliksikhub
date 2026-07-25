@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Submission;
 
-
+use App\Enums\ManuscriptStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Submission\StoreManuscriptRequest;
 use App\Http\Requests\Submission\SubmitRevisionRequest;
-use App\Enums\ManuscriptStatus;
 use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\Submission\ManuscriptApproved;

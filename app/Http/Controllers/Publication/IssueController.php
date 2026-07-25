@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Publication;
 
-
-use App\Http\Controllers\Controller;
 use App\Enums\ManuscriptStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Issue;
 use App\Models\Manuscript;
 use App\Notifications\Publication\IssueAssigned;

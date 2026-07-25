@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Install;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Institution;
 use App\Models\Journal;

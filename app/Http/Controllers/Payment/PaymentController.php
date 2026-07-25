@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Payment;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Manuscript;
 use App\Models\Payment;

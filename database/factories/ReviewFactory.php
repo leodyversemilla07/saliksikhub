@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Manuscript;
-use App\Models\User;
 use App\Enums\ReviewRecommendation;
 use App\Enums\ReviewStatus;
+use App\Models\Manuscript;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ReviewFactory extends Factory

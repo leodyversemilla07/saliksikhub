@@ -2,7 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Core\Plugin\Hook;
+use App\Models\Journal;
 use App\Models\PlatformSetting;
+use App\Services\SidebarWidgetService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -86,6 +89,39 @@ class HandleInertiaRequests extends Middleware
             ] : null,
             'headerMenu' => $headerMenu,
             'footerMenu' => $footerMenu,
+            'sidebarWidgets' => $this->getSidebarWidgets($journal),
+            'pluginData' => $this->getPluginData($request, $journal),
         ];
+    }
+
+    /**
+     * Collect data from registered plugins for the frontend.
+     * Plugins can hook into 'inertia.shared_data' via Hook::addFilter().
+     */
+    protected function getPluginData(Request $request, ?Journal $journal): array
+    {
+        $data = [];
+
+        return Hook::applyFilters('inertia.shared_data', $data, $request, $journal);
+    }
+
+    /**
+     * Build sidebar widget data from journal settings.
+     */
+    protected function getSidebarWidgets(?Journal $journal): array
+    {
+        if (! $journal) {
+            return [];
+        }
+
+        $widgetConfigs = $journal->settings['sidebar_widgets'] ?? [];
+
+        if (empty($widgetConfigs)) {
+            return [];
+        }
+
+        $service = app(SidebarWidgetService::class);
+
+        return $service->buildWidgets($widgetConfigs, $journal->id);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Production;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Galley;
 use App\Models\Publication;

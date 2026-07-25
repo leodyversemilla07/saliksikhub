@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Publication;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\DOI;
 use App\Models\Manuscript;

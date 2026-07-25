@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Editorial;
 
-
-use App\Http\Controllers\Controller;
 use App\Enums\ManuscriptStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Manuscript;
 use App\Notifications\Submission\ManuscriptStatusChanged;
 use Exception;

@@ -4,6 +4,9 @@ import { Link } from '@inertiajs/react';
 import { LuBookOpen, LuUsers, LuFileText, LuArrowRight } from 'react-icons/lu';
 import SiteFooter from '@/components/site-footer';
 import SiteHeader from '@/components/site-header';
+import {Sidebar} from '@/components/sidebar/sidebar';
+import {PluginSlot} from '@/components/plugins/plugin-slot';
+import type {Widget} from '@/types';
 import { useJournalTheme } from '@/hooks/use-journal-theme';
 import type { PageProps } from '@/types';
 
@@ -14,6 +17,8 @@ interface PublicLayoutProps {
     headChildren?: ReactNode;
     /** Page content */
     children: ReactNode;
+    /** Widgets to show in the sidebar (if any, renders a two-column layout) */
+    sidebarWidgets?: Widget[];
 }
 
 /**
@@ -39,6 +44,7 @@ export default function PublicLayout({
     title,
     headChildren,
     children,
+    sidebarWidgets,
 }: PublicLayoutProps) {
     const { auth, currentJournal } = usePage<PageProps>().props;
 
@@ -82,7 +88,22 @@ export default function PublicLayout({
             )}
 
             <SiteHeader auth={auth} />
-            <main className="grow">{children}</main>
+
+            {/* Plugin injection: banner slot renders above main content */}
+            <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+                <PluginSlot slot="announcement_banner" />
+            </div>
+
+            {sidebarWidgets && sidebarWidgets.length > 0 ? (
+                <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                    <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+                        <main className="min-w-0">{children}</main>
+                        <Sidebar widgets={sidebarWidgets} />
+                    </div>
+                </div>
+            ) : (
+                <main className="grow">{children}</main>
+            )}
 
             {/* Info Blocks Bar — renders if any info blocks have content */}
             {infoBlocks.length > 0 && (

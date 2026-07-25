@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Models\Manuscript;
 use App\Services\StatisticsService;
 use Carbon\Carbon;

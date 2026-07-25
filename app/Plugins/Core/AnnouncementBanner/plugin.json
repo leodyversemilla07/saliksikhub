@@ -4,13 +4,11 @@
     "version": "1.0.0",
     "author": "SaliksikHub Team",
     "description": "Display customizable announcement banners on journal pages",
-    "isGlobal": false,
-    "hasSettings": true,
+    "isGlobal": true,
     "defaultSettings": {
-        "enabled": false,
         "message": "Welcome to our journal!",
         "type": "info",
-        "position": "top",
+        "enabled": true,
         "dismissible": true
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\UserManagement;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserManagement\StoreRequest;
 use App\Http\Requests\UserManagement\UpdateRequest;

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Editorial;
 
-
+use App\Enums\ManuscriptStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Editorial\AssignReviewersRequest;
-use App\Enums\ManuscriptStatus;
 use App\Models\EditorialDecision;
 use App\Models\Manuscript;
 use App\Models\User;
@@ -468,11 +467,11 @@ class EditorController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Editorial decision has been recorded.',
-                    'redirect' => route('editor.indexManuscripts'),
+                    'redirect' => route('editor.manuscripts.index'),
                 ]);
             }
 
-            return redirect()->route('editor.indexManuscripts')
+            return redirect()->route('editor.manuscripts.index')
                 ->with('success', 'Editorial decision has been recorded.');
         } catch (Exception $e) {
             DB::rollBack();
@@ -629,7 +628,7 @@ class EditorController extends Controller
                 ]);
             }
 
-            return redirect()->route('editor.indexManuscripts', $manuscript)
+            return redirect()->route('editor.manuscripts.index', $manuscript)
                 ->with('success', 'Manuscript is now in the copy editing phase.');
         } catch (Exception $e) {
             Log::error('Exception in startCopyEditing', [
@@ -741,11 +740,11 @@ class EditorController extends Controller
                         'message' => 'Finalized manuscript uploaded successfully. Author has been notified for approval.',
                         'file_path' => $storagePath,
                         'temporary_url' => $temporaryUrl,
-                        'redirect' => route('editor.indexManuscripts'),
+                        'redirect' => route('editor.manuscripts.index'),
                     ]);
                 }
 
-                return redirect()->route('editor.indexManuscripts')
+                return redirect()->route('editor.manuscripts.index')
                     ->with('success', 'Finalized manuscript uploaded successfully. Author has been notified for approval.');
             }
 
@@ -784,7 +783,7 @@ class EditorController extends Controller
     public function showPublicationForm(Manuscript $manuscript)
     {
         if ($manuscript->status !== ManuscriptStatus::READY_FOR_PUBLICATION) {
-            return redirect()->route('editor.indexManuscripts')
+            return redirect()->route('editor.manuscripts.index')
                 ->with('error', 'Only approved manuscripts can be prepared for publication.');
         }
 
@@ -854,11 +853,11 @@ class EditorController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Manuscript has been published successfully.',
-                    'redirect' => route('editor.indexManuscripts'),
+                    'redirect' => route('editor.manuscripts.index'),
                 ]);
             }
 
-            return redirect()->route('editor.indexManuscripts')
+            return redirect()->route('editor.manuscripts.index')
                 ->with('success', 'Manuscript has been published successfully.');
         } catch (Exception $e) {
             DB::rollBack();

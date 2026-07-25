@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Profile;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\ProfileUpdateRequest;
 use App\Models\Expertise;

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Statistics;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Manuscript;
 use App\Services\StatisticsService;

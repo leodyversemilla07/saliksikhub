@@ -130,6 +130,9 @@ export default function PublicView({ manuscript }: PublicViewProps) {
                                     </p>
                                 </section>
                             )}
+
+                            {/* Plugin slot for citation tool and other content-bottom plugins */}
+                            <PluginSlot slot="content_bottom" />
                         </div>
                     </div>
 

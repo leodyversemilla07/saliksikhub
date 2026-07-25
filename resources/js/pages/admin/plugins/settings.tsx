@@ -1,5 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Settings, Save, Puzzle } from 'lucide-react';
+import {
+    ArrowLeft,
+    Save,
+    Puzzle,
+    LayoutTemplate,
+} from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +28,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import {getPluginSettingsForm} from '@/plugins/settings-registry';
 import AppLayout from '@/layouts/app-layout';
 
 interface Journal {
@@ -274,7 +280,7 @@ export default function PluginSettings({ plugin, journals }: Props) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Settings className="h-5 w-5" />
+                                    <LayoutTemplate className="h-5 w-5" />
                                     Global Settings
                                 </CardTitle>
                                 <CardDescription>
@@ -287,107 +293,14 @@ export default function PluginSettings({ plugin, journals }: Props) {
                                     onSubmit={handleGlobalSubmit}
                                     className="space-y-4"
                                 >
-                                    {/* Example Settings Form - can be customized per plugin */}
-                                    <div className="space-y-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="setting-example">
-                                                Example Setting
-                                            </Label>
-                                            <Input
-                                                id="setting-example"
-                                                value={
-                                                    (globalSettings.example as string) ||
-                                                    ''
-                                                }
-                                                onChange={(e) =>
-                                                    updateGlobalSetting(
-                                                        'example',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                placeholder="Enter a value..."
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="setting-text">
-                                                Example Text Area
-                                            </Label>
-                                            <Textarea
-                                                id="setting-text"
-                                                value={
-                                                    (globalSettings.text as string) ||
-                                                    ''
-                                                }
-                                                onChange={(e) =>
-                                                    updateGlobalSetting(
-                                                        'text',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                placeholder="Enter longer text..."
-                                                rows={4}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="setting-select">
-                                                Example Select
-                                            </Label>
-                                            <Select
-                                                value={
-                                                    (globalSettings.select as string) ||
-                                                    'option1'
-                                                }
-                                                onValueChange={(value) =>
-                                                    updateGlobalSetting(
-                                                        'select',
-                                                        value,
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger id="setting-select">
-                                                    <SelectValue placeholder="Select an option" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="option1">
-                                                        Option 1
-                                                    </SelectItem>
-                                                    <SelectItem value="option2">
-                                                        Option 2
-                                                    </SelectItem>
-                                                    <SelectItem value="option3">
-                                                        Option 3
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="flex items-center justify-between">
-                                            <div className="space-y-0.5">
-                                                <Label htmlFor="setting-toggle">
-                                                    Example Toggle
-                                                </Label>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Enable or disable this
-                                                    feature
-                                                </p>
-                                            </div>
-                                            <Switch
-                                                id="setting-toggle"
-                                                checked={
-                                                    (globalSettings.toggle as boolean) ||
-                                                    false
-                                                }
-                                                onCheckedChange={(checked) =>
-                                                    updateGlobalSetting(
-                                                        'toggle',
-                                                        checked,
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                    </div>
+                                    <CustomPluginSettings
+                                        pluginName={plugin.name}
+                                        settings={globalSettings}
+                                        onUpdate={updateGlobalSetting}
+                                        onUpdateAll={(s) =>
+                                            setGlobalSettings(s)
+                                        }
+                                    />
 
                                     <div className="flex justify-end">
                                         <Button type="submit">
@@ -434,28 +347,27 @@ export default function PluginSettings({ plugin, journals }: Props) {
                                     {isEnabledForJournal(journal.id) && (
                                         <CardContent>
                                             <div className="space-y-4">
-                                                <div className="grid gap-2">
-                                                    <Label>
-                                                        Journal-Specific Setting
-                                                    </Label>
-                                                    <Input
-                                                        value={
-                                                            (journalSettings[
-                                                                journal.id
-                                                            ]
-                                                                ?.custom as string) ||
-                                                            ''
-                                                        }
-                                                        onChange={(e) =>
-                                                            updateJournalSetting(
-                                                                journal.id,
-                                                                'custom',
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        placeholder="Enter journal-specific value..."
-                                                    />
-                                                </div>
+                                                <CustomPluginSettings
+                                                    pluginName={plugin.name}
+                                                    settings={
+                                                        journalSettings[
+                                                            journal.id
+                                                        ] || {}
+                                                    }
+                                                    onUpdate={(key, value) =>
+                                                        updateJournalSetting(
+                                                            journal.id,
+                                                            key,
+                                                            value,
+                                                        )
+                                                    }
+                                                    onUpdateAll={(s) =>
+                                                        setJournalSettings({
+                                                            ...journalSettings,
+                                                            [journal.id]: s,
+                                                        })
+                                                    }
+                                                />
                                                 <div className="flex justify-end">
                                                     <Button
                                                         variant="outline"
@@ -467,7 +379,8 @@ export default function PluginSettings({ plugin, journals }: Props) {
                                                         }
                                                     >
                                                         <Save className="mr-2 h-4 w-4" />
-                                                        Save for {journal.name}
+                                                        Save for{' '}
+                                                        {journal.name}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -488,5 +401,115 @@ export default function PluginSettings({ plugin, journals }: Props) {
                 </Tabs>
             </div>
         </AppLayout>
+    );
+}
+
+// ─── Plugin Settings Renderer ─────────────────────────────────────────
+
+interface CustomPluginSettingsProps {
+    /** Plugin name identifier used to look up the registered component */
+    pluginName: string;
+    /** Current settings values */
+    settings: Record<string, unknown>;
+    /** Update a single setting */
+    onUpdate: (key: string, value: unknown) => void;
+    /** Replace all settings */
+    onUpdateAll: (settings: Record<string, unknown>) => void;
+}
+
+/**
+ * Renders a plugin's custom settings form if one is registered,
+ * otherwise falls back to a generic key-value editor.
+ */
+function CustomPluginSettings({
+    pluginName,
+    settings,
+    onUpdate,
+    onUpdateAll,
+}: CustomPluginSettingsProps) {
+    const SettingsComponent = getPluginSettingsForm(pluginName);
+
+    if (SettingsComponent) {
+        return (
+            <SettingsComponent
+                settings={settings}
+                onUpdate={onUpdate}
+                onUpdateAll={onUpdateAll}
+            />
+        );
+    }
+
+    // Fallback: generic key-value editor for plugins without a custom form
+    const entries = Object.entries(settings);
+
+    if (entries.length === 0) {
+        return (
+            <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
+                <p className="text-sm">
+                    This plugin has no configurable settings.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-4">
+            {entries.map(([key, value]) => (
+                <div key={key} className="grid gap-2">
+                    <Label htmlFor={`setting-${key}`}>
+                        {key.replace(/_/g, ' ').replace(/\b\w/g, (l) =>
+                            l.toUpperCase(),
+                        )}
+                    </Label>
+                    {typeof value === 'boolean' ? (
+                        <div className="flex items-center justify-between rounded-lg border p-3">
+                            <p className="text-sm text-muted-foreground">
+                                {key.replace(/_/g, ' ')}
+                            </p>
+                            <Switch
+                                id={`setting-${key}`}
+                                checked={value as boolean}
+                                onCheckedChange={(checked) =>
+                                    onUpdate(key, checked)
+                                }
+                            />
+                        </div>
+                    ) : typeof value === 'number' ? (
+                        <Input
+                            id={`setting-${key}`}
+                            type="number"
+                            value={String(value)}
+                            onChange={(e) =>
+                                onUpdate(key, Number(e.target.value))
+                            }
+                        />
+                    ) : Array.isArray(value) ? (
+                        <Textarea
+                            id={`setting-${key}`}
+                            value={value.join(', ')}
+                            onChange={(e) =>
+                                onUpdate(
+                                    key,
+                                    e.target.value
+                                        .split(',')
+                                        .map((s) => s.trim())
+                                        .filter(Boolean),
+                                )
+                            }
+                            placeholder="Comma-separated values"
+                            rows={3}
+                        />
+                    ) : (
+                        <Input
+                            id={`setting-${key}`}
+                            value={String(value ?? '')}
+                            onChange={(e) =>
+                                onUpdate(key, e.target.value)
+                            }
+                        />
+                    )}
+                </div>
+            ))}
+        </div>
     );
 }

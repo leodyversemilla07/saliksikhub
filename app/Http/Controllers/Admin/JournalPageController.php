@@ -37,7 +37,7 @@ class JournalPageController extends Controller
         return Inertia::render('admin/cms/pages/create', [
             'journal' => $journal,
             'pageTypes' => JournalPage::TYPES,
-            'sectionTypes' => JournalPageSection::TYPES,
+            'sectionTypes' => JournalPageSection::getTypes(),
         ]);
     }
 
@@ -76,7 +76,7 @@ class JournalPageController extends Controller
             'journal' => $journal,
             'page' => $page,
             'pageTypes' => JournalPage::TYPES,
-            'sectionTypes' => JournalPageSection::TYPES,
+            'sectionTypes' => JournalPageSection::getTypes(),
         ]);
     }
 
@@ -143,13 +143,15 @@ class JournalPageController extends Controller
      */
     public function addSection(Request $request, Journal $journal, JournalPage $page)
     {
+        $types = array_keys(JournalPageSection::getTypes());
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
-            'type' => 'required|in:'.implode(',', array_keys(JournalPageSection::TYPES)),
+            'type' => 'required|in:'.implode(',', $types),
         ]);
 
+        $typesList = JournalPageSection::getTypes();
         $section = $page->sections()->create([
-            'name' => $validated['name'] ?? JournalPageSection::TYPES[$validated['type']],
+            'name' => $validated['name'] ?? $typesList[$validated['type']]['name'] ?? $validated['type'],
             'type' => $validated['type'],
             'content' => JournalPageSection::getDefaultContent($validated['type']),
             'settings' => JournalPageSection::getDefaultSettings($validated['type']),
@@ -169,7 +171,7 @@ class JournalPageController extends Controller
             'journal' => $journal,
             'page' => $page,
             'section' => $section,
-            'sectionTypes' => JournalPageSection::TYPES,
+            'sectionTypes' => JournalPageSection::getTypes(),
         ]);
     }
 

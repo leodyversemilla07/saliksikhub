@@ -308,7 +308,7 @@ export default function ApproveManuscript({
         },
         {
             label: 'Manuscripts',
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
         },
         {
             label: 'Approve Manuscript',

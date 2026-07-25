@@ -74,7 +74,7 @@ const navigationMap = {
             icon: LayoutDashboard,
         },
         {
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
             label: 'Submitted Manuscripts',
             icon: FileText,
         },
@@ -98,7 +98,7 @@ const navigationMap = {
             icon: LayoutDashboard,
         },
         {
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
             label: 'Submitted Manuscripts',
             icon: FileText,
         },
@@ -122,7 +122,7 @@ const navigationMap = {
             icon: LayoutDashboard,
         },
         {
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
             label: 'Submitted Manuscripts',
             icon: FileText,
         },
@@ -140,7 +140,7 @@ const navigationMap = {
             icon: LayoutDashboard,
         },
         {
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
             label: 'Submitted Manuscripts',
             icon: FileText,
         },

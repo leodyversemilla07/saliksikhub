@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Review;
 use App\Enums\ReviewStatus;
+use App\Models\Review;
 use App\Services\ReviewService;
 use Illuminate\Console\Command;
 

@@ -1,0 +1,14 @@
+{
+    "name": "citation-tool",
+    "displayName": "Citation Tool",
+    "version": "1.0.0",
+    "author": "SaliksikHub Team",
+    "description": "Generate manuscript citations in APA, MLA, Chicago, Harvard, and Vancouver formats",
+    "isGlobal": true,
+    "defaultSettings": {
+        "defaultFormat": "apa",
+        "enabled": true,
+        "showCopyButton": true,
+        "availableFormats": ["apa", "mla", "chicago", "harvard", "vancouver"]
+    }
+}

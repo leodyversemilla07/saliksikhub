@@ -76,7 +76,7 @@ export default function AssignReviewers({
     });
 
     const breadcrumbItems = [
-        { label: 'Manuscripts', href: editor.indexManuscripts.url() },
+        { label: 'Manuscripts', href: editor.manuscripts.index.url() },
         {
             label: manuscript.title,
             href: editor.manuscripts.show.url({ id: manuscript.id }),

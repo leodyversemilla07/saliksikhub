@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Settings, RotateCcw, X } from 'lucide-react';
+import { ArrowLeft, Settings, RotateCcw, X, GripVertical, Eye, EyeOff } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import {
@@ -324,6 +324,238 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         <p className="text-xs text-muted-foreground">
                             {field.description}
                         </p>
+                    </div>
+                );
+            }
+
+            case 'sidebar_widgets': {
+                const widgets = (getSetting(fullKey, []) as Array<{
+                    id: string;
+                    type: string;
+                    title: string;
+                    enabled: boolean;
+                    settings: Record<string, unknown>;
+                }>) || [];
+
+                const availableTypes = [
+                    {value: 'recent_articles', label: 'Recent Articles'},
+                    {value: 'keywords', label: 'Keywords / Topics'},
+                    {value: 'journal_info', label: 'About the Journal'},
+                ];
+
+                const addWidget = (type: string) => {
+                    const label =
+                        availableTypes.find((t) => t.value === type)
+                            ?.label || type;
+                    const newWidget = {
+                        id: `${type}-${Date.now()}`,
+                        type,
+                        title: label,
+                        enabled: true,
+                        settings: {},
+                        order: widgets.length,
+                    };
+                    setSetting(fullKey, [...widgets, newWidget]);
+                };
+
+                const removeWidget = (id: string) => {
+                    setSetting(
+                        fullKey,
+                        widgets.filter((w) => w.id !== id),
+                    );
+                };
+
+                const toggleWidget = (id: string) => {
+                    setSetting(
+                        fullKey,
+                        widgets.map((w) =>
+                            w.id === id
+                                ? {...w, enabled: !w.enabled}
+                                : w,
+                        ),
+                    );
+                };
+
+                const moveWidget = (id: string, direction: -1 | 1) => {
+                    const idx = widgets.findIndex((w) => w.id === id);
+                    if (
+                        idx === -1 ||
+                        (direction === -1 && idx === 0) ||
+                        (direction === 1 && idx === widgets.length - 1)
+                    ) {
+                        return;
+                    }
+                    const updated = [...widgets];
+                    const target = idx + direction;
+                    [updated[idx], updated[target]] = [
+                        updated[target],
+                        updated[idx],
+                    ];
+                    setSetting(
+                        fullKey,
+                        updated.map((w, i) => ({...w, order: i})),
+                    );
+                };
+
+                return (
+                    <div key={fullKey} className="space-y-4">
+                        <Label>{field.label}</Label>
+                        <p className="text-sm text-muted-foreground">
+                            {field.description}
+                        </p>
+
+                        {widgets.length === 0 && (
+                            <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                                <EyeOff className="mx-auto mb-2 h-8 w-8 opacity-50" />
+                                <p>No sidebar widgets configured.</p>
+                                <p className="text-xs">
+                                    Add widgets below to show content in the
+                                    sidebar.
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            {widgets.map((widget, index) => (
+                                <div
+                                    key={widget.id}
+                                    className={`flex items-center gap-3 rounded-lg border p-3 ${
+                                        widget.enabled
+                                            ? ''
+                                            : 'opacity-50'
+                                    }`}
+                                >
+                                    <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium">
+                                            {availableTypes.find(
+                                                (t) =>
+                                                    t.value ===
+                                                    widget.type,
+                                            )?.label || widget.type}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {widget.title ||
+                                                'No title set'}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            disabled={index === 0}
+                                            onClick={() =>
+                                                moveWidget(
+                                                    widget.id,
+                                                    -1,
+                                                )
+                                            }
+                                            title="Move up"
+                                        >
+                                            ↑
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            disabled={
+                                                index ===
+                                                widgets.length - 1
+                                            }
+                                            onClick={() =>
+                                                moveWidget(
+                                                    widget.id,
+                                                    1,
+                                                )
+                                            }
+                                            title="Move down"
+                                        >
+                                            ↓
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            onClick={() =>
+                                                toggleWidget(
+                                                    widget.id,
+                                                )
+                                            }
+                                            title={
+                                                widget.enabled
+                                                    ? 'Disable'
+                                                    : 'Enable'
+                                            }
+                                        >
+                                            {widget.enabled ? (
+                                                <Eye className="h-4 w-4" />
+                                            ) : (
+                                                <EyeOff className="h-4 w-4" />
+                                            )}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-destructive hover:text-destructive"
+                                            onClick={() =>
+                                                removeWidget(
+                                                    widget.id,
+                                                )
+                                            }
+                                            title="Remove"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Select
+                                onValueChange={(value) =>
+                                    addWidget(value)
+                                }
+                            >
+                                <SelectTrigger className="w-[200px]">
+                                    <SelectValue placeholder="Add a widget..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableTypes
+                                        .filter(
+                                            (t) =>
+                                                !widgets.some(
+                                                    (w) =>
+                                                        w.type ===
+                                                        t.value,
+                                                ),
+                                        )
+                                        .map((t) => (
+                                            <SelectItem
+                                                key={t.value}
+                                                value={t.value}
+                                            >
+                                                {t.label}
+                                            </SelectItem>
+                                        ))}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                {availableTypes.filter(
+                                    (t) =>
+                                        !widgets.some(
+                                            (w) =>
+                                                w.type === t.value,
+                                        ),
+                                ).length === 0 &&
+                                    'All widget types added'}
+                            </p>
+                        </div>
                     </div>
                 );
             }

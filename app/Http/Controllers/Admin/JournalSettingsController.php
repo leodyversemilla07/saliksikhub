@@ -52,6 +52,11 @@ class JournalSettingsController extends Controller
             'for_librarians' => ['type' => 'text', 'label' => 'For Librarians', 'description' => 'Information block for librarians (e.g., indexing, archiving)'],
             'footer_content' => ['type' => 'text', 'label' => 'Footer Content', 'description' => 'Extra HTML/content displayed in the footer area'],
         ],
+        'sidebar' => [
+            'enable_sidebar' => ['type' => 'boolean', 'label' => 'Enable Sidebar', 'description' => 'Show sidebar widgets on public pages'],
+            'sidebar_position' => ['type' => 'select', 'label' => 'Sidebar Position', 'description' => 'Which side the sidebar appears on', 'options' => ['right', 'left']],
+            'sidebar_widgets' => ['type' => 'sidebar_widgets', 'label' => 'Sidebar Widgets', 'description' => 'Configure which widgets appear in the sidebar and their order'],
+        ],
     ];
 
     /**

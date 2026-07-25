@@ -120,7 +120,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
         },
         {
             label: 'Manuscripts',
-            href: editor.indexManuscripts.url(),
+            href: editor.manuscripts.index.url(),
         },
     ];
 
@@ -201,7 +201,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
                 return response.json();
             })
             .then(() => {
-                window.location.href = editor.indexManuscripts.url();
+                window.location.href = editor.manuscripts.index.url();
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -246,7 +246,7 @@ export default function Index({ manuscripts }: ManuscriptTableProps) {
             {
                 forceFormData: true, // Ensure FormData is used
                 onSuccess: () => {
-                    window.location.href = editor.indexManuscripts.url();
+                    window.location.href = editor.manuscripts.index.url();
                 },
                 onError: (errors) => {
                     console.error('Upload error:', errors);

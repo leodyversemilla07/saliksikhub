@@ -8,7 +8,9 @@ use App\Http\Middleware\SetCurrentJournal;
 use App\Http\Middleware\SlugRedirectMiddleware;
 use App\Http\Middleware\TeamsPermission;
 use App\Http\Middleware\TrackManuscriptStatistics;
+use App\Providers\AppServiceProvider;
 use App\Providers\FortifyServiceProvider;
+use App\Providers\PluginServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -20,7 +22,9 @@ use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
+        AppServiceProvider::class,
         FortifyServiceProvider::class,
+        PluginServiceProvider::class,
     ])
     ->withRouting(
         web: __DIR__.'/../routes/web.php',

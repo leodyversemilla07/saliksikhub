@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Plugin\Hook;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,24 @@ class JournalPageSection extends Model
         'order' => 'integer',
         'is_visible' => 'boolean',
     ];
+
+    /**
+     * Get available section types with plugin extensions.
+     *
+     * Plugins can register custom section types by hooking into
+     * the 'cms.section_types' filter.
+     */
+    public static function getTypes(): array
+    {
+        $types = self::TYPES;
+
+        // Only apply the hook if the Plugin system is available
+        if (class_exists(Hook::class)) {
+            $types = Hook::applyFilters('cms.section_types', $types);
+        }
+
+        return $types;
+    }
 
     /**
      * Available section types with their descriptions.

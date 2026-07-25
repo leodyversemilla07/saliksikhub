@@ -18,6 +18,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
+// ─── Plugin Section Renderer Registry ────────────────────────────────
+// Plugins register custom CMS section renderers here.
+// The registry maps section type strings to renderer functions.
+
+const pluginSectionRenderers = new Map<
+    string,
+    (section: Section) => React.ReactNode
+>();
+
+/**
+ * Register a plugin section renderer for a custom CMS section type.
+ */
+export function registerPluginSectionRenderer(
+    type: string,
+    renderer: (section: Section) => React.ReactNode,
+): void {
+    pluginSectionRenderers.set(type, renderer);
+}
+
+/**
+ * Get a registered plugin section renderer.
+ */
+function getPluginSectionRenderer(
+    type: string,
+): ((section: Section) => React.ReactNode) | undefined {
+    return pluginSectionRenderers.get(type);
+}
+
+// ─── Section Content Types ───────────────────────────────────────────
+
 interface SectionContent {
     title?: string;
     subtitle?: string;
@@ -85,6 +115,12 @@ export default function CmsSection({ section }: Props) {
     const containerClass = settings.full_width
         ? 'w-full'
         : 'mx-auto max-w-7xl px-6 lg:px-8';
+
+    // Check if a plugin handles this section type
+    const pluginRenderer = getPluginSectionRenderer(type);
+    if (pluginRenderer) {
+        return pluginRenderer(section);
+    }
 
     switch (type) {
         case 'hero':
