@@ -97,6 +97,16 @@ class Journal extends Model
     }
 
     /**
+     * Get the plugins enabled for this journal.
+     */
+    public function plugins(): BelongsToMany
+    {
+        return $this->belongsToMany(Plugin::class, 'journal_plugins')
+            ->withPivot(['enabled', 'settings'])
+            ->withTimestamps();
+    }
+
+    /**
      * Get the journal's logo URL.
      */
     public function getLogoUrlAttribute(): ?string

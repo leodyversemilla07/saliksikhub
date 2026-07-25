@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Journal;
+use App\Models\Plugin;
+use App\Services\SidebarWidgetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -60,10 +63,35 @@ class JournalSettingsController extends Controller
     ];
 
     /**
+     * Available sidebar widget types (including plugin-registered).
+     */
+    protected function getWidgetTypes(): array
+    {
+        $service = app(SidebarWidgetService::class);
+
+        return $service->getAvailableTypes();
+    }
+
+    /**
      * Show the journal settings form.
      */
     public function edit(Journal $journal): Response
     {
+        $plugins = Plugin::orderBy('display_name')->get()->map(function ($plugin) use ($journal) {
+            $journalPivot = $plugin->journals()->where('journal_id', $journal->id)->first()?->pivot;
+
+            return [
+                'id' => $plugin->id,
+                'name' => $plugin->name,
+                'display_name' => $plugin->display_name,
+                'description' => $plugin->description,
+                'version' => $plugin->version,
+                'is_global' => $plugin->is_global,
+                'enabled' => $plugin->enabled,
+                'enabled_for_journal' => $journalPivot?->enabled ?? false,
+            ];
+        });
+
         return Inertia::render('admin/journals/settings', [
             'journal' => [
                 'id' => $journal->id,
@@ -71,6 +99,8 @@ class JournalSettingsController extends Controller
                 'settings' => $journal->settings ?? [],
             ],
             'settingsSchema' => $this->settingsSchema,
+            'widgetTypes' => $this->getWidgetTypes(),
+            'plugins' => $plugins,
         ]);
     }
 
@@ -100,5 +130,41 @@ class JournalSettingsController extends Controller
         $journal->update(['settings' => []]);
 
         return back()->with('success', 'Journal settings reset to defaults.');
+    }
+
+    /**
+     * Toggle a plugin for this journal.
+     */
+    public function togglePlugin(Request $request, Journal $journal, Plugin $plugin): RedirectResponse
+    {
+        $request->validate([
+            'enabled' => 'required|boolean',
+        ]);
+
+        try {
+            $enabled = $request->boolean('enabled');
+
+            $journal->plugins()->syncWithoutDetaching([
+                $plugin->id => ['enabled' => $enabled],
+            ]);
+
+            Log::info('Journal plugin toggled', [
+                'journal_id' => $journal->id,
+                'plugin_id' => $plugin->id,
+                'enabled' => $enabled,
+            ]);
+
+            $action = $enabled ? 'enabled' : 'disabled';
+
+            return back()->with('success', "Plugin '{$plugin->display_name}' {$action} for this journal.");
+        } catch (\Exception $e) {
+            Log::error('Failed to toggle plugin for journal', [
+                'error' => $e->getMessage(),
+                'journal_id' => $journal->id,
+                'plugin_id' => $plugin->id,
+            ]);
+
+            return back()->with('error', 'Failed to update plugin status: '.$e->getMessage());
+        }
     }
 }

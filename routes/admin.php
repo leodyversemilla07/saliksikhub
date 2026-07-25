@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified', 'user_role:super_admin|managing_editor|ed
     Route::get('journals/{journal}/settings', [JournalSettingsController::class, 'edit'])->name('journals.settings.edit');
     Route::put('journals/{journal}/settings', [JournalSettingsController::class, 'update'])->name('journals.settings.update');
     Route::post('journals/{journal}/settings/reset', [JournalSettingsController::class, 'reset'])->name('journals.settings.reset');
+    Route::post('journals/{journal}/settings/plugins/{plugin}/toggle', [JournalSettingsController::class, 'togglePlugin'])->name('journals.settings.plugins.toggle');
 
     // Journal CMS - Pages
     Route::get('journals/{journal}/cms/pages', [JournalPageController::class, 'index'])->name('journals.cms.pages.index');

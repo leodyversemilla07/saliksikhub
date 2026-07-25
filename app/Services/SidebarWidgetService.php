@@ -2,11 +2,40 @@
 
 namespace App\Services;
 
+use App\Core\Plugin\Hook;
 use App\Enums\ManuscriptStatus;
 use App\Models\Manuscript;
 
 class SidebarWidgetService
 {
+    /**
+     * Get all available widget types, including those registered by plugins.
+     *
+     * @return array<string, array{name: string, description: string, icon?: string}>
+     */
+    public function getAvailableTypes(): array
+    {
+        $types = [
+            'recent_articles' => [
+                'name' => 'Recent Articles',
+                'description' => 'Shows the latest published manuscripts',
+                'icon' => 'FileText',
+            ],
+            'keywords' => [
+                'name' => 'Keywords / Topics',
+                'description' => 'Displays a tag cloud of manuscript keywords',
+                'icon' => 'Hash',
+            ],
+            'journal_info' => [
+                'name' => 'About the Journal',
+                'description' => 'Shows journal metadata (ISSN, publisher, etc.)',
+                'icon' => 'Info',
+            ],
+        ];
+
+        return Hook::applyFilters('sidebar.widget_types', $types);
+    }
+
     /**
      * Build widget data for the sidebar based on journal settings.
      *
@@ -34,7 +63,7 @@ class SidebarWidgetService
                 'settings' => $config['settings'] ?? [],
             ];
 
-            // Populate widget-specific data
+            // Populate widget-specific data, including plugin-registered types
             $widget = $this->populateWidgetData($widget, $journalId);
 
             $widgets[] = $widget;
@@ -45,15 +74,24 @@ class SidebarWidgetService
 
     /**
      * Populate a single widget with its data.
+     * Falls back to a filter for plugin-registered widget types.
      */
     protected function populateWidgetData(array $widget, ?int $journalId): array
     {
-        return match ($widget['type']) {
+        $result = match ($widget['type']) {
             'recent_articles' => $this->populateRecentArticles($widget, $journalId),
             'keywords' => $this->populateKeywords($widget, $journalId),
             'journal_info' => $this->populateJournalInfo($widget),
-            default => $widget,
+            default => null,
         };
+
+        // If the built-in handler handled it, return the result
+        if ($result !== null) {
+            return $result;
+        }
+
+        // Otherwise, let plugins handle custom widget types via filter
+        return Hook::applyFilters('sidebar.widget_data', $widget, $journalId);
     }
 
     /**
@@ -100,7 +138,6 @@ class SidebarWidgetService
             $query->where('journal_id', $journalId);
         }
 
-        // Extract and count keywords from published manuscripts
         $keywords = [];
         $manuscripts = $query->get(['keywords']);
 
@@ -118,7 +155,6 @@ class SidebarWidgetService
             }
         }
 
-        // Sort by count descending, take top 20
         usort($keywords, fn ($a, $b) => $b['count'] <=> $a['count']);
         $keywords = array_slice($keywords, 0, 20);
 
@@ -128,7 +164,7 @@ class SidebarWidgetService
     }
 
     /**
-     * Populate journal info — set from the shared currentJournal props.
+     * Populate journal info.
      */
     protected function populateJournalInfo(array $widget): array
     {
@@ -139,7 +175,7 @@ class SidebarWidgetService
                 'name' => $journal->name,
                 'description' => $journal->description,
                 'issn' => $journal->issn,
-                'publisher' => null, // Could be populated from institution
+                'publisher' => null,
                 'frequency' => $journal->settings['publication_frequency'] ?? $journal->publication_frequency ?? null,
             ];
         }

@@ -1,7 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Settings, RotateCcw, X, GripVertical, Eye, EyeOff } from 'lucide-react';
+import {
+    ArrowLeft,
+    Settings,
+    RotateCcw,
+    X,
+    GripVertical,
+    Eye,
+    EyeOff,
+    Puzzle,
+    Power,
+    PowerOff,
+} from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -63,12 +75,37 @@ interface Journal {
     settings: Record<string, unknown>;
 }
 
+interface WidgetTypeInfo {
+    name: string;
+    description: string;
+    icon?: string;
+    plugin?: string;
+}
+
+interface JournalPlugin {
+    id: number;
+    name: string;
+    display_name: string;
+    description: string | null;
+    version: string;
+    is_global: boolean;
+    enabled: boolean;
+    enabled_for_journal: boolean;
+}
+
 interface Props {
     journal: Journal;
     settingsSchema: SettingsSchema;
+    widgetTypes: Record<string, WidgetTypeInfo>;
+    plugins: JournalPlugin[];
 }
 
-export default function JournalSettings({ journal, settingsSchema }: Props) {
+export default function JournalSettings({
+    journal,
+    settingsSchema,
+    widgetTypes = {},
+    plugins = [],
+}: Props) {
     const [tagInputs, setTagInputs] = useState<Record<string, string>>({});
     const [settings, setSettings] = useState<Record<string, unknown>>(
         journal.settings || {},
@@ -337,11 +374,14 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                     settings: Record<string, unknown>;
                 }>) || [];
 
-                const availableTypes = [
-                    {value: 'recent_articles', label: 'Recent Articles'},
-                    {value: 'keywords', label: 'Keywords / Topics'},
-                    {value: 'journal_info', label: 'About the Journal'},
-                ];
+                // Use dynamic widget types from PHP (includes plugin-registered types)
+                const availableTypes = Object.entries(widgetTypes).map(
+                    ([key, info]) => ({
+                        value: key,
+                        label: info.name,
+                        plugin: info.plugin,
+                    }),
+                );
 
                 const addWidget = (type: string) => {
                     const label =
@@ -628,7 +668,7 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                         <TabsList
                             className="grid w-full"
                             style={{
-                                gridTemplateColumns: `repeat(${categories.length}, 1fr)`,
+                                gridTemplateColumns: `repeat(${categories.length + (plugins.length > 0 ? 1 : 0)}, 1fr)`,
                             }}
                         >
                             {categories.map(([category]) => (
@@ -640,6 +680,15 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                                     {category.replace(/_/g, ' ')}
                                 </TabsTrigger>
                             ))}
+                            {plugins.length > 0 && (
+                                <TabsTrigger
+                                    value="plugins"
+                                    className="capitalize"
+                                >
+                                    <Puzzle className="mr-2 h-4 w-4" />
+                                    Plugins
+                                </TabsTrigger>
+                            )}
                         </TabsList>
 
                         {categories.map(([category, fields]) => (
@@ -666,6 +715,96 @@ export default function JournalSettings({ journal, settingsSchema }: Props) {
                                 </Card>
                             </TabsContent>
                         ))}
+
+                        {plugins.length > 0 && (
+                            <TabsContent value="plugins">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Puzzle className="h-5 w-5" />
+                                            Plugins
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Enable or disable plugins for{' '}
+                                            {journal.name}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        {plugins.map((plugin) => (
+                                            <div
+                                                key={plugin.id}
+                                                className="flex items-center justify-between rounded-lg border p-4"
+                                            >
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-medium">
+                                                            {
+                                                                plugin.display_name
+                                                            }
+                                                        </p>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-xs"
+                                                        >
+                                                            v{
+                                                                plugin.version
+                                                            }
+                                                        </Badge>
+                                                        {plugin.is_global &&
+                                                            plugin.enabled && (
+                                                                <Badge
+                                                                    variant="secondary"
+                                                                    className="text-xs"
+                                                                >
+                                                                    Globally
+                                                                    Enabled
+                                                                </Badge>
+                                                            )}
+                                                    </div>
+                                                    {plugin.description && (
+                                                        <p className="mt-1 text-xs text-muted-foreground line-clamp-1">
+                                                            {
+                                                                plugin.description
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <Switch
+                                                    checked={
+                                                        plugin.enabled_for_journal
+                                                    }
+                                                    onCheckedChange={(
+                                                        checked,
+                                                    ) => {
+                                                        router.post(
+                                                            `/admin/journals/${journal.id}/settings/plugins/${plugin.id}/toggle`,
+                                                            {
+                                                                enabled:
+                                                                    checked,
+                                                            },
+                                                            {
+                                                                preserveScroll:
+                                                                    true,
+                                                                onSuccess:
+                                                                    () => {
+                                                                        toast[
+                                                                            checked
+                                                                                ? 'success'
+                                                                                : 'info'
+                                                                        ](
+                                                                            `${plugin.display_name} ${checked ? 'enabled' : 'disabled'} for this journal.`,
+                                                                        );
+                                                                    },
+                                                            },
+                                                        );
+                                                    }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        )}
                     </Tabs>
 
                     <div className="mt-6 flex justify-end gap-4">
