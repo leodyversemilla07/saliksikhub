@@ -1,7 +1,8 @@
-import {registerPluginSectionRenderer, type Section} from '@/components/cms/section';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Link} from '@inertiajs/react';
-import {ArrowRight, BookOpen, Calendar, FileText} from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import { ArrowRight, BookOpen, Calendar, FileText } from 'lucide-react';
+import { registerPluginSectionRenderer } from '@/components/cms/section';
+import type { Section } from '@/components/cms/section';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * Register CMS section renderers provided by plugins.
@@ -12,10 +13,7 @@ export function registerCmsPluginSections(): void {
         'featured_publications',
         renderFeaturedPublications,
     );
-    registerPluginSectionRenderer(
-        'editor_picks',
-        renderEditorPicks,
-    );
+    registerPluginSectionRenderer('editor_picks', renderEditorPicks);
 }
 
 interface Publication {
@@ -40,7 +38,9 @@ interface FeaturedPublicationsContent {
  */
 function renderFeaturedPublications(section: Section) {
     const content = section.content as FeaturedPublicationsContent;
-    const publications = section.content.publications as Publication[] | undefined;
+    const publications = section.content.publications as
+        | Publication[]
+        | undefined;
 
     return (
         <section className="py-16 sm:py-20">
@@ -61,49 +61,57 @@ function renderFeaturedPublications(section: Section) {
                 {(!publications || publications.length === 0) && (
                     <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
                         <BookOpen className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                        <p className="text-lg font-medium">No publications to display</p>
-                        <p className="text-sm">Publications will appear here once published.</p>
+                        <p className="text-lg font-medium">
+                            No publications to display
+                        </p>
+                        <p className="text-sm">
+                            Publications will appear here once published.
+                        </p>
                     </div>
                 )}
 
                 {publications && publications.length > 0 && (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {publications.slice(0, content.limit ?? 6).map((pub) => (
-                            <Card
-                                key={pub.id}
-                                className="transition-shadow hover:shadow-lg"
-                            >
-                                <CardHeader>
-                                    <CardTitle className="line-clamp-2 text-base">
-                                        <Link
-                                            href={`/manuscripts/${pub.slug}`}
-                                            className="hover:text-primary transition-colors"
-                                        >
-                                            {pub.title}
-                                        </Link>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                    <p className="line-clamp-1 text-sm text-muted-foreground">
-                                        {pub.authors?.join(', ')}
-                                    </p>
-                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                        {pub.publication_date && (
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="h-3 w-3" />
-                                                {new Date(pub.publication_date).toLocaleDateString()}
-                                            </span>
-                                        )}
-                                        {pub.doi && (
-                                            <span className="flex items-center gap-1">
-                                                <FileText className="h-3 w-3" />
-                                                DOI: {pub.doi}
-                                            </span>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        {publications
+                            .slice(0, content.limit ?? 6)
+                            .map((pub) => (
+                                <Card
+                                    key={pub.id}
+                                    className="transition-shadow hover:shadow-lg"
+                                >
+                                    <CardHeader>
+                                        <CardTitle className="line-clamp-2 text-base">
+                                            <Link
+                                                href={`/manuscripts/${pub.slug}`}
+                                                className="transition-colors hover:text-primary"
+                                            >
+                                                {pub.title}
+                                            </Link>
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2">
+                                        <p className="line-clamp-1 text-sm text-muted-foreground">
+                                            {pub.authors?.join(', ')}
+                                        </p>
+                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                            {pub.publication_date && (
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    {new Date(
+                                                        pub.publication_date,
+                                                    ).toLocaleDateString()}
+                                                </span>
+                                            )}
+                                            {pub.doi && (
+                                                <span className="flex items-center gap-1">
+                                                    <FileText className="h-3 w-3" />
+                                                    DOI: {pub.doi}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
                     </div>
                 )}
 
@@ -176,11 +184,11 @@ function renderEditorPicks(section: Section) {
                                 <div className="min-w-0 flex-1">
                                     <Link
                                         href={`/manuscripts/${pick.slug}`}
-                                        className="font-medium hover:text-primary transition-colors line-clamp-1"
+                                        className="line-clamp-1 font-medium transition-colors hover:text-primary"
                                     >
                                         {pick.title}
                                     </Link>
-                                    <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
+                                    <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
                                         {pick.authors?.join(', ')}
                                     </p>
                                 </div>

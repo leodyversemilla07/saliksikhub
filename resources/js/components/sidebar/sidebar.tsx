@@ -1,4 +1,5 @@
-import {getWidgetRenderer, type Widget} from '@/components/sidebar/widget-registry';
+import { getWidgetRenderer } from '@/components/sidebar/widget-registry';
+import type { Widget } from '@/components/sidebar/widget-registry';
 
 interface SidebarProps {
     /** Widgets to render in the sidebar, in order */
@@ -17,40 +18,29 @@ interface SidebarProps {
  * Usage:
  * ```tsx
  * <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
- *   <div>{/* main content */}</div>
+ *   <div>main content here</div>
  *   <Sidebar widgets={sidebarWidgets} />
  * </div>
  * ```
  */
-export function Sidebar({widgets, className}: SidebarProps) {
+export function Sidebar({ widgets, className }: SidebarProps) {
     if (!widgets || widgets.length === 0) {
         return null;
     }
 
     return (
-        <aside
-            className={`space-y-6 ${className ?? ''}`}
-            aria-label="Sidebar"
-        >
+        <aside className={`space-y-6 ${className ?? ''}`} aria-label="Sidebar">
             {widgets
                 .sort((a, b) => a.order - b.order)
-                .map((widget) => (
-                    <WidgetRenderer key={widget.id} widget={widget} />
-                ))}
+                .map((widget) => {
+                    const Renderer = getWidgetRenderer(widget.type);
+
+                    if (!Renderer) {
+                        return null;
+                    }
+
+                    return <Renderer key={widget.id} widget={widget} />;
+                })}
         </aside>
     );
-}
-
-/**
- * Internal helper that renders a single widget by looking up its renderer.
- */
-function WidgetRenderer({widget}: {widget: Widget}) {
-    const Renderer = getWidgetRenderer(widget.type);
-
-    if (!Renderer) {
-        // Unknown widget type — skip gracefully
-        return null;
-    }
-
-    return <Renderer widget={widget} />;
 }

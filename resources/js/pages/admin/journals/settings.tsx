@@ -8,8 +8,6 @@ import {
     Eye,
     EyeOff,
     Puzzle,
-    Power,
-    PowerOff,
 } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
@@ -366,13 +364,14 @@ export default function JournalSettings({
             }
 
             case 'sidebar_widgets': {
-                const widgets = (getSetting(fullKey, []) as Array<{
-                    id: string;
-                    type: string;
-                    title: string;
-                    enabled: boolean;
-                    settings: Record<string, unknown>;
-                }>) || [];
+                const widgets =
+                    (getSetting(fullKey, []) as Array<{
+                        id: string;
+                        type: string;
+                        title: string;
+                        enabled: boolean;
+                        settings: Record<string, unknown>;
+                    }>) || [];
 
                 // Use dynamic widget types from PHP (includes plugin-registered types)
                 const availableTypes = Object.entries(widgetTypes).map(
@@ -385,8 +384,8 @@ export default function JournalSettings({
 
                 const addWidget = (type: string) => {
                     const label =
-                        availableTypes.find((t) => t.value === type)
-                            ?.label || type;
+                        availableTypes.find((t) => t.value === type)?.label ||
+                        type;
                     const newWidget = {
                         id: `${type}-${Date.now()}`,
                         type,
@@ -409,15 +408,14 @@ export default function JournalSettings({
                     setSetting(
                         fullKey,
                         widgets.map((w) =>
-                            w.id === id
-                                ? {...w, enabled: !w.enabled}
-                                : w,
+                            w.id === id ? { ...w, enabled: !w.enabled } : w,
                         ),
                     );
                 };
 
                 const moveWidget = (id: string, direction: -1 | 1) => {
                     const idx = widgets.findIndex((w) => w.id === id);
+
                     if (
                         idx === -1 ||
                         (direction === -1 && idx === 0) ||
@@ -425,6 +423,7 @@ export default function JournalSettings({
                     ) {
                         return;
                     }
+
                     const updated = [...widgets];
                     const target = idx + direction;
                     [updated[idx], updated[target]] = [
@@ -433,7 +432,7 @@ export default function JournalSettings({
                     ];
                     setSetting(
                         fullKey,
-                        updated.map((w, i) => ({...w, order: i})),
+                        updated.map((w, i) => ({ ...w, order: i })),
                     );
                 };
 
@@ -460,23 +459,18 @@ export default function JournalSettings({
                                 <div
                                     key={widget.id}
                                     className={`flex items-center gap-3 rounded-lg border p-3 ${
-                                        widget.enabled
-                                            ? ''
-                                            : 'opacity-50'
+                                        widget.enabled ? '' : 'opacity-50'
                                     }`}
                                 >
                                     <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
                                     <div className="min-w-0 flex-1">
                                         <p className="text-sm font-medium">
                                             {availableTypes.find(
-                                                (t) =>
-                                                    t.value ===
-                                                    widget.type,
+                                                (t) => t.value === widget.type,
                                             )?.label || widget.type}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            {widget.title ||
-                                                'No title set'}
+                                            {widget.title || 'No title set'}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-1">
@@ -487,10 +481,7 @@ export default function JournalSettings({
                                             className="h-8 w-8"
                                             disabled={index === 0}
                                             onClick={() =>
-                                                moveWidget(
-                                                    widget.id,
-                                                    -1,
-                                                )
+                                                moveWidget(widget.id, -1)
                                             }
                                             title="Move up"
                                         >
@@ -502,14 +493,10 @@ export default function JournalSettings({
                                             size="icon"
                                             className="h-8 w-8"
                                             disabled={
-                                                index ===
-                                                widgets.length - 1
+                                                index === widgets.length - 1
                                             }
                                             onClick={() =>
-                                                moveWidget(
-                                                    widget.id,
-                                                    1,
-                                                )
+                                                moveWidget(widget.id, 1)
                                             }
                                             title="Move down"
                                         >
@@ -521,9 +508,7 @@ export default function JournalSettings({
                                             size="icon"
                                             className="h-8 w-8"
                                             onClick={() =>
-                                                toggleWidget(
-                                                    widget.id,
-                                                )
+                                                toggleWidget(widget.id)
                                             }
                                             title={
                                                 widget.enabled
@@ -543,9 +528,7 @@ export default function JournalSettings({
                                             size="icon"
                                             className="h-8 w-8 text-destructive hover:text-destructive"
                                             onClick={() =>
-                                                removeWidget(
-                                                    widget.id,
-                                                )
+                                                removeWidget(widget.id)
                                             }
                                             title="Remove"
                                         >
@@ -557,11 +540,7 @@ export default function JournalSettings({
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Select
-                                onValueChange={(value) =>
-                                    addWidget(value)
-                                }
-                            >
+                            <Select onValueChange={(value) => addWidget(value)}>
                                 <SelectTrigger className="w-[200px]">
                                     <SelectValue placeholder="Add a widget..." />
                                 </SelectTrigger>
@@ -570,9 +549,7 @@ export default function JournalSettings({
                                         .filter(
                                             (t) =>
                                                 !widgets.some(
-                                                    (w) =>
-                                                        w.type ===
-                                                        t.value,
+                                                    (w) => w.type === t.value,
                                                 ),
                                         )
                                         .map((t) => (
@@ -589,11 +566,9 @@ export default function JournalSettings({
                                 {availableTypes.filter(
                                     (t) =>
                                         !widgets.some(
-                                            (w) =>
-                                                w.type === t.value,
+                                            (w) => w.type === t.value,
                                         ),
-                                ).length === 0 &&
-                                    'All widget types added'}
+                                ).length === 0 && 'All widget types added'}
                             </p>
                         </div>
                     </div>
@@ -746,9 +721,7 @@ export default function JournalSettings({
                                                             variant="outline"
                                                             className="text-xs"
                                                         >
-                                                            v{
-                                                                plugin.version
-                                                            }
+                                                            v{plugin.version}
                                                         </Badge>
                                                         {plugin.is_global &&
                                                             plugin.enabled && (
@@ -762,10 +735,8 @@ export default function JournalSettings({
                                                             )}
                                                     </div>
                                                     {plugin.description && (
-                                                        <p className="mt-1 text-xs text-muted-foreground line-clamp-1">
-                                                            {
-                                                                plugin.description
-                                                            }
+                                                        <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                                                            {plugin.description}
                                                         </p>
                                                     )}
                                                 </div>
@@ -783,8 +754,7 @@ export default function JournalSettings({
                                                                     checked,
                                                             },
                                                             {
-                                                                preserveScroll:
-                                                                    true,
+                                                                preserveScroll: true,
                                                                 onSuccess:
                                                                     () => {
                                                                         toast[

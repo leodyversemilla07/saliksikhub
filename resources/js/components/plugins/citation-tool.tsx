@@ -1,18 +1,13 @@
-import {useCallback, useMemo, useState} from 'react';
-import {Check, ChevronDown, Copy, Quote} from 'lucide-react';
+import { Check, ChevronDown, Copy, Quote } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {Button} from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 
 interface CitationToolProps {
     title: string;
@@ -37,10 +32,7 @@ type FormatKey = 'apa' | 'mla' | 'chicago' | 'harvard' | 'vancouver';
  * Generate a formatted citation string from manuscript metadata.
  * Uses pure string formatting — no external libraries needed.
  */
-function formatCitation(
-    format: FormatKey,
-    props: CitationToolProps,
-): string {
+function formatCitation(format: FormatKey, props: CitationToolProps): string {
     const {
         title,
         authors,
@@ -50,7 +42,6 @@ function formatCitation(
         pages,
         doi,
         year,
-        publisher,
         url,
     } = props;
     const yr = year ?? '(n.d.)';
@@ -84,8 +75,15 @@ function formatCitation(
                       : '';
             const pageStr = pages ? `, pp. ${pages}` : '';
             const sourceParts = [`*${journalName}*`];
-            if (volIssue) sourceParts.push(volIssue);
-            if (pageStr) sourceParts.push(pageStr);
+
+            if (volIssue) {
+                sourceParts.push(volIssue);
+            }
+
+            if (pageStr) {
+                sourceParts.push(pageStr);
+            }
+
             const source = sourceParts.join(', ');
 
             return `${authorStr} "${title}." ${source}, ${yr}. ${doiStr}.`;
@@ -100,10 +98,9 @@ function formatCitation(
                       ? `${volume}`
                       : '';
             const pageStr = pages ? `: ${pages}` : '';
-            const source =
-                volIssue
-                    ? `${journalName} ${volIssue}${pageStr} (${yr})`
-                    : `${journalName} (${yr})`;
+            const source = volIssue
+                ? `${journalName} ${volIssue}${pageStr} (${yr})`
+                : `${journalName} (${yr})`;
 
             return `${authorStr} "${title}" ${source}. ${doiStr}.`;
         }
@@ -145,42 +142,79 @@ function formatCitation(
 }
 
 function formatAuthorsAPA(authors: string[]): string {
-    if (authors.length === 0) return 'Anonymous';
-    if (authors.length === 1) return authors[0];
-    if (authors.length === 2) return `${authors[0]} & ${authors[1]}`;
+    if (authors.length === 0) {
+        return 'Anonymous';
+    }
+
+    if (authors.length === 1) {
+        return authors[0];
+    }
+
+    if (authors.length === 2) {
+        return `${authors[0]} & ${authors[1]}`;
+    }
 
     return `${authors.slice(0, -1).join(', ')}, & ${authors[authors.length - 1]}`;
 }
 
 function formatAuthorsMLA(authors: string[]): string {
-    if (authors.length === 0) return 'Anonymous.';
-    if (authors.length === 1) return `${authors[0]}.`;
-    if (authors.length === 2) return `${authors[0]} and ${authors[1]}.`;
+    if (authors.length === 0) {
+        return 'Anonymous.';
+    }
+
+    if (authors.length === 1) {
+        return `${authors[0]}.`;
+    }
+
+    if (authors.length === 2) {
+        return `${authors[0]} and ${authors[1]}.`;
+    }
 
     return `${authors[0]}, et al.`;
 }
 
 function formatAuthorsChicago(authors: string[]): string {
-    if (authors.length === 0) return 'Anonymous';
-    if (authors.length === 1) return authors[0];
-    if (authors.length <= 3) return authors.join(', ').replace(/, ([^,]+)$/, ', and $1');
+    if (authors.length === 0) {
+        return 'Anonymous';
+    }
+
+    if (authors.length === 1) {
+        return authors[0];
+    }
+
+    if (authors.length <= 3) {
+        return authors.join(', ').replace(/, ([^,]+)$/, ', and $1');
+    }
 
     return `${authors[0]} et al.`;
 }
 
 function formatAuthorsHarvard(authors: string[], year: string): string {
-    if (authors.length === 0) return 'Anonymous';
+    if (authors.length === 0) {
+        return 'Anonymous';
+    }
+
     const surname = authors[0].split(' ').pop() ?? authors[0];
 
-    if (authors.length === 1) return `${surname} (${year})`;
-    if (authors.length === 2) return `${surname} and ${authors[1].split(' ').pop()} (${year})`;
+    if (authors.length === 1) {
+        return `${surname} (${year})`;
+    }
+
+    if (authors.length === 2) {
+        return `${surname} and ${authors[1].split(' ').pop()} (${year})`;
+    }
 
     return `${surname} et al. (${year})`;
 }
 
 function formatAuthorsVancouver(authors: string[]): string {
-    if (authors.length === 0) return 'Anonymous';
-    if (authors.length <= 3) return authors.join(', ');
+    if (authors.length === 0) {
+        return 'Anonymous';
+    }
+
+    if (authors.length <= 3) {
+        return authors.join(', ');
+    }
 
     return `${authors[0]}, ${authors[1]}, ${authors[2]}, et al.`;
 }
@@ -290,7 +324,7 @@ export function CitationTool(props: CitationToolProps) {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-2 h-7 w-7"
+                        className="absolute top-2 right-2 h-7 w-7"
                         onClick={handleCopy}
                         title="Copy to clipboard"
                     >

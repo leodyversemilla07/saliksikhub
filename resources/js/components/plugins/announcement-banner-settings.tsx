@@ -1,15 +1,21 @@
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Switch} from '@/components/ui/switch';
-import {Textarea} from '@/components/ui/textarea';
-import type {PluginSettingsProps} from '@/plugins/settings-registry';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import type { PluginSettingsProps } from '@/plugins/settings-registry';
 
 const BANNER_TYPES = [
-    {value: 'info', label: 'Info (Blue)', color: 'bg-blue-500'},
-    {value: 'success', label: 'Success (Green)', color: 'bg-green-500'},
-    {value: 'warning', label: 'Warning (Yellow)', color: 'bg-yellow-500'},
-    {value: 'error', label: 'Error (Red)', color: 'bg-red-500'},
+    { value: 'info', label: 'Info (Blue)', color: 'bg-blue-500' },
+    { value: 'success', label: 'Success (Green)', color: 'bg-green-500' },
+    { value: 'warning', label: 'Warning (Yellow)', color: 'bg-yellow-500' },
+    { value: 'error', label: 'Error (Red)', color: 'bg-red-500' },
 ];
 
 /**

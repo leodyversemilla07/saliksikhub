@@ -63,10 +63,10 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import manuscriptsRoutes from '@/routes/manuscripts';
 import type { Manuscript } from '@/types';
 import { ManuscriptStatus } from '@/types';
+import { dashboard } from '@/routes';
+import manuscriptsRoutes from '@/routes/manuscripts';
 
 interface PaginatedManuscripts {
     data: Manuscript[];
@@ -444,15 +444,36 @@ export default function Index({
         currentFilters.per_page,
     ]);
 
-    const onSortingChange = useCallback((updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
-        setSorting(updaterOrValue);
-    }, []);
-    const onColumnFiltersChange = useCallback((updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
-        setColumnFilters(updaterOrValue);
-    }, []);
-    const onRowSelectionChange = useCallback((updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => {
-        setRowSelection(updaterOrValue);
-    }, []);
+    const onSortingChange = useCallback(
+        (
+            updaterOrValue:
+                | SortingState
+                | ((old: SortingState) => SortingState),
+        ) => {
+            setSorting(updaterOrValue);
+        },
+        [],
+    );
+    const onColumnFiltersChange = useCallback(
+        (
+            updaterOrValue:
+                | ColumnFiltersState
+                | ((old: ColumnFiltersState) => ColumnFiltersState),
+        ) => {
+            setColumnFilters(updaterOrValue);
+        },
+        [],
+    );
+    const onRowSelectionChange = useCallback(
+        (
+            updaterOrValue:
+                | Record<string, boolean>
+                | ((old: Record<string, boolean>) => Record<string, boolean>),
+        ) => {
+            setRowSelection(updaterOrValue);
+        },
+        [],
+    );
     const onGlobalFilterChange = useCallback((updaterOrValue: string) => {
         setGlobalFilter(updaterOrValue);
     }, []);

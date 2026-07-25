@@ -10,7 +10,7 @@ import {
     Trash2,
     RotateCcw,
 } from 'lucide-react';
-import type { FormEventHandler} from 'react';
+import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -116,7 +116,6 @@ export default function EditPlatformSettings({
         platformSettings.favicon_url,
     );
 
-     
     const { data, setData, post, processing, errors } = useForm<
         Record<string, any>
     >({

@@ -54,11 +54,19 @@ export default function PluginShow({ plugin }: Props) {
     ];
 
     const handleEnable = () => {
-        router.post(`/admin/plugins/${plugin.id}/enable`, {}, { preserveScroll: true });
+        router.post(
+            `/admin/plugins/${plugin.id}/enable`,
+            {},
+            { preserveScroll: true },
+        );
     };
 
     const handleDisable = () => {
-        router.post(`/admin/plugins/${plugin.id}/disable`, {}, { preserveScroll: true });
+        router.post(
+            `/admin/plugins/${plugin.id}/disable`,
+            {},
+            { preserveScroll: true },
+        );
     };
 
     return (
@@ -89,7 +97,9 @@ export default function PluginShow({ plugin }: Props) {
                         <Button
                             variant="outline"
                             render={
-                                <Link href={`/admin/plugins/${plugin.id}/settings`} />
+                                <Link
+                                    href={`/admin/plugins/${plugin.id}/settings`}
+                                />
                             }
                         >
                             <Settings className="mr-2 h-4 w-4" />
@@ -133,7 +143,9 @@ export default function PluginShow({ plugin }: Props) {
                                                 Disabled
                                             </Badge>
                                         )}
-                                        <Badge variant="outline">v{plugin.version}</Badge>
+                                        <Badge variant="outline">
+                                            v{plugin.version}
+                                        </Badge>
                                     </div>
                                 </div>
 
@@ -143,12 +155,18 @@ export default function PluginShow({ plugin }: Props) {
                                     </p>
                                     <div className="mt-2">
                                         {plugin.is_global ? (
-                                            <Badge variant="secondary" className="gap-1">
+                                            <Badge
+                                                variant="secondary"
+                                                className="gap-1"
+                                            >
                                                 <Globe className="h-3 w-3" />
                                                 Global
                                             </Badge>
                                         ) : (
-                                            <Badge variant="outline" className="gap-1">
+                                            <Badge
+                                                variant="outline"
+                                                className="gap-1"
+                                            >
                                                 <FileJson className="h-3 w-3" />
                                                 Per Journal
                                             </Badge>
@@ -161,7 +179,9 @@ export default function PluginShow({ plugin }: Props) {
                                         Installed
                                     </p>
                                     <p className="mt-2 text-sm font-medium">
-                                        {new Date(plugin.created_at).toLocaleDateString()}
+                                        {new Date(
+                                            plugin.created_at,
+                                        ).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>
@@ -197,7 +217,7 @@ export default function PluginShow({ plugin }: Props) {
                                     <p className="text-sm text-muted-foreground">
                                         Path
                                     </p>
-                                    <p className="mt-2 break-all text-sm font-medium">
+                                    <p className="mt-2 text-sm font-medium break-all">
                                         {plugin.path}
                                     </p>
                                 </div>
@@ -236,7 +256,8 @@ export default function PluginShow({ plugin }: Props) {
                         <CardContent>
                             {plugin.journals.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    No journals are currently linked to this plugin.
+                                    No journals are currently linked to this
+                                    plugin.
                                 </p>
                             ) : (
                                 <div className="space-y-3">

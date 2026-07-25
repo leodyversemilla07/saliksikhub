@@ -26,16 +26,16 @@ export function Rating({
 
     const getRatingColor = (rating: number) => {
         if (rating >= 8) {
-return 'text-green-500';
-}
+            return 'text-green-500';
+        }
 
         if (rating >= 6) {
-return 'text-blue-500';
-}
+            return 'text-blue-500';
+        }
 
         if (rating >= 4) {
-return 'text-yellow-500';
-}
+            return 'text-yellow-500';
+        }
 
         return 'text-red-500';
     };

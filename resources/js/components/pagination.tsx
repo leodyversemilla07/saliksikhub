@@ -59,8 +59,8 @@ export const Pagination: React.FC<PaginationProps> = ({
 
         if (last_page <= 7) {
             for (let i = 1; i <= last_page; i++) {
-pages.push(i);
-}
+                pages.push(i);
+            }
         } else {
             if (current_page <= 4) {
                 pages.push(1, 2, 3, 4, 5, 'ellipsis', last_page);

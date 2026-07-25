@@ -1,15 +1,21 @@
-import {Label} from '@/components/ui/label';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Switch} from '@/components/ui/switch';
-import {Textarea} from '@/components/ui/textarea';
-import type {PluginSettingsProps} from '@/plugins/settings-registry';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import type { PluginSettingsProps } from '@/plugins/settings-registry';
 
 const FORMAT_OPTIONS = [
-    {value: 'apa', label: 'APA 7th Edition'},
-    {value: 'mla', label: 'MLA 9th Edition'},
-    {value: 'chicago', label: 'Chicago 17th Edition'},
-    {value: 'harvard', label: 'Harvard'},
-    {value: 'vancouver', label: 'Vancouver'},
+    { value: 'apa', label: 'APA 7th Edition' },
+    { value: 'mla', label: 'MLA 9th Edition' },
+    { value: 'chicago', label: 'Chicago 17th Edition' },
+    { value: 'harvard', label: 'Harvard' },
+    { value: 'vancouver', label: 'Vancouver' },
 ];
 
 /**
@@ -26,7 +32,8 @@ export default function CitationToolSettings({
     onUpdate,
 }: PluginSettingsProps) {
     const availableFormats =
-        (settings.availableFormats as string[]) || FORMAT_OPTIONS.map((f) => f.value);
+        (settings.availableFormats as string[]) ||
+        FORMAT_OPTIONS.map((f) => f.value);
 
     return (
         <div className="space-y-6">
@@ -84,10 +91,7 @@ export default function CitationToolSettings({
                                             : availableFormats.filter(
                                                   (f) => f !== opt.value,
                                               );
-                                        onUpdate(
-                                            'availableFormats',
-                                            updated,
-                                        );
+                                        onUpdate('availableFormats', updated);
                                     }}
                                 />
                             </div>
@@ -122,12 +126,8 @@ export default function CitationToolSettings({
                 </p>
                 <Textarea
                     id="formatOverride"
-                    value={
-                        (settings.formatOverride as string) || ''
-                    }
-                    onChange={(e) =>
-                        onUpdate('formatOverride', e.target.value)
-                    }
+                    value={(settings.formatOverride as string) || ''}
+                    onChange={(e) => onUpdate('formatOverride', e.target.value)}
                     placeholder="e.g. {authors} ({year}). {title}. {journal}, {volume}({issue}), {pages}."
                     rows={3}
                 />

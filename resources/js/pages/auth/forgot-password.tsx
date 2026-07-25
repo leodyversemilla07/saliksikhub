@@ -19,9 +19,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import type { PageProps } from '@/types';
 import { home, login as loginRoute } from '@/routes';
 import password from '@/routes/password';
-import type { PageProps } from '@/types';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { currentJournal } = usePage<PageProps>().props;
@@ -47,7 +47,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title={`Reset Password | ${journalName}`} />
 
             <div className="w-full max-w-md">
-                <Card className="shadow-xl duration-500 animate-in fade-in-50">
+                <Card className="animate-in shadow-xl duration-500 fade-in-50">
                     <CardHeader className="space-y-4 text-center">
                         <Link
                             href={home.url()}
@@ -75,7 +75,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                     {status && (
                         <div className="px-6">
-                            <Alert className="border-green-200 bg-green-50 text-green-800 duration-300 animate-in slide-in-from-top-2">
+                            <Alert className="animate-in border-green-200 bg-green-50 text-green-800 duration-300 slide-in-from-top-2">
                                 <CheckCircle className="h-4 w-4" />
                                 <AlertDescription>{status}</AlertDescription>
                             </Alert>
@@ -116,7 +116,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     />
                                 </div>
                                 {errors.email && (
-                                    <div className="flex items-center gap-2 text-sm text-destructive duration-200 animate-in slide-in-from-left-2">
+                                    <div className="flex animate-in items-center gap-2 text-sm text-destructive duration-200 slide-in-from-left-2">
                                         <AlertCircle className="h-4 w-4" />
                                         <span>{errors.email}</span>
                                     </div>

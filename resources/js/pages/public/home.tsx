@@ -1,18 +1,12 @@
 import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import {
-    ArrowRight,
-    FilePlus2,
-    BookOpen,
-    Users,
-    Award,
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, FilePlus2, BookOpen, Users, Award } from 'lucide-react';
 import CmsSection from '@/components/cms/section';
+import { Card, CardContent } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
+import type { PageProps } from '@/types';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
-import type { PageProps } from '@/types';
 
 interface CmsSection {
     id: number;
@@ -213,20 +207,36 @@ export default function Home() {
                     </div>
                     <div className="mx-auto grid max-w-2xl grid-cols-2 gap-8 lg:max-w-none lg:grid-cols-4">
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">10,000+</div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Researchers</div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
+                                10,000+
+                            </div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
+                                Researchers
+                            </div>
                         </div>
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">2,500+</div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Articles Published</div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
+                                2,500+
+                            </div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
+                                Articles Published
+                            </div>
                         </div>
                         <div className="border-r border-border px-4 text-center last:border-r-0">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">150+</div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Institutions</div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
+                                150+
+                            </div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
+                                Institutions
+                            </div>
                         </div>
                         <div className="px-4 text-center">
-                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">99.9%</div>
-                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">Uptime</div>
+                            <div className="mb-2 font-serif text-4xl font-bold text-foreground">
+                                99.9%
+                            </div>
+                            <div className="font-sans text-sm tracking-wide text-muted-foreground uppercase">
+                                Uptime
+                            </div>
                         </div>
                     </div>
                 </div>

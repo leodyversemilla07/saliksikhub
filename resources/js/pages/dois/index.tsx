@@ -93,14 +93,11 @@ export default function DOIIndex({
         e.preventDefault();
 
         if (!selectedPublication) {
-return;
-}
+            return;
+        }
 
         post(
-            manuscriptDois.assign.url([
-                manuscript.id,
-                selectedPublication.id,
-            ]),
+            manuscriptDois.assign.url([manuscript.id, selectedPublication.id]),
             {
                 onSuccess: () => {
                     setShowAssignDialog(false);

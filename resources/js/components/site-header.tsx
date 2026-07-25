@@ -64,6 +64,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import type { PageProps, Journal, Institution } from '@/types';
 import {
     home,
     current,
@@ -77,7 +78,6 @@ import {
 import { dashboard } from '@/routes';
 import author from '@/routes/author';
 import editor from '@/routes/editor';
-import type { PageProps, Journal, Institution } from '@/types';
 
 /**
  * Navigation item configuration for the site header menu.
@@ -148,11 +148,8 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export default function SiteHeader({ auth }: SiteHeaderProps) {
-    const {
-        currentJournal,
-        currentInstitution,
-        headerMenu,
-    } = usePage<PageProps>().props;
+    const { currentJournal, currentInstitution, headerMenu } =
+        usePage<PageProps>().props;
     const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
     const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(() =>
         typeof window !== 'undefined'
@@ -169,16 +166,16 @@ export default function SiteHeader({ auth }: SiteHeaderProps) {
     const { url: currentUrl } = usePage();
 
     // Build navigation items: prefer CMS menu, fall back to hardcoded
-    const effectiveNavItems: NavigationItem[] = headerMenu && headerMenu.length > 0
-        ? headerMenu.map((item) => ({
-              name: item.label,
-              href:
-                  item.url ??
-                  (item.page ? `/page/${item.page.slug}` : '#'),
-              icon: undefined,
-              description: undefined,
-          }))
-        : navigationItems;
+    const effectiveNavItems: NavigationItem[] =
+        headerMenu && headerMenu.length > 0
+            ? headerMenu.map((item) => ({
+                  name: item.label,
+                  href:
+                      item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
+                  icon: undefined,
+                  description: undefined,
+              }))
+            : navigationItems;
 
     // Handle scroll effect
     useEffect(() => {

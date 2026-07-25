@@ -1,13 +1,13 @@
 import { Head, usePage } from '@inertiajs/react';
-import type {ReactNode} from 'react';
 import { Link } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 import { LuBookOpen, LuUsers, LuFileText, LuArrowRight } from 'react-icons/lu';
+import { PluginSlot } from '@/components/plugins/plugin-slot';
+import { Sidebar } from '@/components/sidebar/sidebar';
 import SiteFooter from '@/components/site-footer';
 import SiteHeader from '@/components/site-header';
-import {Sidebar} from '@/components/sidebar/sidebar';
-import {PluginSlot} from '@/components/plugins/plugin-slot';
-import type {Widget} from '@/types';
 import { useJournalTheme } from '@/hooks/use-journal-theme';
+import type { Widget } from '@/types';
 import type { PageProps } from '@/types';
 
 interface PublicLayoutProps {
@@ -44,9 +44,16 @@ export default function PublicLayout({
     title,
     headChildren,
     children,
-    sidebarWidgets,
+    sidebarWidgets: propSidebarWidgets,
 }: PublicLayoutProps) {
-    const { auth, currentJournal } = usePage<PageProps>().props;
+    const {
+        auth,
+        currentJournal,
+        sidebarWidgets: sharedSidebarWidgets,
+    } = usePage<PageProps>().props;
+
+    // Use sidebarWidgets from prop or fall back to shared Inertia props
+    const sidebarWidgets = propSidebarWidgets ?? sharedSidebarWidgets;
 
     // Apply journal theme CSS custom properties
     useJournalTheme();

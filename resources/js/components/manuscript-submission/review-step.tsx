@@ -33,16 +33,16 @@ export function ReviewStep({ formValues }: ReviewStepProps) {
 
     const formatFileSize = (bytes?: number): string => {
         if (!bytes) {
-return '';
-}
+            return '';
+        }
 
         if (bytes < 1024) {
-return `${bytes} bytes`;
-}
+            return `${bytes} bytes`;
+        }
 
         if (bytes < 1024 * 1024) {
-return `${(bytes / 1024).toFixed(1)} KB`;
-}
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
 
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     };
@@ -155,8 +155,8 @@ return `${(bytes / 1024).toFixed(1)} KB`;
                                     .split(',')
                                     .map((author, index) => {
                                         if (author.trim() === '') {
-return null;
-}
+                                            return null;
+                                        }
 
                                         return (
                                             <span key={index}>

@@ -1,4 +1,6 @@
-import type {ComponentType, ReactNode} from 'react';
+import { Link } from '@inertiajs/react';
+import { Calendar, Clock, FileText, Hash, Users } from 'lucide-react';
+import type { ComponentType } from 'react';
 
 /**
  * Widget definition — what gets passed to the renderer component.
@@ -47,6 +49,7 @@ export function registerWidgetType(
     defaultTitle?: string,
 ): void {
     widgetRegistry.set(type, component);
+
     if (defaultTitle) {
         widgetDefaultTitles.set(type, defaultTitle);
     }
@@ -68,15 +71,13 @@ export function getWidgetDefaultTitle(type: string): string | undefined {
 
 // ─── Built-in Widgets ─────────────────────────────────────────────────
 
-import {Link} from '@inertiajs/react';
-import {Calendar, Clock, FileText, Hash, Users} from 'lucide-react';
-import {Badge} from '@/components/ui/badge';
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * Recent Articles widget — shows the latest published manuscripts.
  */
-function RecentArticlesWidget({widget}: WidgetProps) {
+function RecentArticlesWidget({ widget }: WidgetProps) {
     const articles = widget.settings.articles as
         | Array<{
               id: number;
@@ -131,9 +132,9 @@ function RecentArticlesWidget({widget}: WidgetProps) {
 /**
  * Keywords / Topics widget — shows a tag cloud of manuscript keywords.
  */
-function KeywordsWidget({widget}: WidgetProps) {
+function KeywordsWidget({ widget }: WidgetProps) {
     const keywords = widget.settings.keywords as
-        | Array<{name: string; count: number}>
+        | Array<{ name: string; count: number }>
         | undefined;
 
     if (!keywords || keywords.length === 0) {
@@ -180,7 +181,7 @@ function KeywordsWidget({widget}: WidgetProps) {
 /**
  * Journal Info widget — shows basic journal metadata.
  */
-function JournalInfoWidget({widget}: WidgetProps) {
+function JournalInfoWidget({ widget }: WidgetProps) {
     const info = widget.settings.info as
         | {
               name?: string;
@@ -208,9 +209,7 @@ function JournalInfoWidget({widget}: WidgetProps) {
                     <p className="font-medium text-foreground">{info.name}</p>
                 )}
                 {info.description && (
-                    <p className="text-muted-foreground">
-                        {info.description}
-                    </p>
+                    <p className="text-muted-foreground">{info.description}</p>
                 )}
                 <div className="space-y-1 text-xs text-muted-foreground">
                     {info.issn && <p>ISSN: {info.issn}</p>}

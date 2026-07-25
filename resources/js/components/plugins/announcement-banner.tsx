@@ -1,5 +1,5 @@
-import {useEffect, useState} from 'react';
-import {X} from 'lucide-react';
+import { X } from 'lucide-react';
+import { useState } from 'react';
 
 interface AnnouncementBannerProps {
     message: string;
@@ -32,16 +32,13 @@ export function AnnouncementBanner({
     dismissible = true,
     storageKey = 'plugin_announcement_dismissed',
 }: AnnouncementBannerProps) {
-    const [visible, setVisible] = useState(true);
-
-    useEffect(() => {
+    const [visible, setVisible] = useState<boolean>(() => {
         if (dismissible) {
-            const dismissed = localStorage.getItem(storageKey);
-            if (dismissed === 'true') {
-                setVisible(false);
-            }
+            return localStorage.getItem(storageKey) !== 'true';
         }
-    }, [dismissible, storageKey]);
+
+        return true;
+    });
 
     if (!visible) {
         return null;
@@ -49,6 +46,7 @@ export function AnnouncementBanner({
 
     const handleDismiss = () => {
         setVisible(false);
+
         if (dismissible) {
             localStorage.setItem(storageKey, 'true');
         }
@@ -56,7 +54,7 @@ export function AnnouncementBanner({
 
     return (
         <div
-            className={`border px-4 py-3 rounded-lg mb-4 ${typeStyles[type]}`}
+            className={`mb-4 rounded-lg border px-4 py-3 ${typeStyles[type]}`}
             role="alert"
         >
             <div className="flex items-center gap-3">
@@ -68,7 +66,7 @@ export function AnnouncementBanner({
                     <button
                         type="button"
                         onClick={handleDismiss}
-                        className="shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                        className="shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
                         aria-label="Dismiss announcement"
                     >
                         <X className="h-4 w-4" />

@@ -76,8 +76,8 @@ export default function ProductionDashboard({
 }: Props) {
     const getDaysElapsed = (startDate: string | null) => {
         if (!startDate) {
-return 0;
-}
+            return 0;
+        }
 
         const start = new Date(startDate);
         const now = new Date();

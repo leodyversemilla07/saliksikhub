@@ -1,5 +1,5 @@
-import {usePage} from '@inertiajs/react';
-import {type ReactNode} from 'react';
+import { usePage } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 
 /**
  * Plugin slot identifiers used by plugin components
@@ -50,8 +50,8 @@ interface PluginRendererProps {
  * </PluginSlot>
  * ```
  */
-export function PluginSlot({slot, children}: PluginRendererProps) {
-    const {pluginData} = usePage<{pluginData?: PluginData}>().props;
+export function PluginSlot({ slot, children }: PluginRendererProps) {
+    const { pluginData } = usePage<{ pluginData?: PluginData }>().props;
 
     if (!pluginData?.components) {
         return children ?? null;
@@ -69,9 +69,11 @@ export function PluginSlot({slot, children}: PluginRendererProps) {
         <>
             {matchedComponents.map((comp) => {
                 const PluginComponent = getPluginComponent(comp.component);
+
                 if (!PluginComponent) {
                     return null;
                 }
+
                 return (
                     <PluginComponent
                         key={comp.key}
@@ -113,4 +115,4 @@ function getPluginComponent(
     return pluginComponentRegistry.get(name) ?? null;
 }
 
-export type {PluginData, PluginComponent};
+export type { PluginData, PluginComponent };

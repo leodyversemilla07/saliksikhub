@@ -1,9 +1,9 @@
-import {registerPluginComponent} from '@/components/plugins/plugin-slot';
-import {AnnouncementBanner} from '@/components/plugins/announcement-banner';
-import {CitationTool} from '@/components/plugins/citation-tool';
-import {registerPluginSettingsForm} from '@/plugins/settings-registry';
-import CitationToolSettings from '@/components/plugins/citation-tool-settings';
+import { AnnouncementBanner } from '@/components/plugins/announcement-banner';
 import AnnouncementBannerSettings from '@/components/plugins/announcement-banner-settings';
+import { CitationTool } from '@/components/plugins/citation-tool';
+import CitationToolSettings from '@/components/plugins/citation-tool-settings';
+import { registerPluginComponent } from '@/components/plugins/plugin-slot';
+import { registerPluginSettingsForm } from '@/plugins/settings-registry';
 
 /**
  * Register plugin components that can be injected via PluginSlot.
@@ -15,5 +15,8 @@ export function registerCorePluginComponents(): void {
 
     // Register custom settings forms for each plugin
     registerPluginSettingsForm('citation-tool', CitationToolSettings);
-    registerPluginSettingsForm('announcement-banner', AnnouncementBannerSettings);
+    registerPluginSettingsForm(
+        'announcement-banner',
+        AnnouncementBannerSettings,
+    );
 }

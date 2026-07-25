@@ -129,8 +129,8 @@ export default function Show({ issue, manuscripts, coverImageUrl }: ShowProps) {
 
     const handleUnassignManuscript = () => {
         if (!manuscriptToUnassign) {
-return;
-}
+            return;
+        }
 
         setUnassigningManuscript(manuscriptToUnassign.id);
         router.delete(

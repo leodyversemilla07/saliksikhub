@@ -1,10 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    ArrowLeft,
-    Save,
-    Puzzle,
-    LayoutTemplate,
-} from 'lucide-react';
+import { ArrowLeft, Save, Puzzle, LayoutTemplate } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -18,18 +13,11 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import {getPluginSettingsForm} from '@/plugins/settings-registry';
 import AppLayout from '@/layouts/app-layout';
+import { getPluginSettingsForm } from '@/plugins/settings-registry';
 
 interface Journal {
     id: number;
@@ -379,8 +367,7 @@ export default function PluginSettings({ plugin, journals }: Props) {
                                                         }
                                                     >
                                                         <Save className="mr-2 h-4 w-4" />
-                                                        Save for{' '}
-                                                        {journal.name}
+                                                        Save for {journal.name}
                                                     </Button>
                                                 </div>
                                             </div>
@@ -427,16 +414,10 @@ function CustomPluginSettings({
     onUpdate,
     onUpdateAll,
 }: CustomPluginSettingsProps) {
-    const SettingsComponent = getPluginSettingsForm(pluginName);
+    const settingsForm = getPluginSettingsForm(pluginName);
 
-    if (SettingsComponent) {
-        return (
-            <SettingsComponent
-                settings={settings}
-                onUpdate={onUpdate}
-                onUpdateAll={onUpdateAll}
-            />
-        );
+    if (settingsForm) {
+        return settingsForm({ settings, onUpdate, onUpdateAll });
     }
 
     // Fallback: generic key-value editor for plugins without a custom form
@@ -457,9 +438,9 @@ function CustomPluginSettings({
             {entries.map(([key, value]) => (
                 <div key={key} className="grid gap-2">
                     <Label htmlFor={`setting-${key}`}>
-                        {key.replace(/_/g, ' ').replace(/\b\w/g, (l) =>
-                            l.toUpperCase(),
-                        )}
+                        {key
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, (l) => l.toUpperCase())}
                     </Label>
                     {typeof value === 'boolean' ? (
                         <div className="flex items-center justify-between rounded-lg border p-3">
@@ -503,9 +484,7 @@ function CustomPluginSettings({
                         <Input
                             id={`setting-${key}`}
                             value={String(value ?? '')}
-                            onChange={(e) =>
-                                onUpdate(key, e.target.value)
-                            }
+                            onChange={(e) => onUpdate(key, e.target.value)}
                         />
                     )}
                 </div>

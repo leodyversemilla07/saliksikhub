@@ -92,8 +92,8 @@ export default function Revision({ manuscript, decision }: RevisionProps) {
 
     const getRemainingDays = () => {
         if (!decision?.revision_deadline) {
-return null;
-}
+            return null;
+        }
 
         const deadline = new Date(decision.revision_deadline);
         const today = new Date();

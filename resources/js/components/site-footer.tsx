@@ -46,6 +46,7 @@ import {
 } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { PageProps } from '@/types';
 import {
     home,
     submissions,
@@ -56,7 +57,6 @@ import {
     contactUs,
     current,
 } from '@/routes';
-import type { PageProps } from '@/types';
 
 const socialLinks = [
     { name: 'Facebook', icon: FaFacebook, href: '#' },
@@ -66,7 +66,8 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-    const { currentJournal, currentInstitution, footerMenu } = usePage<PageProps>().props;
+    const { currentJournal, currentInstitution, footerMenu } =
+        usePage<PageProps>().props;
     const currentYear = new Date().getFullYear();
     const institutionSettings = currentInstitution?.settings as
         | Record<string, unknown>
@@ -115,13 +116,15 @@ export default function Footer() {
         'English';
 
     // Build footer links from CMS menu, fall back to hardcoded
-    const cmsFooterLinks = footerMenu && footerMenu.length > 0
-        ? footerMenu.map((item) => ({
-              name: item.label,
-              href: item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
-              icon: LuBookOpen,
-          }))
-        : null;
+    const cmsFooterLinks =
+        footerMenu && footerMenu.length > 0
+            ? footerMenu.map((item) => ({
+                  name: item.label,
+                  href:
+                      item.url ?? (item.page ? `/page/${item.page.slug}` : '#'),
+                  icon: LuBookOpen,
+              }))
+            : null;
 
     const quickLinks = cmsFooterLinks ?? [
         { name: 'Home', href: home.url(), icon: LuBookOpen },
@@ -133,7 +136,11 @@ export default function Footer() {
     const aboutLinks = [
         { name: 'About the Journal', href: aboutJournal.url(), icon: LuInfo },
         { name: 'Editorial Board', href: editorialBoard.url(), icon: LuUsers },
-        { name: 'Announcements', href: announcements.url(), icon: LuMessageSquare },
+        {
+            name: 'Announcements',
+            href: announcements.url(),
+            icon: LuMessageSquare,
+        },
         { name: 'Contact Us', href: contactUs.url(), icon: LuMail },
     ];
 

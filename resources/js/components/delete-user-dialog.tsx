@@ -13,8 +13,8 @@ import {
     AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import users from '@/routes/users';
 import type { User } from '@/types';
+import users from '@/routes/users';
 
 export interface DeleteUserDialogProps {
     open: boolean;

@@ -118,6 +118,7 @@ export default function CmsSection({ section }: Props) {
 
     // Check if a plugin handles this section type
     const pluginRenderer = getPluginSectionRenderer(type);
+
     if (pluginRenderer) {
         return pluginRenderer(section);
     }

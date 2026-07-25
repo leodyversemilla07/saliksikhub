@@ -23,9 +23,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
+import type { PageProps } from '@/types';
 import { dashboard } from '@/routes';
 import issuesRoutes from '@/routes/issues';
-import type { PageProps } from '@/types';
 
 interface JournalIssue {
     id: number;

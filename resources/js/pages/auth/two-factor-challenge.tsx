@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { Shield, Smartphone, Key } from 'lucide-react';
-import type { FormEventHandler} from 'react';
+import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,7 +50,7 @@ export default function TwoFactorChallenge() {
             <Head title="Two-Factor Authentication" />
 
             <div className="w-full max-w-md">
-                <Card className="shadow-xl duration-500 animate-in fade-in-50">
+                <Card className="animate-in shadow-xl duration-500 fade-in-50">
                     <CardHeader className="space-y-4 text-center">
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                             <Shield className="h-8 w-8 text-primary" />

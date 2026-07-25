@@ -23,9 +23,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useWindowSize } from '@/hooks/use-window-size';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
+import type { User } from '@/types';
 import { dashboard } from '@/routes';
 import manuscriptsRoutes from '@/routes/manuscripts';
-import type { User } from '@/types';
 
 export default function ManuscriptSubmissionForm() {
     interface PageProps {
@@ -119,7 +119,6 @@ export default function ManuscriptSubmissionForm() {
         };
     };
 
-     
     const useFormCompletion = (form: any) => {
         const [submitProgress, setSubmitProgress] = useState(0);
         const totalFields = 5;
@@ -129,24 +128,24 @@ export default function ManuscriptSubmissionForm() {
             let completedFields = 0;
 
             if (data.title && data.title.length >= 10) {
-completedFields++;
-}
+                completedFields++;
+            }
 
             if (data.authors && data.authors.length >= 3) {
-completedFields++;
-}
+                completedFields++;
+            }
 
             if (data.abstract && data.abstract.length >= 100) {
-completedFields++;
-}
+                completedFields++;
+            }
 
             if (data.keywords && data.keywords.length >= 3) {
-completedFields++;
-}
+                completedFields++;
+            }
 
             if (data.manuscript) {
-completedFields++;
-}
+                completedFields++;
+            }
 
             setSubmitProgress(
                 Math.round((completedFields / totalFields) * 100),
@@ -156,7 +155,6 @@ completedFields++;
         return submitProgress;
     };
 
-     
     const validateStep = async (form: any, stepId: string) => {
         form.clearErrors();
         let isValid = true;
@@ -308,8 +306,8 @@ completedFields++;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const validationMessage = useMemo<string | null>(() => {
         if (!form.data.manuscript) {
-return null;
-}
+            return null;
+        }
 
         const maxSize = 10 * 1024 * 1024;
 
@@ -344,8 +342,8 @@ return null;
 
     const formatBytes = (bytes: number, decimals = 2) => {
         if (bytes === 0) {
-return '0 Bytes';
-}
+            return '0 Bytes';
+        }
 
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;
@@ -359,12 +357,12 @@ return '0 Bytes';
 
     const getProgressPercentage = () => {
         if (form.progress === null) {
-return 0;
-}
+            return 0;
+        }
 
         if (typeof form.progress === 'number') {
-return form.progress;
-}
+            return form.progress;
+        }
 
         return form.progress.percentage || 0;
     };
@@ -413,16 +411,16 @@ return form.progress;
         .filter(Boolean).length;
     const formatFileSize = (bytes?: number): string => {
         if (!bytes) {
-return '';
-}
+            return '';
+        }
 
         if (bytes < 1024) {
-return `${bytes} bytes`;
-}
+            return `${bytes} bytes`;
+        }
 
         if (bytes < 1024 * 1024) {
-return `${(bytes / 1024).toFixed(1)} KB`;
-}
+            return `${(bytes / 1024).toFixed(1)} KB`;
+        }
 
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     };
@@ -438,26 +436,26 @@ return `${(bytes / 1024).toFixed(1)} KB`;
 
     useEffect(() => {
         if (!serverErrors || Object.keys(serverErrors).length === 0) {
-return;
-}
+            return;
+        }
 
         Object.entries(serverErrors).forEach(([field, message]) => {
             if (field === 'title') {
-form.setError('title', message as string);
-} else if (field === 'authors') {
-form.setError('authors', message as string);
-} else if (field === 'abstract') {
-form.setError('abstract', message as string);
-} else if (field === 'keywords') {
-form.setError('keywords', message as string);
-} else if (field === 'manuscript') {
-form.setError('manuscript', message as string);
-}
+                form.setError('title', message as string);
+            } else if (field === 'authors') {
+                form.setError('authors', message as string);
+            } else if (field === 'abstract') {
+                form.setError('abstract', message as string);
+            } else if (field === 'keywords') {
+                form.setError('keywords', message as string);
+            } else if (field === 'manuscript') {
+                form.setError('manuscript', message as string);
+            }
         });
 
         if (serverErrors.title || serverErrors.authors) {
-resetSteps();
-} else if (serverErrors.abstract || serverErrors.keywords) {
+            resetSteps();
+        } else if (serverErrors.abstract || serverErrors.keywords) {
             resetSteps();
             goToNextStep();
         } else if (serverErrors.manuscript) {
@@ -1278,8 +1276,8 @@ resetSteps();
                                                                 author.trim() ===
                                                                 ''
                                                             ) {
-return null;
-}
+                                                                return null;
+                                                            }
 
                                                             return (
                                                                 <div
@@ -1392,8 +1390,8 @@ return null;
                                                                     keyword.trim() ===
                                                                     ''
                                                                 ) {
-return null;
-}
+                                                                    return null;
+                                                                }
 
                                                                 return (
                                                                     <Badge
