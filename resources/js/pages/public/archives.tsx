@@ -1,465 +1,549 @@
-import { Link, router, usePage } from '@inertiajs/react';
-import { Calendar, Archive, Search } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    Calendar,
+    BookOpen,
+    FileText,
+    Search,
+    ChevronRight,
+    Layers,
+    Clock,
+    Hash,
+} from 'lucide-react';
 import React, { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import PublicLayout from '@/layouts/public-layout';
 import type { PageProps } from '@/types';
 
-interface JournalArticle {
+interface IssueSummary {
     id: number;
-    title: string;
-    authors: string;
-    abstract: string;
-    keywords: string[];
-    doi: string;
-    pages: string;
-    pdfUrl: string;
-}
-
-interface JournalIssue {
-    id: number;
+    slug: string;
     volume: number;
-    issue: number;
-    title: string;
-    description: string;
-    coverImageUrl: string;
-    publicationDate: string;
-    articles: JournalArticle[];
+    number: number;
+    title: string | null;
+    description: string | null;
+    publication_date: string | null;
+    cover_image_url: string | null;
+    doi: string | null;
+    theme: string | null;
+    manuscripts_count: number;
 }
 
-interface VolumeYear {
+interface VolumeGroup {
+    volume: number;
+    issues: IssueSummary[];
+}
+
+interface YearGroup {
     year: number;
-    volumes: {
-        volume: number;
-        issues: JournalIssue[];
-    }[];
+    volume_count: number;
+    issue_count: number;
+    volumes: VolumeGroup[];
 }
 
-export default function Archives() {
+interface ArchiveStats {
+    total_issues: number;
+    total_volumes: number;
+    total_years: number;
+}
+
+interface ArchivesProps extends PageProps {
+    years: YearGroup[];
+    stats: ArchiveStats;
+}
+
+export default function Archives({ years, stats }: ArchivesProps) {
     const { currentJournal } = usePage<PageProps>().props;
     const journalName = currentJournal?.name ?? 'Research Journal';
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedYear, setSelectedYear] = useState<string>('all');
+    const [selectedVolume, setSelectedVolume] = useState<string>('all');
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (searchTerm.trim()) {
-            router.visit(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    // Derive available years and volumes from data
+    const availableYears = years.map((y) => y.year);
+    const availableVolumes = React.useMemo(() => {
+        if (selectedYear === 'all') {
+            const vols = new Set<number>();
+            years.forEach((y) => y.volumes.forEach((v) => vols.add(v.volume)));
+            return [...vols].toSorted((a, b) => b - a);
         }
-    };
+        const yearData = years.find((y) => y.year === Number(selectedYear));
+        if (!yearData) {
+            return [];
+        }
+        return yearData.volumes.map((v) => v.volume).toSorted((a, b) => b - a);
+    }, [years, selectedYear]);
 
-    const archiveData: VolumeYear[] = [
-        {
-            year: 2024,
-            volumes: [
-                {
-                    volume: 22,
-                    issues: [
-                        {
-                            id: 1,
-                            volume: 22,
-                            issue: 2,
-                            title: 'Special Issue on the International Conference on Research, Innovation, and Investment (ICRII) 2024',
-                            description: 'Vol. 22 No. S1 (2024)',
-                            coverImageUrl: '/images/journal-cover.webp',
-                            publicationDate: '2024',
-                            articles: [],
-                        },
-                        {
-                            id: 2,
-                            volume: 22,
-                            issue: 1,
-                            title: 'July - December 2024',
-                            description: 'Vol. 22 No. 2 (2024)',
-                            coverImageUrl: '/images/journal-cover.webp',
-                            publicationDate: '2024',
-                            articles: [],
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            year: 2023,
-            volumes: [
-                {
-                    volume: 21,
-                    issues: [
-                        {
-                            id: 3,
-                            volume: 21,
-                            issue: 2,
-                            title: 'July - December 2023',
-                            description: 'Vol. 21 No. 2 (2023)',
-                            coverImageUrl: '/images/journal-cover.webp',
-                            publicationDate: '2023',
-                            articles: [],
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
+    // Reset volume when year changes
+    React.useEffect(() => {
+        setSelectedVolume('all');
+    }, [selectedYear]);
+
+    // Filter years based on selections
+    const filteredYears = React.useMemo(() => {
+        return years
+            .filter(
+                (y) =>
+                    selectedYear === 'all' || y.year === Number(selectedYear),
+            )
+            .map((y) => ({
+                ...y,
+                volumes: y.volumes.filter(
+                    (v) =>
+                        selectedVolume === 'all' ||
+                        v.volume === Number(selectedVolume),
+                ),
+            }))
+            .filter((y) => y.volumes.length > 0);
+    }, [years, selectedYear, selectedVolume]);
 
     return (
         <PublicLayout title={`Archives | ${journalName}`}>
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 {/* Page Header */}
                 <div className="mb-8">
-                    <h1 className="mb-2 text-3xl font-bold text-foreground md:text-4xl">
-                        Archives
-                    </h1>
-                    <p className="text-lg text-muted-foreground">
-                        Browse our published issues and search through our
-                        research collection.
-                    </p>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold text-foreground md:text-4xl">
+                                Archives
+                            </h1>
+                            <p className="mt-1 text-lg text-muted-foreground">
+                                Browse our published issues and research
+                                collection.
+                            </p>
+                        </div>
+                        <Link href="/current">
+                            <Button variant="outline" className="gap-2">
+                                <BookOpen className="h-4 w-4" />
+                                Current Issue
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
-                {/* Search Section */}
+                {/* Quick Stats */}
+                <div className="mb-8 grid gap-4 sm:grid-cols-3">
+                    <Card>
+                        <CardContent className="flex items-center gap-4 pt-6">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                <BookOpen className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">
+                                    {stats.total_issues}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Published Issues
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="flex items-center gap-4 pt-6">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                <Layers className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">
+                                    {stats.total_volumes}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Volumes
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="flex items-center gap-4 pt-6">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                <Clock className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold">
+                                    {stats.total_years}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Years
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Filters Bar */}
                 <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Search className="h-5 w-5" />
-                            Search Archives
-                        </CardTitle>
-                        <CardDescription>
-                            Use our advanced search to find specific articles,
-                            authors, or research topics across all published
-                            issues.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <form onSubmit={handleSearch} className="flex gap-4">
-                            <Input
-                                placeholder="Search articles, authors, keywords..."
-                                className="flex-1"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <Button type="submit">Search</Button>
-                        </form>
-
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Advanced Filters
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-foreground">
-                                            Publication Year
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Input
-                                                placeholder="From"
-                                                type="number"
-                                            />
-                                            <Input
-                                                placeholder="To"
-                                                type="number"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-foreground">
-                                            Author
-                                        </label>
-                                        <Input placeholder="Author name" />
-                                    </div>
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-foreground">
-                                            Subject Area
-                                        </label>
-                                        <Input placeholder="Research area or topic" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Search Tips
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ul className="space-y-2 text-sm text-muted-foreground">
-                                        <li>
-                                            • Use quotes for exact phrases:
-                                            "climate change"
-                                        </li>
-                                        <li>
-                                            • Use AND/OR for multiple terms:
-                                            research AND methodology
-                                        </li>
-                                        <li>
-                                            • Use wildcards for partial matches:
-                                            sustain*
-                                        </li>
-                                        <li>
-                                            • Search by DOI for specific
-                                            articles
-                                        </li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
+                    <CardContent className="p-4">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                            <div className="relative flex-1">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search issues..."
+                                    className="pl-10"
+                                    value={searchQuery}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div className="flex gap-3">
+                                <Select
+                                    value={selectedYear}
+                                    onValueChange={setSelectedYear}
+                                >
+                                    <SelectTrigger className="w-36">
+                                        <Calendar className="mr-2 h-4 w-4" />
+                                        <SelectValue placeholder="All Years" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            All Years
+                                        </SelectItem>
+                                        {availableYears.map((year) => (
+                                            <SelectItem
+                                                key={year}
+                                                value={String(year)}
+                                            >
+                                                {year}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Select
+                                    value={selectedVolume}
+                                    onValueChange={setSelectedVolume}
+                                >
+                                    <SelectTrigger className="w-40">
+                                        <Layers className="mr-2 h-4 w-4" />
+                                        <SelectValue placeholder="All Volumes" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            All Volumes
+                                        </SelectItem>
+                                        {availableVolumes.map((vol) => (
+                                            <SelectItem
+                                                key={vol}
+                                                value={String(vol)}
+                                            >
+                                                Volume {vol}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Published Issues Section */}
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5" />
-                            Published Issues
-                        </CardTitle>
-                        <CardDescription>
-                            Browse all published volumes and issues organized by
-                            year.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-8">
-                            {archiveData.map((yearData) => (
+                {/* Year Navigation Sidebar + Issues Grid */}
+                {filteredYears.length === 0 ? (
+                    <Card>
+                        <CardContent className="py-12 text-center">
+                            <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                            <h3 className="mb-2 text-lg font-medium">
+                                No Issues Found
+                            </h3>
+                            <p className="text-muted-foreground">
+                                No published issues match the current filters.
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
+                        {/* Year Navigation Sidebar */}
+                        <div className="space-y-1">
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium">
+                                        Browse by Year
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-0.5 p-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedYear('all')}
+                                        className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                                            selectedYear === 'all'
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'hover:bg-muted'
+                                        }`}
+                                    >
+                                        <span>All Years</span>
+                                        <Badge
+                                            variant={
+                                                selectedYear === 'all'
+                                                    ? 'secondary'
+                                                    : 'outline'
+                                            }
+                                            className="ml-2 text-xs"
+                                        >
+                                            {stats.total_years}
+                                        </Badge>
+                                    </button>
+                                    {years.map((y) => (
+                                        <button
+                                            key={y.year}
+                                            type="button"
+                                            onClick={() =>
+                                                setSelectedYear(String(y.year))
+                                            }
+                                            className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                                                selectedYear === String(y.year)
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'hover:bg-muted'
+                                            }`}
+                                        >
+                                            <span>{y.year}</span>
+                                            <Badge
+                                                variant={
+                                                    selectedYear ===
+                                                    String(y.year)
+                                                        ? 'secondary'
+                                                        : 'outline'
+                                                }
+                                                className="ml-2 text-xs"
+                                            >
+                                                {y.issue_count}
+                                            </Badge>
+                                        </button>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                            {/* Volume Navigation */}
+                            {selectedYear !== 'all' && (
+                                <Card>
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="text-sm font-medium">
+                                            Volumes
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-0.5 p-2">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setSelectedVolume('all')
+                                            }
+                                            className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                                                selectedVolume === 'all'
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'hover:bg-muted'
+                                            }`}
+                                        >
+                                            <span>All Volumes</span>
+                                        </button>
+                                        {years
+                                            .find(
+                                                (y) =>
+                                                    y.year ===
+                                                    Number(selectedYear),
+                                            )
+                                            ?.volumes.map((v) => (
+                                                <button
+                                                    key={v.volume}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSelectedVolume(
+                                                            String(v.volume),
+                                                        )
+                                                    }
+                                                    className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                                                        selectedVolume ===
+                                                        String(v.volume)
+                                                            ? 'bg-primary text-primary-foreground'
+                                                            : 'hover:bg-muted'
+                                                    }`}
+                                                >
+                                                    <span>Vol. {v.volume}</span>
+                                                    <Badge
+                                                        variant={
+                                                            selectedVolume ===
+                                                            String(v.volume)
+                                                                ? 'secondary'
+                                                                : 'outline'
+                                                        }
+                                                        className="ml-2 text-xs"
+                                                    >
+                                                        {v.issues.length}
+                                                    </Badge>
+                                                </button>
+                                            ))}
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+
+                        {/* Issues List */}
+                        <div className="space-y-6">
+                            {filteredYears.map((yearData) => (
                                 <div key={yearData.year}>
-                                    <div className="mb-6 flex items-center gap-3">
-                                        <h3 className="text-xl font-semibold text-foreground">
+                                    <div className="mb-4 flex items-center gap-3">
+                                        <h2 className="text-xl font-semibold text-foreground">
                                             {yearData.year}
-                                        </h3>
-                                        <Badge variant="secondary">
-                                            {yearData.volumes.reduce(
-                                                (total, vol) =>
-                                                    total + vol.issues.length,
-                                                0,
-                                            )}{' '}
-                                            Issues
+                                        </h2>
+                                        <Badge
+                                            variant="secondary"
+                                            className="rounded-full"
+                                        >
+                                            {yearData.issue_count} issue
+                                            {yearData.issue_count !== 1
+                                                ? 's'
+                                                : ''}
                                         </Badge>
                                     </div>
-                                    <div className="grid gap-4">
-                                        {yearData.volumes.map((volumeData) => (
-                                            <div key={volumeData.volume}>
-                                                {volumeData.issues.map(
-                                                    (issue) => (
-                                                        <Card
-                                                            key={issue.id}
-                                                            className="transition-shadow hover:shadow-md"
-                                                        >
-                                                            <CardContent className="p-6">
-                                                                <div className="flex items-start gap-4">
-                                                                    <div className="h-32 w-24 shrink-0">
+
+                                    <div className="space-y-3">
+                                        {yearData.volumes.map((volumeData) =>
+                                            volumeData.issues
+                                                .filter((issue) => {
+                                                    if (!searchQuery.trim()) {
+                                                        return true;
+                                                    }
+                                                    const q =
+                                                        searchQuery.toLowerCase();
+                                                    return (
+                                                        (issue.title ?? '')
+                                                            .toLowerCase()
+                                                            .includes(q) ||
+                                                        (
+                                                            issue.description ??
+                                                            ''
+                                                        )
+                                                            .toLowerCase()
+                                                            .includes(q) ||
+                                                        (issue.theme ?? '')
+                                                            .toLowerCase()
+                                                            .includes(q) ||
+                                                        String(
+                                                            issue.volume,
+                                                        ).includes(q) ||
+                                                        String(
+                                                            issue.number,
+                                                        ).includes(q)
+                                                    );
+                                                })
+                                                .map((issue) => (
+                                                    <Link
+                                                        key={issue.id}
+                                                        href={`/issues/${issue.slug}`}
+                                                        className="group block"
+                                                    >
+                                                        <Card className="transition-shadow hover:shadow-md">
+                                                            <CardContent className="flex gap-4 p-4">
+                                                                {issue.cover_image_url ? (
+                                                                    <div className="h-28 w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
                                                                         <img
                                                                             src={
-                                                                                issue.coverImageUrl
+                                                                                issue.cover_image_url
                                                                             }
-                                                                            alt={`Cover for ${issue.title}`}
-                                                                            className="h-full w-full rounded-md object-cover"
+                                                                            alt={`Cover Vol. ${issue.volume} No. ${issue.number}`}
+                                                                            className="h-full w-full object-cover"
+                                                                            onError={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.currentTarget.style.display =
+                                                                                    'none';
+                                                                            }}
                                                                         />
                                                                     </div>
-                                                                    <div className="flex-1">
-                                                                        <Link
-                                                                            href={`/issue/${issue.id}`}
-                                                                            className="mb-2 block text-lg font-medium text-primary hover:underline"
-                                                                        >
+                                                                ) : (
+                                                                    <div className="flex h-28 w-20 shrink-0 items-center justify-center rounded-md border bg-muted">
+                                                                        <BookOpen className="h-8 w-8 text-muted-foreground" />
+                                                                    </div>
+                                                                )}
+
+                                                                <div className="min-w-0 flex-1">
+                                                                    <div className="mb-1 flex items-center gap-2">
+                                                                        <span className="text-sm font-medium text-primary">
+                                                                            Vol.{' '}
+                                                                            {
+                                                                                issue.volume
+                                                                            }
+                                                                            ,
+                                                                            No.{' '}
+                                                                            {
+                                                                                issue.number
+                                                                            }
+                                                                        </span>
+                                                                        {issue.theme && (
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="text-xs"
+                                                                            >
+                                                                                {
+                                                                                    issue.theme
+                                                                                }
+                                                                            </Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    {issue.title && (
+                                                                        <h3 className="mb-1 font-semibold text-foreground group-hover:text-primary">
                                                                             {
                                                                                 issue.title
                                                                             }
-                                                                        </Link>
-                                                                        <p className="mb-3 text-sm text-muted-foreground">
+                                                                        </h3>
+                                                                    )}
+                                                                    {issue.description && (
+                                                                        <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
                                                                             {
                                                                                 issue.description
                                                                             }
                                                                         </p>
-                                                                        <div className="flex items-center gap-2">
-                                                                            <Badge variant="outline">
-                                                                                Volume{' '}
+                                                                    )}
+                                                                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                                                                        {issue.publication_date && (
+                                                                            <span className="flex items-center gap-1">
+                                                                                <Calendar className="h-3 w-3" />
+                                                                                {new Date(
+                                                                                    issue.publication_date,
+                                                                                ).toLocaleDateString()}
+                                                                            </span>
+                                                                        )}
+                                                                        <span className="flex items-center gap-1">
+                                                                            <FileText className="h-3 w-3" />
+                                                                            {
+                                                                                issue.manuscripts_count
+                                                                            }{' '}
+                                                                            article
+                                                                            {issue.manuscripts_count !==
+                                                                            1
+                                                                                ? 's'
+                                                                                : ''}
+                                                                        </span>
+                                                                        {issue.doi && (
+                                                                            <span className="flex items-center gap-1">
+                                                                                <Hash className="h-3 w-3" />
                                                                                 {
-                                                                                    issue.volume
+                                                                                    issue.doi
                                                                                 }
-                                                                            </Badge>
-                                                                            <Badge variant="outline">
-                                                                                Issue{' '}
-                                                                                {
-                                                                                    issue.issue
-                                                                                }
-                                                                            </Badge>
-                                                                            <Badge variant="outline">
-                                                                                {
-                                                                                    issue.publicationDate
-                                                                                }
-                                                                            </Badge>
-                                                                        </div>
+                                                                            </span>
+                                                                        )}
                                                                     </div>
+                                                                </div>
+
+                                                                <div className="flex shrink-0 items-center">
+                                                                    <ChevronRight className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
                                                                 </div>
                                                             </CardContent>
                                                         </Card>
-                                                    ),
-                                                )}
-                                            </div>
-                                        ))}
+                                                    </Link>
+                                                )),
+                                        )}
                                     </div>
                                 </div>
                             ))}
-
-                            {archiveData.length === 0 && (
-                                <div className="py-12 text-center">
-                                    <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                                    <p className="text-muted-foreground">
-                                        No archives found.
-                                    </p>
-                                </div>
-                            )}
                         </div>
-                    </CardContent>
-                </Card>
-
-                {/* Statistics Section */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Archive className="h-5 w-5" />
-                            Archive Statistics
-                        </CardTitle>
-                        <CardDescription>
-                            Overview of our publication statistics and research
-                            impact.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="mb-8 grid gap-6 md:grid-cols-3">
-                            <Card className="text-center">
-                                <CardContent className="pt-6">
-                                    <div className="mb-2 text-3xl font-bold text-primary">
-                                        {archiveData.reduce(
-                                            (total, year) =>
-                                                total +
-                                                year.volumes.reduce(
-                                                    (volTotal, vol) =>
-                                                        volTotal +
-                                                        vol.issues.length,
-                                                    0,
-                                                ),
-                                            0,
-                                        )}
-                                    </div>
-                                    <p className="text-muted-foreground">
-                                        Total Issues
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="text-center">
-                                <CardContent className="pt-6">
-                                    <div className="mb-2 text-3xl font-bold text-primary">
-                                        {archiveData.length}
-                                    </div>
-                                    <p className="text-muted-foreground">
-                                        Years Published
-                                    </p>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="text-center">
-                                <CardContent className="pt-6">
-                                    <div className="mb-2 text-3xl font-bold text-primary">
-                                        {archiveData.reduce(
-                                            (total, year) =>
-                                                total + year.volumes.length,
-                                            0,
-                                        )}
-                                    </div>
-                                    <p className="text-muted-foreground">
-                                        Total Volumes
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Publication History
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        {archiveData.map((yearData) => (
-                                            <div
-                                                key={yearData.year}
-                                                className="flex items-center justify-between border-b border-border py-2 last:border-0"
-                                            >
-                                                <span className="font-medium">
-                                                    {yearData.year}
-                                                </span>
-                                                <div className="flex items-center gap-2">
-                                                    <Badge variant="secondary">
-                                                        {yearData.volumes.reduce(
-                                                            (total, vol) =>
-                                                                total +
-                                                                vol.issues
-                                                                    .length,
-                                                            0,
-                                                        )}{' '}
-                                                        issues
-                                                    </Badge>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base">
-                                        Quick Access
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        <Link
-                                            href="/current-issue"
-                                            className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent"
-                                        >
-                                            <span>Current Issue</span>
-                                            <Badge>Latest</Badge>
-                                        </Link>
-                                        <Link
-                                            href="/most-cited"
-                                            className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent"
-                                        >
-                                            <span>Most Cited Articles</span>
-                                            <Badge variant="secondary">
-                                                Popular
-                                            </Badge>
-                                        </Link>
-                                        <Link
-                                            href="/recent-articles"
-                                            className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent"
-                                        >
-                                            <span>Recent Articles</span>
-                                            <Badge variant="secondary">
-                                                New
-                                            </Badge>
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                )}
             </div>
         </PublicLayout>
     );

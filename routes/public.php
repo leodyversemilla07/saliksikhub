@@ -19,7 +19,7 @@ Route::get('/', [JournalCmsController::class, 'home'])->name('home');
 Route::get('/page/{slug}', [JournalCmsController::class, 'show'])->name('cms.page');
 Route::get('/current', [IssueController::class, 'current'])->name('current');
 Route::inertia('/submissions', 'public/submissions')->name('submissions');
-Route::inertia('/archives', 'public/archives')->name('archives');
+Route::get('/archives', [IssueController::class, 'archives'])->name('archives');
 Route::inertia('/editorial-board', 'public/editorial-board')->name('editorial-board');
 Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements');
 Route::get('/announcements/{announcement:slug}', [AnnouncementController::class, 'show'])->name('announcements.show');

@@ -1,5 +1,13 @@
 import { Link } from '@inertiajs/react';
-import { Calendar, Clock, FileText, Hash, Users } from 'lucide-react';
+import {
+    BookOpen,
+    Calendar,
+    Clock,
+    FileText,
+    Hash,
+    Layers,
+    Users,
+} from 'lucide-react';
 import type { ComponentType } from 'react';
 
 /**
@@ -226,3 +234,146 @@ function JournalInfoWidget({ widget }: WidgetProps) {
 registerWidgetType('recent_articles', RecentArticlesWidget, 'Recent Articles');
 registerWidgetType('keywords', KeywordsWidget, 'Keywords');
 registerWidgetType('journal_info', JournalInfoWidget, 'About the Journal');
+
+/**
+ * Year Navigation widget — displays years and volumes for browsing the archives.
+ */
+function YearNavigationWidget({ widget }: WidgetProps) {
+    const years = widget.settings.years as
+        | Array<{
+              year: number;
+              volumes: Array<{ volume: number; issue_count: number }>;
+          }>
+        | undefined;
+
+    if (!years || years.length === 0) {
+        return null;
+    }
+
+    return (
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    {widget.title || 'Browse Archives'}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-0.5">
+                {years.slice(0, 6).map((yearGroup) => (
+                    <div key={yearGroup.year} className="group">
+                        <Link
+                            href={`/archives?year=${yearGroup.year}`}
+                            className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+                        >
+                            <span className="font-medium">
+                                {yearGroup.year}
+                            </span>
+                            <Badge variant="outline" className="text-xs">
+                                {yearGroup.volumes.reduce(
+                                    (sum, v) => sum + v.issue_count,
+                                    0,
+                                )}
+                            </Badge>
+                        </Link>
+                        <div className="ml-3 space-y-0.5">
+                            {yearGroup.volumes.slice(0, 3).map((vol) => (
+                                <Link
+                                    key={vol.volume}
+                                    href={`/archives?year=${yearGroup.year}&volume=${vol.volume}`}
+                                    className="flex items-center justify-between rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                >
+                                    <span className="flex items-center gap-1">
+                                        <Layers className="h-3 w-3" />
+                                        Vol. {vol.volume}
+                                    </span>
+                                    <span>{vol.issue_count} issues</span>
+                                </Link>
+                            ))}
+                            {yearGroup.volumes.length > 3 && (
+                                <Link
+                                    href={`/archives?year=${yearGroup.year}`}
+                                    className="block px-2 py-0.5 text-xs text-primary hover:underline"
+                                >
+                                    + {yearGroup.volumes.length - 3} more
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                ))}
+                {years.length > 6 && (
+                    <Link
+                        href="/archives"
+                        className="mt-2 block rounded-md px-2 py-1.5 text-center text-sm text-primary hover:bg-muted hover:underline"
+                    >
+                        View All Years
+                    </Link>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+/**
+ * Issue Highlights widget — shows featured published issues with cover images.
+ */
+function IssueHighlightsWidget({ widget }: WidgetProps) {
+    const issues = widget.settings.issues as
+        | Array<{
+              id: number;
+              slug: string;
+              volume: number;
+              number: number;
+              title: string | null;
+              publication_date: string;
+              manuscripts_count: number;
+          }>
+        | undefined;
+
+    if (!issues || issues.length === 0) {
+        return null;
+    }
+
+    return (
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    {widget.title || 'Latest Issues'}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                {issues.slice(0, 3).map((issue) => (
+                    <Link
+                        key={issue.id}
+                        href={`/issues/${issue.slug}`}
+                        className="group block rounded-md p-2 transition-colors hover:bg-muted/50"
+                    >
+                        <p className="text-sm font-medium group-hover:text-primary">
+                            Vol. {issue.volume}, No. {issue.number}
+                        </p>
+                        {issue.title && (
+                            <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                                {issue.title}
+                            </p>
+                        )}
+                        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                                {new Date(
+                                    issue.publication_date,
+                                ).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <FileText className="h-3 w-3" />
+                                {issue.manuscripts_count}
+                            </span>
+                        </div>
+                    </Link>
+                ))}
+            </CardContent>
+        </Card>
+    );
+}
+
+registerWidgetType('year_navigation', YearNavigationWidget, 'Browse Archives');
+registerWidgetType('issue_highlights', IssueHighlightsWidget, 'Latest Issues');

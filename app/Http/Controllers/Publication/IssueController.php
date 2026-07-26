@@ -482,8 +482,93 @@ class IssueController extends Controller
     }
 
     /**
-     * Unassign a manuscript from an issue.
+     * Display the public archives page with published issues grouped by year.
      */
+    public function archives(Request $request)
+    {
+        $journal = app()->bound('currentJournal') ? app('currentJournal') : null;
+        $journalId = $journal?->id;
+
+        // Get all published issues, ordered by volume/issue desc
+        $issues = Issue::withCount('manuscripts')
+            ->where('status', Issue::STATUS_PUBLISHED)
+            ->orderedByVolumeIssue()
+            ->get();
+
+        // Group by year (from publication_date), then by volume
+        $years = [];
+        foreach ($issues as $issue) {
+            $year = $issue->publication_date?->year ?? date('Y');
+            if (! isset($years[$year])) {
+                $years[$year] = [
+                    'year' => $year,
+                    'volume_count' => 0,
+                    'issue_count' => 0,
+                    'volumes' => [],
+                ];
+            }
+
+            $volLabel = (string) $issue->volume_number;
+            if (! isset($years[$year]['volumes'][$volLabel])) {
+                $years[$year]['volumes'][$volLabel] = [
+                    'volume' => $issue->volume_number,
+                    'issues' => [],
+                ];
+                $years[$year]['volume_count']++;
+            }
+
+            $years[$year]['volumes'][$volLabel]['issues'][] = [
+                'id' => $issue->id,
+                'slug' => $issue->slug,
+                'volume' => $issue->volume_number,
+                'number' => $issue->issue_number,
+                'title' => $issue->issue_title,
+                'description' => $issue->description,
+                'publication_date' => $issue->publication_date?->toDateString(),
+                'cover_image_url' => $issue->cover_image
+                    ? app(StorageService::class)->generateTemporaryUrl($issue->cover_image, 5)
+                    : null,
+                'doi' => $issue->doi,
+                'theme' => $issue->theme,
+                'manuscripts_count' => $issue->manuscripts_count,
+            ];
+            $years[$year]['issue_count']++;
+        }
+
+        // Convert to indexed array (descending by year)
+        $years = array_values($years);
+        rsort($years);
+
+        // Re-index volumes arrays after sorting
+        foreach ($years as &$yearData) {
+            $yearData['volumes'] = array_values($yearData['volumes']);
+        }
+        unset($yearData);
+
+        // Compute archive statistics
+        $stats = [
+            'total_issues' => $issues->count(),
+            'total_volumes' => collect($years)->sum('volume_count'),
+            'total_years' => count($years),
+        ];
+
+        // Get sidebar widgets for the archives page
+        $sidebarWidgets = [];
+        if ($journal && isset($journal->settings['sidebar_widgets'])) {
+            $widgetService = app(SidebarWidgetService::class);
+            $sidebarWidgets = $widgetService->buildWidgets(
+                $journal->settings['sidebar_widgets'],
+                $journalId
+            );
+        }
+
+        return Inertia::render('public/archives', [
+            'years' => $years,
+            'stats' => $stats,
+            'sidebarWidgets' => $sidebarWidgets,
+        ]);
+    }
+
     public function unassignManuscript(Request $request, Issue $issue, Manuscript $manuscript)
     {
         try {
@@ -681,8 +766,9 @@ class IssueController extends Controller
                 'articles' => $articles,
             ];
 
-            return Inertia::render('issues/show', [
+            return Inertia::render('public/issue-show', [
                 'issue' => $issueData,
+                'sidebarWidgets' => $sidebarWidgets,
             ]);
         } catch (Exception $e) {
             Log::error('Public Issue Show Error', [
