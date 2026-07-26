@@ -16,38 +16,42 @@ This document outlines the plugin system architecture for SaliksikHub, transform
 ### 1. Core Components
 
 #### Plugin Manager (`app/Core/Plugin/PluginManager.php`)
+
 - **Responsibility**: Manage plugin lifecycle (install, enable, disable, uninstall)
 - **Methods**:
-  - `install($source)` - Install from directory or zip
-  - `uninstall($pluginId)` - Remove plugin
-  - `enable($pluginId, $journalId = null)` - Enable plugin
-  - `disable($pluginId, $journalId = null)` - Disable plugin
-  - `getActive($journalId = null)` - Get active plugins
-  - `loadActive()` - Bootstrap active plugins
+    - `install($source)` - Install from directory or zip
+    - `uninstall($pluginId)` - Remove plugin
+    - `enable($pluginId, $journalId = null)` - Enable plugin
+    - `disable($pluginId, $journalId = null)` - Disable plugin
+    - `getActive($journalId = null)` - Get active plugins
+    - `loadActive()` - Bootstrap active plugins
 
 #### Hook System (`app/Core/Plugin/Hook.php`)
+
 - **Responsibility**: Event-driven architecture for plugin communication
 - **Methods**:
-  - `addAction($hook, $callback, $priority = 10)` - Register action listener
-  - `doAction($hook, ...$args)` - Trigger action
-  - `addFilter($hook, $callback, $priority = 10)` - Register filter
-  - `applyFilters($hook, $value, ...$args)` - Apply filters
+    - `addAction($hook, $callback, $priority = 10)` - Register action listener
+    - `doAction($hook, ...$args)` - Trigger action
+    - `addFilter($hook, $callback, $priority = 10)` - Register filter
+    - `applyFilters($hook, $value, ...$args)` - Apply filters
 
 #### Plugin Interface (`app/Core/Plugin/Contracts/PluginInterface.php`)
+
 - **Contract**: All plugins must implement this interface
 - **Methods**:
-  - `register()` - Register hooks and filters
-  - `boot()` - Initialize plugin
-  - `activate()` - Run on activation
-  - `deactivate()` - Run on deactivation
-  - `uninstall()` - Cleanup on removal
-  - `getInfo()` - Return plugin metadata
-  - `hasSettings()` - Has settings page?
-  - `renderSettings()` - Render settings UI
+    - `register()` - Register hooks and filters
+    - `boot()` - Initialize plugin
+    - `activate()` - Run on activation
+    - `deactivate()` - Run on deactivation
+    - `uninstall()` - Cleanup on removal
+    - `getInfo()` - Return plugin metadata
+    - `hasSettings()` - Has settings page?
+    - `renderSettings()` - Render settings UI
 
 ### 2. Database Schema
 
 #### plugins table
+
 Stores plugin metadata and status.
 
 ```sql
@@ -68,6 +72,7 @@ CREATE TABLE plugins (
 ```
 
 #### journal_plugins table
+
 Stores per-journal plugin activation and settings.
 
 ```sql
@@ -144,6 +149,7 @@ PluginName/
 ```
 
 #### plugin.json
+
 ```json
 {
     "name": "announcement-banner",
@@ -156,16 +162,14 @@ PluginName/
         "saliksikhub": "^2.0"
     },
     "hasSettings": true,
-    "hooks": [
-        "journal.header.before",
-        "journal.homepage.before"
-    ]
+    "hooks": ["journal.header.before", "journal.homepage.before"]
 }
 ```
 
 ### 5. Hook Reference
 
 #### Available Actions
+
 - `plugin.activate` - After plugin activation
 - `plugin.deactivate` - After plugin deactivation
 - `manuscript.submitted` - After manuscript submission
@@ -178,6 +182,7 @@ PluginName/
 - `journal.homepage.after` - After homepage content
 
 #### Available Filters
+
 - `manuscript.title` - Modify manuscript title
 - `manuscript.abstract` - Modify manuscript abstract
 - `email.subject` - Modify email subject
@@ -190,11 +195,13 @@ PluginName/
 #### Creating a Plugin
 
 1. **Create Plugin Directory**
+
 ```bash
 mkdir storage/plugins/my-plugin
 ```
 
 2. **Create plugin.json**
+
 ```json
 {
     "name": "my-plugin",
@@ -207,6 +214,7 @@ mkdir storage/plugins/my-plugin
 ```
 
 3. **Create Plugin Class**
+
 ```php
 <?php
 
@@ -276,12 +284,14 @@ class MyPlugin implements PluginInterface
 ```
 
 4. **Install Plugin**
+
 - Upload via Admin UI, or
 - Place in `storage/plugins/` and run installation
 
 #### Using Hooks in Core Code
 
 **Actions:**
+
 ```php
 use App\Core\Plugin\Hook;
 
@@ -290,6 +300,7 @@ Hook::doAction('manuscript.submitted', $manuscript);
 ```
 
 **Filters:**
+
 ```php
 use App\Core\Plugin\Hook;
 
@@ -300,6 +311,7 @@ $title = Hook::applyFilters('manuscript.title', $manuscript->title, $manuscript)
 ### 7. Admin Interface
 
 #### Plugin Management Page
+
 - List all installed plugins
 - Enable/disable per journal
 - Configure plugin settings
@@ -307,6 +319,7 @@ $title = Hook::applyFilters('manuscript.title', $manuscript->title, $manuscript)
 - Check for updates
 
 #### Routes
+
 ```php
 // routes/web.php (admin routes)
 Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
@@ -323,23 +336,24 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function
 ### 8. Security Considerations
 
 1. **Plugin Isolation**
-   - Plugins run in isolated namespaces
-   - No direct database access (use models)
-   - Sandboxed file system access
+    - Plugins run in isolated namespaces
+    - No direct database access (use models)
+    - Sandboxed file system access
 
 2. **Validation**
-   - Validate plugin.json schema
-   - Check PHP version compatibility
-   - Verify file permissions
+    - Validate plugin.json schema
+    - Check PHP version compatibility
+    - Verify file permissions
 
 3. **Permissions**
-   - Only super_admin can install/uninstall
-   - Journal managers can enable/disable
-   - Settings access controlled per plugin
+    - Only super_admin can install/uninstall
+    - Journal managers can enable/disable
+    - Settings access controlled per plugin
 
 ### 9. Testing
 
 #### Unit Tests
+
 ```php
 // tests/Unit/Plugin/HookTest.php
 it('can register and trigger actions', function () {
@@ -347,21 +361,22 @@ it('can register and trigger actions', function () {
     Hook::addAction('test.action', function () use (&$called) {
         $called = true;
     });
-    
+
     Hook::doAction('test.action');
-    
+
     expect($called)->toBeTrue();
 });
 ```
 
 #### Feature Tests
+
 ```php
 // tests/Feature/Plugin/PluginInstallationTest.php
 it('can install a plugin from directory', function () {
     $manager = app(PluginManager::class);
-    
+
     $plugin = $manager->install(storage_path('plugins/test-plugin'));
-    
+
     expect($plugin)->not->toBeNull();
     expect($plugin->name)->toBe('test-plugin');
 });
@@ -370,14 +385,16 @@ it('can install a plugin from directory', function () {
 ### 10. Migration Strategy
 
 #### From Current System
+
 1. Install plugin system (new migrations)
 2. Convert existing features to plugins:
-   - Email templates → EmailTemplatesPlugin
-   - Statistics → StatisticsPlugin
-   - Review forms → ReviewFormsPlugin
+    - Email templates → EmailTemplatesPlugin
+    - Statistics → StatisticsPlugin
+    - Review forms → ReviewFormsPlugin
 3. Gradual migration over releases
 
 #### Versioning
+
 - Follow semantic versioning
 - Plugins declare compatible SaliksikHub version
 - Migration system for plugin database updates
@@ -385,6 +402,7 @@ it('can install a plugin from directory', function () {
 ## Implementation Timeline
 
 ### Phase 1: Core Plugin System (Weeks 1-2)
+
 - [ ] Database migrations
 - [ ] PluginManager service
 - [ ] Hook system
@@ -392,17 +410,20 @@ it('can install a plugin from directory', function () {
 - [ ] PluginLoader
 
 ### Phase 2: Admin Interface (Weeks 3-4)
+
 - [ ] PluginController
 - [ ] Plugin management UI
 - [ ] Upload/install functionality
 - [ ] Settings pages
 
 ### Phase 3: Sample Plugins (Week 5)
+
 - [ ] AnnouncementBanner plugin
 - [ ] Documentation
 - [ ] Testing
 
 ### Phase 4: Integration (Week 6)
+
 - [ ] Add hooks to core code
 - [ ] Test with real use cases
 - [ ] Performance optimization

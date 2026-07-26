@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { getData } from 'country-list';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
+
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +16,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import type { User, UserRole } from '@/types';
 import { dashboard } from '@/routes';
 import users from '@/routes/users';
+import type { User, UserRole } from '@/types';
 
 interface EditUserProps {
     user: User;

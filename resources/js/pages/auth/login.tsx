@@ -1,6 +1,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CheckCircle } from 'lucide-react';
 import type { FormEventHandler } from 'react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,9 +19,9 @@ import {
     FieldError,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import type { PageProps } from '@/types';
 import { home, login as loginRoute, register as registerRoute } from '@/routes';
 import password from '@/routes/password';
+import type { PageProps } from '@/types';
 
 export default function Login({
     status,

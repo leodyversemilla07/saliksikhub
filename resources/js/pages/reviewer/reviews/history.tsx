@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import React from 'react';
+
 import AppLayout from '@/layouts/app-layout';
 
 interface Review {

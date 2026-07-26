@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { getData } from 'country-list';
 import React from 'react';
 import { toast } from 'sonner';
+
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

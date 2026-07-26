@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+
 import {
     AlertDialog,
     AlertDialogContent,

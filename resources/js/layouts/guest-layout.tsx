@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
+
 import ApplicationLogo from '@/components/application-logo';
 
 export default function GuestLayout({

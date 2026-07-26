@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+
 import Breadcrumb from '@/components/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

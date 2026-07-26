@@ -44,9 +44,9 @@ import {
     LuInfo,
     LuMessageSquare,
 } from 'react-icons/lu';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { PageProps } from '@/types';
 import {
     home,
     submissions,
@@ -57,6 +57,7 @@ import {
     contactUs,
     current,
 } from '@/routes';
+import type { PageProps } from '@/types';
 
 const socialLinks = [
     { name: 'Facebook', icon: FaFacebook, href: '#' },

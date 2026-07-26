@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
     AlertDialog,
@@ -55,8 +56,8 @@ import {
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import type { Manuscript, User as UserType } from '@/types';
 import editor from '@/routes/editor';
+import type { Manuscript, User as UserType } from '@/types';
 
 interface DecisionTypes {
     [key: string]: string;

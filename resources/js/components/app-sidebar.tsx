@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+
 import ApplicationLogo from '@/components/application-logo';
 import JournalSwitcher from '@/components/journal-switcher';
 import {
@@ -15,6 +16,7 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import type { User, UserRole, PageProps } from '@/types';
+
 import { NavUser } from './nav-user';
 
 interface SidebarLinkType {

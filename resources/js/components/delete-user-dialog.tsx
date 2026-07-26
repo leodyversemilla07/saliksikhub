@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+
 import {
     AlertDialog,
     AlertDialogContent,
@@ -13,8 +14,8 @@ import {
     AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import type { User } from '@/types';
 import users from '@/routes/users';
+import type { User } from '@/types';
 
 export interface DeleteUserDialogProps {
     open: boolean;

@@ -1,7 +1,9 @@
 import { usePage } from '@inertiajs/react';
 import { FileText, Calendar, Users, Hash, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
+
 import Breadcrumb from '@/components/breadcrumb';
+import { PluginSlot } from '@/components/plugins/plugin-slot';
 import PublicLayout from '@/layouts/public-layout';
 import type { PageProps } from '@/types';
 

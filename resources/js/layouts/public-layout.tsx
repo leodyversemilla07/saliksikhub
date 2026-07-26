@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { LuBookOpen, LuUsers, LuFileText, LuArrowRight } from 'react-icons/lu';
+
 import { PluginSlot } from '@/components/plugins/plugin-slot';
 import { Sidebar } from '@/components/sidebar/sidebar';
 import SiteFooter from '@/components/site-footer';

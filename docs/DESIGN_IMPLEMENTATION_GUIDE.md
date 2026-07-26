@@ -7,6 +7,7 @@ This guide helps you implement the Scholarly Design System in SaliksikHub.
 ### 1. Fonts Are Loaded ✓
 
 The scholarly fonts are already loaded in `resources/views/app.blade.php`:
+
 - **Merriweather** (Serif) - For content and headings
 - **Inter** (Sans-serif) - For UI elements
 - **JetBrains Mono** (Monospace) - For code/technical content
@@ -14,6 +15,7 @@ The scholarly fonts are already loaded in `resources/views/app.blade.php`:
 ### 2. CSS Variables Are Updated ✓
 
 Your `resources/css/app.css` now includes:
+
 - Scholarly color palette (Oxford Blue, Burgundy, Parchment)
 - Typography system with serif/sans-serif distinction
 - Minimal border radius (4px instead of 10px)
@@ -82,9 +84,7 @@ npm run dev
 
 ```tsx
 // In your custom styles
-<div style={{ color: 'oklch(var(--primary))' }}>
-    Custom styled element
-</div>
+<div style={{ color: 'oklch(var(--primary))' }}>Custom styled element</div>
 ```
 
 ### Academic Components
@@ -164,13 +164,9 @@ import { ManuscriptCard, ManuscriptCardCompact } from '@/components/academic';
 // Academic paper card style
 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
     <CardHeader>
-        <h3 className="font-serif text-xl font-bold">
-            Card Title in Serif
-        </h3>
+        <h3 className="font-serif text-xl font-bold">Card Title in Serif</h3>
     </CardHeader>
-    <CardContent>
-        Content here
-    </CardContent>
+    <CardContent>Content here</CardContent>
 </Card>
 ```
 
@@ -181,9 +177,7 @@ import { ManuscriptCard, ManuscriptCardCompact } from '@/components/academic';
 <Table className="font-sans text-sm">
     <TableHeader className="bg-muted/50">
         <TableRow>
-            <TableHead className="font-semibold">
-                Manuscript ID
-            </TableHead>
+            <TableHead className="font-semibold">Manuscript ID</TableHead>
             <TableHead>Title</TableHead>
         </TableRow>
     </TableHeader>
@@ -193,9 +187,7 @@ import { ManuscriptCard, ManuscriptCardCompact } from '@/components/academic';
                 <TableCell className="font-mono text-xs">
                     {m.manuscript_id}
                 </TableCell>
-                <TableCell className="font-serif">
-                    {m.title}
-                </TableCell>
+                <TableCell className="font-serif">{m.title}</TableCell>
             </TableRow>
         ))}
     </TableBody>
@@ -208,9 +200,7 @@ import { ManuscriptCard, ManuscriptCardCompact } from '@/components/academic';
 
 ```tsx
 <div className="rounded-2xl bg-linear-to-r from-blue-500 to-purple-600 shadow-xl">
-    <h2 className="font-sans text-4xl font-black">
-        Submit Your Research
-    </h2>
+    <h2 className="font-sans text-4xl font-black">Submit Your Research</h2>
     <button className="rounded-full bg-white text-black px-8 py-4">
         Get Started →
     </button>
@@ -253,16 +243,14 @@ When creating or updating components:
 
 ```tsx
 <article className="prose prose-lg max-w-3xl mx-auto">
-    <h1 className="font-serif text-4xl font-bold mb-4">
-        Article Title
-    </h1>
-    
+    <h1 className="font-serif text-4xl font-bold mb-4">Article Title</h1>
+
     <p className="font-serif italic text-lg text-muted-foreground mb-8">
         Author Name, Co-author Name
     </p>
-    
+
     <Separator className="my-8" />
-    
+
     <div className="font-serif text-base leading-relaxed">
         <p>Article content...</p>
     </div>
@@ -279,9 +267,7 @@ When creating or updating components:
         </h5>
     </CardHeader>
     <CardContent>
-        <div className="font-serif text-4xl font-bold">
-            1,234
-        </div>
+        <div className="font-serif text-4xl font-bold">1,234</div>
         <p className="font-sans text-sm text-muted-foreground mt-2">
             +12% from last month
         </p>
@@ -300,7 +286,7 @@ function StatusBadge({ status }: { status: string }) {
         accepted: 'bg-success/10 text-success border-success/20',
         rejected: 'bg-destructive/10 text-destructive border-destructive/20',
     };
-    
+
     return (
         <Badge className={variants[status] + ' font-sans text-xs'}>
             {status.replace('_', ' ').toUpperCase()}
@@ -321,6 +307,7 @@ function toggleDarkMode() {
 ```
 
 The design system ensures:
+
 - Warm dark tones (not pure black)
 - Reduced contrast for comfortable reading
 - Appropriate color adjustments for all elements
@@ -328,12 +315,14 @@ The design system ensures:
 ## Accessibility
 
 **Built-in:**
+
 - Semantic HTML5 elements
 - ARIA labels via Radix UI components
 - Focus states with Oxford Blue ring
 - Color contrast ratios meeting WCAG AA
 
 **Test:**
+
 ```bash
 # Install axe for accessibility testing
 npm install --save-dev @axe-core/react
@@ -358,6 +347,7 @@ npm install --save-dev @axe-core/react
 ## Need Help?
 
 Check the design system documentation or create an issue for:
+
 - New component requests
 - Color palette questions
 - Typography decisions

@@ -1,8 +1,10 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import type { PageProps } from '@/types';
+
 import UpdatePasswordForm from './partials/password';
 import UpdateProfileInformationForm from './partials/profile';
 

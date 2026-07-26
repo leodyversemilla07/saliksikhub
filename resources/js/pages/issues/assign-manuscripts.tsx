@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import { ArrowLeft, FileText, User, Calendar } from 'lucide-react';
 import React, { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

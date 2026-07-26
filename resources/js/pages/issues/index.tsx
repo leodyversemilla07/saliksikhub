@@ -11,6 +11,7 @@ import {
     X,
 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,9 +24,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import type { PageProps } from '@/types';
 import { dashboard } from '@/routes';
 import issuesRoutes from '@/routes/issues';
+import type { PageProps } from '@/types';
 
 interface JournalIssue {
     id: number;
@@ -109,7 +110,7 @@ export default function Index({ issues, filters }: IndexProps) {
     const availableVolumes = useMemo(() => {
         const volumes = issues.data.map((issue) => issue.volume_number);
 
-        return [...new Set(volumes)].sort((a, b) => b - a); // Sort descending
+        return [...new Set(volumes)].toSorted((a, b) => b - a); // Sort descending
     }, [issues.data]); // Client-side filtering for all filters (search, status, volume)
     const filteredIssues = useMemo(() => {
         let filtered = issues.data;

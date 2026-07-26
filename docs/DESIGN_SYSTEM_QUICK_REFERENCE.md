@@ -3,25 +3,28 @@
 ## 🎨 Color Palette
 
 ### Primary Colors
+
 ```css
---primary: oklch(0.35 0.08 250)      /* Oxford Blue - Primary actions, links */
---accent: oklch(0.40 0.12 15)        /* Burgundy - Important highlights */
---secondary: oklch(0.95 0.02 85)     /* Parchment - Secondary surfaces */
+--primary: oklch(0.35 0.08 250) /* Oxford Blue - Primary actions, links */
+    --accent: oklch(0.4 0.12 15) /* Burgundy - Important highlights */
+    --secondary: oklch(0.95 0.02 85) /* Parchment - Secondary surfaces */;
 ```
 
 ### Semantic Colors
+
 ```css
---success: oklch(0.45 0.10 145)      /* Forest Green - Published, approved */
---warning: oklch(0.65 0.15 75)       /* Amber - Under review */
---destructive: oklch(0.50 0.20 25)   /* Crimson - Rejected, errors */
---info: oklch(0.48 0.08 235)         /* Prussian Blue - Information */
+--success: oklch(0.45 0.1 145) /* Forest Green - Published, approved */
+    --warning: oklch(0.65 0.15 75) /* Amber - Under review */
+    --destructive: oklch(0.5 0.2 25) /* Crimson - Rejected, errors */
+    --info: oklch(0.48 0.08 235) /* Prussian Blue - Information */;
 ```
 
 ### Neutral Tones
+
 ```css
---foreground: oklch(0.20 0.01 250)   /* Charcoal - Primary text */
---muted-foreground: oklch(0.50 0.02 250)  /* Slate - Secondary text */
---border: oklch(0.88 0.01 250)       /* Pearl - Borders, dividers */
+--foreground: oklch(0.2 0.01 250) /* Charcoal - Primary text */
+    --muted-foreground: oklch(0.5 0.02 250) /* Slate - Secondary text */
+    --border: oklch(0.88 0.01 250) /* Pearl - Borders, dividers */;
 ```
 
 ---
@@ -29,13 +32,17 @@
 ## ✍️ Typography
 
 ### Font Families
+
 ```css
---font-serif: 'Merriweather', Georgia, serif      /* Content & headings */
---font-sans: 'Inter', 'Segoe UI', sans-serif      /* UI elements */
---font-mono: 'JetBrains Mono', Consolas, monospace /* Code, DOI, IDs */
+--font-serif:
+    'Merriweather', Georgia,
+    serif /* Content & headings */ --font-sans: 'Inter', 'Segoe UI',
+    sans-serif /* UI elements */ --font-mono: 'JetBrains Mono', Consolas,
+    monospace /* Code, DOI, IDs */;
 ```
 
 ### Usage
+
 - **Headings (h1-h4)**: Serif, Bold, for article titles and sections
 - **Small Headings (h5-h6)**: Sans-serif, Uppercase, for UI labels
 - **Body Text**: Serif, for articles, abstracts, content
@@ -43,6 +50,7 @@
 - **Technical**: Monospace, for DOI, manuscript IDs, code
 
 ### Type Scale
+
 ```
 Display:    48.8px (3.052rem)
 H1:         39px (2.441rem)
@@ -60,13 +68,10 @@ Caption:    12px (0.75rem)
 ## 📐 Spacing
 
 ```css
---space-xs:  4px    /* Tight spacing */
---space-sm:  8px    /* Default gap */
---space-md:  16px   /* Section spacing */
---space-lg:  24px   /* Component separation */
---space-xl:  32px   /* Major sections */
---space-2xl: 48px   /* Page sections */
---space-3xl: 64px   /* Hero spacing */
+--space-xs: 4px /* Tight spacing */ --space-sm: 8px /* Default gap */
+    --space-md: 16px /* Section spacing */ --space-lg: 24px
+    /* Component separation */ --space-xl: 32px /* Major sections */
+    --space-2xl: 48px /* Page sections */ --space-3xl: 64px /* Hero spacing */;
 ```
 
 ---
@@ -74,9 +79,7 @@ Caption:    12px (0.75rem)
 ## 🔘 Border Radius
 
 ```css
---radius: 4px        /* Minimal, traditional */
---radius-md: 3px
---radius-sm: 2px
+--radius: 4px /* Minimal, traditional */ --radius-md: 3px --radius-sm: 2px;
 ```
 
 Much smaller than typical SaaS (0.625rem = 10px → 4px)
@@ -86,48 +89,53 @@ Much smaller than typical SaaS (0.625rem = 10px → 4px)
 ## 🎯 Common Patterns
 
 ### Academic Paper Card
+
 ```tsx
 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-  <CardHeader>
-    <h3 className="font-serif text-xl font-bold">{title}</h3>
-    <p className="font-serif italic text-muted-foreground">{authors}</p>
-  </CardHeader>
-  <CardContent>
-    <p className="font-serif leading-relaxed">{abstract}</p>
-  </CardContent>
+    <CardHeader>
+        <h3 className="font-serif text-xl font-bold">{title}</h3>
+        <p className="font-serif italic text-muted-foreground">{authors}</p>
+    </CardHeader>
+    <CardContent>
+        <p className="font-serif leading-relaxed">{abstract}</p>
+    </CardContent>
 </Card>
 ```
 
 ### Status Badge
+
 ```tsx
 <Badge className="bg-success/10 text-success border-success/20">
-  Published
+    Published
 </Badge>
 ```
 
 ### Data Table
+
 ```tsx
 <Table className="font-sans text-sm">
-  <TableHeader className="bg-muted/50">
-    <TableRow>
-      <TableHead className="font-semibold">Manuscript ID</TableHead>
-    </TableRow>
-  </TableHeader>
+    <TableHeader className="bg-muted/50">
+        <TableRow>
+            <TableHead className="font-semibold">Manuscript ID</TableHead>
+        </TableRow>
+    </TableHeader>
 </Table>
 ```
 
 ### Primary Button
+
 ```tsx
 <Button variant="default" className="px-6 py-3">
-  Submit Manuscript
+    Submit Manuscript
 </Button>
 ```
 
 ### Manuscript Metadata
+
 ```tsx
 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-  <Calendar className="h-4 w-4" />
-  <time>{submittedDate}</time>
+    <Calendar className="h-4 w-4" />
+    <time>{submittedDate}</time>
 </div>
 ```
 
@@ -136,6 +144,7 @@ Much smaller than typical SaaS (0.625rem = 10px → 4px)
 ## 🌓 Dark Mode
 
 Colors automatically adjust via CSS variables.
+
 - Warm dark tones (not pure black)
 - Reduced contrast for comfortable reading
 - Maintains scholarly aesthetic
@@ -159,10 +168,12 @@ Toggle: `document.documentElement.classList.toggle('dark')`
 Located in: `resources/js/components/`
 
 ### UI Components (shadcn)
+
 - All in `components/ui/` - pre-themed with scholarly colors
 - Use directly: `import { Button } from '@/components/ui/button'`
 
 ### Academic Components
+
 - Custom scholarly components in `components/academic/`
 - `ManuscriptCard` - Academic paper card
 - `ManuscriptCardCompact` - List view variant
@@ -191,6 +202,7 @@ Located in: `resources/js/components/`
 ## 🎨 Visual Identity
 
 **Before (SaaS):**
+
 - Bright, saturated colors
 - Large rounded corners (10px+)
 - Sans-serif everywhere
@@ -198,6 +210,7 @@ Located in: `resources/js/components/`
 - Modern, playful
 
 **After (Scholarly):**
+
 - Muted, authoritative tones
 - Minimal rounded corners (4px)
 - Serif for content
@@ -209,6 +222,7 @@ Located in: `resources/js/components/`
 ## ✅ Component Checklist
 
 When creating/updating:
+
 - [ ] Serif fonts for content/headings
 - [ ] Sans-serif for UI elements
 - [ ] Minimal border radius (≤4px)
@@ -220,4 +234,4 @@ When creating/updating:
 
 ---
 
-*Design System v1.0 - December 24, 2025*
+_Design System v1.0 - December 24, 2025_

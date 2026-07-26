@@ -3,6 +3,7 @@ import { getData } from 'country-list';
 import { Check, Mail, Camera, AlertTriangle } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
     AlertDialog,
@@ -38,9 +39,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import type { User } from '@/types';
 import profile from '@/routes/profile';
 import verification from '@/routes/verification';
+import type { User } from '@/types';
 
 interface CountryOption {
     code: string;

@@ -31,7 +31,7 @@ export function Sidebar({ widgets, className }: SidebarProps) {
     return (
         <aside className={`space-y-6 ${className ?? ''}`} aria-label="Sidebar">
             {widgets
-                .sort((a, b) => a.order - b.order)
+                .toSorted((a, b) => a.order - b.order)
                 .map((widget) => {
                     const Renderer = getWidgetRenderer(widget.type);
 

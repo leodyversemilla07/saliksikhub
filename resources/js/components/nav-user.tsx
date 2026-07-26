@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ChevronsUpDown, LogOut, User } from 'lucide-react';
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -16,9 +17,9 @@ import {
     SidebarMenuButton,
     useSidebar,
 } from '@/components/ui/sidebar';
-import type { User as UserType } from '@/types';
 import { logout } from '@/routes';
 import profile from '@/routes/profile';
+import type { User as UserType } from '@/types';
 
 interface NavUserProps {
     user: UserType;

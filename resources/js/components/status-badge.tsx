@@ -1,6 +1,8 @@
 import { BookOpen, Clock, Edit, CheckCircle, XCircle, Eye } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { ManuscriptStatus } from '@/types';
+
 import { Badge } from './ui/badge';
 
 interface ManuscriptStatusBadgeProps {

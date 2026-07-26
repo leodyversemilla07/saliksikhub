@@ -1,11 +1,12 @@
 import '../css/app.css';
 import './bootstrap';
-
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+
 import { registerCmsPluginSections } from './components/cms/plugins';
 import { initializeTheme } from './hooks/use-appearance';
 import { registerCorePluginComponents } from './plugins';

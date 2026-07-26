@@ -8,14 +8,15 @@ import {
     AlertCircle,
 } from 'lucide-react';
 import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import type { PageProps } from '@/types';
 import { dashboard } from '@/routes';
 import notificationsRoutes from '@/routes/notifications';
+import type { PageProps } from '@/types';
 
 interface NotificationData {
     message?: string;

@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
+
 import {
     Accordion,
     AccordionContent,

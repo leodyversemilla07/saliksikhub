@@ -7,13 +7,13 @@ Transform SaliksikHub from a single-journal RJMS (Research Journal Management Sy
 ### Why Multi-Tenancy?
 
 | Problem (Self-Hosted per Institution) | Solution (Multi-Tenant Platform) |
-|---------------------------------------|----------------------------------|
-| Each SUC manages their own server | You manage one platform |
-| No IT staff for updates/security | You push updates to everyone |
-| Bugs stay unfixed for months | One fix benefits all tenants |
-| Different versions = chaos | Everyone on same version |
-| Each pays for hosting separately | Shared infrastructure = cheaper |
-| Data backups? What backups? | Centralized backup strategy |
+| ------------------------------------- | -------------------------------- |
+| Each SUC manages their own server     | You manage one platform          |
+| No IT staff for updates/security      | You push updates to everyone     |
+| Bugs stay unfixed for months          | One fix benefits all tenants     |
+| Different versions = chaos            | Everyone on same version         |
+| Each pays for hosting separately      | Shared infrastructure = cheaper  |
+| Data backups? What backups?           | Centralized backup strategy      |
 
 ### Architecture
 
@@ -44,17 +44,17 @@ Transform SaliksikHub from a single-journal RJMS (Research Journal Management Sy
 
 ### Database Tables (Existing)
 
-| Table | Key Columns | Tenant Scoping Needed |
-|-------|-------------|----------------------|
-| `users` | id, email, role, affiliation | Add `institution_id` |
-| `manuscripts` | id, user_id, title, status | Add `journal_id` |
-| `manuscript_authors` | manuscript_id, user_id | Via manuscript |
-| `manuscript_files` | manuscript_id, file_type | Via manuscript |
-| `manuscript_revisions` | manuscript_id, version | Via manuscript |
-| `reviews` | manuscript_id, reviewer_id | Via manuscript |
-| `editorial_decisions` | manuscript_id, editor_id | Via manuscript |
-| `issues` | id, volume_number, status | Add `journal_id` |
-| `issue_comments` | issue_id, user_id | Via issue |
+| Table                  | Key Columns                  | Tenant Scoping Needed |
+| ---------------------- | ---------------------------- | --------------------- |
+| `users`                | id, email, role, affiliation | Add `institution_id`  |
+| `manuscripts`          | id, user_id, title, status   | Add `journal_id`      |
+| `manuscript_authors`   | manuscript_id, user_id       | Via manuscript        |
+| `manuscript_files`     | manuscript_id, file_type     | Via manuscript        |
+| `manuscript_revisions` | manuscript_id, version       | Via manuscript        |
+| `reviews`              | manuscript_id, reviewer_id   | Via manuscript        |
+| `editorial_decisions`  | manuscript_id, editor_id     | Via manuscript        |
+| `issues`               | id, volume_number, status    | Add `journal_id`      |
+| `issue_comments`       | issue_id, user_id            | Via issue             |
 
 ### Current Role Structure (Spatie Permission)
 
@@ -71,11 +71,11 @@ $roles = [
 
 ### Hardcoded References to Remove
 
-| File | Hardcoded Content |
-|------|-------------------|
+| File                                      | Hardcoded Content                          |
+| ----------------------------------------- | ------------------------------------------ |
 | `resources/js/components/site-header.tsx` | "Mindoro State University", ISSN, logo URL |
-| `resources/js/pages/about-journal.tsx` | Entire "Daluyang Dunong" journal details |
-| `resources/js/pages/submissions.tsx` | "SaliksikHub" branding |
+| `resources/js/pages/about-journal.tsx`    | Entire "Daluyang Dunong" journal details   |
+| `resources/js/pages/submissions.tsx`      | "SaliksikHub" branding                     |
 
 ---
 
@@ -121,7 +121,7 @@ CREATE TABLE journals (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    
+
     UNIQUE(institution_id, slug)
 );
 
@@ -135,12 +135,13 @@ CREATE TABLE journal_user (
     assigned_at TIMESTAMP,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    
+
     UNIQUE(journal_id, user_id, role)
 );
 ```
 
 **Files to Create:**
+
 - `database/migrations/xxxx_create_institutions_table.php`
 - `database/migrations/xxxx_create_journals_table.php`
 - `database/migrations/xxxx_create_journal_user_table.php`
@@ -157,7 +158,7 @@ CREATE TABLE journal_user (
 -- Add to manuscripts table
 ALTER TABLE manuscripts ADD COLUMN journal_id BIGINT REFERENCES journals(id);
 
--- Add to issues table  
+-- Add to issues table
 ALTER TABLE issues ADD COLUMN journal_id BIGINT REFERENCES journals(id);
 
 -- Add to users table (institution association)
@@ -206,6 +207,7 @@ trait BelongsToJournal
 ```
 
 **Files to Create:**
+
 - `database/migrations/xxxx_add_journal_id_to_manuscripts_table.php`
 - `database/migrations/xxxx_add_journal_id_to_issues_table.php`
 - `database/migrations/xxxx_add_institution_id_to_users_table.php`
@@ -239,6 +241,7 @@ $user->hasRole('editor_in_chief', $journal);
 ```
 
 **Files to Modify:**
+
 - `config/permission.php`
 - `database/seeders/RoleAndPermissionSeeder.php`
 
@@ -262,21 +265,21 @@ class SetCurrentJournal
     public function handle(Request $request, Closure $next)
     {
         $journal = $this->resolveJournal($request);
-        
+
         if (!$journal) {
             abort(404, 'Journal not found');
         }
-        
+
         // Bind to container for global access
         app()->instance('currentJournal', $journal);
         app()->instance('currentInstitution', $journal->institution);
-        
+
         // Set Spatie Permission team context
         setPermissionsTeamId($journal->id);
-        
+
         return $next($request);
     }
-    
+
     protected function resolveJournal(Request $request): ?Journal
     {
         // Strategy 1: Subdomain (journal.saliksikhub.com)
@@ -284,26 +287,26 @@ class SetCurrentJournal
         $journal = Journal::where('domain', $host)
             ->orWhereHas('institution', fn($q) => $q->where('domain', $host))
             ->first();
-        
+
         if ($journal) {
             return $journal;
         }
-        
+
         // Strategy 2: Path-based (/minsu/ddmrj/...)
         $institutionSlug = $request->route('institution');
         $journalSlug = $request->route('journal');
-        
+
         if ($institutionSlug && $journalSlug) {
-            return Journal::whereHas('institution', fn($q) => 
+            return Journal::whereHas('institution', fn($q) =>
                 $q->where('slug', $institutionSlug)
             )->where('slug', $journalSlug)->first();
         }
-        
+
         // Strategy 3: Journal slug only (for simpler setup)
         if ($journalSlug = $request->route('journal')) {
             return Journal::where('slug', $journalSlug)->first();
         }
-        
+
         return null;
     }
 }
@@ -320,9 +323,11 @@ class SetCurrentJournal
 ```
 
 **Files to Create:**
+
 - `app/Http/Middleware/SetCurrentJournal.php`
 
 **Files to Modify:**
+
 - `bootstrap/app.php`
 
 ---
@@ -337,7 +342,7 @@ use App\Models\Concerns\BelongsToJournal;
 class Manuscript extends Model
 {
     use BelongsToJournal;
-    
+
     protected $fillable = [
         'journal_id', // Add this
         // ... existing fillable
@@ -353,7 +358,7 @@ use App\Models\Concerns\BelongsToJournal;
 class Issue extends Model
 {
     use BelongsToJournal;
-    
+
     protected $fillable = [
         'journal_id', // Add this
         // ... existing fillable
@@ -362,6 +367,7 @@ class Issue extends Model
 ```
 
 **Files to Modify:**
+
 - `app/Models/Manuscript.php`
 - `app/Models/Issue.php`
 
@@ -409,7 +415,7 @@ Route::prefix('j/{journal}')
         Route::get('/', [HomeController::class, 'index'])->name('journal.home');
         Route::get('/current', [CurrentIssueController::class, 'show']);
         // ... all public journal routes
-        
+
         Route::middleware(['auth'])->group(function () {
             Route::prefix('author')->group(/* author routes */);
             Route::prefix('editor')->group(/* editor routes */);
@@ -419,6 +425,7 @@ Route::prefix('j/{journal}')
 ```
 
 **Files to Modify:**
+
 - `routes/web.php`
 - `routes/auth.php`
 
@@ -433,10 +440,10 @@ public function share(Request $request): array
 {
     $journal = app('currentJournal');
     $institution = app('currentInstitution');
-    
+
     return [
         ...parent::share($request),
-        
+
         'currentJournal' => $journal ? [
             'id' => $journal->id,
             'name' => $journal->name,
@@ -448,7 +455,7 @@ public function share(Request $request): array
             'logo' => $journal->logo_url,
             'submission_guidelines' => $journal->submission_guidelines,
         ] : null,
-        
+
         'currentInstitution' => $institution ? [
             'id' => $institution->id,
             'name' => $institution->name,
@@ -456,12 +463,12 @@ public function share(Request $request): array
             'logo' => $institution->logo_url,
             'website' => $institution->website,
         ] : null,
-        
+
         'auth' => [
             'user' => $request->user() ? [
                 // ... existing user data
-                'journal_roles' => $journal 
-                    ? $request->user()->roles->pluck('name') 
+                'journal_roles' => $journal
+                    ? $request->user()->roles->pluck('name')
                     : [],
             ] : null,
         ],
@@ -470,6 +477,7 @@ public function share(Request $request): array
 ```
 
 **Files to Modify:**
+
 - `app/Http/Middleware/HandleInertiaRequests.php`
 
 ---
@@ -514,7 +522,7 @@ interface PageProps {
 ```tsx
 export function SiteHeader() {
     const { currentJournal, currentInstitution } = usePage<PageProps>().props;
-    
+
     return (
         <header>
             <img src={currentJournal?.logo || '/default-logo.png'} />
@@ -527,6 +535,7 @@ export function SiteHeader() {
 ```
 
 **Files to Modify:**
+
 - `resources/js/types/index.d.ts`
 - `resources/js/components/site-header.tsx`
 - `resources/js/components/site-footer.tsx`
@@ -551,7 +560,7 @@ public function up(): void
         'domain' => 'minsu.saliksikhub.com',
         'is_active' => true,
     ]);
-    
+
     // Create default journal
     $journal = Journal::create([
         'institution_id' => $institution->id,
@@ -561,22 +570,23 @@ public function up(): void
         'issn' => '2024-XXXX',
         'is_active' => true,
     ]);
-    
+
     // Migrate existing manuscripts
     DB::table('manuscripts')->update(['journal_id' => $journal->id]);
-    
+
     // Migrate existing issues
     DB::table('issues')->update(['journal_id' => $journal->id]);
-    
+
     // Migrate existing users
     DB::table('users')->update(['institution_id' => $institution->id]);
-    
+
     // Migrate existing role assignments to be journal-scoped
     DB::table('model_has_roles')->update(['team_id' => $journal->id]);
 }
 ```
 
 **Files to Create:**
+
 - `database/migrations/xxxx_migrate_existing_data_to_tenancy.php`
 
 ---
@@ -633,10 +643,12 @@ class JournalFactory extends Factory
 ```
 
 **Files to Create:**
+
 - `database/factories/InstitutionFactory.php`
 - `database/factories/JournalFactory.php`
 
 **Files to Modify:**
+
 - `database/factories/ManuscriptFactory.php`
 - `database/factories/IssueFactory.php`
 - `database/factories/UserFactory.php`
@@ -654,13 +666,13 @@ class JournalFactory extends Factory
 it('scopes manuscripts to current journal', function () {
     $journal1 = Journal::factory()->create();
     $journal2 = Journal::factory()->create();
-    
+
     $manuscript1 = Manuscript::factory()->create(['journal_id' => $journal1->id]);
     $manuscript2 = Manuscript::factory()->create(['journal_id' => $journal2->id]);
-    
+
     // Set current journal context
     app()->instance('currentJournal', $journal1);
-    
+
     expect(Manuscript::count())->toBe(1);
     expect(Manuscript::first()->id)->toBe($manuscript1->id);
 });
@@ -668,12 +680,12 @@ it('scopes manuscripts to current journal', function () {
 it('prevents users from accessing other journals manuscripts', function () {
     $journal1 = Journal::factory()->create();
     $journal2 = Journal::factory()->create();
-    
+
     $user = User::factory()->create(['institution_id' => $journal1->institution_id]);
     $user->assignRole('author', $journal1);
-    
+
     $manuscript = Manuscript::factory()->create(['journal_id' => $journal2->id]);
-    
+
     actingAs($user)
         ->get(route('journal.manuscripts.show', [
             'journal' => $journal2->slug,
@@ -685,11 +697,11 @@ it('prevents users from accessing other journals manuscripts', function () {
 it('allows cross-journal reviewers to access assigned journals', function () {
     $journal1 = Journal::factory()->create();
     $journal2 = Journal::factory()->create();
-    
+
     $reviewer = User::factory()->create();
     $reviewer->assignRole('reviewer', $journal1);
     $reviewer->assignRole('reviewer', $journal2);
-    
+
     expect($reviewer->hasRole('reviewer', $journal1))->toBeTrue();
     expect($reviewer->hasRole('reviewer', $journal2))->toBeTrue();
 });
@@ -697,14 +709,15 @@ it('allows cross-journal reviewers to access assigned journals', function () {
 it('auto-assigns journal_id when creating manuscripts', function () {
     $journal = Journal::factory()->create();
     app()->instance('currentJournal', $journal);
-    
+
     $manuscript = Manuscript::factory()->create(['journal_id' => null]);
-    
+
     expect($manuscript->journal_id)->toBe($journal->id);
 });
 ```
 
 **Files to Create:**
+
 - `tests/Feature/TenancyIsolationTest.php`
 - `tests/Feature/JournalAccessTest.php`
 - `tests/Feature/CrossJournalUserTest.php`
@@ -715,11 +728,11 @@ it('auto-assigns journal_id when creating manuscripts', function () {
 
 ### 1. URL Strategy
 
-| Strategy | Example | Pros | Cons |
-|----------|---------|------|------|
-| **Subdomain** | `ddmrj.saliksikhub.com` | Clean URLs, white-label ready, SEO friendly | Complex local development, DNS config needed |
-| **Path-based** | `saliksikhub.com/j/ddmrj` | Simple local dev, no DNS needed | Longer URLs, harder to white-label |
-| **Hybrid** | Both supported | Maximum flexibility | More code to maintain |
+| Strategy       | Example                   | Pros                                        | Cons                                         |
+| -------------- | ------------------------- | ------------------------------------------- | -------------------------------------------- |
+| **Subdomain**  | `ddmrj.saliksikhub.com`   | Clean URLs, white-label ready, SEO friendly | Complex local development, DNS config needed |
+| **Path-based** | `saliksikhub.com/j/ddmrj` | Simple local dev, no DNS needed             | Longer URLs, harder to white-label           |
+| **Hybrid**     | Both supported            | Maximum flexibility                         | More code to maintain                        |
 
 **Recommendation:** Start with **path-based** for simpler development, add subdomain support later.
 
@@ -727,10 +740,10 @@ it('auto-assigns journal_id when creating manuscripts', function () {
 
 ### 2. User-Institution Relationship
 
-| Approach | Schema | Pros | Cons |
-|----------|--------|------|------|
-| **Single institution** | `users.institution_id` | Simple, clear ownership | Reviewers can't serve multiple SUCs |
-| **Multi-institution** | `institution_user` pivot | Flexible, reviewers can serve multiple | More complex queries |
+| Approach               | Schema                   | Pros                                   | Cons                                |
+| ---------------------- | ------------------------ | -------------------------------------- | ----------------------------------- |
+| **Single institution** | `users.institution_id`   | Simple, clear ownership                | Reviewers can't serve multiple SUCs |
+| **Multi-institution**  | `institution_user` pivot | Flexible, reviewers can serve multiple | More complex queries                |
 
 **Recommendation:** Use **multi-institution pivot table** since academic reviewers often serve multiple institutions.
 
@@ -741,7 +754,7 @@ CREATE TABLE institution_user (
     user_id BIGINT REFERENCES users(id),
     is_primary BOOLEAN DEFAULT FALSE,  -- User's home institution
     created_at TIMESTAMP,
-    
+
     UNIQUE(institution_id, user_id)
 );
 ```
@@ -750,12 +763,13 @@ CREATE TABLE institution_user (
 
 ### 3. Spatie Multitenancy Package
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| **spatie/laravel-multitenancy** | Tenant-aware queues/jobs/cache, well-tested, official package | Another dependency, learning curve |
-| **Custom implementation** | Full control, lighter weight, tailored to needs | More code to maintain, edge cases to handle |
+| Approach                        | Pros                                                          | Cons                                        |
+| ------------------------------- | ------------------------------------------------------------- | ------------------------------------------- |
+| **spatie/laravel-multitenancy** | Tenant-aware queues/jobs/cache, well-tested, official package | Another dependency, learning curve          |
+| **Custom implementation**       | Full control, lighter weight, tailored to needs               | More code to maintain, edge cases to handle |
 
 **Recommendation:** Start with **custom implementation** (simpler for shared-database approach), consider package if you need:
+
 - Tenant-specific queues
 - Tenant-specific cache
 - Automatic tenant switching in jobs
@@ -792,39 +806,39 @@ Phase 4: Quality (Week 4)
 
 ### New Files to Create
 
-| File | Purpose |
-|------|---------|
-| `database/migrations/xxxx_create_institutions_table.php` | Institution table |
-| `database/migrations/xxxx_create_journals_table.php` | Journal table |
-| `database/migrations/xxxx_create_journal_user_table.php` | Journal-user pivot |
+| File                                                               | Purpose                  |
+| ------------------------------------------------------------------ | ------------------------ |
+| `database/migrations/xxxx_create_institutions_table.php`           | Institution table        |
+| `database/migrations/xxxx_create_journals_table.php`               | Journal table            |
+| `database/migrations/xxxx_create_journal_user_table.php`           | Journal-user pivot       |
 | `database/migrations/xxxx_add_journal_id_to_manuscripts_table.php` | Tenant scope manuscripts |
-| `database/migrations/xxxx_add_journal_id_to_issues_table.php` | Tenant scope issues |
-| `database/migrations/xxxx_add_institution_id_to_users_table.php` | User institution |
-| `database/migrations/xxxx_migrate_existing_data_to_tenancy.php` | Data migration |
-| `app/Models/Institution.php` | Institution model |
-| `app/Models/Journal.php` | Journal model |
-| `app/Models/Concerns/BelongsToJournal.php` | Tenant scoping trait |
-| `app/Http/Middleware/SetCurrentJournal.php` | Tenant resolution |
-| `database/factories/InstitutionFactory.php` | Testing factory |
-| `database/factories/JournalFactory.php` | Testing factory |
-| `tests/Feature/TenancyIsolationTest.php` | Tenancy tests |
+| `database/migrations/xxxx_add_journal_id_to_issues_table.php`      | Tenant scope issues      |
+| `database/migrations/xxxx_add_institution_id_to_users_table.php`   | User institution         |
+| `database/migrations/xxxx_migrate_existing_data_to_tenancy.php`    | Data migration           |
+| `app/Models/Institution.php`                                       | Institution model        |
+| `app/Models/Journal.php`                                           | Journal model            |
+| `app/Models/Concerns/BelongsToJournal.php`                         | Tenant scoping trait     |
+| `app/Http/Middleware/SetCurrentJournal.php`                        | Tenant resolution        |
+| `database/factories/InstitutionFactory.php`                        | Testing factory          |
+| `database/factories/JournalFactory.php`                            | Testing factory          |
+| `tests/Feature/TenancyIsolationTest.php`                           | Tenancy tests            |
 
 ### Existing Files to Modify
 
-| File | Changes |
-|------|---------|
-| `config/permission.php` | Enable teams |
-| `bootstrap/app.php` | Register middleware |
-| `app/Models/Manuscript.php` | Add BelongsToJournal trait |
-| `app/Models/Issue.php` | Add BelongsToJournal trait |
-| `app/Models/User.php` | Add institution relationship |
-| `app/Http/Middleware/HandleInertiaRequests.php` | Share journal context |
-| `routes/web.php` | Add journal prefix/groups |
-| `resources/js/types/index.d.ts` | Add Journal/Institution types |
-| `resources/js/components/site-header.tsx` | Dynamic branding |
-| `resources/js/components/site-footer.tsx` | Dynamic branding |
-| `resources/js/pages/about-journal.tsx` | Dynamic content |
-| `resources/js/pages/submissions.tsx` | Dynamic content |
-| `database/factories/ManuscriptFactory.php` | Add journal_id |
-| `database/factories/IssueFactory.php` | Add journal_id |
-| `database/seeders/RoleAndPermissionSeeder.php` | Team-scoped roles |
+| File                                            | Changes                       |
+| ----------------------------------------------- | ----------------------------- |
+| `config/permission.php`                         | Enable teams                  |
+| `bootstrap/app.php`                             | Register middleware           |
+| `app/Models/Manuscript.php`                     | Add BelongsToJournal trait    |
+| `app/Models/Issue.php`                          | Add BelongsToJournal trait    |
+| `app/Models/User.php`                           | Add institution relationship  |
+| `app/Http/Middleware/HandleInertiaRequests.php` | Share journal context         |
+| `routes/web.php`                                | Add journal prefix/groups     |
+| `resources/js/types/index.d.ts`                 | Add Journal/Institution types |
+| `resources/js/components/site-header.tsx`       | Dynamic branding              |
+| `resources/js/components/site-footer.tsx`       | Dynamic branding              |
+| `resources/js/pages/about-journal.tsx`          | Dynamic content               |
+| `resources/js/pages/submissions.tsx`            | Dynamic content               |
+| `database/factories/ManuscriptFactory.php`      | Add journal_id                |
+| `database/factories/IssueFactory.php`           | Add journal_id                |
+| `database/seeders/RoleAndPermissionSeeder.php`  | Team-scoped roles             |

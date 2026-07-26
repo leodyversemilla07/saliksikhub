@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
+
 import type { PageProps, ThemeSettings } from '@/types';
 
 /**

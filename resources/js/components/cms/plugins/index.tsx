@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight, BookOpen, Calendar, FileText } from 'lucide-react';
+
 import { registerPluginSectionRenderer } from '@/components/cms/section';
 import type { Section } from '@/components/cms/section';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

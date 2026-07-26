@@ -7,6 +7,7 @@ import {
     ArrowLeft,
 } from 'lucide-react';
 import type { FormEventHandler } from 'react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,9 +20,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { PageProps } from '@/types';
 import { home, login as loginRoute } from '@/routes';
 import password from '@/routes/password';
+import type { PageProps } from '@/types';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { currentJournal } = usePage<PageProps>().props;

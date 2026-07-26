@@ -1,14 +1,14 @@
 {
-    "name": "announcement-banner",
-    "displayName": "Announcement Banner",
-    "version": "1.0.0",
-    "author": "SaliksikHub Team",
-    "description": "Display customizable announcement banners on journal pages",
-    "isGlobal": true,
-    "defaultSettings": {
-        "message": "Welcome to our journal!",
-        "type": "info",
-        "enabled": true,
-        "dismissible": true
-    }
+  "name": "announcement-banner",
+  "displayName": "Announcement Banner",
+  "version": "1.0.0",
+  "author": "SaliksikHub Team",
+  "description": "Display customizable announcement banners on journal pages",
+  "isGlobal": true,
+  "defaultSettings": {
+    "message": "Welcome to our journal!",
+    "type": "info",
+    "enabled": true,
+    "dismissible": true
+  }
 }

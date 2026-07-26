@@ -13,6 +13,7 @@ import {
     SlidersHorizontal,
 } from 'lucide-react';
 import React, { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -66,7 +67,7 @@ export default function SearchResults({ results, query }: SearchResultsProps) {
     // Get unique volumes for filtering
     const availableVolumes = [
         ...new Set(results.data.map((r) => r.volume).filter((v) => v !== null)),
-    ].sort((a, b) => b - a);
+    ].toSorted((a, b) => b - a);
 
     // Filter and sort results
     const filteredAndSortedResults = React.useMemo(() => {

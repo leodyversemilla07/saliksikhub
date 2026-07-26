@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { Mail, MapPin, Phone, Clock, Users, MessageSquare } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';

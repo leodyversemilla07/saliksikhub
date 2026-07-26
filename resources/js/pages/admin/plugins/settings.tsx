@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Save, Puzzle, LayoutTemplate } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -111,7 +112,7 @@ export default function PluginSettings({ plugin, journals }: Props) {
         setJournalSettings({
             ...journalSettings,
             [journalId]: {
-                ...(journalSettings[journalId] || {}),
+                ...journalSettings[journalId],
                 [key]: value,
             },
         });

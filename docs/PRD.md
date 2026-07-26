@@ -13,6 +13,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 1.2 Business Objectives
 
 **For All Institutions:**
+
 - Reduce manuscript processing time by 40%
 - Increase reviewer engagement and response rates by 30%
 - Provide real-time visibility into manuscript status for all stakeholders
@@ -23,6 +24,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Facilitate compliance with research ethics and data privacy regulations
 
 **Additional Customization Options:**
+
 - Multi-journal support from a single installation
 - Institutional branding and theming
 - Integration with institutional authentication (SSO/LDAP)
@@ -31,42 +33,43 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 
 ### 1.3 Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Average time from submission to first decision | < 45 days |
-| Reviewer acceptance rate | > 60% |
-| System uptime | 99.9% |
-| User satisfaction score | > 4.5/5 |
-| Monthly active users growth | 20% year-over-year |
+| Metric                                         | Target             |
+| ---------------------------------------------- | ------------------ |
+| Average time from submission to first decision | < 45 days          |
+| Reviewer acceptance rate                       | > 60%              |
+| System uptime                                  | 99.9%              |
+| User satisfaction score                        | > 4.5/5            |
+| Monthly active users growth                    | 20% year-over-year |
 
 ## 2. Stakeholders
 
 ### 2.1 Primary Users
 
-| Role | Description |
-|------|-------------|
-| **Faculty Authors** | Researchers submitting manuscripts for publication, promotion, and tenure |
+| Role                    | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| **Faculty Authors**     | Researchers submitting manuscripts for publication, promotion, and tenure   |
 | **Student Researchers** | Graduate students and thesis writers contributing to institutional journals |
-| **Editors-in-Chief** | Senior faculty members overseeing journal operations and quality |
-| **Associate Editors** | Faculty members managing assigned manuscripts and coordinating reviews |
-| **Peer Reviewers** | Subject matter experts evaluating manuscript quality |
-| **Managing Editors** | Staff coordinating publication workflow and system administration |
-| **Language Editors** | Copyeditors ensuring clarity and style consistency |
+| **Editors-in-Chief**    | Senior faculty members overseeing journal operations and quality            |
+| **Associate Editors**   | Faculty members managing assigned manuscripts and coordinating reviews      |
+| **Peer Reviewers**      | Subject matter experts evaluating manuscript quality                        |
+| **Managing Editors**    | Staff coordinating publication workflow and system administration           |
+| **Language Editors**    | Copyeditors ensuring clarity and style consistency                          |
 
 ### 2.2 Secondary Users
 
-| Role | Description |
-|------|-------------|
-| **Research Directors** | Administrators monitoring institutional research output |
-| **Library Staff** | Managing institutional repositories and archives |
-| **Readers** | Researchers accessing published articles |
-| **System Administrators** | IT staff maintaining the platform |
+| Role                      | Description                                             |
+| ------------------------- | ------------------------------------------------------- |
+| **Research Directors**    | Administrators monitoring institutional research output |
+| **Library Staff**         | Managing institutional repositories and archives        |
+| **Readers**               | Researchers accessing published articles                |
+| **System Administrators** | IT staff maintaining the platform                       |
 
 ## 3. Functional Requirements
 
 ### 3.1 User Management
 
 #### 3.1.1 Registration and Authentication
+
 - Users can create accounts with email verification (Laravel Fortify)
 - Support for ORCID integration for author identification
 - Multi-factor authentication (MFA) via Laravel Fortify (TOTP, SMS, email)
@@ -78,6 +81,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Password confirmation for sensitive actions
 
 #### 3.1.2 User Roles and Permissions
+
 - Define granular permissions for each role type
 - Support for multiple roles per user across different journals
 - Role delegation and temporary assignment capabilities
@@ -86,6 +90,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.2 Manuscript Submission
 
 #### 3.2.1 Submission Workflow
+
 - Multi-step submission wizard with progress indication
 - Support for multiple file formats (PDF, Word, LaTeX, images)
 - File size limit: up to 100MB per submission (configurable)
@@ -99,17 +104,18 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Keyword and subject area classification
 - Supplementary materials upload
 - **Customizable compliance checklist**:
-  - Ethics committee approval (if applicable)
-  - Institutional Review Board (IRB) clearance
-  - Data availability statement
-  - Funding disclosure
-  - Community consent requirements (if applicable)
+    - Ethics committee approval (if applicable)
+    - Institutional Review Board (IRB) clearance
+    - Data availability statement
+    - Funding disclosure
+    - Community consent requirements (if applicable)
 - **License selection** (Creative Commons options: CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, or custom)
 - **Copyright configuration** (author-retained or institutional)
 - Save draft functionality with auto-save every 2 minutes
 - Submission confirmation email with manuscript ID
 
 #### 3.2.2 Manuscript Types
+
 - Original research articles
 - Review articles
 - Short communications
@@ -119,6 +125,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Corrections and retractions
 
 #### 3.2.3 Pre-submission Checks
+
 - Plagiarism detection integration (Turnitin, iThenticate)
 - Reference formatting validation
 - File integrity verification
@@ -128,6 +135,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.3 Editorial Workflow
 
 #### 3.3.1 Manuscript Assignment
+
 - Automatic assignment based on subject area matching
 - Manual assignment by Editor-in-Chief
 - Editor workload balancing algorithm
@@ -136,6 +144,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Reassignment capability
 
 #### 3.3.2 Editorial Decision Making
+
 - Pre-screening for scope and quality
 - Decision options: Accept, Minor Revision, Major Revision, Reject, Desk Reject
 - Decision templates with customizable text
@@ -145,6 +154,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Deadline tracking for editorial actions
 
 #### 3.3.3 Reviewer Selection
+
 - Searchable reviewer database with expertise tags
 - Reviewer suggestion algorithm based on manuscript keywords
 - Conflict of interest checking (institution, co-authorship)
@@ -156,6 +166,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.4 Peer Review Process
 
 #### 3.4.1 Reviewer Interface
+
 - Anonymous manuscript access (single-blind or double-blind)
 - Downloadable manuscript files
 - Structured review form with rating scales
@@ -167,6 +178,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Continuing Medical Education (CME) credit tracking
 
 #### 3.4.2 Review Management
+
 - Configurable review rounds (typically 2-3 rounds)
 - Minimum reviewer requirement (default: 2 per manuscript)
 - Review quality assessment by editors
@@ -176,6 +188,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Review withdrawal capability with notification
 
 #### 3.4.3 Revision Process
+
 - Author revision submission with point-by-point response
 - Track changes support
 - Version comparison tool
@@ -186,6 +199,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.5 Communication System
 
 #### 3.5.1 Messaging Features
+
 - In-system messaging between all stakeholders
 - Email notifications with configurable preferences
 - Message templates for common communications
@@ -195,6 +209,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - File attachment support in messages
 
 #### 3.5.2 Notification Types
+
 - Submission confirmation
 - Assignment notifications
 - Review invitations
@@ -207,6 +222,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.6 Production and Publication
 
 #### 3.6.1 Copyediting
+
 - Manuscript transfer to production queue
 - Copyeditor assignment
 - Style and format checking
@@ -215,6 +231,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Correction round tracking
 
 #### 3.6.2 Typesetting and Layout
+
 - Template-based formatting
 - Multi-format output (PDF, HTML, XML, ePub)
 - Figure and table optimization
@@ -222,16 +239,17 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Accessibility compliance (WCAG 2.1 AA)
 
 #### 3.6.3 Publication
+
 - DOI assignment integration (CrossRef for open access)
 - Publication date scheduling
 - Immediate online publication (no embargo)
 - Issue compilation and organization
 - Open access metadata generation:
-  - CrossRef
-  - DOAJ (Directory of Open Access Journals)
-  - Google Scholar
-  - Scopus/Web of Science (if indexed)
-  - **Configurable regional/national citation indices**
+    - CrossRef
+    - DOAJ (Directory of Open Access Journals)
+    - Google Scholar
+    - Scopus/Web of Science (if indexed)
+    - **Configurable regional/national citation indices**
 - Creative Commons license badge display
 - Social media sharing integration (Facebook, Twitter/X, LinkedIn, ResearchGate)
 - Usage statistics tracking (downloads, views, geographic distribution)
@@ -243,6 +261,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.7 Content Management
 
 #### 3.7.1 Article Organization
+
 - Volume and issue management
 - Special issue creation and management
 - Article categorization by type and subject
@@ -250,6 +269,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Archive browsing by date, topic, and author
 
 #### 3.7.2 Search and Discovery
+
 - Full-text search capability
 - Advanced search with filters (date, author, keywords, type)
 - Boolean search operators
@@ -260,6 +280,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.8 Open Access and Rights Management
 
 #### 3.8.1 Open Access Model
+
 - **Fully Open Access**: All published content is freely available immediately upon publication
 - Creative Commons licensing (CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA)
 - No article processing charges (APCs) - completely free to publish
@@ -268,6 +289,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Permanent open access - no future paywalls
 
 #### 3.8.2 Licensing and Rights
+
 - Author selection of Creative Commons license during submission
 - Copyright retained by authors
 - Licensing agreement templates for each CC license type
@@ -279,6 +301,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.9 Analytics and Reporting
 
 #### 3.9.1 Dashboard Views
+
 - Submission trends over time
 - Acceptance/rejection rates
 - Average processing time by stage
@@ -288,6 +311,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Subject area distribution
 
 #### 3.9.2 Reports
+
 - Editorial board activity reports
 - Open access compliance reports
 - Impact metrics (citations, downloads, Altmetrics)
@@ -298,6 +322,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Scheduled automated reports
 
 #### 3.9.3 Article-Level Metrics
+
 - Download statistics
 - Citation tracking
 - Altmetric scores
@@ -307,6 +332,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 3.10 Administrative Functions
 
 #### 3.10.1 Journal Configuration
+
 - Journal profile management (title, ISSN, scope, guidelines)
 - Editorial board composition
 - Author guidelines and instructions
@@ -316,6 +342,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Fee structure configuration
 
 #### 3.10.2 System Configuration
+
 - User role definitions
 - Notification settings
 - Integration configurations
@@ -326,6 +353,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ## 4. Non-Functional Requirements
 
 ### 4.1 Performance
+
 - Page load time: < 3 seconds for 95% of requests
 - Search results: < 2 seconds
 - Support for 1,000 concurrent users
@@ -334,6 +362,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Scalability to handle 10,000+ manuscripts annually
 
 ### 4.2 Security
+
 - Data encryption at rest (AES-256)
 - Data encryption in transit (TLS 1.3)
 - Regular security audits and penetration testing
@@ -345,6 +374,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Session timeout after 30 minutes of inactivity
 
 ### 4.3 Reliability
+
 - System availability: 99.9% uptime
 - Automated failover capabilities
 - Regular system health monitoring
@@ -352,6 +382,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Graceful degradation for non-critical features
 
 ### 4.4 Usability
+
 - Intuitive interface requiring minimal training
 - Responsive design for desktop, tablet, and mobile devices
 - Accessibility compliance (WCAG 2.1 AA standards)
@@ -363,12 +394,14 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - **Progressive enhancement** for varying internet speeds
 
 ### 4.5 Compatibility
+
 - Browser support: Chrome, Firefox, Safari, Edge (latest 2 versions)
 - Mobile OS: iOS 13+, Android 9+
 - Screen reader compatibility
 - API for third-party integrations
 
 ### 4.6 Maintainability
+
 - Modular architecture for easy updates
 - Comprehensive API documentation
 - Code documentation and commenting standards
@@ -381,6 +414,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ### 5.1 Technology Stack
 
 #### Backend
+
 - **PHP**: 8.2.29
 - **Laravel Framework**: 12.33.0 (latest features including streamlined structure)
 - **Inertia.js (Server)**: 2.0.10 for seamless SPA integration
@@ -391,6 +425,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - **Laravel Pint**: 1.25.1 for PHP code style formatting
 
 #### Frontend
+
 - **React**: 19.2.0
 - **Inertia.js (Client)**: 2.2.8 (@inertiajs/react)
 - **Tailwind CSS**: 4.1.14 (latest version with modern CSS approach)
@@ -398,21 +433,25 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - **Vite**: For fast frontend bundling and development
 
 #### Testing
+
 - **Pest**: 3.8.4 for elegant testing syntax
 - **PHPUnit**: 11.5.33 as the underlying test framework
 - **Laravel Prompts**: 0.3.7 for interactive CLI prompts
 
 #### Database & Caching
+
 - **MySQL**: 8.0+ (primary relational database)
 - **Redis**: For caching and queue management
 - **Laravel Scout**: For full-text search (using database driver with MySQL)
 
 #### Development Tools
+
 - **Docker**: Via Laravel Sail for consistent development environment
 - **Composer**: For PHP dependency management
 - **NPM/Node.js**: For JavaScript dependency management
 
 ### 5.2 System Architecture
+
 - Cloud-based infrastructure (AWS, Azure, Google Cloud, DigitalOcean, or regional providers)
 - Option for **on-premises deployment** at institutional data centers
 - Microservices architecture
@@ -423,6 +462,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - **Multi-tenancy support** for hosting multiple journals on single instance
 
 ### 5.3 Database
+
 - Primary database: MySQL 8.0+ for all structured data
 - JSON column types for flexible metadata storage (replacing need for separate document store)
 - Full-text search using MySQL full-text indexes or Laravel Scout with database driver
@@ -431,23 +471,24 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 
 ### 5.4 Integrations
 
-| Category | Integration | Description |
-|----------|-------------|-------------|
-| **Identity** | ORCID | Researcher identification |
-| **DOI** | CrossRef | DOI registration for articles |
-| **Indexing** | DOAJ | Open access journal directory |
-| | Google Scholar | Search indexing |
-| | Scopus / Web of Science | Citation databases (if indexed) |
-| | **Regional indices** | Configurable (e.g., SciELO, ACI, etc.) |
-| **Plagiarism** | Turnitin, iThenticate, Plagiarism Checker X | Similarity detection |
-| **Reference Tools** | EndNote, Mendeley, Zotero | Export and citation management |
-| **Repositories** | **Institutional repositories** | Configurable API integration |
-| | OAI-PMH | Metadata harvesting protocol |
-| **Email** | SendGrid, AWS SES, SMTP | Notification delivery |
-| **Storage** | AWS S3, DigitalOcean Spaces, MinIO | File storage |
-| **Authentication** | SAML 2.0, OAuth 2.0, LDAP | Single Sign-On with institutional credentials |
+| Category            | Integration                                 | Description                                   |
+| ------------------- | ------------------------------------------- | --------------------------------------------- |
+| **Identity**        | ORCID                                       | Researcher identification                     |
+| **DOI**             | CrossRef                                    | DOI registration for articles                 |
+| **Indexing**        | DOAJ                                        | Open access journal directory                 |
+|                     | Google Scholar                              | Search indexing                               |
+|                     | Scopus / Web of Science                     | Citation databases (if indexed)               |
+|                     | **Regional indices**                        | Configurable (e.g., SciELO, ACI, etc.)        |
+| **Plagiarism**      | Turnitin, iThenticate, Plagiarism Checker X | Similarity detection                          |
+| **Reference Tools** | EndNote, Mendeley, Zotero                   | Export and citation management                |
+| **Repositories**    | **Institutional repositories**              | Configurable API integration                  |
+|                     | OAI-PMH                                     | Metadata harvesting protocol                  |
+| **Email**           | SendGrid, AWS SES, SMTP                     | Notification delivery                         |
+| **Storage**         | AWS S3, DigitalOcean Spaces, MinIO          | File storage                                  |
+| **Authentication**  | SAML 2.0, OAuth 2.0, LDAP                   | Single Sign-On with institutional credentials |
 
 ### 5.5 File Storage
+
 - Secure cloud-based file storage
 - CDN integration for fast content delivery
 - File versioning and audit trail
@@ -457,6 +498,7 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 ## 6. User Experience Requirements
 
 ### 6.1 Design Principles
+
 - Clean, professional aesthetic appropriate for academic context
 - Consistent navigation across all sections
 - Clear visual hierarchy and information architecture
@@ -464,12 +506,14 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 - Accessible color scheme with sufficient contrast
 
 ### 6.2 Key User Flows
+
 - Author submission (target: < 15 minutes for complete submission)
 - Editor manuscript assignment (< 5 minutes)
 - Reviewer evaluation (streamlined review form)
 - Decision communication (automated with templates)
 
 ### 6.3 Mobile Experience
+
 - Responsive design for all screen sizes
 - Touch-optimized interface elements
 - Simplified navigation for smaller screens
@@ -482,15 +526,15 @@ SaliksikHub serves researchers, faculty members, editors, reviewers, and adminis
 
 SaliksikHub is designed to meet international publishing standards while allowing institutions to configure compliance for their specific regional requirements.
 
-| Standard | Description | Configuration |
-|----------|-------------|---------------|
-| **COPE** | Committee on Publication Ethics | Built-in workflow enforcement |
-| **ICMJE** | Medical Journal Editors recommendations | Configurable for health research |
-| **DOAJ** | Directory of Open Access Journals | Metadata export ready |
-| **COUNTER** | Usage statistics | Built-in metrics tracking |
-| **FAIR** | Data principles | Metadata and accessibility support |
-| **Plan S** | Immediate open access compliance | Default behavior |
-| **Creative Commons** | Licensing best practices | Multiple CC options |
+| Standard             | Description                             | Configuration                      |
+| -------------------- | --------------------------------------- | ---------------------------------- |
+| **COPE**             | Committee on Publication Ethics         | Built-in workflow enforcement      |
+| **ICMJE**            | Medical Journal Editors recommendations | Configurable for health research   |
+| **DOAJ**             | Directory of Open Access Journals       | Metadata export ready              |
+| **COUNTER**          | Usage statistics                        | Built-in metrics tracking          |
+| **FAIR**             | Data principles                         | Metadata and accessibility support |
+| **Plan S**           | Immediate open access compliance        | Default behavior                   |
+| **Creative Commons** | Licensing best practices                | Multiple CC options                |
 
 **Configurable reporting guidelines**: CONSORT, PRISMA, STROBE, and other discipline-specific checklists can be enabled per journal.
 
@@ -500,17 +544,18 @@ SaliksikHub is designed to meet international publishing standards while allowin
 
 SaliksikHub provides configurable compliance frameworks for different jurisdictions:
 
-| Framework | Purpose | Notes |
-|-----------|---------|-------|
-| **GDPR** | EU data protection | Consent management, data portability |
-| **Data Privacy Laws** | National privacy regulations | Configurable per jurisdiction |
-| **Intellectual Property** | Copyright and licensing | Author-retained or institutional copyright |
-| **Research Ethics** | IRB/Ethics committee standards | Configurable compliance checklists |
-| **Open Access Mandates** | Funder requirements | Configurable embargo and deposit rules |
+| Framework                 | Purpose                        | Notes                                      |
+| ------------------------- | ------------------------------ | ------------------------------------------ |
+| **GDPR**                  | EU data protection             | Consent management, data portability       |
+| **Data Privacy Laws**     | National privacy regulations   | Configurable per jurisdiction              |
+| **Intellectual Property** | Copyright and licensing        | Author-retained or institutional copyright |
+| **Research Ethics**       | IRB/Ethics committee standards | Configurable compliance checklists         |
+| **Open Access Mandates**  | Funder requirements            | Configurable embargo and deposit rules     |
 
 **Note**: Institutions are responsible for configuring the system to meet their specific national and regional regulatory requirements.
 
 ### 7.3 Accessibility
+
 - WCAG 2.1 Level AA compliance
 - Keyboard navigation support
 - Screen reader optimization
@@ -520,6 +565,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ## 8. Data Management
 
 ### 8.1 Data Retention
+
 - Active manuscripts: retained indefinitely
 - Rejected manuscripts: 2 years post-decision
 - User accounts: retained while active, archived after 3 years inactivity
@@ -528,12 +574,14 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Audit logs: 7 years
 
 ### 8.2 Data Export
+
 - User data export upon request
 - Manuscript export in multiple formats
 - Bulk data export for journal migration
 - Compliance with data portability requirements
 
 ### 8.3 Backup and Recovery
+
 - Daily incremental backups
 - Weekly full backups
 - Off-site backup storage
@@ -544,17 +592,18 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 
 ### 9.1 User Support
 
-| Support Channel | Availability | Response Time |
-|-----------------|--------------|---------------|
-| **Email** | 24/7 | 24-48 hours |
-| **Live Chat** | Business hours | Real-time |
-| **Knowledge Base** | 24/7 | Self-service |
-| **Community Forum** | 24/7 | Community-driven |
-| **Video Tutorials** | 24/7 | Self-service |
+| Support Channel     | Availability   | Response Time    |
+| ------------------- | -------------- | ---------------- |
+| **Email**           | 24/7           | 24-48 hours      |
+| **Live Chat**       | Business hours | Real-time        |
+| **Knowledge Base**  | 24/7           | Self-service     |
+| **Community Forum** | 24/7           | Community-driven |
+| **Video Tutorials** | 24/7           | Self-service     |
 
 **Institutional administrators** receive dedicated support and onboarding assistance.
 
 ### 9.2 Training Materials
+
 - Video tutorials for each user role
 - Interactive onboarding wizard for new users
 - Downloadable user guides (PDF)
@@ -566,6 +615,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 **Internationalization**: Training materials can be translated and localized by institutions for their specific language needs.
 
 ### 9.3 Release Management
+
 - Quarterly feature releases
 - Monthly security and bug fix updates
 - Release notes with detailed change logs
@@ -575,6 +625,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ## 10. Implementation Plan
 
 **Technical Foundation:**
+
 - Laravel 12 with modern streamlined structure
 - React 19 with Inertia.js 2 for SPA experience
 - Tailwind CSS 4 for styling
@@ -583,58 +634,63 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Pest for elegant testing approach
 
 ### 10.1 Phase 1: Core Features (Months 1-6)
+
 **Goal**: Launch pilot with 3-5 institutional journals
 
-| Component | Features |
-|-----------|----------|
-| **Authentication** | User management, Laravel Fortify, ORCID integration |
-| **Submission** | Full manuscript submission workflow with configurable compliance checklist |
-| **Editorial** | Basic editorial assignment and desk review |
-| **Review** | Simple peer review process with structured forms |
-| **Notifications** | Email notifications for all workflow stages |
-| **Compliance** | Configurable ethics and regulatory checklists |
+| Component          | Features                                                                   |
+| ------------------ | -------------------------------------------------------------------------- |
+| **Authentication** | User management, Laravel Fortify, ORCID integration                        |
+| **Submission**     | Full manuscript submission workflow with configurable compliance checklist |
+| **Editorial**      | Basic editorial assignment and desk review                                 |
+| **Review**         | Simple peer review process with structured forms                           |
+| **Notifications**  | Email notifications for all workflow stages                                |
+| **Compliance**     | Configurable ethics and regulatory checklists                              |
 
 ### 10.2 Phase 2: Advanced Workflow (Months 7-12)
+
 **Goal**: Expand to 10-15 institutional journals
 
-| Component | Features |
-|-----------|----------|
+| Component             | Features                                              |
+| --------------------- | ----------------------------------------------------- |
 | **Reviewer Matching** | Advanced matching based on expertise and availability |
-| **Production** | Copyediting, typesetting, and publication tools |
-| **Analytics** | Dashboard with institutional reporting metrics |
-| **Plagiarism** | Integration with plagiarism detection services |
-| **DOI** | CrossRef DOI assignment integration |
-| **Indexing** | Metadata export for DOAJ and regional indices |
-| **Multi-tenancy** | Support for multiple journals on single instance |
+| **Production**        | Copyediting, typesetting, and publication tools       |
+| **Analytics**         | Dashboard with institutional reporting metrics        |
+| **Plagiarism**        | Integration with plagiarism detection services        |
+| **DOI**               | CrossRef DOI assignment integration                   |
+| **Indexing**          | Metadata export for DOAJ and regional indices         |
+| **Multi-tenancy**     | Support for multiple journals on single instance      |
 
 ### 10.3 Phase 3: Optimization (Months 13-18)
+
 **Goal**: Production-ready for widespread deployment
 
-| Component | Features |
-|-----------|----------|
-| **Reporting** | Advanced reporting and analytics |
-| **Mobile** | Full mobile optimization |
-| **API** | Third-party integration APIs |
-| **Search** | Advanced search capabilities |
-| **Performance** | Optimization for varying network conditions |
-| **Deployment** | On-premises deployment option |
-| **Collaboration** | Cross-institutional collaboration features |
+| Component         | Features                                    |
+| ----------------- | ------------------------------------------- |
+| **Reporting**     | Advanced reporting and analytics            |
+| **Mobile**        | Full mobile optimization                    |
+| **API**           | Third-party integration APIs                |
+| **Search**        | Advanced search capabilities                |
+| **Performance**   | Optimization for varying network conditions |
+| **Deployment**    | On-premises deployment option               |
+| **Collaboration** | Cross-institutional collaboration features  |
 
 ### 10.4 Phase 4: Expansion (Months 19-24)
+
 **Goal**: Full-scale institutional adoption
 
-| Component | Features |
-|-----------|----------|
-| **i18n** | Enhanced internationalization and localization |
-| **Customization** | Advanced customization options per journal |
-| **AI** | AI-assisted reviewer matching and recommendations |
-| **Analytics** | Predictive analytics for research trends |
-| **Mobile Apps** | Native mobile applications (optional) |
-| **Integration** | Enhanced integration with international indexing services |
+| Component         | Features                                                  |
+| ----------------- | --------------------------------------------------------- |
+| **i18n**          | Enhanced internationalization and localization            |
+| **Customization** | Advanced customization options per journal                |
+| **AI**            | AI-assisted reviewer matching and recommendations         |
+| **Analytics**     | Predictive analytics for research trends                  |
+| **Mobile Apps**   | Native mobile applications (optional)                     |
+| **Integration**   | Enhanced integration with international indexing services |
 
 ## 11. Success Criteria
 
 ### 11.1 Launch Criteria (Pilot Phase)
+
 - All Phase 1 features complete and tested
 - Security audit passed
 - Performance benchmarks met
@@ -645,67 +701,71 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 
 ### 11.2 Post-Launch Metrics (6 months)
 
-| Metric | Target |
-|--------|--------|
-| User adoption rate | > 80% for pilot journals |
-| System uptime | > 99.5% |
-| Processing time reduction | 25% improvement |
-| User satisfaction score | > 4.0/5 |
-| Critical bugs | < 5 open |
-| Manuscripts submitted | > 50 across pilot journals |
-| Articles published | > 20 in open access format |
+| Metric                    | Target                     |
+| ------------------------- | -------------------------- |
+| User adoption rate        | > 80% for pilot journals   |
+| System uptime             | > 99.5%                    |
+| Processing time reduction | 25% improvement            |
+| User satisfaction score   | > 4.0/5                    |
+| Critical bugs             | < 5 open                   |
+| Manuscripts submitted     | > 50 across pilot journals |
+| Articles published        | > 20 in open access format |
 
 ### 11.3 Long-Term Success (24 months)
 
-| Metric | Target |
-|--------|--------|
-| Active journals | 50+ |
-| Participating institutions | 20+ |
-| Processing time targets | Met per SLA |
-| Reviewer engagement | Active reviewer pool |
-| Indexing coverage | DOAJ listing for qualifying journals |
-| Published articles | 10,000+ accessible |
-| Sustainability | Funding model established |
+| Metric                     | Target                               |
+| -------------------------- | ------------------------------------ |
+| Active journals            | 50+                                  |
+| Participating institutions | 20+                                  |
+| Processing time targets    | Met per SLA                          |
+| Reviewer engagement        | Active reviewer pool                 |
+| Indexing coverage          | DOAJ listing for qualifying journals |
+| Published articles         | 10,000+ accessible                   |
+| Sustainability             | Funding model established            |
 
 ## 12. Risks and Mitigation
 
 ### 12.1 Technical Risks
+
 - **Risk**: System performance degradation under load
-  - **Mitigation**: Load testing, scalable architecture, performance monitoring
+    - **Mitigation**: Load testing, scalable architecture, performance monitoring
 - **Risk**: Data loss or corruption
-  - **Mitigation**: Robust backup strategy, redundancy, regular recovery testing
+    - **Mitigation**: Robust backup strategy, redundancy, regular recovery testing
 - **Risk**: Security breaches
-  - **Mitigation**: Regular security audits, penetration testing, encryption
+    - **Mitigation**: Regular security audits, penetration testing, encryption
 
 ### 12.2 Business Risks
+
 - **Risk**: Low user adoption
-  - **Mitigation**: User-centered design, comprehensive training, pilot program
+    - **Mitigation**: User-centered design, comprehensive training, pilot program
 - **Risk**: Resistance from existing users
-  - **Mitigation**: Change management strategy, gradual rollout, support resources
+    - **Mitigation**: Change management strategy, gradual rollout, support resources
 - **Risk**: Competition from established platforms
-  - **Mitigation**: Differentiated features, competitive pricing, superior UX
+    - **Mitigation**: Differentiated features, competitive pricing, superior UX
 
 ### 12.3 Operational Risks
+
 - **Risk**: Insufficient support capacity
-  - **Mitigation**: Scalable support model, comprehensive documentation, community forums
+    - **Mitigation**: Scalable support model, comprehensive documentation, community forums
 - **Risk**: Integration failures
-  - **Mitigation**: Thorough testing, fallback mechanisms, vendor relationships
+    - **Mitigation**: Thorough testing, fallback mechanisms, vendor relationships
 
 ## 13. Budget and Resources
 
 ### 13.1 Development Team
 
-| Role | FTE | Notes |
-|------|-----|-------|
-| Project Manager | 1 | Can be faculty or IT staff |
-| Product Designer | 1 | React/Tailwind CSS expertise |
-| Frontend Developers | 2-3 | React 19, Inertia.js 2, Tailwind CSS 4 |
-| Backend Developers | 2-3 | Laravel 12, PHP 8.2+, MySQL 8.0+ |
-| QA Engineers | 1-2 | Pest testing framework experience |
-| DevOps Engineer | 1 | Docker, cloud/on-premises infrastructure |
-| Technical Writer | 0.5 | Documentation |
+| Role                | FTE | Notes                                    |
+| ------------------- | --- | ---------------------------------------- |
+| Project Manager     | 1   | Can be faculty or IT staff               |
+| Product Designer    | 1   | React/Tailwind CSS expertise             |
+| Frontend Developers | 2-3 | React 19, Inertia.js 2, Tailwind CSS 4   |
+| Backend Developers  | 2-3 | Laravel 12, PHP 8.2+, MySQL 8.0+         |
+| QA Engineers        | 1-2 | Pest testing framework experience        |
+| DevOps Engineer     | 1   | Docker, cloud/on-premises infrastructure |
+| Technical Writer    | 0.5 | Documentation                            |
 
 **Alternative Staffing Model for Institutions:**
+
 - Utilize IT department staff
 - Engage faculty with programming expertise
 - Hire student assistants/interns from CS programs
@@ -715,34 +775,37 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 
 **Cloud Hosting Option (Monthly):**
 
-| Component | Estimated Cost |
-|-----------|----------------|
-| Cloud hosting | $1,000-10,000/month |
-| Third-party services | $500-2,000/month |
-| Storage and bandwidth | $500-3,000/month |
-| Security tools | $200-1,000/month |
+| Component             | Estimated Cost      |
+| --------------------- | ------------------- |
+| Cloud hosting         | $1,000-10,000/month |
+| Third-party services  | $500-2,000/month    |
+| Storage and bandwidth | $500-3,000/month    |
+| Security tools        | $200-1,000/month    |
 
 **On-Premises Option:**
 
-| Component | Estimated Cost |
-|-----------|----------------|
-| Server hardware | $10,000-30,000 (one-time) |
-| Annual maintenance | $2,000-6,000 |
+| Component           | Estimated Cost             |
+| ------------------- | -------------------------- |
+| Server hardware     | $10,000-30,000 (one-time)  |
+| Annual maintenance  | $2,000-6,000               |
 | Data center hosting | Often free at institutions |
 
 **Service Fees:**
+
 - DOI registration: ~$1/article via CrossRef
 - DOAJ membership: Free
 - Plagiarism detection: Varies (often institutionally licensed)
 - SSL certificates: Free (Let's Encrypt)
 
 ### 13.3 Ongoing Costs
+
 - Customer support (1-2 FTE from institutional staff)
 - Maintenance and updates (1-2 developers, can be part-time)
 - Infrastructure scaling
 - Third-party service fees
 
 ### 13.4 Funding Model Options
+
 - Institutional budget allocation (research office, library)
 - Consortium funding (multiple institutions sharing costs)
 - Government research grants
@@ -769,16 +832,19 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ### 15.1 User Stories
 
 **Author User Stories:**
+
 - As an author, I want to submit my manuscript easily so that I can focus on my research
 - As an author, I want to track my manuscript status so that I know where it is in the review process
 - As an author, I want to respond to reviewer comments systematically so that I can address all feedback
 
 **Editor User Stories:**
+
 - As an editor, I want to quickly assess manuscript fit so that I can make efficient desk decisions
 - As an editor, I want to find appropriate reviewers so that I get quality feedback
 - As an editor, I want to monitor editorial workflow so that I can meet publication deadlines
 
 **Reviewer User Stories:**
+
 - As a reviewer, I want a structured review form so that I provide consistent feedback
 - As a reviewer, I want to manage my review commitments so that I can balance my workload
 - As a reviewer, I want to access manuscripts securely so that confidentiality is maintained
@@ -786,7 +852,9 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ### 15.2 Wireframes and Mockups
 
 #### Dashboard Views
+
 **Author Dashboard:**
+
 - Manuscript status cards with visual progress indicators
 - Quick submission button prominently displayed
 - Recent activity timeline
@@ -794,6 +862,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Action items requiring attention highlighted
 
 **Editor Dashboard:**
+
 - Assigned manuscripts list with sorting/filtering
 - Workload distribution chart
 - Pending actions queue with priority indicators
@@ -801,6 +870,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Reviewer pool status overview
 
 **Reviewer Dashboard:**
+
 - Active review invitations with accept/decline buttons
 - Current assignments with deadline countdown
 - Completed reviews history
@@ -808,7 +878,9 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Available CME credits tracker
 
 #### Key Page Layouts
+
 **Manuscript Submission Flow:**
+
 1. Landing page with progress stepper (5 steps)
 2. Manuscript details (title, abstract, keywords)
 3. Author information and co-author management
@@ -817,6 +889,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 6. Review and submit confirmation
 
 **Review Interface:**
+
 - Split-screen layout: manuscript viewer (left), review form (right)
 - Collapsible sections for each review criterion
 - Rating scales with visual indicators (1-5 stars or 1-10 numeric)
@@ -825,6 +898,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 - Save draft and submit buttons with confirmation
 
 **Editorial Decision Page:**
+
 - Manuscript summary card at top
 - Review summaries in expandable cards
 - Decision selection dropdown with conditional fields
@@ -835,6 +909,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ### 15.3 Technical Architecture Diagrams
 
 #### System Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        Load Balancer                         │
@@ -874,6 +949,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ```
 
 #### Application Layer Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     Frontend Layer                           │
@@ -907,6 +983,7 @@ SaliksikHub provides configurable compliance frameworks for different jurisdicti
 ```
 
 #### Data Flow - Manuscript Submission
+
 ```
 Author → React Form → Inertia → Laravel Controller
                                       ↓
@@ -933,6 +1010,7 @@ Author → React Form → Inertia → Laravel Controller
 #### Core Entities and Relationships
 
 **Users Table:**
+
 ```
 users
 ├── id (primary key)
@@ -952,6 +1030,7 @@ users
 ```
 
 **Manuscripts Table:**
+
 ```
 manuscripts
 ├── id (primary key)
@@ -976,6 +1055,7 @@ manuscripts
 ```
 
 **Manuscript Authors Table (Pivot):**
+
 ```
 manuscript_authors
 ├── id (primary key)
@@ -988,6 +1068,7 @@ manuscript_authors
 ```
 
 **Manuscript Files Table:**
+
 ```
 manuscript_files
 ├── id (primary key)
@@ -1004,6 +1085,7 @@ manuscript_files
 ```
 
 **Reviews Table:**
+
 ```
 reviews
 ├── id (primary key)
@@ -1029,6 +1111,7 @@ reviews
 ```
 
 **Editorial Decisions Table:**
+
 ```
 editorial_decisions
 ├── id (primary key)
@@ -1043,6 +1126,7 @@ editorial_decisions
 ```
 
 **Roles and Permissions:**
+
 ```
 roles
 ├── id (primary key)
@@ -1067,6 +1151,7 @@ role_has_permissions (pivot)
 ```
 
 **Issues Table:**
+
 ```
 issues
 ├── id (primary key)
@@ -1083,6 +1168,7 @@ issues
 ```
 
 **Manuscript Revisions Table:**
+
 ```
 manuscript_revisions
 ├── id (primary key)
@@ -1096,6 +1182,7 @@ manuscript_revisions
 ```
 
 **Notifications Table:**
+
 ```
 notifications
 ├── id (primary key, UUID)
@@ -1108,6 +1195,7 @@ notifications
 ```
 
 **Entity Relationship Summary:**
+
 - User has many Manuscripts (as author)
 - User has many Manuscripts (as editor, assigned)
 - User has many Reviews (as reviewer)

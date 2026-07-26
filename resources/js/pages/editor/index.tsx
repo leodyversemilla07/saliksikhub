@@ -10,6 +10,7 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
+
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,10 +42,9 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-
+import editor from '@/routes/editor';
 import type { Manuscript } from '@/types';
 import { ManuscriptStatus } from '@/types';
-import editor from '@/routes/editor';
 
 interface ManuscriptTableProps {
     manuscripts: Manuscript[];

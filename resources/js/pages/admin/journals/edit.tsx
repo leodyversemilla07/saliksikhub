@@ -2,6 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, BookOpen, FileText, Menu, Palette } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
     Card,

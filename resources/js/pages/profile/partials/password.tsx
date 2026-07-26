@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -133,7 +134,7 @@ export default function EditPlatformSettings({
         setData('settings', {
             ...data.settings,
             [group]: {
-                ...(data.settings[group] || {}),
+                ...data.settings[group],
                 [key]: value,
             },
         });

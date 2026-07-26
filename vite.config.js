@@ -1,9 +1,9 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);

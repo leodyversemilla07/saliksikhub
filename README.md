@@ -17,14 +17,14 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Laravel 12, PHP 8.4 |
-| Frontend | React 19, TypeScript, Inertia.js v2 |
-| Styling | Tailwind CSS v4, shadcn/ui |
-| Auth | Laravel Fortify, Spatie Permission |
-| Storage | S3-compatible (DigitalOcean Spaces, AWS S3, MinIO) |
-| Testing | Pest v4 |
+| Layer    | Technology                                         |
+| -------- | -------------------------------------------------- |
+| Backend  | Laravel 12, PHP 8.4                                |
+| Frontend | React 19, TypeScript, Inertia.js v2                |
+| Styling  | Tailwind CSS v4, shadcn/ui                         |
+| Auth     | Laravel Fortify, Spatie Permission                 |
+| Storage  | S3-compatible (DigitalOcean Spaces, AWS S3, MinIO) |
+| Testing  | Pest v4                                            |
 
 ## Quick Start
 
@@ -86,6 +86,7 @@ Institution
 **Middleware chain:** `EnsureInstalled` → `SetCurrentJournal` → `HandleInertiaRequests`
 
 **Role hierarchy:**
+
 - `super_admin` – platform-wide, manages all institutions/journals
 - `managing_editor` / `editor_in_chief` – journal-level editorial oversight
 - `associate_editor` / `language_editor` – workflow roles
@@ -121,8 +122,8 @@ Tests include `PluginAdminRoutesTest`.
 
 ## Documentation
 
-| Document | Description |
-|---|---|
+| Document                                                     | Description                            |
+| ------------------------------------------------------------ | -------------------------------------- |
 | [`docs/PLUGIN_ARCHITECTURE.md`](docs/PLUGIN_ARCHITECTURE.md) | Plugin system design and API reference |
 
 ## License

@@ -2,6 +2,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { Shield, Smartphone, Key } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useRef, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
     Card,

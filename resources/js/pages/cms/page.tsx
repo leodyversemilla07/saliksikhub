@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react';
+
 import CmsSection from '@/components/cms/section';
 import PublicLayout from '@/layouts/public-layout';
 import type { PageProps } from '@/types';

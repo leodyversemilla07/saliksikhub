@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
+
 import { Pagination as ShadcnPagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -58,8 +59,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { Manuscript } from '@/types';
 import reviewer from '@/routes/reviewer';
+import type { Manuscript } from '@/types';
 
 interface PaginatedManuscripts {
     data: Manuscript[];

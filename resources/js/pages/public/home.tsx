@@ -1,12 +1,13 @@
 import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, FilePlus2, BookOpen, Users, Award } from 'lucide-react';
+
 import CmsSection from '@/components/cms/section';
 import { Card, CardContent } from '@/components/ui/card';
 import PublicLayout from '@/layouts/public-layout';
-import type { PageProps } from '@/types';
 import { dashboard, submissions } from '@/routes';
 import { register as registerRoute } from '@/routes';
+import type { PageProps } from '@/types';
 
 interface CmsSection {
     id: number;

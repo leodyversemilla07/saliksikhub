@@ -18,6 +18,7 @@ import {
     MoreHorizontal,
 } from 'lucide-react';
 import { useState } from 'react';
+
 import BulkDeleteUserDialog from '@/components/bulk-delete-user-dialog';
 import DeleteUserDialog from '@/components/delete-user-dialog';
 import { Pagination } from '@/components/pagination'; // Reusable Pagination component
@@ -51,9 +52,9 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import type { User } from '@/types';
 import { dashboard } from '@/routes';
 import usersRoutes from '@/routes/users';
+import type { User } from '@/types';
 
 interface PaginationMeta {
     current_page: number;
