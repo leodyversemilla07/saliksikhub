@@ -155,6 +155,13 @@ export default function PluginsIndex({
                         </p>
                     </div>
                     <div className="flex gap-2">
+                        <Link
+                            href={route('admin.ojs-import.index')}
+                            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                            <Globe className="mr-2 h-4 w-4" />
+                            OJS Import
+                        </Link>
                         <Button variant="outline" onClick={handleRefresh}>
                             <RefreshCw className="mr-2 h-4 w-4" />
                             Refresh

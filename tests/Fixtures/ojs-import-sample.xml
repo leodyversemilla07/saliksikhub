@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues xmlns="http://pkp.sfu.ca/ojs/native" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pkp.sfu.ca/ojs/native native.xsd">
+    <issue locale="en_US" date_published="2023-06-15">
+        <issue_identification>
+            <volume>10</volume>
+            <number>2</number>
+            <year>2023</year>
+            <locale>en_US</locale>
+            <title>Volume 10, Issue 2: Special Issue on Philippine Biodiversity</title>
+        </issue_identification>
+        <description>A special issue covering recent research on Philippine biodiversity and conservation efforts.</description>
+        <articles>
+            <article xmlns="http://pkp.sfu.ca/ojs/native" locale="en_US" date_submitted="2023-01-15" date_published="2023-06-15" section_ref="articles" seq="1" access_status="0" stage="production">
+                <id type="internal" advice="ignore">101</id>
+                <id type="doi">10.1234/saliksik.v10i2.101</id>
+                <title locale="en_US">Endemic Amphibians of the Sierra Madre Mountain Range</title>
+                <abstract locale="en_US">This study surveys amphibian populations across elevational gradients in the Sierra Madre mountain range, documenting 23 species including 7 newly recorded endemics. Our findings highlight the critical conservation status of montane ecosystems.</abstract>
+                <pages>1-15</pages>
+                <keywords locale="en_US">
+                    <keyword>amphibians</keyword>
+                    <keyword>Sierra Madre</keyword>
+                    <keyword>endemic species</keyword>
+                    <keyword>conservation</keyword>
+                </keywords>
+                <authors>
+                    <author include_in_browse="true" user_group_ref="Author">
+                        <firstname>Maria</firstname>
+                        <lastname>Santos</lastname>
+                        <email>msantos@university.edu.ph</email>
+                        <affiliation locale="en_US">University of the Philippines, Diliman</affiliation>
+                        <country>PH</country>
+                    </author>
+                    <author include_in_browse="true" user_group_ref="Author">
+                        <firstname>Juan</firstname>
+                        <lastname>dela Cruz</lastname>
+                        <email>jdelacruz@conservation.org.ph</email>
+                        <affiliation locale="en_US">Philippine Conservation Foundation</affiliation>
+                        <country>PH</country>
+                    </author>
+                </authors>
+            </article>
+            <article xmlns="http://pkp.sfu.ca/ojs/native" locale="en_US" date_submitted="2023-02-20" date_published="2023-06-15" section_ref="review-articles" seq="2" access_status="0" stage="production">
+                <id type="internal" advice="ignore">102</id>
+                <id type="doi">10.1234/saliksik.v10i2.102</id>
+                <title locale="en_US">A Systematic Review of Coral Reef Restoration in the Coral Triangle</title>
+                <abstract locale="en_US">We review 45 coral reef restoration projects across the Coral Triangle region, evaluating success metrics, methodology, and long-term survival rates. Restoration success varies significantly by method and location.</abstract>
+                <pages>16-35</pages>
+                <keywords locale="en_US">
+                    <keyword>coral reefs</keyword>
+                    <keyword>restoration</keyword>
+                    <keyword>Coral Triangle</keyword>
+                    <keyword>systematic review</keyword>
+                </keywords>
+                <authors>
+                    <author include_in_browse="true" user_group_ref="Author">
+                        <firstname>Elena</firstname>
+                        <lastname>Rodriguez</lastname>
+                        <email>erodriguez@marine-lab.ph</email>
+                        <affiliation locale="en_US">Marine Science Institute, Diliman</affiliation>
+                        <country>PH</country>
+                    </author>
+                </authors>
+            </article>
+        </articles>
+    </issue>
+    <issue locale="en_US" date_published="2023-12-01">
+        <issue_identification>
+            <volume>10</volume>
+            <number>3</number>
+            <year>2023</year>
+            <locale>en_US</locale>
+            <title>Volume 10, Issue 3</title>
+        </issue_identification>
+        <articles>
+            <article xmlns="http://pkp.sfu.ca/ojs/native" locale="en_US" date_submitted="2023-05-10" date_published="2023-12-01" section_ref="case-reports" seq="1" access_status="0" stage="production">
+                <id type="internal" advice="ignore">103</id>
+                <id type="doi">10.1234/saliksik.v10i3.103</id>
+                <title locale="en_US">A Rare Case of Avian Influenza in Endemic Philippine Raptors</title>
+                <abstract locale="en_US">We document the first confirmed case of H5N1 avian influenza in the Philippine eagle (Pithecophaga jefferyi), with discussion of implications for conservation management.</abstract>
+                <pages>36-42</pages>
+                <authors>
+                    <author include_in_browse="true" user_group_ref="Author">
+                        <firstname>Carlos</firstname>
+                        <lastname>Villanueva</lastname>
+                        <email>cvillanueva@wildlife.gov.ph</email>
+                        <affiliation locale="en_US">Department of Environment and Natural Resources</affiliation>
+                        <country>PH</country>
+                    </author>
+                    <author include_in_browse="true" user_group_ref="Author">
+                        <firstname>Ana</firstname>
+                        <lastname>Mercado</lastname>
+                        <email>amercado@vetmed.ph</email>
+                        <affiliation locale="en_US">University of the Philippines Los Baños</affiliation>
+                        <country>PH</country>
+                    </author>
+                </authors>
+            </article>
+        </articles>
+    </issue>
+</issues>

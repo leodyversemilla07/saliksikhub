@@ -25,7 +25,7 @@ import {
     Pie,
     PieChart,
     ResponsiveContainer,
-    Tooltip,
+    Tooltip as RechartsTooltip,
     XAxis,
     YAxis,
 } from 'recharts';
@@ -562,7 +562,7 @@ export default function AuthorDashboard({
                                             tick={{ fontSize: 11 }}
                                         />
                                         <YAxis tick={{ fontSize: 11 }} />
-                                        <Tooltip
+                                        <RechartsTooltip
                                             contentStyle={{
                                                 borderRadius: '8px',
                                                 border: '1px solid hsl(var(--border))',
@@ -706,7 +706,7 @@ export default function AuthorDashboard({
                                                     ),
                                                 )}
                                             </Pie>
-                                            <Tooltip />
+                                            <RechartsTooltip />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 </div>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\JournalSettingsController;
 use App\Http\Controllers\Admin\JournalThemeController;
 use App\Http\Controllers\Admin\JournalUserController;
 use App\Http\Controllers\Admin\JournalWizardController;
+use App\Http\Controllers\Admin\OJSImportController;
 use App\Http\Controllers\Admin\PlatformSettingsController;
 use App\Http\Controllers\Admin\PluginController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +86,12 @@ Route::middleware(['auth', 'verified', 'user_role:super_admin|managing_editor|ed
 
     // Plugin Management
     Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
+
+    // OJS Import
+    Route::get('ojs-import', [OJSImportController::class, 'index'])->name('ojs-import.index');
+    Route::post('ojs-import', [OJSImportController::class, 'store'])->name('ojs-import.store');
+
+    // Plugin Management (continued)
     Route::get('plugins/{plugin}', [PluginController::class, 'show'])->name('plugins.show');
     Route::post('plugins/install', [PluginController::class, 'install'])->name('plugins.install');
     Route::post('plugins/upload', [PluginController::class, 'upload'])->name('plugins.upload');
