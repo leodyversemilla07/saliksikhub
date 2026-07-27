@@ -186,30 +186,64 @@ class ManuscriptController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('q', '');
+        $query = is_string($query) ? $query : '';
         $perPage = 20;
+
+        $filters = [
+            'year_from' => $request->input('year_from'),
+            'year_to' => $request->input('year_to'),
+            'author' => $request->input('author'),
+            'keyword' => $request->input('keyword'),
+            'volume' => $request->input('volume'),
+            'category' => $request->input('category'),
+            'sort' => $request->input('sort', 'date'),
+            'order' => $request->input('order', 'desc'),
+        ];
 
         $manuscripts = Manuscript::published()
             ->search($query)
+            ->applyFilters($filters)
             ->with('author')
+            ->applySorting($filters['sort'], $filters['order'])
             ->paginate($perPage)
             ->through(function ($manuscript) {
+                $authors = $manuscript->authors;
+                if (is_string($authors)) {
+                    $decoded = json_decode($authors, true);
+                    $authors = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : explode(', ', $authors);
+                }
+
+                $keywords = $manuscript->keywords;
+                if (is_string($keywords)) {
+                    $keywords = explode(', ', $keywords);
+                } elseif (! is_array($keywords)) {
+                    $keywords = [];
+                }
+
                 return [
                     'id' => $manuscript->id,
                     'title' => $manuscript->title,
                     'slug' => $manuscript->slug,
-                    'authors' => explode(', ', $manuscript->authors),
-                    'abstract' => Str::limit($manuscript->abstract, 200),
-                    'keywords' => explode(', ', $manuscript->keywords),
-                    'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->format('M j, Y') : null,
+                    'authors' => $authors,
+                    'abstract' => $manuscript->abstract ?? '',
+                    'keywords' => $keywords,
+                    'publication_date' => $manuscript->publication_date?->format('M j, Y'),
                     'doi' => $manuscript->doi,
-                    'volume' => $manuscript->volume,
-                    'issue' => $manuscript->issue,
+                    'volume' => $manuscript->volume ? (int) $manuscript->volume : null,
+                    'issue' => $manuscript->issue ? (int) $manuscript->issue : null,
+                    'category' => $manuscript->category,
+                    'pdf_url' => $manuscript->final_pdf_path ? route('manuscripts.pdf', $manuscript->slug) : null,
                 ];
             });
 
+        // Build facet data from all published manuscripts
+        $facets = Manuscript::getFacets();
+
         return Inertia::render('public/search-results', [
             'results' => $manuscripts,
-            'query' => $query ?? '',
+            'query' => $query,
+            'filters' => $filters,
+            'facets' => $facets,
         ]);
     }
 

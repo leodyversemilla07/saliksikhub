@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ManuscriptStatus;
 use App\Models\Concerns\BelongsToJournal;
+use Carbon\Carbon;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -408,6 +409,156 @@ class Manuscript extends Model
                 ->orWhere('keywords', 'like', "%{$searchTerm}%")
                 ->orWhere('abstract', 'like', "%{$searchTerm}%");
         });
+    }
+
+    /**
+     * Apply facet filters to a manuscript query.
+     */
+    public function scopeApplyFilters($query, array $filters)
+    {
+        return $query->when($filters['year_from'] ?? null, function ($q, $year) {
+            $q->whereYear('publication_date', '>=', $year);
+        })
+            ->when($filters['year_to'] ?? null, function ($q, $year) {
+                $q->whereYear('publication_date', '<=', $year);
+            })
+            ->when($filters['author'] ?? null, function ($q, $author) {
+                $q->where('authors', 'like', "%{$author}%");
+            })
+            ->when($filters['keyword'] ?? null, function ($q, $keyword) {
+                $q->where('keywords', 'like', "%{$keyword}%");
+            })
+            ->when($filters['volume'] ?? null, function ($q, $volume) {
+                $q->where('volume', $volume);
+            })
+            ->when($filters['category'] ?? null, function ($q, $category) {
+                $q->where('category', $category);
+            });
+    }
+
+    /**
+     * Apply sorting to a manuscript query.
+     */
+    public function scopeApplySorting($query, string $sort, string $order)
+    {
+        return match ($sort) {
+            'title' => $query->orderBy('title', $order === 'asc' ? 'asc' : 'desc'),
+            'authors' => $query->orderBy('authors', $order === 'asc' ? 'asc' : 'desc'),
+            'date' => $query->orderBy('publication_date', $order === 'asc' ? 'asc' : 'desc'),
+            default => $query->latest('published_at'),
+        };
+    }
+
+    /**
+     * Get facet counts for published manuscripts.
+     *
+     * Returns available years, volumes, categories, keywords, and authors
+     * with their respective counts for the faceted search UI.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getFacets(): array
+    {
+        $published = self::where('status', ManuscriptStatus::PUBLISHED);
+
+        // Years — fetch dates and group in PHP for DB-agnostic compatibility
+        $allDates = (clone $published)
+            ->whereNotNull('publication_date')
+            ->pluck('publication_date');
+
+        $yearCounts = [];
+        foreach ($allDates as $date) {
+            $year = $date instanceof Carbon ? $date->year : date('Y', strtotime($date));
+            if (! isset($yearCounts[$year])) {
+                $yearCounts[$year] = 0;
+            }
+            $yearCounts[$year]++;
+        }
+        krsort($yearCounts);
+        $years = [];
+        foreach ($yearCounts as $year => $count) {
+            $years[] = ['value' => $year, 'count' => $count];
+        }
+
+        // Volumes
+        $volumes = (clone $published)
+            ->selectRaw('volume as value, COUNT(*) as count')
+            ->whereNotNull('volume')
+            ->where('volume', '!=', '')
+            ->groupBy('value')
+            ->orderBy('value', 'desc')
+            ->pluck('count', 'value')
+            ->map(fn ($count, $vol) => ['value' => (int) $vol, 'count' => $count])
+            ->values()
+            ->toArray();
+
+        // Categories
+        $categories = (clone $published)
+            ->selectRaw('category as value, COUNT(*) as count')
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->groupBy('value')
+            ->orderBy('count', 'desc')
+            ->pluck('count', 'value')
+            ->map(fn ($count, $cat) => ['value' => $cat, 'count' => $count])
+            ->values()
+            ->toArray();
+
+        // Keywords (top 30)
+        $allKeywords = (clone $published)
+            ->whereNotNull('keywords')
+            ->where('keywords', '!=', '')
+            ->pluck('keywords');
+
+        $keywordCounts = [];
+        foreach ($allKeywords as $kwString) {
+            $parts = explode(',', $kwString);
+            foreach ($parts as $kw) {
+                $kw = trim($kw);
+                if ($kw !== '') {
+                    $key = mb_strtolower($kw);
+                    if (! isset($keywordCounts[$key])) {
+                        $keywordCounts[$key] = ['value' => $kw, 'count' => 0];
+                    }
+                    $keywordCounts[$key]['count']++;
+                }
+            }
+        }
+        usort($keywordCounts, fn ($a, $b) => $b['count'] <=> $a['count']);
+        $keywords = array_slice($keywordCounts, 0, 30);
+
+        // Authors (top 20 unique author names)
+        $allAuthors = (clone $published)
+            ->whereNotNull('authors')
+            ->where('authors', '!=', '')
+            ->pluck('authors');
+
+        $authorCounts = [];
+        foreach ($allAuthors as $authString) {
+            // authors could be a JSON array string or comma-separated
+            $decoded = json_decode($authString, true);
+            $parts = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : explode(',', $authString);
+            foreach ($parts as $name) {
+                $name = trim($name);
+                if ($name !== '') {
+                    $key = mb_strtolower($name);
+                    if (! isset($authorCounts[$key])) {
+                        $authorCounts[$key] = ['value' => $name, 'count' => 0];
+                    }
+                    $authorCounts[$key]['count']++;
+                }
+            }
+        }
+        usort($authorCounts, fn ($a, $b) => $b['count'] <=> $a['count']);
+        $authors = array_slice($authorCounts, 0, 20);
+
+        return [
+            'years' => $years,
+            'volumes' => array_values($volumes),
+            'categories' => array_values($categories),
+            'keywords' => array_values($keywords),
+            'authors' => array_values($authors),
+        ];
     }
 
     /**
