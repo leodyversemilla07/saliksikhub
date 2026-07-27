@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import Breadcrumb from '@/components/breadcrumb';
 import { PluginSlot } from '@/components/plugins/plugin-slot';
+import SEOHead from '@/components/seo-head';
 import PublicLayout from '@/layouts/public-layout';
 import type { PageProps } from '@/types';
 
@@ -24,14 +25,29 @@ interface Manuscript {
 
 interface PublicViewProps extends PageProps {
     manuscript: Manuscript;
+    articleSchema?: Record<string, unknown>;
 }
 
-export default function PublicView({ manuscript }: PublicViewProps) {
+export default function PublicView({
+    manuscript,
+    articleSchema,
+}: PublicViewProps) {
     const { currentJournal } = usePage<PageProps>().props;
     const journalName = currentJournal?.name ?? 'Research Journal';
 
     return (
         <PublicLayout title={`${manuscript.title} - ${journalName}`}>
+            <SEOHead
+                title={`${manuscript.title} - ${journalName}`}
+                description={
+                    manuscript.abstract
+                        ? manuscript.abstract.substring(0, 300)
+                        : null
+                }
+                keywords={manuscript.keywords?.join(', ')}
+                ogType="article"
+                jsonld={articleSchema}
+            />
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <Breadcrumb
                     items={[

@@ -7,6 +7,7 @@ use App\Models\Journal;
 use App\Models\PlatformSetting;
 use App\Services\SidebarWidgetService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -91,6 +92,43 @@ class HandleInertiaRequests extends Middleware
             'footerMenu' => $footerMenu,
             'sidebarWidgets' => $this->getSidebarWidgets($journal),
             'pluginData' => $this->getPluginData($request, $journal),
+            'seo' => $this->getSEOData($journal),
+        ];
+    }
+
+    /**
+     * Build default SEO metadata for the frontend.
+     *
+     * @return array{meta: array<string, string|null>, jsonld: list<array<string, mixed>>}
+     */
+    protected function getSEOData(?Journal $journal): array
+    {
+        $appName = config('app.name');
+        $description = $journal?->description ?? $appName.' — An open access academic journal platform.';
+        $image = $journal?->logo_path ? asset('storage/'.$journal->logo_path) : null;
+        $currentUrl = url()->current();
+
+        return [
+            'meta' => [
+                'title' => $journal?->name ?? $appName,
+                'description' => $description,
+                'keywords' => $journal?->settings['meta_keywords'] ?? 'academic journal, research, open access, scholarly publishing',
+                'og:title' => $journal?->name ?? $appName,
+                'og:description' => Str::limit(strip_tags($description), 300),
+                'og:url' => $currentUrl,
+                'og:type' => 'website',
+                'og:site_name' => $journal?->name ?? $appName,
+                'og:image' => $image,
+                'og:locale' => str_replace('_', '-', app()->getLocale()),
+                'twitter:card' => 'summary_large_image',
+                'twitter:title' => $journal?->name ?? $appName,
+                'twitter:description' => Str::limit(strip_tags($description), 200),
+                'twitter:image' => $image,
+            ],
+            'jsonld' => [
+                $this->getOrganizationSchema($journal, $appName, $description, $image),
+                $this->getWebsiteSchema($appName),
+            ],
         ];
     }
 
@@ -123,5 +161,41 @@ class HandleInertiaRequests extends Middleware
         $service = app(SidebarWidgetService::class);
 
         return $service->buildWidgets($widgetConfigs, $journal->id);
+    }
+
+    /**
+     * Generate Organization JSON-LD schema.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getOrganizationSchema(?Journal $journal, string $appName, string $description, ?string $image): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            '@id' => url('/').'/#organization',
+            'name' => $journal?->name ?? $appName,
+            'description' => $description,
+            'url' => url('/'),
+            'logo' => $image,
+            ...($journal?->issn ? ['identifier' => 'ISSN:'.$journal->issn] : []),
+        ];
+    }
+
+    /**
+     * Generate WebSite JSON-LD schema.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getWebsiteSchema(string $appName): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            '@id' => url('/').'/#website',
+            'url' => url('/'),
+            'name' => $appName,
+            'publisher' => ['@id' => url('/').'/#organization'],
+        ];
     }
 }

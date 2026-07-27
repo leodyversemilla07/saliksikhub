@@ -8,6 +8,28 @@
 
     <title data-inertia>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Meta tags (overridden by Inertia <Head> per page) -->
+    <meta name="description" content="{{ config('app.name') }} — An open access academic journal platform.">
+    <meta name="keywords" content="academic journal, research, open access, scholarly publishing">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- JSON-LD Structured Data (injected from Inertia shared props) -->
+    @php
+        $seoShared = \Inertia\Inertia::getShared('seo');
+        $jsonld = $seoShared['jsonld'] ?? [];
+    @endphp
+    @foreach($jsonld as $schema)
+    <script type="application/ld+json">
+    {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+    @endforeach
+
     <link rel="shortcut icon" href="https://minsu.edu.ph/template/images/logo.png" type="image/x-icon">
 
     <!-- Fonts - Scholarly Design System -->

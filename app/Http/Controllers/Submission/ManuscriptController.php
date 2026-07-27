@@ -10,6 +10,7 @@ use App\Models\Manuscript;
 use App\Models\User;
 use App\Notifications\Submission\ManuscriptApproved;
 use App\Notifications\Submission\ManuscriptStatusChanged;
+use App\Services\SEOService;
 use App\Services\StorageService;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -152,6 +153,8 @@ class ManuscriptController extends Controller
                 abort(404, 'Manuscript not found or not publicly available');
             }
 
+            $seo = app(SEOService::class);
+
             return Inertia::render('manuscripts/public-view', [
                 'manuscript' => [
                     'id' => $manuscript->id,
@@ -168,6 +171,7 @@ class ManuscriptController extends Controller
                     'publication_date' => $manuscript->publication_date ? $manuscript->publication_date->toDateString() : null,
                     'institution' => $manuscript->user->affiliation ?? '',
                 ],
+                'articleSchema' => $seo->articleSchema($manuscript),
             ]);
         } catch (Exception $e) {
             Log::error('Public Manuscript Show Error', [

@@ -23,9 +23,48 @@
 |   payment.php       — Payments, subscriptions, statistics
 |   admin.php         — System administration
 |
+| SEO:
+|   robots.txt — Dynamic robots.txt
+|   sitemap.xml — XML sitemap for search engines
+|
 */
 
 use Illuminate\Support\Facades\Route;
+
+// ============================================================
+// SEO — robots.txt and sitemap (no journal context)
+// ============================================================
+Route::get('/robots.txt', function () {
+    $disallow = app()->environment('production') ? '' : '/';
+    $url = url('/sitemap.xml');
+    $now = now()->toIso8601String();
+
+    $content = "User-agent: *\n";
+    $content .= "Allow: /\n";
+    $content .= "Disallow: {$disallow}\n";
+    $content .= "Disallow: /dashboard\n";
+    $content .= "Disallow: /editor\n";
+    $content .= "Disallow: /admin\n";
+    $content .= "Disallow: /profile\n";
+    $content .= "Disallow: /submissions\n";
+    $content .= "Disallow: /payments\n";
+    $content .= "\n";
+    $content .= "Sitemap: {$url}\n";
+    $content .= "\n";
+    $content .= "# Generated at: {$now}\n";
+
+    return response($content, 200, ['Content-Type' => 'text/plain']);
+})->name('robots');
+
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+
+    if (! file_exists($path)) {
+        abort(404, 'Sitemap not yet generated. Run php artisan sitemap:generate');
+    }
+
+    return response()->file($path, ['Content-Type' => 'application/xml']);
+})->name('sitemap');
 
 // ============================================================
 // Installation (no journal context)

@@ -145,6 +145,10 @@ export type PageProps<
     footerMenu?: CmsMenuItem[];
     sidebarWidgets?: Widget[];
     pluginData?: Record<string, unknown>;
+    seo?: {
+        meta: Record<string, string | null>;
+        jsonld: Record<string, unknown>[];
+    };
 };
 
 // Sidebar widget types

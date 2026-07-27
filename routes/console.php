@@ -23,3 +23,9 @@ Schedule::command('reviews:send-overdue-reminders')
     ->dailyAt('10:00')
     ->timezone('UTC')
     ->description('Send reminders for overdue reviews');
+
+// Generate XML sitemap daily for SEO
+Schedule::command('sitemap:generate --format=xml')
+    ->dailyAt('03:00')
+    ->timezone('UTC')
+    ->description('Generate XML sitemap for search engines');
