@@ -10,6 +10,7 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
+    Wand2,
 } from 'lucide-react';
 
 import {
@@ -105,10 +106,19 @@ export default function JournalsIndex({ journals }: Props) {
                             Manage journals in the research journal system
                         </p>
                     </div>
-                    <Button render={<Link href="/admin/journals/create" />}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Journal
-                    </Button>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            render={<Link href="/admin/journals/onboarding" />}
+                        >
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            Quick Setup
+                        </Button>
+                        <Button render={<Link href="/admin/journals/create" />}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Journal
+                        </Button>
+                    </div>
                 </div>
 
                 <Card>
@@ -126,16 +136,28 @@ export default function JournalsIndex({ journals }: Props) {
                                     No journals yet
                                 </h3>
                                 <p className="mb-4 text-muted-foreground">
-                                    Get started by creating your first journal.
+                                    Get started by creating your first journal
+                                    using the guided setup.
                                 </p>
-                                <Button
-                                    render={
-                                        <Link href="/admin/journals/create" />
-                                    }
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Journal
-                                </Button>
+                                <div className="flex items-center justify-center gap-3">
+                                    <Button
+                                        render={
+                                            <Link href="/admin/journals/onboarding" />
+                                        }
+                                    >
+                                        <Wand2 className="mr-2 h-4 w-4" />
+                                        Quick Setup
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        render={
+                                            <Link href="/admin/journals/create" />
+                                        }
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Manual
+                                    </Button>
+                                </div>
                             </div>
                         ) : (
                             <>

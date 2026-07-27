@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\JournalPageController;
 use App\Http\Controllers\Admin\JournalSettingsController;
 use App\Http\Controllers\Admin\JournalThemeController;
 use App\Http\Controllers\Admin\JournalUserController;
+use App\Http\Controllers\Admin\JournalWizardController;
 use App\Http\Controllers\Admin\PlatformSettingsController;
 use App\Http\Controllers\Admin\PluginController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,11 @@ Route::middleware(['auth', 'verified', 'user_role:super_admin|managing_editor|ed
     // Journal management
     Route::resource('journals', AdminJournalController::class);
     Route::post('journals/{journal}/toggle-status', [AdminJournalController::class, 'toggleStatus'])->name('journals.toggle-status');
+
+    // Journal onboarding wizard
+    Route::get('journals/onboarding', [JournalWizardController::class, 'index'])->name('journals.onboarding');
+    Route::post('journals/onboarding', [JournalWizardController::class, 'store'])->name('journals.onboarding.store');
+    Route::get('journals/onboarding/{journal}/complete', [JournalWizardController::class, 'complete'])->name('journals.onboarding.complete');
 
     // Journal settings
     Route::get('journals/{journal}/settings', [JournalSettingsController::class, 'edit'])->name('journals.settings.edit');
